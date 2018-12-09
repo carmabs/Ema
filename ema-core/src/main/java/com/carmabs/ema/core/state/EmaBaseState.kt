@@ -1,0 +1,12 @@
+package com.carmabs.ema.core.state
+
+/**
+ * Interface which all state view classes must use to be handled by the library
+ *
+ * The states mast have all properties as val to make it inmutable for views. If it has to be change
+ * use the copy methods of data classes inside the ViewModel
+ *
+ * @author <a href=“mailto:carlos.mateo@babel.es”>Carlos Mateo</a>
+ */
+
+interface EmaBaseState

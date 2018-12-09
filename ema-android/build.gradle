@@ -1,0 +1,50 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+
+android {
+    compileSdkVersion 28
+
+    defaultConfig {
+        minSdkVersion 19
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+}
+
+dependencies {
+
+    //Navigation
+    implementation emaAndroid.navigationFragment
+    implementation emaAndroid.navigationUI
+
+    //Architecture components
+    implementation emaAndroid.lifecycle
+
+    //Kotlin
+    implementation emaAndroid.kotlin
+    implementation emaAndroid.coroutines
+
+    //Kodein
+    implementation emaAndroid.kodein
+    implementation emaAndroid.kodeinAndroid
+
+    //UI
+    implementation emaAndroid.constraint
+    implementation emaAndroid.design
+    implementation emaAndroid.material
+
+    implementation project(path: ':ema-core')
+}
