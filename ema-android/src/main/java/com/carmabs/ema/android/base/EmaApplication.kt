@@ -14,13 +14,13 @@ import org.kodein.di.KodeinAware
 abstract class EmaApplication : Application(), KodeinAware {
 
     override val kodein: Kodein = Kodein {
-        import(injectAppModule(this@EmaApplication))
+        import(injectAppModule(this))
     }
 
     /**
      * The child classes implement this methods to return the module that provides the app scope objects
-     * @param app The app which provide the scope
+     * @param kodein The object which provide the injection
      * @return The Kodein module which makes the injection
      */
-    abstract fun injectAppModule(app:EmaApplication):Kodein.Module
+    abstract fun injectAppModule(kodein: Kodein.MainBuilder):Kodein.Module
 }
