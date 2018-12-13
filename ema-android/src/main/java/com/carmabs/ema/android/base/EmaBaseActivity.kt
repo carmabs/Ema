@@ -21,7 +21,7 @@ abstract class EmaBaseActivity : AppCompatActivity(), NavHost, KodeinAware {
     private val parentKodein by closestKodein()
     override val kodein: Kodein = Kodein.lazy {
         extend(parentKodein)
-        import(injectActivityModule(this@EmaBaseActivity))
+        import(injectActivityModule(this))
     }
 
     /**
@@ -49,8 +49,8 @@ abstract class EmaBaseActivity : AppCompatActivity(), NavHost, KodeinAware {
 
     /**
      * The child classes implement this methods to return the module that provides the activity scope objects
-     * @param activity The activity which provide the scope
+     * @param kodein The object which provide the injection
      * @return The Kodein module which makes the injection
      */
-    abstract fun injectActivityModule(activity: EmaBaseActivity):Kodein.Module
+    abstract fun injectActivityModule(kodein: Kodein.MainBuilder):Kodein.Module
 }

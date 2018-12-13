@@ -21,12 +21,12 @@ abstract class EmaUseCase<T>(private val asyncManager: AsyncManager) {
      * @return the deferred object with the return value
      */
     suspend fun execute(): Deferred<T> {
-        return asyncManager.async { usecaseFunction() }
+        return asyncManager.async { useCaseFunction() }
     }
 
     /**
      * Function to implement by child classes to execute the code associated to data retrieving.
      * It will be executed inside an AsyncTask
      */
-    abstract suspend fun usecaseFunction(): T
+    protected abstract suspend fun useCaseFunction(): T
 }
