@@ -3,7 +3,7 @@ package com.carmabs.ema.core.state
 /**
  * Class to represent basic view states
  *
- * @author <a href="mailto:carlos.mateo@babel.es">Carlos Mateo Benito</a>
+ * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
 
 sealed class EmaState : EmaBaseState {

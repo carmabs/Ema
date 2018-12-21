@@ -6,7 +6,7 @@ import kotlinx.coroutines.*
 /**
  * ConcurrencyManager implementation for coroutines
  *
- * @author <a href=“mailto:carlos.mateo@babel.es”>Carlos Mateo</a>
+ * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
 
 class DefaultConcurrencyManager : ConcurrencyManager {
@@ -18,8 +18,8 @@ class DefaultConcurrencyManager : ConcurrencyManager {
      * @param block Function to execute in the thread
      * @param dispatcher Executor thread
      */
-    override fun launch(block: suspend CoroutineScope.() -> Unit, dispatcher: CoroutineDispatcher): Job {
-        val job = Job()
+    override fun launch(dispatcher: CoroutineDispatcher, block: suspend CoroutineScope.() -> Unit): Job {
+        val job = SupervisorJob()
         val scope = CoroutineScope(dispatcher + job)
         job.invokeOnCompletion { jobList.remove(job) }
         scope.launch { block.invoke(this) }
@@ -40,7 +40,7 @@ class DefaultConcurrencyManager : ConcurrencyManager {
      * @param job Job to cancel the task in process
      */
     override fun cancelTask(job: Job) {
-        if(jobList.remove(job)){
+        if (jobList.remove(job)) {
             job.cancel()
         }
     }

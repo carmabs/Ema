@@ -21,7 +21,7 @@ import kotlinx.coroutines.CoroutineScope
  * if we catch that exception and don’t let it flow through the coroutines code, there’s no way for
  * the coroutines or asynchronous tasks down in the stack to cancel.
  *
- * @author <a href=“mailto:carlos.mateo@babel.es”>Carlos Mateo</a>
+ * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
 
 /**

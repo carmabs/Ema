@@ -5,7 +5,7 @@ package com.carmabs.ema.core.navigator
  * where you must handle the navigation implementation. A good approach is to define a sealed class
  * inside the EmaNavigator implementation class  with all the possibles destination
  *
- * @author <a href=“mailto:carlos.mateo@babel.es”>Carlos Mateo</a>
+ * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
 
 interface EmaNavigator<T : EmaNavigationState> {

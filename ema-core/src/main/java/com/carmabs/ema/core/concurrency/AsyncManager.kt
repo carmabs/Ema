@@ -15,15 +15,17 @@ interface AsyncManager {
      * Method to make async task. Not blocking. To get result use blocking  Deferred.await()
      * @param T Return object when call is finished
      * @param block Function to execute in asynchronous task
+     * @param dispatcher @param dispatcher Executor thread
      */
-    suspend fun <T> async(block: suspend CoroutineScope.() -> T): Deferred<T>
+    suspend fun <T> async(dispatcher: CoroutineDispatcher = Dispatchers.Main,block: suspend CoroutineScope.() -> T): Deferred<T>
 
     /**
      * Blocking method to make async task.
      * @param T Return object when call is finished
      * @param block Function to execute in asynchronous task
+     * @param dispatcher @param dispatcher Executor thread
      */
-    suspend fun <T> asyncAwait(block: suspend CoroutineScope.() -> T): T
+    suspend fun <T> asyncAwait(dispatcher: CoroutineDispatcher = Dispatchers.Main,block: suspend CoroutineScope.() -> T): T
 
     /**
      * Cancel all async tasks in process
