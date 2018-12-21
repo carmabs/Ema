@@ -8,7 +8,7 @@ import kotlinx.coroutines.Job
 /**
  * Manager to handle concurrency tasks
  *
- * @author <a href=“mailto:carlos.mateo@babel.es”>Carlos Mateo</a>
+ * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
 
 interface ConcurrencyManager{
@@ -23,7 +23,7 @@ interface ConcurrencyManager{
      * @param block Function to execute in the thread
      * @param dispatcher Executor thread
      */
-    fun launch(block: suspend CoroutineScope.() -> Unit, dispatcher: CoroutineDispatcher=Dispatchers.Main): Job
+    fun launch(dispatcher: CoroutineDispatcher = Dispatchers.Main, block: suspend CoroutineScope.() -> Unit): Job
 
     /**
      * Cancel a task in process through its job

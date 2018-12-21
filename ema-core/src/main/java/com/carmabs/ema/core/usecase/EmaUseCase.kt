@@ -7,7 +7,7 @@ import kotlinx.coroutines.Deferred
  *
  * All the logic associated to data retrieving must be done inside an use case.
  *
- * @author <a href=“mailto:carlos.mateo@babel.es”>Carlos Mateo</a>
+ * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
 
 /**
@@ -21,7 +21,7 @@ abstract class EmaUseCase<T>(private val asyncManager: AsyncManager) {
      * @return the deferred object with the return value
      */
     suspend fun execute(): Deferred<T> {
-        return asyncManager.async { useCaseFunction() }
+        return asyncManager.async(dispatcher) { useCaseFunction() }
     }
 
     /**
@@ -29,4 +29,9 @@ abstract class EmaUseCase<T>(private val asyncManager: AsyncManager) {
      * It will be executed inside an AsyncTask
      */
     protected abstract suspend fun useCaseFunction(): T
+
+    /**
+     * Dispatcher used for useCase execution
+     */
+    protected open val dispatcher:CoroutineDispatcher = Dispatchers.Main
 }

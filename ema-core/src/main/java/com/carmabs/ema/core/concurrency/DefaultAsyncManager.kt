@@ -8,7 +8,7 @@ import kotlinx.coroutines.async
 /**
  * AsyncManager implementation for coroutines
  *
- * @author <a href=“mailto:carlos.mateo@babel.es”>Carlos Mateo</a>
+ * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
 
 class DefaultAsyncManager : AsyncManager {
@@ -21,9 +21,11 @@ class DefaultAsyncManager : AsyncManager {
      * Add each deferred object to a list to make available its cancellation
      * @param T Return object when call is finished
      * @param block Function to execute in asynchronous task
+     * @param dispatcher Executor thread
      */
-    override suspend fun <T> async(block: suspend CoroutineScope.() -> T): Deferred<T> {
-        val deferred: Deferred<T> = GlobalScope.async { block() }
+    override suspend fun <T> async(dispatcher: CoroutineDispatcher,block: suspend CoroutineScope.() -> T): Deferred<T> {
+        val job = SupervisorJob()
+        val deferred: Deferred<T> = CoroutineScope(dispatcher+ job).async { block() }
         deferredList.add(deferred)
         deferred.invokeOnCompletion { deferredList.remove(deferred) }
         return deferred
@@ -33,9 +35,10 @@ class DefaultAsyncManager : AsyncManager {
      * Blocking method to make async task.
      * @param T Return object when call is finished
      * @param block Function to execute in asynchronous task
+     * @param dispatcher Executor thread
      */
-    override suspend fun <T> asyncAwait(block: suspend CoroutineScope.() -> T): T {
-        return async(block).await()
+    override suspend fun <T> asyncAwait(dispatcher: CoroutineDispatcher,block: suspend CoroutineScope.() -> T): T {
+        return async(dispatcher,block).await()
     }
 
     /**
