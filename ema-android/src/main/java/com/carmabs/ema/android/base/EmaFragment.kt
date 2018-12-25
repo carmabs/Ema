@@ -47,8 +47,20 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
      */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initializeViewModel(this)
+        activity?.let {
+            initializeViewModel(it,
+                    if (fragmentViewModelScope)
+                        this
+                    else
+                        null)
+        }
     }
+
+    /**
+     * Determine if the view model lifecycle is attached to the Activity or to the Fragment
+     */
+    abstract val fragmentViewModelScope: Boolean
+
 
     /**
      * Methods called when view model has been created
