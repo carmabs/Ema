@@ -1,9 +1,6 @@
 package com.carmabs.ema.core.concurrency
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
+import kotlinx.coroutines.*
 
 /**
  * AsyncManager implementation for coroutines
@@ -23,7 +20,7 @@ class DefaultAsyncManager : AsyncManager {
      * @param block Function to execute in asynchronous task
      * @param dispatcher Executor thread
      */
-    override suspend fun <T> async(dispatcher: CoroutineDispatcher,block: suspend CoroutineScope.() -> T): Deferred<T> {
+    override suspend fun <T> async(dispatcher: CoroutineDispatcher, block: suspend CoroutineScope.() -> T): Deferred<T> {
         val job = SupervisorJob()
         val deferred: Deferred<T> = CoroutineScope(dispatcher+ job).async { block() }
         deferredList.add(deferred)

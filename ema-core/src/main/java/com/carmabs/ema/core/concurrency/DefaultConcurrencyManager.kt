@@ -1,6 +1,5 @@
 package com.carmabs.ema.core.concurrency
 
-import com.carmabs.ema.core.concurrency.ConcurrencyManager
 import kotlinx.coroutines.*
 
 /**

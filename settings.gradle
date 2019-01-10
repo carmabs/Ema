@@ -1,0 +1,1 @@
+include ':app', ':ema-android', ':ema-core'
