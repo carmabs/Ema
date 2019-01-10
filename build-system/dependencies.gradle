@@ -16,6 +16,19 @@ project.ext {
 
     coroutinesVersion = "1.0.1"
 
+    appDependencies = [
+            navigationFragment: "android.arch.navigation:navigation-fragment-ktx:" + project.navigationVersion,
+            navigationUI      : "android.arch.navigation:navigation-ui-ktx:" + project.navigationVersion,
+            constraint        : "androidx.constraintlayout:constraintlayout:" + project.constraintVersion,
+            kotlin            : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:" + project.kotlinVersion,
+            design            : "com.android.support:design:" + project.designVersion,
+            material          : "com.google.android.material:material:" + project.materialVersion,
+            lifecycle         : "androidx.lifecycle:lifecycle-extensions:" + project.lifecycleVersion,
+            kodein            : "org.kodein.di:kodein-di-generic-jvm:" + project.kodeinVersion,
+            kodeinAndroid     : "org.kodein.di:kodein-di-framework-android-x:" + project.kodeinVersion,
+            coroutines        : 'org.jetbrains.kotlinx:kotlinx-coroutines-android:' + project.coroutinesVersion,
+    ]
+
 
     emaCore = [
             kotlin    : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:" + project.kotlinVersion,

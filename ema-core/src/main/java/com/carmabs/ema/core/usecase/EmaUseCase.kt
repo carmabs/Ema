@@ -1,6 +1,8 @@
 package com.carmabs.ema.core.usecase
 import com.carmabs.ema.core.concurrency.AsyncManager
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
 
 /**
  * Base class to handle every use case.
@@ -33,5 +35,5 @@ abstract class EmaUseCase<T>(private val asyncManager: AsyncManager) {
     /**
      * Dispatcher used for useCase execution
      */
-    protected open val dispatcher:CoroutineDispatcher = Dispatchers.Main
+    protected open val dispatcher: CoroutineDispatcher = Dispatchers.Main
 }

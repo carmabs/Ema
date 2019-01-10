@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.carmabs.ema.core.concurrency.ConcurrencyManager
 import com.carmabs.ema.core.concurrency.DefaultConcurrencyManager
+import com.carmabs.ema.core.concurrency.tryCatch
 import com.carmabs.ema.core.navigator.EmaNavigationState
 import com.carmabs.ema.core.state.EmaBaseState
 import com.carmabs.ema.core.state.EmaExtraData
@@ -60,12 +61,14 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> : Vie
     /**
      * Methos called the first time ViewModel is created
      * @param inputState
+     * @return true if it's the first time is started
      */
-    open fun onStart(inputState: S? = null) {
-        if (state == null) {
+     open fun onStart(inputState: S? = null): Boolean {
+        return if (state == null) {
             state = inputState ?: createInitialState()
             updateView(state)
-        }
+            true
+        } else false
     }
 
     /**
@@ -106,7 +109,23 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> : Vie
      * @return the job that can handle the lifecycle of the background task
      */
     protected fun executeUseCase(block: suspend CoroutineScope.() -> Unit): Job {
-        return concurrencyManager.launch(block)
+        return concurrencyManager.launch(block = block)
+    }
+
+    /**
+     * When a background task must be executed for data retrieving or other background job, it must
+     * be called through this method with [block] function
+     * @param block is the function that will be executed in background
+     * @param exceptionBlock is the function that will be executed if an exception launched
+     * @param handleCancellationManually true if CancellationException must be handled by exceptionBlock
+     * @return the job that can handle the lifecycle of the background task
+     */
+    protected fun executeUseCaseWithException(block: suspend CoroutineScope.() -> Unit,
+                                              exceptionBlock: suspend CoroutineScope.(Throwable) -> Unit,
+                                              handleCancellationManually: Boolean = false): Job {
+        return concurrencyManager.launch {
+            tryCatch(block, exceptionBlock, handleCancellationManually)
+        }
     }
 
 
