@@ -66,7 +66,7 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
      * Methods called when view model has been created
      * @param viewModel
      */
-    override fun onViewModelInitalized(viewModel: VM) {
+    override fun onViewModelInitialized(viewModel: VM) {
         vm = viewModel
         onInitialized(viewModel)
     }

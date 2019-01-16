@@ -59,14 +59,15 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> : Vie
     protected var state: S? = null
 
     /**
-     * Methos called the first time ViewModel is created
+     * Method called the first time ViewModel is created
      * @param inputState
      * @return true if it's the first time is started
      */
-     open fun onStart(inputState: S? = null): Boolean {
+    open fun onStart(inputState: S? = null): Boolean {
         return if (state == null) {
-            state = inputState ?: createInitialState()
-            updateView(state)
+            val initialStatus = inputState ?: createInitialState()
+            state = initialStatus
+            updateView(initialStatus)
             true
         } else false
     }
@@ -75,9 +76,8 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> : Vie
      * Method used to update the state of the view. It will be notified to the observers
      * @param state Tee current state of the view
      */
-    protected fun updateView(state: S?) {
-        if (state != null)
-            this.observableState.value = state
+    protected fun updateView(state: S) {
+        this.observableState.value = state
     }
 
     /**
