@@ -3,13 +3,15 @@ package com.carmabs.ema.android.base
 import com.carmabs.ema.core.navigator.EmaNavigationState
 import com.carmabs.ema.core.state.EmaState
 import com.carmabs.ema.core.state.EmaExtraData
+import java.lang.Exception
+import java.lang.RuntimeException
 
 /**
  * View model to handle view states.
  *
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
-abstract class EmaViewModel<S,NS : EmaNavigationState> : EmaBaseViewModel<EmaState, NS>() {
+abstract class EmaViewModel<S,NS : EmaNavigationState> : EmaBaseViewModel<EmaState<S>, NS>() {
 
     /**
      * State of the view
@@ -22,7 +24,9 @@ abstract class EmaViewModel<S,NS : EmaNavigationState> : EmaBaseViewModel<EmaSta
      * @param state of the view
      */
     protected fun updateViewState(state:S?) {
-        super.updateView(EmaState.Normal(state))
+        state?.let {
+            super.updateView(EmaState.Normal(state))
+        }
     }
 
     /**
@@ -31,7 +35,10 @@ abstract class EmaViewModel<S,NS : EmaNavigationState> : EmaBaseViewModel<EmaSta
      * @param error generated
      */
     protected fun notifyError(error: Throwable) {
-        super.updateView(EmaState.Error(error))
+        viewState?.let {
+            super.updateView(EmaState.Error(it,error))
+        }?:throwInitialStateException()
+
     }
 
     /**
@@ -40,23 +47,33 @@ abstract class EmaViewModel<S,NS : EmaNavigationState> : EmaBaseViewModel<EmaSta
      * @param data with loading information
      */
     protected fun loading(data: EmaExtraData?=null) {
-        val loadingData = data?.let {
-            EmaState.Loading(data = it)
-        }?: EmaState.Loading()
+        viewState?.let {state ->
+            val loadingData = data?.let {
+                EmaState.Loading(state,dataLoading = it)
+            }?: EmaState.Loading(state)
 
-        super.updateView(loadingData)
+            super.updateView(loadingData)
+        }?:throwInitialStateException()
+
     }
 
     /**
      * Generate the initial state with EmaState to trigger normal/loading/error states
      * for the view.
      */
-     override fun createInitialState(): EmaState {
+    override fun createInitialState(): EmaState<S> {
         if (viewState == null) {
             viewState = createInitialViewState()
         }
 
-        return EmaState.Normal(viewState)
+        return EmaState.Normal(viewState!!)
+    }
+
+    /**
+     * Throws exception if the state of the view has not been initialized
+     */
+    private fun throwInitialStateException():Exception{
+        throw RuntimeException("Initial state has not been created")
     }
 
     /**

@@ -3,13 +3,12 @@ package com.carmabs.ema.android.base
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import com.carmabs.ema.core.navigator.EmaNavigationState
 import com.carmabs.ema.core.navigator.EmaNavigator
 import com.carmabs.ema.core.state.EmaBaseState
-import com.carmabs.ema.core.state.EmaState
 import com.carmabs.ema.core.state.EmaExtraData
+import com.carmabs.ema.core.state.EmaState
 
 
 /**
@@ -59,19 +58,23 @@ interface EmaView<S: EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigationS
                 ?: fragmentActivity, Observer(this::onSingleDataSent))
         vm.navigationState.observe(fragment
                 ?: fragmentActivity, Observer(this::onNavigation))
-        onViewModelInitalized(vm)
-        vm.onStart(inputState?.let { EmaState.Normal(inputState) })
+        onViewModelInitialized(vm)
+        vm.onStart(inputState?.let { EmaState.Normal(it) })
     }
 
     /**
      * Called when view model trigger an update view event
      * @param state of the view
      */
-    fun onDataUpdated(state: EmaState) {
+    fun onDataUpdated(state: EmaState<S>) {
+        onStateNormal(state.data)
         when (state) {
-            is EmaState.Normal<*> -> onStateNormal(state.data as S)
-            is EmaState.Loading -> onStateLoading(state.data)
-            is EmaState.Error -> onStateError(state.error)
+            is EmaState.Loading -> {
+                onStateLoading(state.dataLoading)
+            }
+            is EmaState.Error -> {
+                onStateError(state.error)
+            }
         }
     }
 
@@ -95,7 +98,7 @@ interface EmaView<S: EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigationS
      * Called once the view model have been provided. Here must go the view set up
      * @param viewModel of the view
      */
-    fun onViewModelInitalized(viewModel: VM)
+    fun onViewModelInitialized(viewModel: VM)
 
     /**
      * Called when view model trigger an update view event
