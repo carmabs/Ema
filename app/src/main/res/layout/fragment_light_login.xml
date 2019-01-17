@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <TextView
+        android:id="@+id/tvLightLoginWelcome"
+        style="@style/TextHugeTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/space_huge_medium"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="@dimen/space_huge_medium"
+        android:gravity="center"
+        android:text="@string/hello"
+        android:textColor="@color/riffle_green"
+        app:layout_constraintBottom_toTopOf="@id/llLighLogin"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"/>
+
+    <TextView
+        android:id="@+id/tvLightLoginWelcomeText"
+        style="@style/TextMedium"
+        android:textSize="@dimen/letter_medium"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/space_big_medium"
+        android:text="@string/identified"
+        app:layout_constraintEnd_toEndOf="@+id/tvLightLoginWelcome"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/tvLightLoginWelcome"
+        app:layout_constraintTop_toBottomOf="@+id/tvLightLoginWelcome" />
+
+    <include
+        android:id="@+id/layoutLightLoginCarPlate"
+        style="@style/EditTextUser"
+        layout="@layout/layout_user"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/tvLightLoginWelcomeText"
+        app:layout_constraintEnd_toEndOf="@+id/tvLightLoginWelcomeText"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/tvLightLoginWelcomeText"/>
+
+    <TextView
+        android:id="@+id/tvLightLoginErrorUser"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/popUpLightLoginError"
+        android:textColor="@color/principalLineaDirecta"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="@+id/layoutLightLoginCarPlate"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/layoutLightLoginCarPlate"
+        app:layout_constraintTop_toBottomOf="@+id/layoutLightLoginCarPlate" />
+
+    <include
+        android:id="@+id/layoutLightLoginTitular"
+        style="@style/EditTextPasswordHome"
+        layout="@layout/layout_password"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="@+id/layoutLightLoginCarPlate"
+        app:layout_constraintStart_toStartOf="@+id/layoutLightLoginCarPlate"
+        app:layout_constraintTop_toBottomOf="@+id/tvLightLoginErrorUser" />
+
+    <TextView
+        android:id="@+id/tvLightLoginErrorPassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/popUpLightLoginError"
+        android:textColor="@color/principalLineaDirecta"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="@+id/layoutLightLoginTitular"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/layoutLightLoginTitular"
+        app:layout_constraintTop_toBottomOf="@+id/layoutLightLoginTitular" />
+
+    <LinearLayout
+        android:id="@+id/llLightLoginRememberUser"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/space_big_medium"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="@+id/layoutLightLoginTitular"
+        app:layout_constraintStart_toStartOf="@+id/layoutLightLoginTitular"
+        app:layout_constraintTop_toBottomOf="@+id/tvLightLoginErrorPassword">
+
+        <Switch
+            android:id="@+id/swLightLoginRememberPassword"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="0"
+            android:trackTint="@color/principalLineaDirecta"
+            android:thumbTint="@color/white"
+            android:checked="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.2"
+            android:layout_gravity="center"
+            android:layout_marginStart="@dimen/space_tiny"
+            android:text="@string/rememberUser"
+            android:textSize="@dimen/letter_small_medium"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/bLightLoginSign"
+            style="@style/ButtonRedLda"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:text="@string/access" />
+
+    </LinearLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/llLighLogin"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/llLightLoginRememberUser"
+        app:layout_constraintStart_toStartOf="@+id/llLightLoginRememberUser"
+        app:layout_constraintTop_toBottomOf="@+id/llLightLoginRememberUser"
+        app:layout_constraintVertical_bias="1.0">
+
+        <Button
+            android:id="@+id/bLightLoginForgetPassword"
+            style="@style/ButtonWhiteLda"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/space_tiny"
+            android:layout_marginBottom="@dimen/space_small_medium"
+            android:paddingStart="0dp"
+            android:paddingEnd="0dp"
+            android:text="@string/forgetPassword"
+            android:textSize="@dimen/letter_small_medium"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/bLightLoginFirstTime"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0"/>
+
+        <androidx.legacy.widget.Space
+            android:layout_width="@dimen/space_small"
+            android:layout_height="0dp"/>
+
+        <Button
+            android:id="@+id/bLightLoginFirstTime"
+            style="@style/ButtonWhiteLda"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/space_tiny"
+            android:paddingStart="0dp"
+            android:paddingEnd="0dp"
+            android:text="@string/firstTime"
+            android:textSize="@dimen/letter_small_medium"
+            app:layout_constraintBottom_toBottomOf="@+id/bLightLoginForgetPassword"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/bLightLoginForgetPassword"
+            app:layout_constraintTop_toTopOf="@+id/bLightLoginForgetPassword"
+            app:layout_constraintVertical_bias="1.0"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

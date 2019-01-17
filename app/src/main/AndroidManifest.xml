@@ -11,10 +11,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity
-            android:name=".MainActivity"
-            android:label="@string/title_activity_main"
-            android:theme="@style/AppTheme.NoActionBar">
+          <activity android:name="com.carmabs.ema.presentation.ui.defaultvm.DefaultVmActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
