@@ -1,9 +1,9 @@
 package com.carmabs.ema.presentation.dialog.simple
 
 import android.view.View
+import com.carmabs.ema.R
 import com.carmabs.ema.presentation.dialog.base.BaseDialog
 import kotlinx.android.synthetic.main.dialog_simple.view.*
-import com.carmabs.ema.R
 
 
 /**
@@ -54,7 +54,7 @@ class SimpleDialog : BaseDialog() {
 
                 view.bDialogSimpleNo.text = cancel
 
-                isCancelable = false
+                isCancelable = true
             }
         }
     }

@@ -13,7 +13,7 @@
     <string name="access">Acceder</string>
     <string name="hello">Hola</string>
     <string name="rememberUser">Recordar usuario</string>
-    <string name="identified">Identifícate para acceder a todos los servicios de la aplicación de la Línea Directa Aseguradora</string>
+    <string name="identified">Identifícate para acceder a todos los servicios de la aplicación</string>
     <string name="user">Usuario:</string>
     <string name="password">Contraseña:</string>
     <string name="popUpLightLoginError">Por favor, revisa tus datos</string>

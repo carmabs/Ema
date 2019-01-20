@@ -1,8 +1,8 @@
 package com.carmabs.ema.presentation.dialog.loading
 import android.view.View
+import com.carmabs.ema.R
 import com.carmabs.ema.presentation.dialog.base.BaseDialog
 import kotlinx.android.synthetic.main.dialog_loading.view.*
-import com.carmabs.ema.R
 
 /**
  * Simple dialog

@@ -1,7 +1,7 @@
 package com.carmabs.ema.core.navigator
 
 /**
- * Navigation state to set navigation destination. All clases where [EmaNavigator] can navigate
+ * Navigation state to set navigation destination. All clases where [EmaBaseNavigator] can navigate
  * have to implement this interface
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
@@ -9,5 +9,5 @@ package com.carmabs.ema.core.navigator
 
 interface EmaNavigationState {
 
-    fun  navigateWith(navigator: EmaNavigator<out EmaNavigationState>)
+    fun  navigateWith(navigator: EmaBaseNavigator<out EmaNavigationState>)
 }

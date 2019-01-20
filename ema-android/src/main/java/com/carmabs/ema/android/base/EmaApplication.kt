@@ -3,6 +3,7 @@ package com.carmabs.ema.android.base
 import android.app.Application
 import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware
+import org.kodein.di.android.androidModule
 
 /**
  *
@@ -14,7 +15,9 @@ import org.kodein.di.KodeinAware
 abstract class EmaApplication : Application(), KodeinAware {
 
     override val kodein: Kodein = Kodein {
-        import(injectAppModule(this))
+        injectAppModule(this)?.let {
+            import(it)
+        }?: androidModule(this@EmaApplication)
     }
 
     /**
@@ -22,5 +25,5 @@ abstract class EmaApplication : Application(), KodeinAware {
      * @param kodein The object which provide the injection
      * @return The Kodein module which makes the injection
      */
-    abstract fun injectAppModule(kodein: Kodein.MainBuilder):Kodein.Module
+    abstract fun injectAppModule(kodein: Kodein.MainBuilder): Kodein.Module?
 }
