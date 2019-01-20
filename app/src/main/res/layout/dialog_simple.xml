@@ -52,8 +52,8 @@
         <Button
             android:id="@+id/bDialogSimpleYes"
             style="@style/ButtonRedLda"
-            android:layout_width="@dimen/space_big_huge"
-            android:layout_height="@dimen/space_big"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/space_very_big"
             android:layout_marginBottom="1dp"
             android:text="@string/dialog_yes"
@@ -69,8 +69,8 @@
         <Button
             android:id="@+id/bDialogSimpleNo"
             style="@style/ButtonWhiteLda"
-            android:layout_width="@dimen/space_big_huge"
-            android:layout_height="@dimen/space_big"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/space_very_big"
             android:text="@string/dialog_no"
             android:textSize="@dimen/letter_big"

@@ -1,6 +1,5 @@
 package com.carmabs.ema.presentation.dialog.loading
 
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
 import com.carmabs.ema.presentation.dialog.base.BaseDialog
 import com.carmabs.ema.presentation.dialog.base.BaseDialogProvider

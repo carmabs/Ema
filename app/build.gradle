@@ -55,7 +55,7 @@ dependencies {
     implementation appDependencies.kotlin
     implementation appDependencies.coroutines
 
-    //EmaNavigator
+    //EmaBaseNavigator
     implementation appDependencies.navigationFragment
     implementation appDependencies.navigationUI
 
@@ -63,6 +63,11 @@ dependencies {
     implementation appDependencies.constraint
     implementation appDependencies.design
     implementation appDependencies.material
+
+    //Kodein
+    implementation appDependencies.kodein
+    implementation appDependencies.kodeinAndroid
+
 
 
     androidTestImplementation 'com.android.support.test:runner:1.0.2'

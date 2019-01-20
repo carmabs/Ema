@@ -26,7 +26,7 @@ project.ext {
             lifecycle         : "androidx.lifecycle:lifecycle-extensions:" + project.lifecycleVersion,
             kodein            : "org.kodein.di:kodein-di-generic-jvm:" + project.kodeinVersion,
             kodeinAndroid     : "org.kodein.di:kodein-di-framework-android-x:" + project.kodeinVersion,
-            coroutines        : 'org.jetbrains.kotlinx:kotlinx-coroutines-android:' + project.coroutinesVersion,
+            coroutines        : 'org.jetbrains.kotlinx:kotlinx-coroutines-android:' + project.coroutinesVersion
     ]
 
 
