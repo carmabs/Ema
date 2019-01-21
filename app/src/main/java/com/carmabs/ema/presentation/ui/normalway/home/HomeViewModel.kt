@@ -45,7 +45,8 @@ class HomeViewModel(private val loginUseCase: LoginUseCase) : ViewModel() {
             try {
                 val user = loginUseCase.doLogin(loginRequest)
                 this@HomeViewModel.user.value = user
-                //this@HomeViewModel.user.value = null
+                this@HomeViewModel.user.value = null
+
             } catch (e: Exception) {
                 error.value = e
             } finally {
@@ -57,7 +58,8 @@ class HomeViewModel(private val loginUseCase: LoginUseCase) : ViewModel() {
     }
 
     fun onActionShowPassword() {
-        showPassword.value = showPassword.value?.not()
+        val show = showPassword.value?:true
+        showPassword.value = (!show)
     }
 
     fun onActionRemember(checked: Boolean) {

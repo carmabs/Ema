@@ -103,7 +103,7 @@ class HomeFragment : Fragment() {
         swLightLoginRememberPassword.setOnCheckedChangeListener { _,isChecked -> viewModel.onActionRemember(isChecked) }
         ivHomeTouchEmptyUser.setOnClickListener { viewModel.onActionDeleteUser() }
         ivHomePassEmptyPassword.setOnClickListener { viewModel.onActionDeletePassword() }
-        ivHomeTouchEmptyUser.setOnClickListener { viewModel.onActionShowPassword() }
+        ivHomePassSeePassword.setOnClickListener { viewModel.onActionShowPassword() }
         etUser.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
 

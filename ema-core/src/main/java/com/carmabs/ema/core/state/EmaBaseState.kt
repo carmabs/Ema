@@ -1,5 +1,7 @@
 package com.carmabs.ema.core.state
 
+import java.io.Serializable
+
 /**
  * Interface which all state view classes must use to be handled by the library
  *
@@ -9,4 +11,4 @@ package com.carmabs.ema.core.state
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
 
-interface EmaBaseState
+interface EmaBaseState : Serializable
