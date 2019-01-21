@@ -1,6 +1,7 @@
 package com.carmabs.ema.presentation.ui.emaway.user
 
 import com.carmabs.ema.R
+import com.carmabs.ema.android.navigation.EmaNavigator
 import com.carmabs.ema.android.ui.EmaFragment
 import com.carmabs.ema.core.navigator.EmaBaseNavigator
 import com.carmabs.ema.core.navigator.EmaNavigationState
@@ -11,9 +12,9 @@ import org.kodein.di.Kodein
 
 class EmaUserFragment : EmaFragment<EmaUserState, EmaUserViewModel, EmaNavigationState>() {
 
-    override val navigator: EmaBaseNavigator<EmaNavigationState>? = null
+    override val navigator: EmaNavigator<EmaNavigationState>? = null
 
-    override val inputStateKey: String = "USER"
+    override val inputStateKey: String = EmaUserState::class.java.canonicalName
 
     override fun onInitialized(viewModel: EmaUserViewModel) {
     }

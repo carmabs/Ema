@@ -38,7 +38,7 @@ class EmaHomeFragment : EmaFragment<EmaHomeState, EmaHomeViewModel, EmaHomeNavig
 
     override val viewModelSeed: EmaHomeViewModel by instance()
 
-    override val navigator: EmaBaseNavigator<EmaHomeNavigator.Navigation>  by instance()
+    override val navigator: EmaHomeNavigator  by instance()
 
     private val errorDialog: DialogProvider by instance(tag = "SIMPLE")
 
