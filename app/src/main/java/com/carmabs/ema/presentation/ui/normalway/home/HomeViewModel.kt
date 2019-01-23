@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 class HomeViewModel(private val loginUseCase: LoginUseCase) : ViewModel() {
 
     val login: MutableLiveData<LoginRequest> = MutableLiveData()
-    val error: MutableLiveData<Exception?> = MutableLiveData()
+    val error: MutableLiveData<Exception> = MutableLiveData()
     val user: MutableLiveData<User?> = MutableLiveData()
     val loading:MutableLiveData<Boolean> = MutableLiveData()
     val showPassword:MutableLiveData<Boolean> = MutableLiveData()
@@ -45,8 +45,6 @@ class HomeViewModel(private val loginUseCase: LoginUseCase) : ViewModel() {
             try {
                 val user = loginUseCase.doLogin(loginRequest)
                 this@HomeViewModel.user.value = user
-                this@HomeViewModel.user.value = null
-
             } catch (e: Exception) {
                 error.value = e
             } finally {

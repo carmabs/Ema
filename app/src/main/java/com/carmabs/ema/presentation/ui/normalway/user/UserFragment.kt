@@ -7,15 +7,23 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import com.carmabs.ema.domain.model.User
-import kotlinx.android.synthetic.main.fragment_user.*
 import com.carmabs.ema.R
+import com.carmabs.ema.domain.model.User
+import com.carmabs.ema.presentation.ui.emaway.user.EmaUserFragment
+import kotlinx.android.synthetic.main.fragment_user.*
 
 
 class UserFragment : Fragment() {
 
     private lateinit var viewModel: UserViewModel
 
+    companion object {
+        fun newInstance(user: User): UserFragment {
+            return UserFragment().apply {
+                arguments = Bundle().also { it.putSerializable("USER",user) }
+            }
+        }
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View {

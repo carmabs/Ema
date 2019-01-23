@@ -11,7 +11,6 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import androidx.navigation.fragment.findNavController
 import com.carmabs.ema.MockRepository
 import com.carmabs.ema.R
 import com.carmabs.ema.domain.exception.LoginException
@@ -26,6 +25,7 @@ import com.carmabs.ema.presentation.dialog.loading.LoadingDialogProvider
 import com.carmabs.ema.presentation.dialog.simple.SimpleDialogData
 import com.carmabs.ema.presentation.dialog.simple.SimpleDialogListener
 import com.carmabs.ema.presentation.dialog.simple.SimpleDialogProvider
+import com.carmabs.ema.presentation.ui.normalway.user.UserFragment
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.layout_password.*
 import kotlinx.android.synthetic.main.layout_user.*
@@ -60,7 +60,7 @@ class HomeFragment : Fragment() {
     }
 
     private val dialogLoading: DialogProvider by lazy {
-         LoadingDialogProvider(fragmentManager!!)
+        LoadingDialogProvider(fragmentManager!!)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -99,7 +99,7 @@ class HomeFragment : Fragment() {
 
     private fun setupButtons() {
 
-        swLightLoginRememberPassword.setOnCheckedChangeListener { _,isChecked -> viewModel.onActionRemember(isChecked) }
+        swLightLoginRememberPassword.setOnCheckedChangeListener { _, isChecked -> viewModel.onActionRemember(isChecked) }
         ivHomeTouchEmptyUser.setOnClickListener { viewModel.onActionDeleteUser() }
         ivHomePassEmptyPassword.setOnClickListener { viewModel.onActionDeletePassword() }
         ivHomePassSeePassword.setOnClickListener { viewModel.onActionShowPassword() }
@@ -145,14 +145,14 @@ class HomeFragment : Fragment() {
                 is PasswordEmptyException -> checkError(tvLightLoginErrorPassword)
                 is LoginException -> showErrorDialog()
             }
-        }?:dialogError.hide()
+        } ?: dialogError.hide()
     }
 
     private fun onObserveLoading(loading: Boolean) {
         showLoading(loading)
     }
 
-    private fun showLoading(show:Boolean){
+    private fun showLoading(show: Boolean) {
         if (show)
             dialogLoading.show(
                     LoadingDialogData(
@@ -193,8 +193,11 @@ class HomeFragment : Fragment() {
     private fun onObserveUser(user: User?) {
         hideErrors()
         user?.let {
-            val bundle = Bundle().apply { putSerializable("USER", it) }
-            findNavController().navigate(R.id.action_homeViewFragment_to_userFragment, bundle)
+            activity?.supportFragmentManager?.
+                    beginTransaction()?.
+                    replace(R.id.container,UserFragment.newInstance(it))?.
+                    addToBackStack(null)?.
+                    commit()
         }
     }
 
