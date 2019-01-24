@@ -1,5 +1,6 @@
 package com.carmabs.ema.android.navigation
 
+import android.app.Activity
 import android.os.Bundle
 import androidx.annotation.IdRes
 import androidx.navigation.NavDirections
@@ -45,5 +46,19 @@ interface EmaNavigator<NS : EmaNavigationState> : EmaBaseNavigator<NS> {
      */
     fun navigateWithDirections(navDirections: NavDirections,navOptions: NavOptions?=null){
         navHost.navController.navigate(navDirections,navOptions)
+    }
+
+    /**
+     * Finish the current activity
+     */
+    fun finishActivity(){
+        (navHost as? Activity)?.finish()
+    }
+
+    /**
+     * Navigates back
+     */
+    fun navigateBack(){
+        navHost.navController.popBackStack()
     }
 }
