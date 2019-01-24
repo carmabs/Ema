@@ -55,13 +55,14 @@ interface EmaView<S: EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigationS
             ViewModelProviders.of(it, emaFactory)[viewModelSeed::class.java]
         }?:ViewModelProviders.of(fragmentActivity, emaFactory)[viewModelSeed::class.java]
 
+        vm.onStart(inputState?.let { EmaState.Normal(it) })
         vm.observableState.observe(fragment ?: fragmentActivity, Observer(this::onDataUpdated))
         vm.singleObservableState.observe(fragment
                 ?: fragmentActivity, Observer(this::onSingleDataSent))
         vm.navigationState.observe(fragment
                 ?: fragmentActivity, Observer(this::onNavigation))
         onViewModelInitialized(vm)
-        vm.onStart(inputState?.let { EmaState.Normal(it) })
+
     }
 
     /**

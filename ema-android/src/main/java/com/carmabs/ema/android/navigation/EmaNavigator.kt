@@ -29,7 +29,7 @@ interface EmaNavigator<NS : EmaNavigationState> : EmaBaseNavigator<NS> {
     }
 
     /**
-     * TODO
+     * Navigate with android architecture components within action ID
      * @param actionID
      * @param data
      * @param navOptions
@@ -39,7 +39,7 @@ interface EmaNavigator<NS : EmaNavigationState> : EmaBaseNavigator<NS> {
     }
 
     /**
-     * TODO
+     * Navigate with android architecture components within navDirections safeargs
      * @param navDirections
      * @param navOptions
      */

@@ -17,19 +17,6 @@ abstract class EmaViewModel<S, NS : EmaNavigationState> : EmaBaseViewModel<EmaSt
     protected var viewState: S? = null
 
     /**
-     * Used for trigger an update on the view
-     * Use the EmaState -> Normal
-     * @param state of the view
-     */
-    protected fun updateViewState() {
-        state?.let {
-            viewState?.let {currentState ->
-                super.updateView(EmaState.Normal(currentState))
-            }
-        }
-    }
-
-    /**
      * Used for trigger an error on the view
      * Use the EmaState -> Error
      * @param error generated
@@ -43,13 +30,29 @@ abstract class EmaViewModel<S, NS : EmaNavigationState> : EmaBaseViewModel<EmaSt
 
     /**
      * Update the current state and update the view by default
-     * @param updateView updates the view
+     * @param notifyView updates the view
      * @param changeStateFunction create the new state
      */
-    protected fun changeState(updateView: Boolean = true, changeStateFunction: S.() -> S) {
+    protected fun updateViewState(notifyView: Boolean = true, changeStateFunction: S.() -> S) {
         viewState?.let {
             viewState = changeStateFunction.invoke(it)
-            if (updateView) updateViewState()
+            viewState?.let { newState -> state = EmaState.Normal(newState) }
+
+            if (notifyView) updateViewState()
+        }
+
+    }
+
+    /**
+     * Used for trigger an update on the view
+     * Use the EmaState -> Normal
+     * @param state of the view
+     */
+    protected fun updateViewState() {
+        state?.let {
+            viewState?.let { currentState ->
+                super.updateView(EmaState.Normal(currentState))
+            }
         }
     }
 

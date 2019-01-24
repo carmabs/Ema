@@ -13,6 +13,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import com.carmabs.ema.MockRepository
+import com.carmabs.ema.R
 import com.carmabs.ema.domain.exception.LoginException
 import com.carmabs.ema.domain.exception.PasswordEmptyException
 import com.carmabs.ema.domain.exception.UserEmptyException
@@ -20,16 +21,14 @@ import com.carmabs.ema.domain.model.LoginRequest
 import com.carmabs.ema.domain.model.User
 import com.carmabs.ema.domain.usecase.LoginUseCase
 import com.carmabs.ema.presentation.dialog.DialogProvider
+import com.carmabs.ema.presentation.dialog.loading.LoadingDialogData
+import com.carmabs.ema.presentation.dialog.loading.LoadingDialogProvider
 import com.carmabs.ema.presentation.dialog.simple.SimpleDialogData
 import com.carmabs.ema.presentation.dialog.simple.SimpleDialogListener
 import com.carmabs.ema.presentation.dialog.simple.SimpleDialogProvider
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.layout_password.*
 import kotlinx.android.synthetic.main.layout_user.*
-import com.carmabs.ema.R
-import com.carmabs.ema.presentation.dialog.DialogListener
-import com.carmabs.ema.presentation.dialog.loading.LoadingDialogData
-import com.carmabs.ema.presentation.dialog.loading.LoadingDialogProvider
 
 
 class HomeFragment : Fragment() {
