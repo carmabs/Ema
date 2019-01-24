@@ -65,19 +65,36 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> : Vie
      * @return true if it's the first time is started
      */
     open fun onStart(inputState: S? = null): Boolean {
-        return if (state == null) {
+        val firstTime = if (state == null) {
             val initialStatus = inputState ?: createInitialState()
             state = initialStatus
             updateView(initialStatus)
             true
         } else false
+
+        observableState.value = state
+        return firstTime
     }
+
+    /**
+     * Update the current state and update the view by default
+     * @param notifyView updates the view
+     * @param changeStateFunction create the new state
+     */
+    protected fun updateView(notifyView: Boolean = true, changeStateFunction: S.() -> S) {
+        state?.let {
+            state = changeStateFunction.invoke(it)
+            if (notifyView) updateView(it)
+        }
+    }
+
 
     /**
      * Method used to update the state of the view. It will be notified to the observers
      * @param state Tee current state of the view
      */
     protected fun updateView(state: S) {
+        this.state = state
         this.observableState.value = state
     }
 

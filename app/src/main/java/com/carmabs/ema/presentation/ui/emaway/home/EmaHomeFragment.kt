@@ -2,6 +2,7 @@ package com.carmabs.ema.presentation.ui.emaway.home
 
 import android.text.Editable
 import android.text.TextWatcher
+import android.text.method.PasswordTransformationMethod
 import android.view.View
 import android.widget.TextView
 import com.carmabs.ema.R
@@ -67,10 +68,10 @@ class EmaHomeFragment : EmaFragment<EmaHomeState, EmaHomeViewModel, EmaHomeNavig
     }
 
     private fun setupButtons(viewModel: EmaHomeViewModel) {
-        //swLightLoginRememberPassword.setOnCheckedChangeListener { _, _ -> viewModel.onActionRemember() }
+        swLightLoginRememberPassword.setOnCheckedChangeListener { _,isChecked -> viewModel.onActionRemember(isChecked) }
         ivHomeTouchEmptyUser.setOnClickListener { viewModel.onActionDeleteUser() }
         ivHomePassEmptyPassword.setOnClickListener { viewModel.onActionDeletePassword() }
-        ivHomeTouchEmptyUser.setOnClickListener { viewModel.onActionShowPassword() }
+        ivHomePassSeePassword.setOnClickListener { viewModel.onActionShowPassword() }
         etUser.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
 
@@ -137,12 +138,22 @@ class EmaHomeFragment : EmaFragment<EmaHomeState, EmaHomeViewModel, EmaHomeNavig
     override fun onStateNormal(data: EmaHomeState) {
         hideErrors()
         hideLoading()
+
         if (etUser.text.toString() != data.userName)
             etUser.setText(data.userName)
+
         if (etPassword.text.toString() != data.userPassword)
             etPassword.setText(data.userPassword)
-        if(swLightLoginRememberPassword.isChecked !=  data.rememberuser)
-            swLightLoginRememberPassword.isChecked = data.rememberuser
+
+        swLightLoginRememberPassword.isChecked = data.rememberuser
+
+        data.showPassword.let {
+            if (it) {
+                etPassword.transformationMethod = PasswordTransformationMethod.getInstance()
+            } else {
+                etPassword.transformationMethod = null
+            }
+        }
     }
 
     override fun onStateLoading(data: EmaExtraData) {

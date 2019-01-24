@@ -38,37 +38,37 @@ class EmaHomeViewModel(private val loginUseCase: LoginUseCase) : EmaViewModel<Em
     }
 
     fun onActionShowPassword() {
-        changeState {
+        updateViewState {
             copy(showPassword = !showPassword)
         }
     }
 
-    fun onActionRemember() {
-        changeState(false) {
-            copy(rememberuser = !rememberuser)
+    fun onActionRemember(isChecked:Boolean) {
+        updateViewState(false) {
+            copy(rememberuser = isChecked)
         }
     }
 
     fun onActionDeletePassword() {
-        changeState {
+        updateViewState {
             copy(userPassword = "")
         }
     }
 
     fun onActionDeleteUser() {
-        changeState {
+        updateViewState {
             copy(userName = "")
         }
     }
 
     fun onActionPasswordWrite(password: String) {
-        changeState(false) {
+        updateViewState(false) {
             copy(userPassword = password)
         }
     }
 
     fun onActionUserWrite(user: String) {
-        changeState(false) {
+        updateViewState(false) {
             copy(userName = user)
         }
     }
