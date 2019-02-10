@@ -6,6 +6,10 @@ import com.carmabs.ema.presentation.ui.emaway.user.EmaUserState
 
 class EmaUserViewModel : EmaViewModel<EmaUserState,EmaNavigationState>() {
 
+    override fun onStartFirstTime() {
+
+    }
+
     override fun createInitialViewState(): EmaUserState {
        return EmaUserState()
     }

@@ -11,6 +11,10 @@ import com.carmabs.ema.domain.usecase.LoginUseCase
  */
 class EmaHomeViewModel(private val loginUseCase: LoginUseCase) : EmaViewModel<EmaHomeState, EmaHomeNavigator.Navigation>() {
 
+    override fun onStartFirstTime() {
+
+    }
+
     override fun createInitialViewState(): EmaHomeState = EmaHomeState()
 
     private fun doLogin() {

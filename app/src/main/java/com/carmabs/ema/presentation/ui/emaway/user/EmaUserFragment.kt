@@ -14,7 +14,7 @@ class EmaUserFragment : EmaFragment<EmaUserState, EmaUserViewModel, EmaNavigatio
 
     override val navigator: EmaNavigator<EmaNavigationState>? = null
 
-    override val inputStateKey: String = EmaUserState::class.java.canonicalName
+    override val inputStateKey: String = EmaUserState::class.java.name
 
     override fun onInitialized(viewModel: EmaUserViewModel) {
     }

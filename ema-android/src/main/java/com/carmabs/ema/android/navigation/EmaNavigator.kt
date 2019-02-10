@@ -1,10 +1,9 @@
 package com.carmabs.ema.android.navigation
 
-import android.app.Activity
 import android.os.Bundle
 import androidx.annotation.IdRes
+import androidx.navigation.NavController
 import androidx.navigation.NavDirections
-import androidx.navigation.NavHost
 import androidx.navigation.NavOptions
 import com.carmabs.ema.core.navigator.EmaBaseNavigator
 import com.carmabs.ema.core.navigator.EmaNavigationState
@@ -12,11 +11,12 @@ import com.carmabs.ema.core.state.EmaBaseState
 
 /**
  * Project: Ema
+ * Navigator to handle navigation through navController
  * Created by: cmateob on 20/1/19.
  */
 interface EmaNavigator<NS : EmaNavigationState> : EmaBaseNavigator<NS> {
 
-    val navHost: NavHost
+    val navController: NavController
 
     /**
      * Set the initial state for the incoming fragment. Only work for fragment at the same activity
@@ -26,7 +26,7 @@ interface EmaNavigator<NS : EmaNavigationState> : EmaBaseNavigator<NS> {
      * of the state
      */
     fun addInputState(emaBaseState: EmaBaseState,inputStateKey: String?=null) : Bundle =
-            Bundle().apply { putSerializable(inputStateKey?:emaBaseState.javaClass.canonicalName, emaBaseState)
+            Bundle().apply { putSerializable(inputStateKey?:emaBaseState.javaClass.name, emaBaseState)
     }
 
     /**
@@ -36,7 +36,7 @@ interface EmaNavigator<NS : EmaNavigationState> : EmaBaseNavigator<NS> {
      * @param navOptions
      */
     fun navigateWithAction(@IdRes actionID:Int,data:Bundle?=null,navOptions: NavOptions?=null){
-        navHost.navController.navigate(actionID,data,navOptions)
+        navController.navigate(actionID,data,navOptions)
     }
 
     /**
@@ -45,20 +45,13 @@ interface EmaNavigator<NS : EmaNavigationState> : EmaBaseNavigator<NS> {
      * @param navOptions
      */
     fun navigateWithDirections(navDirections: NavDirections,navOptions: NavOptions?=null){
-        navHost.navController.navigate(navDirections,navOptions)
-    }
-
-    /**
-     * Finish the current activity
-     */
-    fun finishActivity(){
-        (navHost as? Activity)?.finish()
+        navController.navigate(navDirections,navOptions)
     }
 
     /**
      * Navigates back
      */
     fun navigateBack(){
-        navHost.navController.popBackStack()
+        navController.popBackStack()
     }
 }

@@ -2,6 +2,7 @@ package com.carmabs.ema.android.ui
 
 import android.os.Bundle
 import android.view.View
+import androidx.lifecycle.LifecycleOwner
 import com.carmabs.ema.android.viewmodel.EmaViewModel
 import com.carmabs.ema.core.navigator.EmaNavigationState
 import com.carmabs.ema.core.state.EmaBaseState
@@ -77,9 +78,10 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
      */
     override fun onDestroyView() {
         super.onDestroyView()
-        vm?.observableState?.removeObservers(this)
-        vm?.singleObservableState?.removeObservers(this)
-        vm?.navigationState?.removeObservers(this)
+        val owner: LifecycleOwner = if(fragmentViewModelScope)this else activity!!
+        vm?.observableState?.removeObservers(owner)
+        vm?.singleObservableState?.removeObservers(owner)
+        vm?.navigationState?.removeObservers(owner)
     }
 
     /**
@@ -89,7 +91,6 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
         return arguments?.let {
             if (it.containsKey(inputStateKey)) {
                 it.get(inputStateKey) as? S
-
             } else
                 null
         }
