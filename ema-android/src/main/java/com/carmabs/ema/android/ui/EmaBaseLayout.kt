@@ -5,6 +5,7 @@ import android.content.res.TypedArray
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.FrameLayout
 import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware
@@ -37,8 +38,8 @@ abstract class EmaBaseLayout : FrameLayout, KodeinAware {
     private fun onCreateView(context: Context, attrs: AttributeSet? = null) {
 
         val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        val v = inflater.inflate(getLayout(), this)
-        setup(v)
+        val v = inflater.inflate(getLayout(), this) as ViewGroup
+        setup(v.getChildAt(0))
         attrs?.let {
             val attributes = getAttributes()
             attributes?.let { at ->

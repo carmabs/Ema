@@ -1,5 +1,7 @@
 package com.carmabs.ema.android.viewmodel
 
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.carmabs.ema.android.base.SingleLiveEvent
@@ -59,8 +61,9 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> : Vie
      */
     protected var state: S? = null
 
+
     /**
-     * Method called the first time ViewModel is created
+     * Methos called the first time ViewModel is created
      * @param inputState
      * @return true if it's the first time is started
      */
@@ -69,12 +72,19 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> : Vie
             val initialStatus = inputState ?: createInitialState()
             state = initialStatus
             updateView(initialStatus)
+            onStartFirstTime()
             true
         } else false
-
         observableState.value = state
         return firstTime
     }
+
+    abstract fun onStartFirstTime()
+
+    /**
+     * Get observale state as LiveData to avoid state setting from the view
+     */
+    fun getObservableState(): LiveData<S> = observableState
 
     /**
      * Update the current state and update the view by default
@@ -87,7 +97,6 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> : Vie
             if (notifyView) updateView(it)
         }
     }
-
 
     /**
      * Method used to update the state of the view. It will be notified to the observers
@@ -130,14 +139,6 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> : Vie
         return concurrencyManager.launch(block = block)
     }
 
-    /**
-     * When a background task must be executed for data retrieving or other background job, it must
-     * be called through this method with [block] function
-     * @param block is the function that will be executed in background
-     * @param exceptionBlock is the function that will be executed if an exception launched
-     * @param handleCancellationManually true if CancellationException must be handled by exceptionBlock
-     * @return the job that can handle the lifecycle of the background task
-     */
     protected fun executeUseCaseWithException(block: suspend CoroutineScope.() -> Unit,
                                               exceptionBlock: suspend CoroutineScope.(Throwable) -> Unit,
                                               handleCancellationManually: Boolean = false): Job {
@@ -146,12 +147,21 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> : Vie
         }
     }
 
-
     /**
      * Method called when the ViewModel is destroyed. It cancell all background pending tasks
      */
     override fun onCleared() {
         concurrencyManager.cancelPendingTasks()
         super.onCleared()
+    }
+
+    /**
+     * Unbind the observables of the lifeCycleOwner
+     * @param lifecycleOwner
+     */
+    fun unBindObservables(lifecycleOwner: LifecycleOwner){
+        observableState.removeObservers(lifecycleOwner)
+        navigationState.removeObservers(lifecycleOwner)
+        singleObservableState.removeObservers(lifecycleOwner)
     }
 }
