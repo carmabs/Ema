@@ -22,8 +22,8 @@ abstract class EmaApplication : Application(), KodeinAware {
 
     /**
      * The child classes implement this methods to return the module that provides the app scope objects
-     * @param kodein The object which provide the injection
+     * @param kodein The kodein object which provide the injection
      * @return The Kodein module which makes the injection
      */
-    abstract fun injectAppModule(kodein: Kodein.MainBuilder): Kodein.Module?
+    abstract fun injectAppModule(kodein:Kodein.MainBuilder):Kodein.Module?
 }

@@ -1,10 +1,10 @@
-project.ext {
+rootProject.ext {
 
     //Libraries
 
-    navigationVersion = "1.0.0-beta01"
+    navigationVersion = "2.0.0"
 
-    lifecycleVersion = "2.0.0-rc01"
+    lifecycleVersion = "2.0.0"
 
     kodeinVersion = "5.3.0"
 
@@ -16,9 +16,31 @@ project.ext {
 
     coroutinesVersion = "1.0.1"
 
+    coreVersion = "1.1.0"
+
+    extJUnitVersion = "1.1.0"
+
+    rulesVersion = "1.1.1"
+
+    mockitoVersion = "2.23.4"
+
+    archTesting = "1.1.1"
+
+    espressoVersion = "3.1.1"
+
+
+    ema = [
+            buildTools : "28.0.3",
+            minSdk     : 23,
+            compileSdk : 28,
+            targetSdk  : 28,
+            versionCode: 1,
+            versionName: "1.0.0"
+    ]
+
     appDependencies = [
-            navigationFragment: "android.arch.navigation:navigation-fragment-ktx:" + project.navigationVersion,
-            navigationUI      : "android.arch.navigation:navigation-ui-ktx:" + project.navigationVersion,
+            navigationFragment: "androidx.navigation:navigation-fragment-ktx:" + project.navigationVersion,
+            navigationUI      : "androidx.navigation:navigation-ui-ktx:" + project.navigationVersion,
             constraint        : "androidx.constraintlayout:constraintlayout:" + project.constraintVersion,
             kotlin            : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:" + project.kotlinVersion,
             design            : "com.android.support:design:" + project.designVersion,
@@ -29,15 +51,27 @@ project.ext {
             coroutines        : 'org.jetbrains.kotlinx:kotlinx-coroutines-android:' + project.coroutinesVersion
     ]
 
-
     emaCore = [
             kotlin    : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:" + project.kotlinVersion,
             coroutines: 'org.jetbrains.kotlinx:kotlinx-coroutines-android:' + project.coroutinesVersion
     ]
 
+    emaTesting = [
+            kotlin     : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:" + project.kotlinVersion,
+            coroutines : 'org.jetbrains.kotlinx:kotlinx-coroutines-android:' + project.coroutinesVersion,
+            core       : "androidx.test:core:" + project.coreVersion,
+            coreKotlin : "androidx.test:core-ktx:" + project.coreVersion,
+            junit      : "androidx.test.ext:junit:" + project.extJUnitVersion,
+            rules      : "androidx.test:rules:" + project.rulesVersion,
+            junitKotlin: "androidx.test.ext:junit-ktx:" + project.extJUnitVersion,
+            mockito    : "org.mockito:mockito-core:" + project.mockitoVersion,
+            archTesting: "android.arch.core:core-testing:" + project.archTesting
+    ]
+
     emaAndroid = [
-            navigationFragment: "android.arch.navigation:navigation-fragment-ktx:" + project.navigationVersion,
-            navigationUI      : "android.arch.navigation:navigation-ui-ktx:" + project.navigationVersion,
+            espresso          : "androidx.test.espresso:espresso-core:" + project.espressoVersion,
+            navigationFragment: "androidx.navigation:navigation-fragment-ktx:" + project.navigationVersion,
+            navigationUI      : "androidx.navigation:navigation-ui-ktx:" + project.navigationVersion,
             constraint        : "androidx.constraintlayout:constraintlayout:" + project.constraintVersion,
             kotlin            : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:" + project.kotlinVersion,
             design            : "com.android.support:design:" + project.designVersion,

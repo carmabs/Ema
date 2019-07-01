@@ -5,14 +5,14 @@ apply plugin: 'kotlin-kapt'
 
 
 android {
-    compileSdkVersion 28
-    buildToolsVersion '28.0.3'
+    buildToolsVersion ema.buildTools
     defaultConfig {
         applicationId "com.carmabs.ema"
-        minSdkVersion 23
-        targetSdkVersion 28
-        versionCode 1
-        versionName "1.0"
+        minSdkVersion ema.minSdk
+        compileSdkVersion ema.compileSdk
+        targetSdkVersion ema.targetSdk
+        versionCode ema.versionCode
+        versionName ema.versionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     flavorDimensions 'default'

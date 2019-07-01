@@ -9,9 +9,6 @@ import com.carmabs.ema.domain.repository.Repository
 /**
  * Login to LDA
  *
- * <p>
- * Copyright (c) 2018, Babel Sistemas de Información. All rights reserved.
- * </p>
  *
  * @author <a href=“mailto:carlos.mateo@babel.es”>Carlos Mateo</a>
  */

@@ -32,7 +32,14 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> : Vie
     /**
      * Observable state that launch event every time a value is set. This value will be the state
      * of the view. When the ViewModel is attached to an observer, if this value is already set up,
-     * it will be notified to the new observer
+     * it will be notified to the new observer. Could be different from state if some changes of the
+     * current state has not been notified to the view (Ex: a switch has been changed and the state has
+     * been modified, but we don't want no notify to the view to avoid infinite loop ->
+     *  switch modified
+     *      -> switch state saved on view model if there is view recreation
+     *          -> it is notified to the view
+     *              -> switch has been set again
+     *                  -> saved in view model ------> INFINITE LOOP)
      */
     internal val observableState: MutableLiveData<S> = MutableLiveData()
 
@@ -54,12 +61,17 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> : Vie
     /**
      * Manager to handle the threads where the background tasks are going to be launched
      */
-    protected var concurrencyManager: ConcurrencyManager = DefaultConcurrencyManager()
+    var concurrencyManager: ConcurrencyManager = DefaultConcurrencyManager()
 
     /**
      * The state of the view.
      */
     protected var state: S? = null
+
+    /**
+     * To determine if the view must be updated when view model is created automatically
+     */
+    protected open val updateOnInitialization: Boolean = true
 
 
     /**
@@ -71,20 +83,35 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> : Vie
         val firstTime = if (state == null) {
             val initialStatus = inputState ?: createInitialState()
             state = initialStatus
-            updateView(initialStatus)
-            onStartFirstTime()
+            onStartFirstTime(inputState != null)
             true
         } else false
-        observableState.value = state
+        if (updateOnInitialization)
+            observableState.value = state
         return firstTime
     }
 
-    abstract fun onStartFirstTime()
+    abstract fun onStartFirstTime(statePreloaded: Boolean)
 
     /**
-     * Get observale state as LiveData to avoid state setting from the view
+     * Get observable state as LiveData to avoid state setting from the view.
      */
     fun getObservableState(): LiveData<S> = observableState
+
+    /**
+     * Get current state of view
+     */
+    fun getCurrentState(): S? = state
+
+    /**
+     * Get navigation state as LiveData to avoid state setting from the view
+     */
+    fun getNavigationState(): LiveData<NS> = navigationState
+
+    /**
+     * Get single state as LiveData to avoid state setting from the view
+     */
+    fun getSingleObservableState(): LiveData<EmaExtraData> = singleObservableState
 
     /**
      * Update the current state and update the view by default
@@ -159,7 +186,7 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> : Vie
      * Unbind the observables of the lifeCycleOwner
      * @param lifecycleOwner
      */
-    fun unBindObservables(lifecycleOwner: LifecycleOwner){
+    fun unBindObservables(lifecycleOwner: LifecycleOwner) {
         observableState.removeObservers(lifecycleOwner)
         navigationState.removeObservers(lifecycleOwner)
         singleObservableState.removeObservers(lifecycleOwner)

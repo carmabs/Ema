@@ -17,24 +17,10 @@ abstract class EmaViewModel<S, NS : EmaNavigationState> : EmaBaseViewModel<EmaSt
     protected var viewState: S? = null
 
 
-    /**
-     * Set the view state if it is passed as input state
-     */
     override fun onStart(inputState: EmaState<S>?): Boolean {
         if (viewState == null)
             inputState?.let { viewState = it.data }
         return super.onStart(inputState)
-    }
-    /**
-     * Used for trigger an error on the view
-     * Use the EmaState -> Error
-     * @param error generated
-     */
-    protected fun notifyError(error: Throwable) {
-        viewState?.let {
-            super.updateView(EmaState.Error(it, error))
-        } ?: throwInitialStateException()
-
     }
 
     /**
@@ -63,6 +49,18 @@ abstract class EmaViewModel<S, NS : EmaNavigationState> : EmaBaseViewModel<EmaSt
                 super.updateView(EmaState.Normal(currentState))
             }
         }
+    }
+
+    /**
+     * Used for trigger an error on the view
+     * Use the EmaState -> Error
+     * @param error generated
+     */
+    protected fun notifyError(error: Throwable) {
+        viewState?.let {
+            super.updateView(EmaState.Error(it, error))
+        } ?: throwInitialStateException()
+
     }
 
     /**
