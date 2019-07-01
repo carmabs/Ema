@@ -9,13 +9,14 @@ import com.carmabs.ema.android.R
 /**
  * Abstract class to handle navigation in activity
  *
- * <p>
- * Copyright (C) 2018 Babel Sistemas de Información. All rights reserved.
- * </p>
  *
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
 abstract class EmaFragmentActivity : EmaBaseActivity() {
+
+    override fun createActivity(savedInstanceState: Bundle?) {
+        setupNavigation()
+    }
 
     /**
      * Get the nav controller to handle the navigation through navigation architecture components.
@@ -32,23 +33,18 @@ abstract class EmaFragmentActivity : EmaBaseActivity() {
         }
 
     }
-
-    override fun createActivity(savedInstanceState: Bundle?) {
-        setupNavigation()
-    }
-
-    /**
-     * Get the navigation resource for the activity [R.navigation]
-     */
-    abstract fun getNavGraph(): Int
-
-
     /**
      * Setup the navigation path for navigation architecture components
      */
     private fun setupNavigation() {
         navController.setGraph(getNavGraph())
     }
+
+
+    /**
+     * Get the navigation resource for the activity [R.navigation]
+     */
+    abstract fun getNavGraph(): Int
 
 
     /**

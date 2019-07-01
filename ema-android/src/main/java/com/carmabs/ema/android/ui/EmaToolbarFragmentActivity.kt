@@ -21,7 +21,7 @@ abstract class EmaToolbarFragmentActivity : EmaFragmentActivity() {
     /**
      * The toolbar container for the activity
      */
-    private lateinit var toolbarLayout: AppBarLayout
+    protected lateinit var toolbarLayout: AppBarLayout
 
     /**
      * Setup the toolbar
@@ -51,14 +51,14 @@ abstract class EmaToolbarFragmentActivity : EmaFragmentActivity() {
     /**
      * Hides the toolbar
      */
-    protected fun hideToolbar() {
-        toolbarLayout.visibility = View.GONE
+    protected open fun hideToolbar(gone: Boolean = true) {
+        toolbarLayout.visibility = if (gone) View.GONE else View.INVISIBLE
     }
 
     /**
      * Show the toolbar
      */
-    protected fun showToolbar() {
+    protected open fun showToolbar() {
         toolbarLayout.visibility = View.VISIBLE
     }
 

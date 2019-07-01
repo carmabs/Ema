@@ -58,4 +58,12 @@ abstract class EmaRecyclerAdapter<I> : RecyclerView.Adapter<EmaViewHolder<I>>() 
             notifyItemChanged(index)
         }
     }
+
+    /**
+     * Add item to the list
+     * @param item to add
+     */
+    fun addItem(item: I,position:Int = listItems.size){
+        listItems.add(position,item)
+    }
 }

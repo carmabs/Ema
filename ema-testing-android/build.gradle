@@ -1,0 +1,44 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+android {
+
+    defaultConfig {
+        minSdkVersion ema.minSdk
+        compileSdkVersion ema.compileSdk
+        targetSdkVersion ema.targetSdk
+        versionCode ema.versionCode
+        versionName ema.versionName
+    }
+
+    buildTypes {
+        debug {
+        }
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+}
+
+dependencies {
+    implementation project(":ema-android")
+    implementation project(":ema-testing-core")
+
+    //androidTest
+    implementation emaTesting.core
+    implementation emaTesting.coreKotlin
+    implementation emaTesting.junit
+    implementation emaTesting.junitKotlin
+    implementation emaTesting.rules
+    implementation emaTesting.mockito
+    implementation emaAndroid.espresso
+    implementation emaTesting.archTesting
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
+}
+
+sourceCompatibility = "7"
+targetCompatibility = "7"
+repositories {
+    mavenCentral()
+}

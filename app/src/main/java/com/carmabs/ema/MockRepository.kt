@@ -16,7 +16,7 @@ class MockRepository : Repository {
     override suspend fun login(loginRequest: LoginRequest): User {
         delay(2000)
        if(loginRequest.name.equals("1234") && loginRequest.password=="1234")
-           return User("Babel","Sistemas de informacion")
+           return User("Carmabs","Android Technology")
         else throw LoginException()
     }
 }

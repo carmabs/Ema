@@ -19,7 +19,7 @@ interface AsyncManager {
      * @param block Function to execute in asynchronous task
      * @param dispatcher @param dispatcher Executor thread
      */
-    suspend fun <T> async(dispatcher: CoroutineDispatcher = Dispatchers.Main, block: suspend CoroutineScope.() -> T): Deferred<T>
+    suspend fun <T> async(dispatcher: CoroutineDispatcher = Dispatchers.Main,block: suspend CoroutineScope.() -> T): Deferred<T>
 
     /**
      * Blocking method to make async task.

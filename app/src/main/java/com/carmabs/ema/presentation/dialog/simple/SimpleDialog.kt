@@ -9,11 +9,7 @@ import kotlinx.android.synthetic.main.dialog_simple.view.*
 /**
  * Simple dialog
  *
- * <p>
- * Copyright (C) 2018Babel Sistemas de Información. All rights reserved.
- * </p>
- *
- * @author <a href="mailto:carlos.mateo@babel.es">Carlos Mateo Benito</a>
+ * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
 class SimpleDialog : BaseDialog() {
 

@@ -1,1 +1,5 @@
-include ':app', ':ema-android', ':ema-core'
+include ':app',
+        ':ema-android',
+        ':ema-core',
+        ':ema-testing-core',
+        ':ema-testing-android'

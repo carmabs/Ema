@@ -11,10 +11,6 @@ import com.carmabs.ema.core.state.EmaBaseState
 /**
  * Base fragment to bind and unbind view model
  *
- * <p>
- * Copyright (C) 2018Babel Sistemas de Información. All rights reserved.
- * </p>
- *
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
 abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigationState> : EmaBaseFragment(), EmaView<S, VM, NS> {
@@ -42,6 +38,7 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
      */
     override val inputState: S? by lazy { getInState() }
 
+
     /**
      * The view model is instantiated on fragment creation
      * @param view which inflated the fragment
@@ -56,6 +53,7 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
                     else
                         null)
         }
+
     }
 
     /**
@@ -63,12 +61,11 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
      */
     abstract val fragmentViewModelScope: Boolean
 
-
     /**
      * Methods called when view model has been created
      * @param viewModel
      */
-    override fun onViewModelInitialized(viewModel: VM) {
+    override fun onViewModelInitalized(viewModel: VM) {
         vm = viewModel
         onInitialized(viewModel)
     }
@@ -78,10 +75,8 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
      */
     override fun onDestroyView() {
         super.onDestroyView()
-        val owner: LifecycleOwner = if(fragmentViewModelScope)this else activity!!
-        vm?.observableState?.removeObservers(owner)
-        vm?.singleObservableState?.removeObservers(owner)
-        vm?.navigationState?.removeObservers(owner)
+        val owner: LifecycleOwner = if (fragmentViewModelScope) this else activity!!
+        vm?.unBindObservables(owner)
     }
 
     /**
@@ -91,8 +86,13 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
         return arguments?.let {
             if (it.containsKey(inputStateKey)) {
                 it.get(inputStateKey) as? S
+
             } else
                 null
         }
+    }
+
+    fun setInputState(inState: S) {
+        arguments = Bundle().apply { putSerializable(inputStateKey, inState) }
     }
 }
