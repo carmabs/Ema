@@ -3,12 +3,10 @@ package com.carmabs.ema.presentation.injection
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.navigation.NavController
-import androidx.navigation.NavHost
 import com.carmabs.ema.MockRepository
-import com.carmabs.ema.android.ui.EmaFragmentActivity
+import com.carmabs.ema.core.dialog.EmaDialogProvider
 import com.carmabs.ema.domain.repository.Repository
 import com.carmabs.ema.domain.usecase.LoginUseCase
-import com.carmabs.ema.presentation.dialog.DialogProvider
 import com.carmabs.ema.presentation.dialog.loading.LoadingDialogProvider
 import com.carmabs.ema.presentation.dialog.simple.SimpleDialogProvider
 import com.carmabs.ema.presentation.ui.emaway.home.EmaHomeActivity
@@ -35,9 +33,9 @@ fun fragmentInjection(fragment: Fragment) = Kodein.Module(name = "FragmentModule
 
     bind<Repository>() with provider { MockRepository() }
 
-    bind<DialogProvider>(tag = "SIMPLE") with provider { SimpleDialogProvider(instance()) }
+    bind<EmaDialogProvider>(tag = "SIMPLE") with provider { SimpleDialogProvider(instance()) }
 
-    bind<DialogProvider>(tag = "LOADING") with provider { LoadingDialogProvider(instance()) }
+    bind<EmaDialogProvider>(tag = "LOADING") with provider { LoadingDialogProvider(instance()) }
 
     bind<EmaHomeNavigator>() with singleton { EmaHomeNavigator(instance()) }
 

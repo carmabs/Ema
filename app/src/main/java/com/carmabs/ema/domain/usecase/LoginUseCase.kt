@@ -10,7 +10,7 @@ import com.carmabs.ema.domain.repository.Repository
  * Login to LDA
  *
  *
- * @author <a href=“mailto:carlos.mateo@babel.es”>Carlos Mateo</a>
+ * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
 
 class LoginUseCase(private val repository: Repository) {

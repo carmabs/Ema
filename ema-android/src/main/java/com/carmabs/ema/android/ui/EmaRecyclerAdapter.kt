@@ -5,9 +5,7 @@ import androidx.recyclerview.widget.RecyclerView
 /**
  * Adapter to implement the list view interface in recycler views
  *
- * <p>
- * Copyright (c) 2019, Babel Sistemas de Información. All rights reserved.
- * </p>
+
  *
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
