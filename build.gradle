@@ -4,8 +4,9 @@ apply from: 'build-system/dependencies.gradle'
 buildscript {
 
     ext.kotlinVersion = '1.3.31'
-    ext.buildGradle = "3.4.1"
-    ext.safeArgs = "1.0.0"
+    ext.buildGradleVersion = "3.4.1"
+    ext.safeArgsVersion = "1.0.0"
+    ext.publishJitPackVersion ="2.1"
 
     repositories {
         mavenCentral()
@@ -15,11 +16,10 @@ buildscript {
     }
 
     dependencies {
-        classpath "com.android.tools.build:gradle:$buildGradle"
+        classpath "com.android.tools.build:gradle:$buildGradleVersion"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
-        classpath "android.arch.navigation:navigation-safe-args-gradle-plugin:$safeArgs"
-
-
+        classpath "android.arch.navigation:navigation-safe-args-gradle-plugin:$safeArgsVersion"
+        classpath "com.github.dcendents:android-maven-gradle-plugin:$publishJitPackVersion"
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
