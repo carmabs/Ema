@@ -7,9 +7,7 @@ import androidx.test.espresso.action.*
 /**
  * Class to handle custom test espresso actions
  *
- * <p>
- * Copyright (c) 2019, Babel Sistemas de Información. All rights reserved.
- * </p>
+
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */

@@ -7,9 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
  * View holder class for item representation in recycler view.
  * Extend this ViewHolder and use bind to implement the holder with the item data
  *
- * <p>
- * Copyright (c) 2019, Babel Sistemas de Información. All rights reserved.
- * </p>
+
  *
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */

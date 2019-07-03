@@ -14,13 +14,13 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import com.carmabs.ema.MockRepository
 import com.carmabs.ema.R
+import com.carmabs.ema.core.dialog.EmaDialogProvider
 import com.carmabs.ema.domain.exception.LoginException
 import com.carmabs.ema.domain.exception.PasswordEmptyException
 import com.carmabs.ema.domain.exception.UserEmptyException
 import com.carmabs.ema.domain.model.LoginRequest
 import com.carmabs.ema.domain.model.User
 import com.carmabs.ema.domain.usecase.LoginUseCase
-import com.carmabs.ema.presentation.dialog.DialogProvider
 import com.carmabs.ema.presentation.dialog.loading.LoadingDialogData
 import com.carmabs.ema.presentation.dialog.loading.LoadingDialogProvider
 import com.carmabs.ema.presentation.dialog.simple.SimpleDialogData
@@ -41,9 +41,9 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private val dialogError: DialogProvider by lazy {
+    private val dialogError: EmaDialogProvider by lazy {
         val dialog = SimpleDialogProvider(fragmentManager!!)
-        dialog.setDialogListener(object : SimpleDialogListener {
+        dialog.dialogListener = object : SimpleDialogListener {
             override fun onCancelClicked() {
                 viewModel.onActionDialogErrorCancel()
             }
@@ -55,11 +55,11 @@ class HomeFragment : Fragment() {
             override fun onConfirmClicked() {
                 viewModel.onActionDialogErrorAccept()
             }
-        })
+        }
         dialog
     }
 
-    private val dialogLoading: DialogProvider by lazy {
+    private val dialogLoading: EmaDialogProvider by lazy {
          LoadingDialogProvider(fragmentManager!!)
     }
 
