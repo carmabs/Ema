@@ -46,7 +46,12 @@ class DefaultAsyncManager : AsyncManager {
      * Cancel all async tasks saved in deferred list
      */
     override fun cancelAllAsync() {
-        deferredList.forEach { it.cancel() }
+        //Create new list to avoid ConcurrentModificationException due to invokeOnCompletion
+
+        val jobPending = mutableListOf<Job>()
+        jobPending.addAll(deferredList)
+        jobPending.forEach { if (it.isActive) it.cancel() }
+
         deferredList.clear()
     }
 
