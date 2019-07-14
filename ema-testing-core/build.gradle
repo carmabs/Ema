@@ -11,6 +11,3 @@ dependencies {
     implementation emaTesting.rules
     implementation emaTesting.mockito
 }
-
-sourceCompatibility = "7"
-targetCompatibility = "7"

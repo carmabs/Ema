@@ -39,8 +39,6 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
 }
 
-sourceCompatibility = "7"
-targetCompatibility = "7"
 repositories {
     mavenCentral()
 }

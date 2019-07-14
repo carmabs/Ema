@@ -33,7 +33,12 @@ class DefaultConcurrencyManager : ConcurrencyManager {
      * Cancel al pending tasks in job list
      */
     override fun cancelPendingTasks() {
-        jobList.forEach { it.cancel() }
+        //Create new list to avoid ConcurrentModificationException due to invokeOnCompletion
+
+        val jobPending = mutableListOf<Job>()
+        jobPending.addAll(jobList)
+        jobPending.forEach { if (it.isActive) it.cancel() }
+
         jobList.clear()
     }
 
