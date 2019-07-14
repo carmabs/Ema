@@ -94,11 +94,6 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> : Vie
     abstract fun onStartFirstTime(statePreloaded: Boolean)
 
     /**
-     * Get observable state as LiveData to avoid state setting from the view.
-     */
-    fun getObservableState(): LiveData<S> = observableState
-
-    /**
      * Get current state of view
      */
     fun getCurrentState(): S? = state
@@ -122,6 +117,16 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> : Vie
         state?.let {
             state = changeStateFunction.invoke(it)
             if (notifyView) updateView(it)
+        }
+    }
+
+    /**
+     * Check the current view state
+     * @param checkStateFunction function to check the current state
+     */
+    protected fun checkState(checkStateFunction: (S) -> Unit) {
+        state?.run {
+            checkStateFunction.invoke(this)
         }
     }
 
