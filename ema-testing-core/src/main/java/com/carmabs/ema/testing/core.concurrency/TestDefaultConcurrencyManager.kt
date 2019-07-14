@@ -17,13 +17,14 @@ class TestDefaultConcurrencyManager : ConcurrencyManager {
     private val defaultConcurrencyManager = DefaultConcurrencyManager()
 
     /**
-     * Launch an especific task a coroutine Scope an add it to the job list. Same behaviour as default concurrency manager but using
-     * Unconfined thread
+     * Launch an especific task a coroutine Scope an add it to the job list
      * @param block Function to execute in the thread
      * @param dispatcher Executor thread
+     * @param fullException If its is true, an exception launched on some child task affects to the
+     * rest of task, including the parent one, if it is false, only affect to the child class
      */
-    override fun launch(dispatcher: CoroutineDispatcher, block: suspend CoroutineScope.() -> Unit): Job {
-        return defaultConcurrencyManager.launch (Dispatchers.Unconfined,block)
+    override fun launch(dispatcher: CoroutineDispatcher, fullException: Boolean, block: suspend CoroutineScope.() -> Unit): Job {
+        return defaultConcurrencyManager.launch (Dispatchers.Unconfined,fullException,block)
     }
 
 

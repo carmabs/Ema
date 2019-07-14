@@ -19,10 +19,12 @@ class DefaultAsyncManager : AsyncManager {
      * @param T Return object when call is finished
      * @param block Function to execute in asynchronous task
      * @param dispatcher Executor thread
+     * @param fullException If its is true, an exception launched on some child task affects to the
+     * rest of task, including the parent one, if it is false, only affect to the child class
      */
-    override suspend fun <T> async(dispatcher: CoroutineDispatcher,block: suspend CoroutineScope.() -> T): Deferred<T> {
-        val job = SupervisorJob()
-        val deferred: Deferred<T> = CoroutineScope(dispatcher+ job).async { block() }
+    override suspend fun <T> async(dispatcher: CoroutineDispatcher, fullException: Boolean, block: suspend CoroutineScope.() -> T): Deferred<T> {
+        val job = if (fullException) Job() else SupervisorJob()
+        val deferred: Deferred<T> = CoroutineScope(dispatcher + job).async { block() }
         deferredList.add(deferred)
         deferred.invokeOnCompletion { deferredList.remove(deferred) }
         return deferred
@@ -33,9 +35,11 @@ class DefaultAsyncManager : AsyncManager {
      * @param T Return object when call is finished
      * @param block Function to execute in asynchronous task
      * @param dispatcher Executor thread
+     * @param fullException If its is true, an exception launched on some child task affects to the
+     * rest of task, including the parent one, if it is false, only affect to the child class
      */
-    override suspend fun <T> asyncAwait(dispatcher: CoroutineDispatcher,block: suspend CoroutineScope.() -> T): T {
-        return async(dispatcher,block).await()
+    override suspend fun <T> asyncAwait(dispatcher: CoroutineDispatcher, fullException: Boolean, block: suspend CoroutineScope.() -> T): T {
+        return async(dispatcher, fullException, block).await()
     }
 
     /**
@@ -51,7 +55,7 @@ class DefaultAsyncManager : AsyncManager {
      * @param deferred Task to cancel
      */
     override fun cancelAsync(deferred: Deferred<*>) {
-        if(deferredList.remove(deferred))
+        if (deferredList.remove(deferred))
             deferred.cancel()
     }
 }

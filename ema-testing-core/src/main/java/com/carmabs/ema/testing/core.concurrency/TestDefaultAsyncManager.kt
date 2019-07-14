@@ -17,26 +17,28 @@ class TestDefaultAsyncManager : AsyncManager {
     private val defaultAsyncManager = DefaultAsyncManager()
 
     /**
-     * Method to make async task for testing. Same behaviour as default async manager but using
-     * Unconfined thread
+     * Method to make async task. Not blocking. To get result use blocking  Deferred.await()
      * Add each deferred object to a list to make available its cancellation
      * @param T Return object when call is finished
      * @param block Function to execute in asynchronous task
      * @param dispatcher Executor thread
+     * @param fullException If its is true, an exception launched on some child task affects to the
+     * rest of task, including the parent one, if it is false, only affect to the child class
      */
-    override suspend fun <T> async(dispatcher: CoroutineDispatcher, block: suspend CoroutineScope.() -> T): Deferred<T> {
-        return defaultAsyncManager.async(Dispatchers.Unconfined, block)
+    override suspend fun <T> async(dispatcher: CoroutineDispatcher, fullException: Boolean, block: suspend CoroutineScope.() -> T): Deferred<T> {
+        return defaultAsyncManager.async(Dispatchers.Unconfined, fullException, block)
     }
 
     /**
-     * Blocking method to make async task. Same behaviour as default async manager but using
-     * Unconfined thread
+     * Blocking method to make async task.
      * @param T Return object when call is finished
      * @param block Function to execute in asynchronous task
      * @param dispatcher Executor thread
+     * @param fullException If its is true, an exception launched on some child task affects to the
+     * rest of task, including the parent one, if it is false, only affect to the child class
      */
-    override suspend fun <T> asyncAwait(dispatcher: CoroutineDispatcher, block: suspend CoroutineScope.() -> T): T {
-        return async(dispatcher, block).await()
+    override suspend fun <T> asyncAwait(dispatcher: CoroutineDispatcher, fullException: Boolean, block: suspend CoroutineScope.() -> T): T {
+        return async(dispatcher, fullException, block).await()
     }
 
     /**

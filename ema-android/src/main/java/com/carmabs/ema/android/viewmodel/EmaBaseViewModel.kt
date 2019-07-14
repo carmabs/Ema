@@ -160,16 +160,29 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> : Vie
      * When a background task must be executed for data retrieving or other background job, it must
      * be called through this method with [block] function
      * @param block is the function that will be executed in background
+     * @param fullException If its is true, an exception launched on some child task affects to the
+     * rest of task, including the parent one, if it is false, only affect to the child class
      * @return the job that can handle the lifecycle of the background task
      */
-    protected fun executeUseCase(block: suspend CoroutineScope.() -> Unit): Job {
-        return concurrencyManager.launch(block = block)
+    protected fun executeUseCase(fullException: Boolean = false, block: suspend CoroutineScope.() -> Unit): Job {
+        return concurrencyManager.launch(fullException = fullException, block = block)
     }
 
+    /**
+     * When a background task must be executed for data retrieving or other background job, it must
+     * be called through this method with [block] function
+     * @param block is the function that will be executed in background
+     * @param exceptionBlock Function to handle errors
+     * @param handleCancellationManually Function to handle Cancellation Exception in coroutine
+     * @param fullException If its is true, an exception launched on some child task affects to the
+     * rest of task, including the parent one, if it is false, only affect to the child class
+     * @return the job that can handle the lifecycle of the background task
+     */
     protected fun executeUseCaseWithException(block: suspend CoroutineScope.() -> Unit,
                                               exceptionBlock: suspend CoroutineScope.(Throwable) -> Unit,
-                                              handleCancellationManually: Boolean = false): Job {
-        return concurrencyManager.launch {
+                                              handleCancellationManually: Boolean = false,
+                                              fullException: Boolean = false): Job {
+        return concurrencyManager.launch(fullException = fullException) {
             tryCatch(block, exceptionBlock, handleCancellationManually)
         }
     }
