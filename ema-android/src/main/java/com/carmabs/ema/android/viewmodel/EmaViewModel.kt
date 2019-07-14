@@ -52,6 +52,16 @@ abstract class EmaViewModel<S, NS : EmaNavigationState> : EmaBaseViewModel<EmaSt
     }
 
     /**
+     * Check the current view state
+     * @param checkStateFunction function to check the current state
+     */
+    protected fun checkViewState(checkStateFunction: (S) -> Unit){
+        viewState?.run{
+            checkStateFunction.invoke(this)
+        }
+    }
+
+    /**
      * Used for trigger an error on the view
      * Use the EmaState -> Error
      * @param error generated
