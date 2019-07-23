@@ -31,7 +31,7 @@ rootProject.ext {
 
     ema = [
             buildTools : "28.0.3",
-            minSdk     : 23,
+            minSdk     : 21,
             compileSdk : 28,
             targetSdk  : 28,
             versionCode: 1,
@@ -57,6 +57,8 @@ rootProject.ext {
     ]
 
     emaTesting = [
+            lifecycle  : "androidx.lifecycle:lifecycle-extensions:" + project.lifecycleVersion,
+            espresso   : "androidx.test.espresso:espresso-core:" + project.espressoVersion,
             kotlin     : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:" + project.kotlinVersion,
             coroutines : 'org.jetbrains.kotlinx:kotlinx-coroutines-android:' + project.coroutinesVersion,
             core       : "androidx.test:core:" + project.coreVersion,
@@ -69,7 +71,6 @@ rootProject.ext {
     ]
 
     emaAndroid = [
-            espresso          : "androidx.test.espresso:espresso-core:" + project.espressoVersion,
             navigationFragment: "androidx.navigation:navigation-fragment-ktx:" + project.navigationVersion,
             navigationUI      : "androidx.navigation:navigation-ui-ktx:" + project.navigationVersion,
             constraint        : "androidx.constraintlayout:constraintlayout:" + project.constraintVersion,

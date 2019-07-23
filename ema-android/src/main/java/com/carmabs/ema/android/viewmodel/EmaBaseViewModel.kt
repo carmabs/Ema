@@ -94,6 +94,11 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> : Vie
     abstract fun onStartFirstTime(statePreloaded: Boolean)
 
     /**
+     * Get observable state as LiveDaya to avoid state setting from the view
+     */
+    fun getObservableState():LiveData<S> = observableState
+
+    /**
      * Get current state of view
      */
     fun getCurrentState(): S? = state
