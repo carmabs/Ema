@@ -6,6 +6,3 @@ dependencies {
     implementation emaCore.kotlin
     implementation emaCore.coroutines
 }
-
-sourceCompatibility = "7"
-targetCompatibility = "7"
