@@ -12,6 +12,14 @@ import com.google.android.material.appbar.AppBarLayout
  */
 abstract class EmaToolbarFragmentActivity : EmaFragmentActivity() {
 
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+
+        //To enable support action bar
+        if(!overrideTheme) setTheme(R.style.EmaTheme_NoActionBar)
+        super.onCreate(savedInstanceState)
+    }
+
     /**
      * The toobar for the activity
      */
@@ -37,6 +45,7 @@ abstract class EmaToolbarFragmentActivity : EmaFragmentActivity() {
      * id=@+id/emaToolbar. The toolbar contaienr [AppBarLayout] must have the id=@+ìd/emaAppBarLayout
      */
     private fun setupToolbar() {
+
         val tbToolbar = findViewById<Toolbar>(R.id.emaToolbar)
                 ?: throw IllegalArgumentException("You must provide in your activity xml a Toolbar with android:id=@+id/emaToolbar")
         val lToolbar = findViewById<AppBarLayout>(R.id.emaAppBarLayout)
@@ -73,4 +82,9 @@ abstract class EmaToolbarFragmentActivity : EmaFragmentActivity() {
     override fun getLayout(): Int {
         return R.layout.ema_toolbar_activity
     }
+
+    /**
+     * Set true if activity use a custom theme to avoid the EmaTheme_NoActionBar theme set up
+     */
+    protected open val overrideTheme = false
 }
