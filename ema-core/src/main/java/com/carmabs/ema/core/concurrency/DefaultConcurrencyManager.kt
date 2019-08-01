@@ -23,7 +23,11 @@ class DefaultConcurrencyManager : ConcurrencyManager {
         val job = if (fullException) Job() else SupervisorJob()
         val scope = CoroutineScope(dispatcher + job)
         jobList.add(job)
-        job.invokeOnCompletion { jobList.remove(job) }
+        job.invokeOnCompletion {
+            synchronized(jobList) {
+                jobList.remove(job)
+            }
+        }
         scope.launch { block.invoke(this) }
         return job
     }
@@ -36,10 +40,12 @@ class DefaultConcurrencyManager : ConcurrencyManager {
         //Create new list to avoid ConcurrentModificationException due to invokeOnCompletion
 
         val jobPending = mutableListOf<Job>()
-        jobPending.addAll(jobList)
-        jobPending.forEach { if (it.isActive) it.cancel() }
+        synchronized(jobList) {
+            jobPending.addAll(jobList)
+            jobPending.forEach { if (it.isActive) it.cancel() }
 
-        jobList.clear()
+            jobList.clear()
+        }
     }
 
     /**
@@ -47,8 +53,10 @@ class DefaultConcurrencyManager : ConcurrencyManager {
      * @param job Job to cancel the task in process
      */
     override fun cancelTask(job: Job) {
-        if (jobList.remove(job)) {
-            job.cancel()
+        synchronized(jobList) {
+            if (jobList.remove(job)) {
+                job.cancel()
+            }
         }
     }
 }
