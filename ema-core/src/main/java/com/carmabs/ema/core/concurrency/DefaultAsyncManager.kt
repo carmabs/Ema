@@ -22,11 +22,19 @@ class DefaultAsyncManager : AsyncManager {
      * @param fullException If its is true, an exception launched on some child task affects to the
      * rest of task, including the parent one, if it is false, only affect to the child class
      */
-    override suspend fun <T> async(dispatcher: CoroutineDispatcher, fullException: Boolean, block: suspend CoroutineScope.() -> T): Deferred<T> {
+    override suspend fun <T> async(
+        dispatcher: CoroutineDispatcher,
+        fullException: Boolean,
+        block: suspend CoroutineScope.() -> T
+    ): Deferred<T> {
         val job = if (fullException) Job() else SupervisorJob()
         val deferred: Deferred<T> = CoroutineScope(dispatcher + job).async { block() }
         deferredList.add(deferred)
-        deferred.invokeOnCompletion { deferredList.remove(deferred) }
+        deferred.invokeOnCompletion {
+            synchronized(deferredList) {
+                deferredList.remove(deferred)
+            }
+        }
         return deferred
     }
 
@@ -38,7 +46,11 @@ class DefaultAsyncManager : AsyncManager {
      * @param fullException If its is true, an exception launched on some child task affects to the
      * rest of task, including the parent one, if it is false, only affect to the child class
      */
-    override suspend fun <T> asyncAwait(dispatcher: CoroutineDispatcher, fullException: Boolean, block: suspend CoroutineScope.() -> T): T {
+    override suspend fun <T> asyncAwait(
+        dispatcher: CoroutineDispatcher,
+        fullException: Boolean,
+        block: suspend CoroutineScope.() -> T
+    ): T {
         return async(dispatcher, fullException, block).await()
     }
 
@@ -49,10 +61,11 @@ class DefaultAsyncManager : AsyncManager {
         //Create new list to avoid ConcurrentModificationException due to invokeOnCompletion
 
         val jobPending = mutableListOf<Job>()
-        jobPending.addAll(deferredList)
-        jobPending.forEach { if (it.isActive) it.cancel() }
-
-        deferredList.clear()
+        synchronized(deferredList) {
+            jobPending.addAll(deferredList)
+            jobPending.forEach { if (it.isActive) it.cancel() }
+            deferredList.clear()
+        }
     }
 
     /**
@@ -60,7 +73,9 @@ class DefaultAsyncManager : AsyncManager {
      * @param deferred Task to cancel
      */
     override fun cancelAsync(deferred: Deferred<*>) {
-        if (deferredList.remove(deferred))
-            deferred.cancel()
+        synchronized(deferredList) {
+            if (deferredList.remove(deferred))
+                deferred.cancel()
+        }
     }
 }
