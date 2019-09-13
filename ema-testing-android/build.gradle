@@ -30,7 +30,7 @@ android {
 
 dependencies {
     implementation project(":ema-android")
-    implementation project(":easymvvm-core")
+    implementation project(":ema-core")
     implementation project(":ema-testing-core")
 
     //androidTest
