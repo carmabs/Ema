@@ -29,10 +29,12 @@ class DefaultAsyncManager : AsyncManager {
     ): Deferred<T> {
         val job = if (fullException) Job() else SupervisorJob()
         val deferred: Deferred<T> = CoroutineScope(dispatcher + job).async { block() }
-        deferredList.add(deferred)
-        deferred.invokeOnCompletion {
-            synchronized(deferredList) {
-                deferredList.remove(deferred)
+        synchronized(deferredList) {
+            deferredList.add(deferred)
+            deferred.invokeOnCompletion {
+                synchronized(deferredList) {
+                    deferredList.remove(deferred)
+                }
             }
         }
         return deferred
@@ -60,8 +62,8 @@ class DefaultAsyncManager : AsyncManager {
     override fun cancelAllAsync() {
         //Create new list to avoid ConcurrentModificationException due to invokeOnCompletion
 
-        val jobPending = mutableListOf<Job>()
         synchronized(deferredList) {
+            val jobPending = mutableListOf<Job>()
             jobPending.addAll(deferredList)
             jobPending.forEach { if (it.isActive) it.cancel() }
             deferredList.clear()
