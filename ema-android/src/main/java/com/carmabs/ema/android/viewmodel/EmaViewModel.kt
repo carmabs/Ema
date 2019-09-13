@@ -14,7 +14,7 @@ abstract class EmaViewModel<S, NS : EmaNavigationState> : EmaBaseViewModel<EmaSt
     /**
      * State of the view
      */
-    protected var viewState: S? = null
+    private var viewState: S? = null
 
 
     override fun onStart(inputState: EmaState<S>?): Boolean {
@@ -54,10 +54,15 @@ abstract class EmaViewModel<S, NS : EmaNavigationState> : EmaBaseViewModel<EmaSt
     /**
      * Check the current view state
      * @param checkStateFunction function to check the current state
+     * @return the value returned by [checkStateFunction]
      */
-    protected fun checkViewState(checkStateFunction: (S) -> Unit){
-        viewState?.run{
-            checkStateFunction.invoke(this)
+    fun <T> checkViewState(checkStateFunction: (S) -> T): T {
+        return viewState?.let {
+            checkStateFunction.invoke(it)
+        } ?: let {
+            val initialState = createInitialViewState()
+            viewState = initialState
+            checkStateFunction.invoke(initialState)
         }
     }
 
@@ -80,7 +85,7 @@ abstract class EmaViewModel<S, NS : EmaNavigationState> : EmaBaseViewModel<EmaSt
      */
     protected fun loading(data: EmaExtraData? = null) {
         viewState?.let { state ->
-            val loadingData = data?.let {
+            val loadingData: EmaState.Loading<S> = data?.let {
                 EmaState.Loading(state, dataLoading = it)
             } ?: EmaState.Loading(state)
 

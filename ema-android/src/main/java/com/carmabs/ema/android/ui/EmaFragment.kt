@@ -45,10 +45,10 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
     override val inputState: S? by lazy { getInState() }
 
     /**
-     * The map which handles the view model attached with their respective scopes, to unbind the observers
+     * The list which handles the extra view models attached, to unbind the observers
      * when the view fragment is destroyed
      */
-    private val extraViewModelMap: MutableList<EmaViewModel<*, *>> by lazy { mutableListOf<EmaViewModel<*, *>>() }
+    private val extraViewModelList: MutableList<EmaViewModel<*, *>> by lazy { mutableListOf<EmaViewModel<*, *>>() }
 
     /**
      * The view model is instantiated on fragment creation
@@ -89,7 +89,7 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
                         ?: ViewModelProviders.of(fragment, EmaFactory(viewModelAttachedSeed))[viewModelAttachedSeed::class.java]
 
         observerFunction?.also { viewModel.getObservableState().observe(this, Observer(it)) }
-        extraViewModelMap.add(viewModel)
+        extraViewModelList.add(viewModel)
 
         return viewModel
     }
@@ -122,10 +122,10 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
      * Remove extra view models attached
      */
     private fun removeExtraViewModels() {
-        extraViewModelMap.forEach {
+        extraViewModelList.forEach {
             it.unBindObservables(this)
         }
-        extraViewModelMap.clear()
+        extraViewModelList.clear()
     }
 
     /**
