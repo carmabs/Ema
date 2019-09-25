@@ -1,11 +1,9 @@
 package com.carmabs.ema.presentation.ui.user
 
 /**
- * <p>
- * Copyright (c) 2019, Babel Sistemas de Información. All rights reserved.
- * </p>
  *
- * @author <a href=“mailto:carlos.mateo@babel.es”>Carlos Mateo</a>
+ *
+ * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  *
  * Date: 2019-09-25
  */

@@ -1,2 +1,1 @@
-# Elemental MVVM Architecture
-An MVVM library to implement this architecture by an easy way in your app
+# You can se the documentation [here](https://github.com/carlosmateo89/Ema/wiki).

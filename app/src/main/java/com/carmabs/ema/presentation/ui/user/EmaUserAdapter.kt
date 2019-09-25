@@ -10,11 +10,9 @@ import kotlinx.android.synthetic.main.item_left.view.*
 import kotlinx.android.synthetic.main.item_right.view.*
 
 /**
- * <p>
- * Copyright (c) 2019, Babel Sistemas de Información. All rights reserved.
- * </p>
  *
- * @author <a href=“mailto:carlos.mateo@babel.es”>Carlos Mateo</a>
+ *
+ * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  *
  * Date: 2019-09-25
  */
