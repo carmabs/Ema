@@ -3,9 +3,11 @@ package com.carmabs.ema.presentation.dialog.simple
 import android.graphics.drawable.Drawable
 import com.carmabs.ema.core.dialog.EmaDialogData
 
+
 /**
- * Data for simple dialog
+ * TODO: Add a class header comment.
  *
+*
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
@@ -17,5 +19,5 @@ data class SimpleDialogData(
         val cancel: String = "",
         val showCross: Boolean = true,
         val image: Drawable? = null,
-        override val proportionWidth: Float? = null,
+        override val proportionWidth: Float? = 7/10f,
         override val proportionHeight: Float? = null) : EmaDialogData

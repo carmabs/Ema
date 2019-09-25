@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@drawable/shape_dialog_white"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
@@ -12,46 +13,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:padding="@dimen/space_big_huge">
-
-
-        <ImageView
-            android:id="@+id/ivDialogSimple"
-            android:layout_width="@dimen/icon_size_huge"
-            android:layout_height="@dimen/icon_size_huge"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:src="@drawable/ic_cross"/>
-
-
-        <TextView
-            android:id="@+id/tvDialogSimpleTitle"
-            style="@style/DialogTitle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ivDialogSimple"
-            tools:text="TITLE"/>
-
-        <TextView
-            android:id="@+id/tvDialogSimpleMessage"
-            style="@style/DialogMessage"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/tvDialogSimpleTitle"
-            android:gravity="center"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvDialogSimpleTitle"
-            tools:text="MESSAGE"/>
+        android:padding="@dimen/space_big_huge"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
 
         <Button
             android:id="@+id/bDialogSimpleYes"
-            style="@style/ButtonRedLda"
+            style="@style/ButtonRed"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/space_very_big"
@@ -64,11 +34,12 @@
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/bDialogSimpleNo"
             app:layout_constraintTop_toBottomOf="@+id/tvDialogSimpleMessage"
-            app:layout_constraintVertical_bias="0.0"/>
+            app:layout_constraintVertical_bias="0.0" />
+
 
         <Button
             android:id="@+id/bDialogSimpleNo"
-            style="@style/ButtonWhiteLda"
+            style="@style/ButtonWhite"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/space_very_big"
@@ -82,7 +53,40 @@
             app:layout_constraintHorizontal_chainStyle="spread"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvDialogSimpleMessage"
-            app:layout_constraintVertical_bias="0.0"/>
+            app:layout_constraintVertical_bias="0.0" />
+
+        <ImageView
+            android:id="@+id/ivDialogSimple"
+            android:layout_width="@dimen/icon_size_huge"
+            android:layout_height="@dimen/icon_size_huge"
+            android:src="@drawable/ic_cross"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <TextView
+            android:id="@+id/tvDialogSimpleTitle"
+            style="@style/DialogTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ivDialogSimple"
+            tools:text="TITLE" />
+
+        <TextView
+            android:id="@+id/tvDialogSimpleMessage"
+            style="@style/DialogMessage"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvDialogSimpleTitle"
+            android:gravity="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvDialogSimpleTitle"
+            tools:text="MESSAGE" />
 
 
         <androidx.constraintlayout.widget.Barrier
@@ -93,7 +97,7 @@
             app:barrierDirection="start"
             app:constraint_referenced_ids="ivDialogSimple"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -102,8 +106,8 @@
         android:id="@+id/ivDialogSimpleCross"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/space_small_medium"
-        android:layout_marginEnd="@dimen/space_small_medium"
+        android:layout_marginTop="@dimen/space_big"
+        android:layout_marginEnd="@dimen/space_big"
         android:src="@drawable/ic_cross"
         app:layout_constraintBottom_toBottomOf="@+id/constraintLayout3"
         app:layout_constraintEnd_toEndOf="parent"

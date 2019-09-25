@@ -9,6 +9,10 @@ import kotlinx.android.synthetic.main.dialog_simple.view.*
 /**
  * Simple dialog
  *
+ * <p>
+ * Copyright (C) 2018Babel Sistemas de Información. All rights reserved.
+ * </p>
+ *
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
 class SimpleDialog : EmaBaseDialog<SimpleDialogData>() {
@@ -18,8 +22,7 @@ class SimpleDialog : EmaBaseDialog<SimpleDialogData>() {
     }
 
     override fun setupData(data: SimpleDialogData, view: View) {
-        (data as? SimpleDialogData)?.let {
-            with(it){
+            with(data){
                 (dialogListener as? SimpleDialogListener)?.let { listener ->
                     view.bDialogSimpleNo.setOnClickListener { listener.onCancelClicked() }
                     view.ivDialogSimpleCross.setOnClickListener { listener.onCancelClicked() }
@@ -49,6 +52,5 @@ class SimpleDialog : EmaBaseDialog<SimpleDialogData>() {
 
                 isCancelable = true
             }
-        }
     }
 }

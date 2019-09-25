@@ -1,4 +1,8 @@
 include ':app',
+        ':injection',
+        ':data',
+        ':domain',
+        ':common',
         ':ema-android',
         ':ema-core',
         ':ema-testing-core',
