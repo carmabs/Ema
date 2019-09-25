@@ -27,7 +27,7 @@ abstract class EmaBaseDialogProvider constructor(private val fragmentManager: Fr
             dialog.dialogListener = dialogListener
             dialog.data = dialogData
             if(!dialog.isVisible)
-                dialog.show(fragmentManager,hashCode().toString())
+                dialog.show(fragmentManager,javaClass.canonicalName.hashCode().toString())
 
         }
     }
