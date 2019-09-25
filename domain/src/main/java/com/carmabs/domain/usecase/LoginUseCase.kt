@@ -7,11 +7,8 @@ import com.carmabs.domain.repository.Repository
 
 
 /**
- * Login to LDA
+ * Login
  *
- * <p>
- * Copyright (c) 2018, Babel Sistemas de Información. All rights reserved.
- * </p>
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
