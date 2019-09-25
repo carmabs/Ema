@@ -54,6 +54,7 @@ abstract class EmaToolbarFragmentActivity : EmaFragmentActivity() {
         setSupportActionBar(tbToolbar)
         toolbarLayout = lToolbar
         toolbar = tbToolbar
+        getToolbarTitle()?.let { supportActionBar?.title = it }
         setupActionBarWithNavController(navController)
     }
 
