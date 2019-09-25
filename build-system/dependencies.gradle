@@ -51,6 +51,25 @@ rootProject.ext {
             coroutines        : 'org.jetbrains.kotlinx:kotlinx-coroutines-android:' + project.coroutinesVersion
     ]
 
+    dataDependencies = [
+            kotlin    : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:" + project.kotlinVersion,
+            coroutines: 'org.jetbrains.kotlinx:kotlinx-coroutines-android:' + project.coroutinesVersion
+    ]
+
+    domainDependencies = [
+            kotlin    : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:" + project.kotlinVersion,
+            coroutines: 'org.jetbrains.kotlinx:kotlinx-coroutines-android:' + project.coroutinesVersion
+    ]
+
+    commonDependencies = [
+    ]
+
+    injectionDependencies = [
+            kotlin       : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:" + project.kotlinVersion,
+            kodein       : "org.kodein.di:kodein-di-generic-jvm:" + project.kodeinVersion,
+            kodeinAndroid: "org.kodein.di:kodein-di-framework-android-x:" + project.kodeinVersion,
+    ]
+
     emaCore = [
             kotlin    : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:" + project.kotlinVersion,
             coroutines: 'org.jetbrains.kotlinx:kotlinx-coroutines-android:' + project.coroutinesVersion

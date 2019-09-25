@@ -2,7 +2,6 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -16,9 +15,8 @@
         android:layout_marginTop="24dp"
         android:layout_marginEnd="@dimen/space_huge_medium"
         android:gravity="center"
-        android:text="@string/hello"
+        android:text="@string/home_hello"
         android:textColor="@color/riffle_green"
-        app:layout_constraintBottom_toTopOf="@id/llLighLogin"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -32,7 +30,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/space_big_medium"
-        android:text="@string/identified"
+        android:text="@string/home_identify"
         app:layout_constraintEnd_toEndOf="@+id/tvLoginWelcome"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/tvLoginWelcome"
@@ -54,7 +52,7 @@
         android:id="@+id/tvLightLoginErrorUser"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/popUpLightLoginError"
+        android:text="@string/home_check_credentials"
         android:textColor="@color/colorAccent"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="@+id/layoutLightLoginCarPlate"
@@ -76,7 +74,7 @@
         android:id="@+id/tvLightLoginErrorPassword"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/popUpLightLoginError"
+        android:text="@string/home_check_credentials"
         android:textColor="@color/colorAccent"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="@+id/layoutLightLoginTitular"
@@ -105,7 +103,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_weight="0.2"
-        android:text="@string/rememberUser"
+        android:text="@string/home_remember_user"
         android:textSize="@dimen/letter_small_medium"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/layoutLightLoginCarPlate"
@@ -114,7 +112,7 @@
 
     <Button
         android:id="@+id/bLightLoginSign"
-        style="@style/ButtonRedLda"
+        style="@style/ButtonRed"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -122,64 +120,10 @@
         android:layout_weight="1"
         android:ellipsize="end"
         android:maxLines="1"
-        android:text="@string/access"
+        android:text="@string/home_access"
         app:layout_constraintBottom_toBottomOf="@+id/layoutLightLoginTitular"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/layoutLightLoginTitular"
         app:layout_constraintVertical_bias="1.0"/>
-
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/llLighLogin"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginBottom="8dp"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/llLightLoginRememberUser"
-        app:layout_constraintStart_toStartOf="@+id/llLightLoginRememberUser"
-        app:layout_constraintTop_toBottomOf="@+id/llLightLoginRememberUser"
-        app:layout_constraintVertical_bias="1.0">
-
-        <Button
-            android:id="@+id/bLightLoginForgetPassword"
-            style="@style/ButtonWhiteLda"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/space_tiny"
-            android:layout_marginBottom="@dimen/space_small_medium"
-            android:paddingStart="0dp"
-            android:paddingEnd="0dp"
-            android:text="@string/forgetPassword"
-            android:textSize="@dimen/letter_small_medium"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/bLightLoginFirstTime"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="1.0"/>
-
-        <androidx.legacy.widget.Space
-            android:layout_width="@dimen/space_small"
-            android:layout_height="0dp"/>
-
-        <Button
-            android:id="@+id/bLightLoginFirstTime"
-            style="@style/ButtonWhiteLda"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/space_tiny"
-            android:paddingStart="0dp"
-            android:paddingEnd="0dp"
-            android:text="@string/firstTime"
-            android:textSize="@dimen/letter_small_medium"
-            app:layout_constraintBottom_toBottomOf="@+id/bLightLoginForgetPassword"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/bLightLoginForgetPassword"
-            app:layout_constraintTop_toTopOf="@+id/bLightLoginForgetPassword"
-            app:layout_constraintVertical_bias="1.0"/>
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

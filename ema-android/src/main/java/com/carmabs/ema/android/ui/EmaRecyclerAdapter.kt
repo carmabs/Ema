@@ -3,6 +3,7 @@ package com.carmabs.ema.android.ui
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.LayoutRes
 import androidx.recyclerview.widget.RecyclerView
 import java.lang.RuntimeException
 

@@ -44,6 +44,10 @@ dependencies {
     implementation project(path: ':ema-android')
     implementation project(path: ':ema-core')
 
+    implementation project(path: ':domain')
+    implementation project(path: ':common')
+    implementation project(path: ':injection')
+
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     implementation 'androidx.appcompat:appcompat:1.1.0-rc01'

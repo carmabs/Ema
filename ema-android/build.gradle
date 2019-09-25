@@ -31,7 +31,7 @@ android {
 
     packagingOptions {
         pickFirst 'META-INF/kotlinx-io.kotlin_module'
-        pickFirst 'META-INF/easymvvm-android_debug.kotlin_module'
+        pickFirst 'META-INF/ema-android_debug.kotlin_module'
     }
 
 }
