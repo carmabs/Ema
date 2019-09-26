@@ -1,5 +1,6 @@
 package com.carmabs.ema.presentation.ui.user
 
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.carmabs.ema.R
 import com.carmabs.ema.android.navigation.EmaNavigator
@@ -15,7 +16,7 @@ class EmaUserFragment : BaseFragment<EmaUserState, EmaUserViewModel, EmaNavigati
 
     override val inputStateKey: String = EmaUserState::class.java.name
 
-    private var adapter:EmaUserAdapter = EmaUserAdapter()
+    lateinit var adapter: EmaUserAdapter
 
     override fun onInitialized(viewModel: EmaUserViewModel) {
         setupRecycler(viewModel)
@@ -23,7 +24,8 @@ class EmaUserFragment : BaseFragment<EmaUserState, EmaUserViewModel, EmaNavigati
     }
 
     private fun setupRecycler(viewModel: EmaUserViewModel) {
-        rvUser.layoutManager = LinearLayoutManager(requireContext(),LinearLayoutManager.VERTICAL,false)
+        adapter = EmaUserAdapter(viewModel)
+        rvUser.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         rvUser.adapter = adapter
     }
 
@@ -45,6 +47,31 @@ class EmaUserFragment : BaseFragment<EmaUserState, EmaUserViewModel, EmaNavigati
     }
 
     override fun onSingle(data: EmaExtraData) {
+
+        when (data.type) {
+            EmaUserViewModel.SINGLE_EVENT_USER -> {
+                val itemLeft = data.extraData as? EmaUserLeftModel
+                itemLeft?.also {
+                    Toast.makeText(
+                            requireContext(),
+                            String.format(getString(R.string.user_hello_user), itemLeft.name),
+                            Toast.LENGTH_SHORT)
+                            .show()
+                }
+            }
+
+            EmaUserViewModel.SINGLE_EVENT_GROUP -> {
+                val itemRight = data.extraData as? EmaUserRightModel
+                itemRight?.also {
+                    Toast.makeText(
+                            requireContext(),
+                            String.format(getString(R.string.user_hello_group), itemRight.number),
+                            Toast.LENGTH_SHORT)
+                            .show()
+
+                }
+            }
+        }
     }
 
     override fun onError(error: Throwable) {

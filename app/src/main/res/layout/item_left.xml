@@ -4,6 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@color/grayLight"
+    android:layout_margin="@dimen/space_medium"
     android:padding="@dimen/space_big">
 
     <ImageView
@@ -13,16 +15,17 @@
         android:scaleType="centerCrop"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:srcCompat="@tools:sample/backgrounds/scenic" />
+        app:srcCompat="@drawable/ic_user" />
 
     <TextView
         android:id="@+id/tvItemLeft"
         android:layout_width="0dp"
+        android:textStyle="bold"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/space_big"
         app:layout_constraintBottom_toBottomOf="@id/ivItemLeft"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/ivItemLeft"
         app:layout_constraintTop_toTopOf="@id/ivItemLeft"
-        tools:text="Item 1" />
+        tools:text="Admin: Carmabs" />
 </androidx.constraintlayout.widget.ConstraintLayout>

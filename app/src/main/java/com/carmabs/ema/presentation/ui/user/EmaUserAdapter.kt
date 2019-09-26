@@ -17,7 +17,8 @@ import kotlinx.android.synthetic.main.item_right.view.*
  * Date: 2019-09-25
  */
 
-class EmaUserAdapter(override val listItems: MutableList<EmaUserItemModel> = mutableListOf()) : EmaRecyclerAdapter<EmaUserItemModel>() {
+class EmaUserAdapter(val viewModel: EmaUserViewModel,
+                     override val listItems: MutableList<EmaUserItemModel> = mutableListOf()) : EmaRecyclerAdapter<EmaUserItemModel>() {
 
 
     override fun getItemViewType(position: Int): Int {
@@ -36,16 +37,16 @@ class EmaUserAdapter(override val listItems: MutableList<EmaUserItemModel> = mut
 
             EmaUserItemModel.Type.LEFT -> {
                 val leftItem = item as EmaUserLeftModel
-                tvItemLeft.text = leftItem.name
-                ivItemLeft.setBackgroundColor(ContextCompat.getColor(context, R.color.colorAccent))
+                tvItemLeft.text = String.format(context.resources.getString(R.string.user_name),leftItem.name)
             }
 
             EmaUserItemModel.Type.RIGHT -> {
                 val rightItem = item as EmaUserRightModel
-                tvItemRight.text = rightItem.number.toString()
-                ivItemRight.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimary))
+                tvItemRight.text = String.format(context.resources.getString(R.string.user_number_people),rightItem.number)
             }
         }
+
+        setOnClickListener { viewModel.onActionUserClicked(item) }
     }
 
 
@@ -73,13 +74,11 @@ class EmaUserAdapter(override val listItems: MutableList<EmaUserItemModel> = mut
 
            EmaUserItemModel.Type.LEFT -> {
                val leftItem = item as EmaUserLeftModel
-               name =  leftItem.name
-               color = ContextCompat.getColor(context,R.color.colorAccent)
+               name =  String.format(context.resources.getString(R.string.user_name),leftItem.name)
            }
            EmaUserItemModel.Type.RIGHT -> {
                val rightItem = item as EmaUserRightModel
-               name = rightItem.number.toString()
-               color = ContextCompat.getColor(context,R.color.colorPrimary)
+               name = String.format(context.resources.getString(R.string.user_number_people),rightItem.number)
            }
        }
 
