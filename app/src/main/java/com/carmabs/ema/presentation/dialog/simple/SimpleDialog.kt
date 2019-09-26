@@ -2,35 +2,28 @@ package com.carmabs.ema.presentation.dialog.simple
 
 import android.view.View
 import com.carmabs.ema.R
-import com.carmabs.ema.presentation.dialog.base.BaseDialog
+import com.carmabs.ema.android.ui.dialog.EmaBaseDialog
 import kotlinx.android.synthetic.main.dialog_simple.view.*
 
 
 /**
  * Simple dialog
  *
- * <p>
- * Copyright (C) 2018Babel Sistemas de Información. All rights reserved.
- * </p>
  *
- * @author <a href="mailto:carlos.mateo@babel.es">Carlos Mateo Benito</a>
+ * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
-class SimpleDialog : BaseDialog() {
+class SimpleDialog : EmaBaseDialog<SimpleDialogData>() {
 
     override fun getLayout(): Int {
         return R.layout.dialog_simple
     }
 
-    override fun setupUI(view: View) {
-        (data as? SimpleDialogData)?.let {
-            with(it){
-                view.bDialogSimpleYes.setOnClickListener {
-                    dialogListener?.onConfirmClicked()
-                }
-
+    override fun setupData(data: SimpleDialogData, view: View) {
+            with(data){
                 (dialogListener as? SimpleDialogListener)?.let { listener ->
                     view.bDialogSimpleNo.setOnClickListener { listener.onCancelClicked() }
                     view.ivDialogSimpleCross.setOnClickListener { listener.onCancelClicked() }
+                    view.bDialogSimpleYes.setOnClickListener { listener.onConfirmClicked() }
                 }
 
                 view.tvDialogSimpleTitle!!.text = title
@@ -56,6 +49,5 @@ class SimpleDialog : BaseDialog() {
 
                 isCancelable = true
             }
-        }
     }
 }

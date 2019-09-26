@@ -22,6 +22,11 @@ abstract class EmaBaseLayout : FrameLayout, KodeinAware {
 
     override val kodein: Kodein by closestKodein()
 
+    private var mainLayout: View? = null
+    private var attributes: AttributeSet? = null
+    protected var viewsSetup = false
+
+
     constructor(context: Context) : super(context) {
         onCreateView(context)
     }
@@ -34,25 +39,34 @@ abstract class EmaBaseLayout : FrameLayout, KodeinAware {
         onCreateView(context, attrs)
     }
 
-
     private fun onCreateView(context: Context, attrs: AttributeSet? = null) {
-
+        viewsSetup = false
         val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val v = inflater.inflate(getLayout(), this) as ViewGroup
-        setup(v.getChildAt(0))
-        attrs?.let {
-            val attributes = getAttributes()
-            attributes?.let { at ->
-                val ta = context.obtainStyledAttributes(attrs, at, 0, 0)
-                try {
-                    setupAttributes(ta!!)
-                } finally {
-                    ta.recycle()
+        mainLayout = v.getChildAt(0)
+        attributes = attrs
+    }
+
+    /**
+     * Setup called once the windows has been attached
+     */
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        mainLayout?.let {
+            setup(it)
+            attributes?.let {
+                val attributes = getAttributes()
+                attributes?.let { at ->
+                    val ta = context.obtainStyledAttributes(it, at, 0, 0)
+                    try {
+                        setupAttributes(ta!!)
+                    } finally {
+                        ta.recycle()
+                    }
                 }
             }
-
+            viewsSetup = true
         }
-
     }
 
     /**

@@ -1,17 +1,17 @@
 package com.carmabs.ema.presentation.dialog.loading
 
-import com.carmabs.ema.presentation.dialog.DialogData
+import com.carmabs.ema.core.dialog.EmaDialogData
 
 /**
  * TODO: Add a class header comment.
  *
- * <p>
- * Copyright (c) 2019, Babel Sistemas de Información. All rights reserved.
- * </p>
+*
  *
- * @author <a href=“mailto:carlos.mateo@babel.es”>Carlos Mateo</a>
+ * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
 
 data class LoadingDialogData(
         val title: String = "",
-        val message: String = "") : DialogData
+        val message: String = "",
+        override val proportionWidth: Float? = 7/10f,
+        override val proportionHeight: Float? = null) : EmaDialogData
