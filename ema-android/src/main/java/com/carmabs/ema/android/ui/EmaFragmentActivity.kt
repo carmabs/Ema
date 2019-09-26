@@ -37,7 +37,7 @@ abstract class EmaFragmentActivity : EmaBaseActivity() {
      * Setup the navigation path for navigation architecture components
      */
     private fun setupNavigation() {
-        navController.setGraph(getNavGraph())
+        navController.setGraph(getNavGraph(),intent.extras)
     }
 
 
