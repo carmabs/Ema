@@ -16,11 +16,20 @@ class DefaultConcurrencyManager : ConcurrencyManager {
      * Launch an especific task a coroutine Scope an add it to the job list
      * @param block Function to execute in the thread
      * @param dispatcher Executor thread
+     * @param fullException If its is true, an exception launched on some child task affects to the
+     * rest of task, including the parent one, if it is false, only affect to the child class
      */
-    override fun launch(dispatcher: CoroutineDispatcher, block: suspend CoroutineScope.() -> Unit): Job {
-        val job = SupervisorJob()
+    override fun launch(dispatcher: CoroutineDispatcher, fullException: Boolean, block: suspend CoroutineScope.() -> Unit): Job {
+        val job = if (fullException) Job() else SupervisorJob()
         val scope = CoroutineScope(dispatcher + job)
-        job.invokeOnCompletion { jobList.remove(job) }
+        synchronized(jobList) {
+            jobList.add(job)
+            job.invokeOnCompletion {
+                synchronized(jobList) {
+                    jobList.remove(job)
+                }
+            }
+        }
         scope.launch { block.invoke(this) }
         return job
     }
@@ -30,8 +39,15 @@ class DefaultConcurrencyManager : ConcurrencyManager {
      * Cancel al pending tasks in job list
      */
     override fun cancelPendingTasks() {
-        jobList.forEach { it.cancel() }
-        jobList.clear()
+        //Create new list to avoid ConcurrentModificationException due to invokeOnCompletion
+
+        synchronized(jobList) {
+            val jobPending = mutableListOf<Job>()
+            jobPending.addAll(jobList)
+            jobPending.forEach { if (it.isActive) it.cancel() }
+
+            jobList.clear()
+        }
     }
 
     /**
@@ -39,8 +55,10 @@ class DefaultConcurrencyManager : ConcurrencyManager {
      * @param job Job to cancel the task in process
      */
     override fun cancelTask(job: Job) {
-        if (jobList.remove(job)) {
-            job.cancel()
+        synchronized(jobList) {
+            if (jobList.remove(job)) {
+                job.cancel()
+            }
         }
     }
 }

@@ -8,16 +8,7 @@
     <color name="white">#FFFFFF</color>
     <color name="riffle_green">#3d3d3d</color>
 
-    <color name="grayLight">#F6F6F6</color>
-    <color name="gray">#dcdcdc</color>
-    <color name="grayAlpha">#66dcdcdc</color>
     <color name="grayDark">#9b9b9b</color>
-
-    <color name="info">#f0faff</color>
-    <color name="infoAccent">#3CCDFF</color>
-
-    <color name="verification">#F5A623</color>
-
-    <color name="green">#92c061</color>
+    <color name="grayLight">#CDCDCD</color>
 
 </resources>

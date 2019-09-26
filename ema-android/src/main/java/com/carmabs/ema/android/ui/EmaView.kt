@@ -53,16 +53,15 @@ interface EmaView<S: EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigationS
         val emaFactory = EmaFactory(viewModelSeed)
         val vm = fragment?.let {
             ViewModelProviders.of(it, emaFactory)[viewModelSeed::class.java]
-        }?:ViewModelProviders.of(fragmentActivity, emaFactory)[viewModelSeed::class.java]
+        } ?: ViewModelProviders.of(fragmentActivity, emaFactory)[viewModelSeed::class.java]
 
-        onViewModelInitialized(vm)
+        onViewModelInitalized(vm)
         vm.onStart(inputState?.let { EmaState.Normal(it) })
         vm.observableState.observe(fragment ?: fragmentActivity, Observer(this::onDataUpdated))
         vm.singleObservableState.observe(fragment
                 ?: fragmentActivity, Observer(this::onSingleDataSent))
         vm.navigationState.observe(fragment
                 ?: fragmentActivity, Observer(this::onNavigation))
-
 
     }
 
@@ -102,7 +101,7 @@ interface EmaView<S: EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigationS
      * Called once the view model have been provided. Here must go the view set up
      * @param viewModel of the view
      */
-    fun onViewModelInitialized(viewModel: VM)
+    fun onViewModelInitalized(viewModel: VM)
 
     /**
      * Called when view model trigger an update view event
@@ -135,5 +134,4 @@ interface EmaView<S: EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigationS
     fun navigate(state: EmaNavigationState) {
         navigator?.navigate(state as NS)
     }
-
 }

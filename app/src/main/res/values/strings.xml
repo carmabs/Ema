@@ -1,24 +1,37 @@
 <resources>
-    <string name="app_name">Ema</string>
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Android Studio</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
-    <string name="nav_header_desc">Navigation header</string>
-    <string name="action_settings">Settings</string>
-    <string name="title_activity_main">MainActivity</string>
 
-    <string name="firstTime">Acceso por primera vez</string>
-    <string name="forgetPassword">¿Olvidaste tu contraseña?</string>
-    <string name="access">Acceder</string>
-    <string name="hello">Hola</string>
-    <string name="rememberUser">Recordar usuario</string>
-    <string name="identified">Identifícate para acceder a todos los servicios de la aplicación</string>
-    <string name="user">Usuario:</string>
-    <string name="password">Contraseña:</string>
-    <string name="popUpLightLoginError">Por favor, revisa tus datos</string>
+    <!--HOME-->
+    <string name="home_access">Acceder</string>
+    <string name="home_remember_user">Recordar usuario</string>
+    <string name="home_hello">Hola</string>
+    <string name="home_invalid_credentials_title">CREDENCIALES INVÁLIDOS</string>
+    <string name="home_invalid_credentials_message">Tus credenciales son inválidos, por favor, inténtalo de nuevo</string>
+    <string name="home_loading_title">Cargando</string>
+    <string name="home_check_credentials">Por favor, revisa tus datos</string>
+    <string name="home_loading_title_message">Obteniendo datos de usuario</string>
+    <string name="home_user">Usuario:</string>
+    <string name="home_password">Contraseña:</string>
+    <string name="home_identify">Identifícate para acceder a todos los servicios de la aplicación</string>
+
+    <!--DIALOG-->
     <string name="dialog_yes">Si</string>
+    <string name="dialog_accept">Aceptar</string>
     <string name="dialog_no">No</string>
+
+    <!--ERROR-->
+    <string name="error_invalid_credentials">Credenciales inválidas</string>
+    <string name="error_bad_credentials">Ema Error</string>
+    <string name="error_show_toolbar">Mostrar toolbar</string>
+    <string name="menu_error_hide_toolbar">Ocultar toolbar</string>
+
+    <!--OTHER-->
+    <string name="ema_recycler_adapter_sample">Ejemplo EMA Recycler Adapter</string>
+
+    <!--USER-->
+    <string name="user_name">Admin: %s</string>
+    <string name="user_number_people">Grupo : %d personas</string>
+    <string name="user_hello_group">Esto es un grupo %d personas</string>
+    <string name="user_hello_user">Hola %s !!</string>
 
 
 </resources>

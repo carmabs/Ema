@@ -1,9 +1,8 @@
 apply plugin: 'kotlin'
+apply plugin: 'com.github.dcendents.android-maven'
+group = 'com.github.carmabs'
 
 dependencies {
     implementation emaCore.kotlin
     implementation emaCore.coroutines
 }
-
-sourceCompatibility = "7"
-targetCompatibility = "7"

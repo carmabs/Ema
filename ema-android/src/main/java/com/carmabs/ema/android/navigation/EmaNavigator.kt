@@ -25,9 +25,10 @@ interface EmaNavigator<NS : EmaNavigationState> : EmaBaseNavigator<NS> {
      * @param inputStateKey the key to identify the state. If it not provided, it will take the canonical name
      * of the state
      */
-    fun addInputState(emaBaseState: EmaBaseState,inputStateKey: String?=null) : Bundle =
-            Bundle().apply { putSerializable(inputStateKey?:emaBaseState.javaClass.name, emaBaseState)
-    }
+    fun addInputState(emaBaseState: EmaBaseState, inputStateKey: String? = null): Bundle =
+            Bundle().apply {
+                putSerializable(inputStateKey ?: emaBaseState.javaClass.name, emaBaseState)
+            }
 
     /**
      * Navigate with android architecture components within action ID
@@ -35,8 +36,8 @@ interface EmaNavigator<NS : EmaNavigationState> : EmaBaseNavigator<NS> {
      * @param data
      * @param navOptions
      */
-    fun navigateWithAction(@IdRes actionID:Int,data:Bundle?=null,navOptions: NavOptions?=null){
-        navController.navigate(actionID,data,navOptions)
+    fun navigateWithAction(@IdRes actionID: Int, data: Bundle? = null, navOptions: NavOptions? = null) {
+        navController.navigate(actionID, data, navOptions)
     }
 
     /**
@@ -44,14 +45,16 @@ interface EmaNavigator<NS : EmaNavigationState> : EmaBaseNavigator<NS> {
      * @param navDirections
      * @param navOptions
      */
-    fun navigateWithDirections(navDirections: NavDirections,navOptions: NavOptions?=null){
-        navController.navigate(navDirections,navOptions)
+    fun navigateWithDirections(navDirections: NavDirections, navOptions: NavOptions? = null) {
+        navController.navigate(navDirections, navOptions)
     }
+
 
     /**
      * Navigates back
+     * @return true if a fragment has been popped, false if backstack is empty
      */
-    fun navigateBack(){
-        navController.popBackStack()
+    fun navigateBack() : Boolean {
+        return navController.popBackStack()
     }
 }

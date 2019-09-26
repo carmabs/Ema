@@ -48,8 +48,8 @@ abstract class EmaBaseFragment : Fragment(), KodeinAware {
 
     /**
      * The child classes implement this methods to return the module that provides the fragment scope objects
-     * @param kodein The object which provide the injection
+     * @param kodein The kodein object which provide the injection
      * @return The Kodein module which makes the injection
      */
-    abstract fun injectFragmentModule(kodein: Kodein.MainBuilder): Kodein.Module?
+    abstract fun injectFragmentModule(kodein:Kodein.MainBuilder):Kodein.Module?
 }

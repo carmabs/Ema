@@ -14,9 +14,8 @@
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/emaToolbar"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginEnd="8dp"
             android:background="@color/colorAccent"
             android:contentInsetStart="0dp"
             android:contentInsetLeft="0dp"

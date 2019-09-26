@@ -14,27 +14,13 @@ abstract class EmaViewModel<S, NS : EmaNavigationState> : EmaBaseViewModel<EmaSt
     /**
      * State of the view
      */
-    protected var viewState: S? = null
+    private var viewState: S? = null
 
 
-    /**
-     * Set the view state if it is passed as input state
-     */
     override fun onStart(inputState: EmaState<S>?): Boolean {
         if (viewState == null)
             inputState?.let { viewState = it.data }
         return super.onStart(inputState)
-    }
-    /**
-     * Used for trigger an error on the view
-     * Use the EmaState -> Error
-     * @param error generated
-     */
-    protected fun notifyError(error: Throwable) {
-        viewState?.let {
-            super.updateView(EmaState.Error(it, error))
-        } ?: throwInitialStateException()
-
     }
 
     /**
@@ -66,13 +52,40 @@ abstract class EmaViewModel<S, NS : EmaNavigationState> : EmaBaseViewModel<EmaSt
     }
 
     /**
+     * Check the current view state
+     * @param checkStateFunction function to check the current state
+     * @return the value returned by [checkStateFunction]
+     */
+    fun <T> checkViewState(checkStateFunction: (S) -> T): T {
+        return viewState?.let {
+            checkStateFunction.invoke(it)
+        } ?: let {
+            val initialState = createInitialViewState()
+            viewState = initialState
+            checkStateFunction.invoke(initialState)
+        }
+    }
+
+    /**
+     * Used for trigger an error on the view
+     * Use the EmaState -> Error
+     * @param error generated
+     */
+    protected fun notifyError(error: Throwable) {
+        viewState?.let {
+            super.updateView(EmaState.Error(it, error))
+        } ?: throwInitialStateException()
+
+    }
+
+    /**
      * Used for trigger a loading event on the view
      * Use the EmaState -> Loading
      * @param data with loading information
      */
     protected fun loading(data: EmaExtraData? = null) {
         viewState?.let { state ->
-            val loadingData = data?.let {
+            val loadingData: EmaState.Loading<S> = data?.let {
                 EmaState.Loading(state, dataLoading = it)
             } ?: EmaState.Loading(state)
 

@@ -8,20 +8,27 @@
 
     <fragment
         android:id="@+id/homeViewFragment"
-        android:name="com.carmabs.ema.presentation.ui.emaway.home.EmaHomeFragment"
+        android:name="com.carmabs.ema.presentation.ui.home.EmaHomeFragment"
         android:label="HomeViewFragment"
         tools:layout="@layout/fragment_home">
         <action
             android:id="@+id/action_homeViewFragment_to_userFragment"
             app:destination="@id/UserViewFragment" />
+        <action
+            android:id="@+id/action_homeViewFragment_to_emaErrorViewActivity"
+            app:destination="@id/emaErrorViewActivity" />
     </fragment>
 
     <fragment
         android:id="@+id/UserViewFragment"
-        android:name="com.carmabs.ema.presentation.ui.emaway.user.EmaUserFragment"
+        android:name="com.carmabs.ema.presentation.ui.user.EmaUserFragment"
         android:label="RememberUserViewFragment"
         tools:layout="@layout/fragment_user">
     </fragment>
+    <activity
+        android:id="@+id/emaErrorViewActivity"
+        android:name="com.carmabs.ema.presentation.ui.error.EmaErrorViewActivity"
+        android:label="EmaErrorViewActivity" />
 
 
 </navigation>
