@@ -24,5 +24,14 @@
     <string name="error_show_toolbar">Mostrar toolbar</string>
     <string name="menu_error_hide_toolbar">Ocultar toolbar</string>
 
+    <!--OTHER-->
+    <string name="ema_recycler_adapter_sample">Ejemplo EMA Recycler Adapter</string>
+
+    <!--USER-->
+    <string name="user_name">Admin: %s</string>
+    <string name="user_number_people">Grupo : %d personas</string>
+    <string name="user_hello_group">Esto es un grupo %d personas</string>
+    <string name="user_hello_user">Hola %s !!</string>
+
 
 </resources>
