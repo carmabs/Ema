@@ -1,10 +1,13 @@
 package com.carmabs.ema.android.navigation
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import androidx.annotation.IdRes
 import androidx.navigation.NavController
 import androidx.navigation.NavDirections
 import androidx.navigation.NavOptions
+import com.carmabs.ema.android.ui.EmaActivity
 import com.carmabs.ema.core.navigator.EmaBaseNavigator
 import com.carmabs.ema.core.navigator.EmaNavigationState
 import com.carmabs.ema.core.state.EmaBaseState
@@ -40,6 +43,24 @@ interface EmaNavigator<NS : EmaNavigationState> : EmaBaseNavigator<NS> {
         navController.navigate(actionID, data, navOptions)
     }
 
+
+    /**
+     * Navigate to new activity with result handling
+     * @param mainActivity activity will launch the next one
+     * @param destinationActivity new destination activity
+     * @param requestCode code for result
+     * @param finishMain if [mainActivity] must be finished when [destinationActivity] is launched
+     */
+    fun navigateToEmaActivityWithResult(mainEmaActivity: Activity, destinationEmaActivity: Intent, finishMain: Boolean = false) {
+        (mainEmaActivity as? EmaActivity<*,*,*>)?.also {
+            it.startActivityForResult(destinationEmaActivity, EmaActivity.RESULT_DEFAULT_CODE)
+            if (finishMain) {
+                it.finish()
+            }
+        }?:throw ClassCastException("The launcher activity and the destination activity must" +
+                "extend from EmaActivity")
+    }
+
     /**
      * Navigate with android architecture components within navDirections safeargs
      * @param navDirections
@@ -54,7 +75,7 @@ interface EmaNavigator<NS : EmaNavigationState> : EmaBaseNavigator<NS> {
      * Navigates back
      * @return true if a fragment has been popped, false if backstack is empty
      */
-    fun navigateBack() : Boolean {
+    override fun navigateBack(): Boolean {
         return navController.popBackStack()
     }
 }

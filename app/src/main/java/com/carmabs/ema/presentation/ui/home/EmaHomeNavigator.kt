@@ -22,11 +22,23 @@ class EmaHomeNavigator(override val navController: NavController) : EmaNavigator
             }
         }
 
+        object Self : Navigation() {
+            override fun navigateWith(navigator: EmaBaseNavigator<out EmaNavigationState>) {
+                (navigator as? EmaHomeNavigator)?.toSelf()
+            }
+        }
+
+
         object Error: Navigation() {
             override fun navigateWith(navigator: EmaBaseNavigator<out EmaNavigationState>) {
                 (navigator as? EmaHomeNavigator)?.toError()
             }
         }
+    }
+
+    private fun toSelf() {
+        navigateWithAction(
+                R.id.action_homeViewFragment_self)
     }
 
     private fun toUser(user: User) {

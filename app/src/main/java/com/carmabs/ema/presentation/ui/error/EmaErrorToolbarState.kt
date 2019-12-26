@@ -10,6 +10,6 @@ import com.carmabs.ema.core.state.EmaBaseState
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
 
-data class EmaToolbarState(
+data class EmaErrorToolbarState(
         val visibility:Boolean = true
 ) : EmaBaseState

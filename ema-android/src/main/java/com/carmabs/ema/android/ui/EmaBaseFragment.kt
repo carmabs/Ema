@@ -52,4 +52,8 @@ abstract class EmaBaseFragment : Fragment(), KodeinAware {
      * @return The Kodein module which makes the injection
      */
     abstract fun injectFragmentModule(kodein:Kodein.MainBuilder):Kodein.Module?
+
+
+
+
 }

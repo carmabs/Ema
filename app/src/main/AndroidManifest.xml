@@ -20,7 +20,10 @@
             <category android:name="android.intent.category.LAUNCHER"/>
         </intent-filter>
         </activity>
-        <activity android:name="com.carmabs.ema.presentation.ui.error.EmaErrorViewActivity" />
+        <activity
+            android:name="com.carmabs.ema.presentation.ui.error.EmaErrorToolbarViewActivity"
+            android:launchMode="singleInstance"/>
+        <activity android:name=".presentation.ui.backdata.EmaBackToolbarActivity" />
     </application>
 
 </manifest>

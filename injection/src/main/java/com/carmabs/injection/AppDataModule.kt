@@ -1,5 +1,8 @@
 package com.carmabs.injection
 
+import com.carmabs.data.manager.AndroidResourceManager
+import com.carmabs.data.repository.MockRepository
+import com.carmabs.domain.manager.ResourceManager
 import com.carmabs.domain.repository.Repository
 import com.carmabs.domain.usecase.LoginUseCase
 import org.kodein.di.Kodein
@@ -15,7 +18,9 @@ import org.kodein.di.generic.singleton
 
 fun appDataInjection() = Kodein.Module(name = "AppDataModule") {
 
-   bind<Repository>() with singleton { com.carmabs.data.repository.MockRepository() }
+   bind<Repository>() with singleton { MockRepository() }
 
    bind<LoginUseCase>() with provider { LoginUseCase(instance()) }
+
+   bind<ResourceManager>() with singleton { AndroidResourceManager(instance()) }
 }
