@@ -12,7 +12,7 @@ import com.carmabs.ema.android.R
  *
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
-abstract class EmaFragmentActivity : EmaBaseActivity() {
+abstract class EmaFragmentActivity : EmaBaseActivity(), EmaViewUtils {
 
     override fun createActivity(savedInstanceState: Bundle?) {
         setupNavigation()
@@ -33,11 +33,12 @@ abstract class EmaFragmentActivity : EmaBaseActivity() {
         }
 
     }
+
     /**
      * Setup the navigation path for navigation architecture components
      */
     private fun setupNavigation() {
-        navController.setGraph(getNavGraph(),intent.extras)
+        navController.setGraph(getNavGraph(), intent.extras)
     }
 
 

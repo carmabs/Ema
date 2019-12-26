@@ -1,20 +1,18 @@
 package com.carmabs.ema.presentation.ui.error
 
-import android.animation.LayoutTransition
-import android.os.Bundle
-import androidx.core.content.ContextCompat
-import com.carmabs.ema.android.extension.toDp
-import com.carmabs.ema.android.ui.EmaView
-import com.carmabs.ema.core.state.EmaExtraData
-import com.carmabs.ema.presentation.base.BaseActivity
-import com.carmabs.ema.presentation.ui.home.EmaHomeNavigator
-import kotlin.math.roundToInt
 import android.view.Menu
 import android.view.MenuItem
-import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.content.ContextCompat
 import com.carmabs.ema.R
+import com.carmabs.ema.android.extension.toDp
+import com.carmabs.ema.android.ui.EmaActivity
 import com.carmabs.ema.core.concurrency.DefaultConcurrencyManager
+import com.carmabs.ema.core.state.EmaExtraData
+import com.carmabs.ema.presentation.injection.activityInjection
+import org.kodein.di.Kodein
 import org.kodein.di.generic.instance
+import kotlin.math.roundToInt
 
 
 /**
@@ -22,25 +20,24 @@ import org.kodein.di.generic.instance
  * We show how to attach  a view model to any view through EmaView interface
  *
  **/
-class EmaErrorViewActivity : BaseActivity(), EmaView<EmaToolbarState, EmaToolbarViewModel, EmaHomeNavigator.Navigation> {
+class EmaErrorToolbarViewActivity : EmaActivity<EmaErrorToolbarState, EmaErrorToolbarViewModel, EmaErrorNavigator.Navigation>() {
 
     override fun getNavGraph(): Int = R.navigation.navigation_ema_error
 
     override fun getToolbarTitle(): String? = getString(R.string.error_bad_credentials)
 
-    override val viewModelSeed: EmaToolbarViewModel by instance()
+    override val viewModelSeed: EmaErrorToolbarViewModel by instance()
 
-    override val navigator: EmaHomeNavigator by instance()
+    override val navigator: EmaErrorNavigator by instance()
 
-    override val inputState: EmaToolbarState? = null
+    override val inputStateKey: String? = null
 
-    private lateinit var vm: EmaToolbarViewModel
+    private lateinit var vm: EmaErrorToolbarViewModel
 
-    override fun createActivity(savedInstanceState: Bundle?) {
-        (getContentLayout() as ViewGroup).layoutTransition = LayoutTransition()
-        super.createActivity(savedInstanceState)
-        //Very important to call this method to initialize the view model in right context
-        initializeViewModel(this)
+    override fun injectActivityModule(kodein: Kodein.MainBuilder): Kodein.Module? = activityInjection(this)
+
+    override fun onInitialized(viewModel: EmaErrorToolbarViewModel) {
+        vm = viewModel
         configureToolbar()
     }
 
@@ -59,16 +56,12 @@ class EmaErrorViewActivity : BaseActivity(), EmaView<EmaToolbarState, EmaToolbar
         })
     }
 
-    override fun onViewModelInitalized(viewModel: EmaToolbarViewModel) {
-        vm = viewModel
-    }
-
-    override fun onStateNormal(data: EmaToolbarState) {
+    override fun onStateNormal(data: EmaErrorToolbarState) {
         checkToolbarVisibility(data)
     }
 
-    private fun checkToolbarVisibility(data: EmaToolbarState) {
-        if(data.visibility)
+    private fun checkToolbarVisibility(data: EmaErrorToolbarState) {
+        if (data.visibility)
             showToolbar()
         else
             hideToolbar()
@@ -79,6 +72,7 @@ class EmaErrorViewActivity : BaseActivity(), EmaView<EmaToolbarState, EmaToolbar
     }
 
     override fun onSingleEvent(data: EmaExtraData) {
+        Toast.makeText(this, getFormattedString(this, R.string.error_user_created, data.extraData as Int), Toast.LENGTH_SHORT).show()
 
     }
 
@@ -102,7 +96,5 @@ class EmaErrorViewActivity : BaseActivity(), EmaView<EmaToolbarState, EmaToolbar
 
             else -> super.onOptionsItemSelected(item)
         }
-
-
     }
 }

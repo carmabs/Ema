@@ -54,5 +54,5 @@ abstract class EmaBaseActivity : AppCompatActivity(), NavHost, KodeinAware {
      * @param kodein The kodein object which provide the injection
      * @return The Kodein module which makes the injection
      */
-    abstract fun injectActivityModule(kodein:Kodein.MainBuilder):Kodein.Module?
+    abstract fun injectActivityModule(kodein: Kodein.MainBuilder): Kodein.Module?
 }

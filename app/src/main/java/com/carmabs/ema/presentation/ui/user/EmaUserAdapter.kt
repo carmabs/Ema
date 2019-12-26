@@ -17,7 +17,7 @@ import kotlinx.android.synthetic.main.item_right.view.*
  * Date: 2019-09-25
  */
 
-class EmaUserAdapter(val viewModel: EmaUserViewModel,
+class EmaUserAdapter(private val viewModel: EmaUserViewModel,
                      override val listItems: MutableList<EmaUserItemModel> = mutableListOf()) : EmaRecyclerAdapter<EmaUserItemModel>() {
 
 
@@ -25,9 +25,9 @@ class EmaUserAdapter(val viewModel: EmaUserViewModel,
         return listItems[position].type.id
     }
 
-    ///////////////////////////////////////////////////////////
-    // SAMPLE CODE IF YOU WANT TO USE A MULTIVIEW IN ADAPTER //
-    ///////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////
+    // SAMPLE CODE IF YOU WANT TO USE A MULTIVIEW IN ADAPTER OR CUSTOM VIEW//
+    /////////////////////////////////////////////////////////////////////////
 
     override val layoutItemId: Int? = null
 
