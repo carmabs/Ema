@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.carmabs.ema.android.extra.EmaActivityResult
@@ -26,7 +27,6 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
 
     companion object {
         const val RESULT_DEFAULT_CODE: Int = 57535
-        const val SAVE_INSTANCE_RECEIVER_ID = "SAVE_INSTANCE_RECEIVER_ID"
     }
 
     /**
@@ -47,13 +47,14 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
      */
     override val inputState: S? by lazy { getInState() }
 
-
-    private val receiverId: HashMap<Int, Unit> by lazy {
-        hashMapOf<Int, Unit>()
-    }
-
+    /**
+     * Activity result model. It if checked to notify result to viewmodels.
+     */
     private var activityResult: EmaActivityResult? = null
 
+    /**
+     * Activity result function to execute the viewmodel function when activity result is received.
+     */
     private val resultActivityFunctions: HashMap<Int, ((Int, Int, Intent?) -> Unit)> by lazy {
         hashMapOf<Int, ((Int, Int, Intent?) -> Unit)>()
     }
@@ -64,6 +65,15 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
     override fun onResume() {
         super.onResume()
         initializeViewModel(this)
+    }
+
+
+    private fun notifyResults() {
+
+        //Check the activity result to launch the result function. It is implemented here
+        //because onResume is executed after onActivityResult and here the view model is already
+        //initialized, otherwise the function wouldn't be executed on viewmodel
+
         activityResult?.apply {
             resultActivityFunctions.forEach {
                 if (it.key == requestCode)
@@ -155,31 +165,32 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
         extraViewModelMap.clear()
     }
 
+    /**
+     * Called everytime a result is setted on viewmodel
+     */
     override fun onResult(emaResultModel: EmaResultModel) {
         setResult(parseResult(emaResultModel.resultState), intent.apply {
-            putExtra(emaResultModel.id.toString(), emaResultModel.data)
+            putExtra(emaResultModel.id.toString(), emaResultModel)
         })
     }
 
-    override fun onReceiverAdded(allReceivers: HashMap<Int, EmaReceiverModel>) {
-        allReceivers.keys.forEach {
-            receiverId[it] = Unit
-        }
+    /**
+     * Called everytime a receiver is invoked on viewmodel
+     */
+    override fun onResultReceived(emaReceiverModel: EmaReceiverModel) {
+        intent.removeExtra(emaReceiverModel.resultId.toString())
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        savedInstanceState?.getSerializable("P")?.also { intArray ->
-            (intArray as? IntArray)?.forEach {
-                receiverId[it] = Unit
+
+    override fun onCreateActivity(savedInstanceState: Bundle?) {
+        super.onCreateActivity(savedInstanceState)
+
+        supportFragmentManager.registerFragmentLifecycleCallbacks(object : FragmentManager.FragmentLifecycleCallbacks() {
+            override fun onFragmentResumed(fm: FragmentManager, f: Fragment) {
+                super.onFragmentResumed(fm, f)
+                notifyResults()
             }
-        }
-        super.onCreate(savedInstanceState)
-
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putSerializable("P", receiverId.keys.toIntArray())
+        }, false)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -187,13 +198,17 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
         activityResult = EmaActivityResult(requestCode, resultCode, data)
         when (requestCode) {
             RESULT_DEFAULT_CODE -> {
-                resultActivityFunctions[requestCode] = { _, _, dataIntent ->
-                    receiverId.keys.forEach { codeReceiver ->
-                        dataIntent?.getSerializableExtra(codeReceiver.toString())?.also {
-                            vm?.resultViewModel?.notifyResult(
-                                    ownerCode = getOwnerId(),
-                                    emaResultModel = EmaResultModel(codeReceiver, it)
-                            )
+
+                resultActivityFunctions[requestCode] = { _, _, _ ->
+                    data?.extras?.apply {
+                        keySet()?.forEach { idResult ->
+                            getSerializable(idResult)?.also {
+                                val resultModel = it as EmaResultModel
+                                vm?.apply {
+                                    resultViewModel.setResult(resultModel)
+                                    resultViewModel.notifyResults(resultModel.ownerId)
+                                }
+                            }
                         }
                     }
 
@@ -204,17 +219,14 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
 
     private fun parseResult(emaResultModel: EmaResultModel.Result): Int {
         return when (emaResultModel) {
-            EmaResultModel.Result.Success -> Activity.RESULT_OK
-            EmaResultModel.Result.Fail -> Activity.RESULT_CANCELED
+            is EmaResultModel.Result.Success -> Activity.RESULT_OK
+            is EmaResultModel.Result.Fail -> Activity.RESULT_CANCELED
             is EmaResultModel.Result.Other -> Activity.RESULT_OK
         }
     }
 
-    private fun getOwnerId(): Int {
-        return this.javaClass.name.hashCode()
-    }
 
-    protected fun addOnResultActivityHandler(requestCode:Int,function:(Int,Int,Intent?)->Unit) {
-        resultActivityFunctions[requestCode]=function
+    protected fun addOnResultActivityHandler(requestCode: Int, function: (Int, Int, Intent?) -> Unit) {
+        resultActivityFunctions[requestCode] = function
     }
 }

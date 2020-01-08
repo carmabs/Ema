@@ -1,18 +1,21 @@
 package com.carmabs.ema.presentation.ui.home
 
+import android.app.Activity
+import android.content.Intent
 import androidx.navigation.NavController
 import com.carmabs.ema.R
 import com.carmabs.ema.android.navigation.EmaNavigator
 import com.carmabs.ema.core.navigator.EmaBaseNavigator
 import com.carmabs.ema.core.navigator.EmaNavigationState
 import com.carmabs.domain.model.User
+import com.carmabs.ema.presentation.ui.error.EmaErrorToolbarViewActivity
 import com.carmabs.ema.presentation.ui.user.EmaUserState
 
 /**
  * Project: Ema
  * Created by: cmateob on 20/1/19.
  */
-class EmaHomeNavigator(override val navController: NavController) : EmaNavigator<EmaHomeNavigator.Navigation> {
+class EmaHomeNavigator(override val navController: NavController, val activity: Activity) : EmaNavigator<EmaHomeNavigator.Navigation> {
 
     sealed class Navigation : EmaNavigationState {
 
@@ -49,7 +52,8 @@ class EmaHomeNavigator(override val navController: NavController) : EmaNavigator
     }
 
     private fun toError() {
-        navigateWithAction(
-                R.id.action_homeViewFragment_to_emaErrorViewActivity)
+        navigateToEmaActivityWithResult(activity, Intent(activity,EmaErrorToolbarViewActivity::class.java))
+      /*  navigateWithAction(
+                R.id.action_homeViewFragment_to_emaErrorViewActivity)*/
     }
 }

@@ -141,19 +141,20 @@ abstract class EmaViewModel<S, NS : EmaNavigationState> : EmaBaseViewModel<EmaSt
     /**
      * Set a result for previous view when the current one is destroyed
      */
-    protected fun setResult(code: Int, data: Serializable) {
+    protected fun setResult(code: Int = EmaResultViewModel.RESULT_ID_DEFAULT, data: Serializable) {
         resultViewModel.setResult(
                 EmaResultModel(
                         id = code,
+                        ownerId = getId(),
                         data = data))
     }
 
     /**
      * Set the listener for back data when the result view is destroyed
      */
-    protected fun addOnResultReceived(code: Int, receiver: (EmaResultModel) -> Unit) {
+    protected fun addOnResultReceived(code: Int = EmaResultViewModel.RESULT_ID_DEFAULT, receiver: (EmaResultModel) -> Unit) {
         val emaReceiver = EmaReceiverModel(
-                ownerCode = getResultId(),
+                ownerCode = getId(),
                 resultId = code,
                 function = receiver
         )
@@ -165,7 +166,7 @@ abstract class EmaViewModel<S, NS : EmaNavigationState> : EmaBaseViewModel<EmaSt
 
     override fun onCleared() {
         super.onCleared()
-        resultViewModel.notifyResults(getResultId())
+        resultViewModel.notifyResults(getId())
         receiverAddedEvent.value?.also { map ->
             map.keys.forEach {
                 resultViewModel.removeResultReceiver(it)
@@ -174,7 +175,7 @@ abstract class EmaViewModel<S, NS : EmaNavigationState> : EmaBaseViewModel<EmaSt
 
     }
 
-    private fun getResultId():Int{
+    fun getId():Int{
         return this.javaClass.name.hashCode()
     }
 }

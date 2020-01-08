@@ -35,8 +35,8 @@ abstract class EmaToolbarFragmentActivity : EmaFragmentActivity() {
      * Setup the toolbar
      * @param savedInstanceState for activity recreation
      */
-    override fun createActivity(savedInstanceState: Bundle?) {
-        super.createActivity(savedInstanceState)
+    override fun onCreateActivity(savedInstanceState: Bundle?) {
+        super.onCreateActivity(savedInstanceState)
         setupToolbar()
     }
 

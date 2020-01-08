@@ -1,6 +1,5 @@
 package com.carmabs.ema.android.ui
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -53,9 +52,7 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
     private val extraViewModelList: MutableList<EmaViewModel<*, *>> by lazy { mutableListOf<EmaViewModel<*, *>>() }
 
     /**
-     * The view model is instantiated on fragment creation
-     * @param view which inflated the fragment
-     * @param savedInstanceState saved data for recreation
+     * The view model is instantiated on fragment resume.
      */
     override fun onResume() {
         super.onResume()
@@ -156,24 +153,9 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
     }
 
     /**
-     * Override to do logic if it is required when receiver is setted
-     */
-    override fun onReceiverAdded(allReceivers: HashMap<Int, EmaReceiverModel>) {
+    * Override to do logic if it is required when result receiver is invoked
+    */
+    override fun onResultReceived(emaReceiverModel: EmaReceiverModel) {
 
-    }
-
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        data?.also {
-            vm?.resultViewModel?.notifyResult(
-                    ownerCode = getOwnerId(),
-                    emaResultModel = EmaResultModel(requestCode, it.getSerializableExtra(requestCode.toString()))
-            )
-        }
-    }
-
-    private fun getOwnerId():Int{
-        return this.javaClass.name.hashCode()
     }
 }

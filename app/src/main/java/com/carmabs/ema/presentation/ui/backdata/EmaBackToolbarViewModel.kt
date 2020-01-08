@@ -22,10 +22,4 @@ class EmaBackToolbarViewModel : EmaViewModel<EmaBackToolbarState, EmaBackNavigat
     override fun onStartFirstTime(statePreloaded: Boolean) {
 
     }
-
-    override fun onResultListenerSetup() {
-        addOnResultReceived(EmaBackUserCreationViewModel.RESULT_USER) {
-            val p = it
-        }
-    }
 }
