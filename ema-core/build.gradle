@@ -3,6 +3,6 @@ apply plugin: 'com.github.dcendents.android-maven'
 group = 'com.github.carmabs'
 
 dependencies {
-    implementation emaCore.kotlin
-    implementation emaCore.coroutines
+    api emaCore.kotlin
+    api emaCore.coroutines
 }

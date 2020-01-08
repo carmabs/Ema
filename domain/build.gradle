@@ -1,10 +1,7 @@
 apply plugin: 'kotlin'
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-
-    implementation domainDependencies.kotlin
-    implementation domainDependencies.coroutines
+    api project(path: ':ema-core')
 }
 
 sourceCompatibility = "7"
