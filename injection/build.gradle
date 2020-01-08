@@ -31,8 +31,8 @@ dependencies {
     implementation project(path: ':common')
     implementation project(path: ':domain')
 
-    implementation appDependencies.kodein
-    implementation appDependencies.kodeinAndroid
+    implementation injectionDependencies.kodein
+    implementation injectionDependencies.kodeinAndroid
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
