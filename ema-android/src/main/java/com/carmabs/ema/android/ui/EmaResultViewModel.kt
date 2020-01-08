@@ -17,13 +17,22 @@ import com.carmabs.ema.android.extra.EmaResultModel
  */
 class EmaResultViewModel : ViewModel() {
 
+    companion object{
+        const val RESULT_ID_DEFAULT = -1
+    }
+
     private val resultMap: HashMap<Int, EmaResultModel> = HashMap()
     private val receiverMap: HashMap<Int, EmaReceiverModel> = HashMap()
 
     /**
-     * Observable to notify result data between different screens
+     * Observable to notify result event when it is set up
      */
     val resultEvent: MutableLiveData<EmaResultModel> = MutableLiveData()
+
+    /**
+     * Observable to notify result receiver invocation event when it is launched
+     */
+    val resultReceiverEvent: MutableLiveData<EmaReceiverModel> = MutableLiveData()
 
     /**
      * Used for notify result data between views
@@ -40,9 +49,13 @@ class EmaResultViewModel : ViewModel() {
         resultMap.forEach {
             val data = it.value
             val key = it.key
-            receiverMap[key]?.let { receiver ->
-                if (ownerCode != receiver.ownerCode) {
-                    receiver.function.invoke(data)
+            val ownerId = data.ownerId
+            if(ownerCode == ownerId ) {
+                receiverMap[key]?.let { receiver ->
+                    if (ownerCode != receiver.ownerCode) {
+                        receiver.function.invoke(data)
+                    }
+                    resultReceiverEvent.value = receiver
                     keysToRemove.add(key)
                 }
             }
@@ -56,22 +69,12 @@ class EmaResultViewModel : ViewModel() {
         keysToRemove.clear()
     }
 
-    internal fun removeResultReceiver(code:Int){
+    internal fun removeResultReceiver(code:Int = RESULT_ID_DEFAULT){
         receiverMap.remove(code)
     }
 
     fun addResultReceiver(receiver: EmaReceiverModel) {
         receiverMap[receiver.resultId] = receiver
-    }
-
-    internal fun notifyResult(ownerCode: Int, emaResultModel: EmaResultModel) {
-        receiverMap[emaResultModel.id]?.also { receiver ->
-            if (ownerCode != receiver.ownerCode) {
-                receiver.function.invoke(emaResultModel)
-                resultMap.remove(emaResultModel.id)
-                receiverMap.remove(emaResultModel.id)
-            }
-        }
     }
 
     override fun onCleared() {
@@ -82,5 +85,6 @@ class EmaResultViewModel : ViewModel() {
 
     fun unBindObservables(owner: LifecycleOwner) {
         resultEvent.removeObservers(owner)
+        resultReceiverEvent.removeObservers(owner)
     }
 }

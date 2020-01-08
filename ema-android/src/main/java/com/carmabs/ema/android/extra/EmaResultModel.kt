@@ -11,14 +11,15 @@ import java.io.Serializable
  */
 data class EmaResultModel(
         internal val id: Int,
-        val data:Serializable,
-        val resultState : Result = Result.Success) {
+        internal val ownerId: Int,
+        val data: Serializable,
+        val resultState: Result = Result.Success()) : Serializable {
 
-    sealed class Result(val code: Int) {
+    sealed class Result(val code: Int) : Serializable {
 
-        object Success : Result(-1)
+        class Success : Result(-1)
 
-        object Fail : Result(0)
+        class Fail : Result(0)
 
         class Other(code: Int) : Result(code)
     }

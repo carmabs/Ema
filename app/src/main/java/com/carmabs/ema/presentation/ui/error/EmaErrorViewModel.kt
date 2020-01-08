@@ -14,12 +14,6 @@ class EmaErrorViewModel : EmaViewModel<EmaErrorState, EmaErrorNavigator.Navigati
 
     }
 
-    override fun onResultListenerSetup() {
-       /* addOnResultReceived(EmaBackUserViewModel.RESULT_USER_NUMBER){
-            sendSingleEvent(EmaExtraData(extraData = it.data as Int))
-        }*/
-    }
-
     override fun createInitialViewState(): EmaErrorState = EmaErrorState()
 
     fun onActionToolbar() {

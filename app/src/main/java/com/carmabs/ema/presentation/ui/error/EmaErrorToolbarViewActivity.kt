@@ -49,11 +49,6 @@ class EmaErrorToolbarViewActivity : EmaActivity<EmaErrorToolbarState, EmaErrorTo
             setTitleTextColor(whiteColor)
             titleMarginStart = resources.getDimension(R.dimen.space_medium).roundToInt().toDp(context)
         }
-
-        val concurrencyManager = DefaultConcurrencyManager()
-        concurrencyManager.cancelTask(concurrencyManager.launch(fullException = false) {
-
-        })
     }
 
     override fun onStateNormal(data: EmaErrorToolbarState) {

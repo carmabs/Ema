@@ -10,6 +10,7 @@ import com.carmabs.ema.presentation.dialog.simple.SimpleDialogProvider
 import com.carmabs.ema.presentation.ui.backdata.userlist.EmaBackUserViewModel
 import com.carmabs.ema.presentation.ui.backdata.creation.EmaBackUserCreationViewModel
 import com.carmabs.ema.presentation.ui.error.EmaErrorViewModel
+import com.carmabs.ema.presentation.ui.home.EmaHomeToolbarViewModel
 import com.carmabs.ema.presentation.ui.home.EmaHomeViewModel
 import org.kodein.di.Kodein
 import org.kodein.di.generic.bind

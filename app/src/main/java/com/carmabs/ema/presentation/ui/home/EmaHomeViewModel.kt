@@ -6,6 +6,7 @@ import com.carmabs.domain.usecase.LoginUseCase
 import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.presentation.base.BaseViewModel
 import com.carmabs.ema.presentation.ui.backdata.EmaBackToolbarViewModel
+import com.carmabs.ema.presentation.ui.backdata.creation.EmaBackUserCreationViewModel
 import com.carmabs.ema.presentation.ui.backdata.userlist.EmaBackUserViewModel
 import com.carmabs.ema.presentation.ui.error.EmaErrorToolbarViewModel
 import com.carmabs.ema.presentation.ui.error.EmaErrorViewModel
@@ -31,7 +32,7 @@ class EmaHomeViewModel(private val loginUseCase: LoginUseCase) : BaseViewModel<E
             executeUseCaseWithException(
                     {
                         loading()
-                        val user = loginUseCase.doLogin(LoginRequest(it.userName, it.userPassword))
+                        val user = loginUseCase.execute(LoginRequest(it.userName, it.userPassword))
                         updateViewState()
                         sendSingleEvent(EmaExtraData(EVENT_MESSAGE,"Congratulations"))
                         setResult(0,1)
@@ -98,7 +99,4 @@ class EmaHomeViewModel(private val loginUseCase: LoginUseCase) : BaseViewModel<E
     fun onActionDialogErrorAccept() {
         updateViewState()
     }
-
-
-
 }

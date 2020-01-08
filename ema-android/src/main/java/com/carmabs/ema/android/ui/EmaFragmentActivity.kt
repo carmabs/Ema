@@ -14,7 +14,7 @@ import com.carmabs.ema.android.R
  */
 abstract class EmaFragmentActivity : EmaBaseActivity(), EmaViewUtils {
 
-    override fun createActivity(savedInstanceState: Bundle?) {
+    override fun onCreateActivity(savedInstanceState: Bundle?) {
         setupNavigation()
     }
 
