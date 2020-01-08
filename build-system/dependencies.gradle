@@ -39,16 +39,6 @@ rootProject.ext {
     ]
 
     appDependencies = [
-            navigationFragment: "androidx.navigation:navigation-fragment-ktx:" + project.navigationVersion,
-            navigationUI      : "androidx.navigation:navigation-ui-ktx:" + project.navigationVersion,
-            constraint        : "androidx.constraintlayout:constraintlayout:" + project.constraintVersion,
-            kotlin            : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:" + project.kotlinVersion,
-            design            : "com.android.support:design:" + project.designVersion,
-            material          : "com.google.android.material:material:" + project.materialVersion,
-            lifecycle         : "androidx.lifecycle:lifecycle-extensions:" + project.lifecycleVersion,
-            kodein            : "org.kodein.di:kodein-di-generic-jvm:" + project.kodeinVersion,
-            kodeinAndroid     : "org.kodein.di:kodein-di-framework-android-x:" + project.kodeinVersion,
-            coroutines        : 'org.jetbrains.kotlinx:kotlinx-coroutines-android:' + project.coroutinesVersion
     ]
 
     dataDependencies = [
@@ -57,15 +47,12 @@ rootProject.ext {
     ]
 
     domainDependencies = [
-            kotlin    : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:" + project.kotlinVersion,
-            coroutines: 'org.jetbrains.kotlinx:kotlinx-coroutines-android:' + project.coroutinesVersion
     ]
 
     commonDependencies = [
     ]
 
     injectionDependencies = [
-            kotlin       : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:" + project.kotlinVersion,
             kodein       : "org.kodein.di:kodein-di-generic-jvm:" + project.kodeinVersion,
             kodeinAndroid: "org.kodein.di:kodein-di-framework-android-x:" + project.kodeinVersion,
     ]
@@ -76,10 +63,7 @@ rootProject.ext {
     ]
 
     emaTesting = [
-            lifecycle  : "androidx.lifecycle:lifecycle-extensions:" + project.lifecycleVersion,
             espresso   : "androidx.test.espresso:espresso-core:" + project.espressoVersion,
-            kotlin     : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:" + project.kotlinVersion,
-            coroutines : 'org.jetbrains.kotlinx:kotlinx-coroutines-android:' + project.coroutinesVersion,
             core       : "androidx.test:core:" + project.coreVersion,
             coreKotlin : "androidx.test:core-ktx:" + project.coreVersion,
             junit      : "androidx.test.ext:junit:" + project.extJUnitVersion,
