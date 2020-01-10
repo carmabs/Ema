@@ -34,7 +34,7 @@
     <dimen name="separator">1dp</dimen>
     <dimen name="radio_corner_big">17dp</dimen>
     <dimen name="circle">100dp</dimen>
-    <dimen name="radiusButton">12dp</dimen>
+    <dimen name="radiusButton">6dp</dimen>
     <dimen name="button_min_height_lda">30dp</dimen>
     <dimen name="stroke_width_edittext">3dp</dimen>
 

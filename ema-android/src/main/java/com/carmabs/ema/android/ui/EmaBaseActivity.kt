@@ -35,7 +35,7 @@ abstract class EmaBaseActivity : AppCompatActivity(), NavHost, KodeinAware {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(getLayout())
-        createActivity(savedInstanceState)
+        onCreateActivity(savedInstanceState)
     }
 
     /**
@@ -47,12 +47,12 @@ abstract class EmaBaseActivity : AppCompatActivity(), NavHost, KodeinAware {
      * Method called once the content view of activity has been set
      * @param savedInstanceState Instance state for activity recreation
      */
-    abstract fun createActivity(savedInstanceState: Bundle?)
+    abstract fun onCreateActivity(savedInstanceState: Bundle?)
 
     /**
      * The child classes implement this methods to return the module that provides the activity scope objects
      * @param kodein The kodein object which provide the injection
      * @return The Kodein module which makes the injection
      */
-    abstract fun injectActivityModule(kodein:Kodein.MainBuilder):Kodein.Module?
+    abstract fun injectActivityModule(kodein: Kodein.MainBuilder): Kodein.Module?
 }

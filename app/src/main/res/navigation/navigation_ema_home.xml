@@ -17,6 +17,9 @@
         <action
             android:id="@+id/action_homeViewFragment_to_emaErrorViewActivity"
             app:destination="@id/emaErrorViewActivity" />
+        <action
+            android:id="@+id/action_homeViewFragment_self"
+            app:destination="@id/homeViewFragment" />
     </fragment>
 
     <fragment
@@ -27,7 +30,7 @@
     </fragment>
     <activity
         android:id="@+id/emaErrorViewActivity"
-        android:name="com.carmabs.ema.presentation.ui.error.EmaErrorViewActivity"
+        android:name="com.carmabs.ema.presentation.ui.error.EmaErrorToolbarViewActivity"
         android:label="EmaErrorViewActivity" />
 
 
