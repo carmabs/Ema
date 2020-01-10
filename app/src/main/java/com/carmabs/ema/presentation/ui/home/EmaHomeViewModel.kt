@@ -7,8 +7,13 @@ import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.presentation.base.BaseViewModel
 
 /**
- * Project: Ema
- * Created by: cmateob on 20/1/19.
+ *  *<p>
+ * Copyright (c) 2020, Carmabs. All rights reserved.
+ * </p>
+ *
+ * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
+ *
+ * Created by: Carlos Mateo Benito on 20/1/19.
  */
 class EmaHomeViewModel(private val loginUseCase: LoginUseCase) : BaseViewModel<EmaHomeState, EmaHomeNavigator.Navigation>() {
 
