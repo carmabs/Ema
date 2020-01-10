@@ -31,6 +31,8 @@ class EmaHomeActivity : BaseActivity<EmaHomeToolbarState,EmaHomeToolbarViewModel
         return "HOLA"
     }
 
+    override val overrideTheme: Boolean = false
+
     override val viewModelSeed: EmaHomeToolbarViewModel by instance()
 
     override val navigator: EmaHomeNavigator by instance()
