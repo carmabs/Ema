@@ -13,9 +13,14 @@ import com.carmabs.ema.core.navigator.EmaNavigationState
 import com.carmabs.ema.core.state.EmaBaseState
 
 /**
- * Project: Ema
+ *  *<p>
+ * Copyright (c) 2020, Carmabs. All rights reserved.
+ * </p>
+ *
+ * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
+ *
  * Navigator to handle navigation through navController
- * Created by: cmateob on 20/1/19.
+ * Created by: Carlos Mateo Benito on 20/1/19.
  */
 interface EmaNavigator<NS : EmaNavigationState> : EmaBaseNavigator<NS> {
 
