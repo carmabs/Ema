@@ -12,8 +12,13 @@ import com.carmabs.ema.presentation.ui.error.EmaErrorToolbarViewActivity
 import com.carmabs.ema.presentation.ui.user.EmaUserState
 
 /**
- * Project: Ema
- * Created by: cmateob on 20/1/19.
+ *  *<p>
+ * Copyright (c) 2020, Carmabs. All rights reserved.
+ * </p>
+ *
+ * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
+ *
+ * Created by: Carlos Mateo Benito on 20/1/19.
  */
 class EmaHomeNavigator(override val navController: NavController, val activity: Activity) : EmaNavigator<EmaHomeNavigator.Navigation> {
 

@@ -8,8 +8,13 @@ import kotlinx.coroutines.delay
 
 
 /**
- * Project: Ema
- * Created by: cmateob on 19/1/19.
+ *  *<p>
+ * Copyright (c) 2020, Carmabs. All rights reserved.
+ * </p>
+ *
+ * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
+ *
+ * Created by: Carlos Mateo Benito on 19/1/19.
  */
 class MockRepository : Repository {
 
