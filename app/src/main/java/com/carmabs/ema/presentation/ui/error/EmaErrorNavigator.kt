@@ -9,8 +9,13 @@ import com.carmabs.ema.core.navigator.EmaNavigationState
 import com.carmabs.ema.presentation.ui.backdata.EmaBackToolbarActivity
 
 /**
- * Project: Ema
- * Created by: cmateob on 20/1/19.
+ *  *<p>
+ * Copyright (c) 2020, Carmabs. All rights reserved.
+ * </p>
+ *
+ * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
+ *
+ * Created by: Carlos Mateo Benito on 20/1/19.
  */
 class EmaErrorNavigator(
         override val navController: NavController,

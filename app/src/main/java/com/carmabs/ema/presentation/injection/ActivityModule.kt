@@ -15,8 +15,13 @@ import org.kodein.di.generic.instance
 import org.kodein.di.generic.singleton
 
 /**
- * Project: Ema
- * Created by: cmateob on 20/1/19.
+ *  *<p>
+ * Copyright (c) 2020, Carmabs. All rights reserved.
+ * </p>
+ *
+ * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
+ *
+ * Created by: Carlos Mateo Benito on 20/1/19.
  */
 
 fun activityInjection(activity: Activity) = Kodein.Module(name = "ActivityModule") {
