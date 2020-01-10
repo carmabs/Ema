@@ -101,7 +101,7 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
      * Methods called when view model has been created
      * @param viewModel
      */
-    override fun onViewModelInitalized(viewModel: VM) {
+    final override fun onViewModelInitalized(viewModel: VM) {
         vm = viewModel
         onInitialized(viewModel)
     }
@@ -148,14 +148,14 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
     /**
      * Override to do logic if it is required when result is setted
      */
-    override fun onResult(emaResultHandlerModel: EmaResultModel) {
+    override fun onResultSetEvent(emaResultModel: EmaResultModel) {
 
     }
 
     /**
     * Override to do logic if it is required when result receiver is invoked
     */
-    override fun onResultReceived(emaReceiverModel: EmaReceiverModel) {
+    override fun onResultReceiverInvokeEvent(emaReceiverModel: EmaReceiverModel) {
 
     }
 }

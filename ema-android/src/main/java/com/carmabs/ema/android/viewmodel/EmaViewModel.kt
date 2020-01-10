@@ -1,6 +1,5 @@
 package com.carmabs.ema.android.viewmodel
 
-import androidx.lifecycle.MutableLiveData
 import com.carmabs.ema.android.extra.EmaReceiverModel
 import com.carmabs.ema.android.extra.EmaResultModel
 import com.carmabs.ema.android.ui.EmaResultViewModel
@@ -20,12 +19,6 @@ abstract class EmaViewModel<S, NS : EmaNavigationState> : EmaBaseViewModel<EmaSt
      * State of the view
      */
     private var viewState: S? = null
-
-    val receiverAddedEvent: MutableLiveData<HashMap<Int,EmaReceiverModel>> by lazy {
-        MutableLiveData<HashMap<Int,EmaReceiverModel>>().apply {
-            value = hashMapOf()
-        }
-    }
 
     internal lateinit var resultViewModel: EmaResultViewModel
 
@@ -118,7 +111,7 @@ abstract class EmaViewModel<S, NS : EmaNavigationState> : EmaBaseViewModel<EmaSt
      * Generate the initial state with EmaState to trigger normal/loading/error states
      * for the view.
      */
-    override fun createInitialState(): EmaState<S> {
+    final override fun createInitialState(): EmaState<S> {
         if (viewState == null) {
             viewState = createInitialViewState()
         }
@@ -141,8 +134,8 @@ abstract class EmaViewModel<S, NS : EmaNavigationState> : EmaBaseViewModel<EmaSt
     /**
      * Set a result for previous view when the current one is destroyed
      */
-    protected fun setResult(code: Int = EmaResultViewModel.RESULT_ID_DEFAULT, data: Serializable) {
-        resultViewModel.setResult(
+    protected fun addResult(data: Serializable,code: Int = EmaResultViewModel.RESULT_ID_DEFAULT) {
+        resultViewModel.addResult(
                 EmaResultModel(
                         id = code,
                         ownerId = getId(),
@@ -158,21 +151,12 @@ abstract class EmaViewModel<S, NS : EmaNavigationState> : EmaBaseViewModel<EmaSt
                 resultId = code,
                 function = receiver
         )
-        receiverAddedEvent.value = receiverAddedEvent.value?.also {
-            it[code] = emaReceiver
-        }?: hashMapOf()
         resultViewModel.addResultReceiver(emaReceiver)
     }
 
     override fun onCleared() {
         super.onCleared()
         resultViewModel.notifyResults(getId())
-        receiverAddedEvent.value?.also { map ->
-            map.keys.forEach {
-                resultViewModel.removeResultReceiver(it)
-            }
-        }
-
     }
 
     fun getId():Int{

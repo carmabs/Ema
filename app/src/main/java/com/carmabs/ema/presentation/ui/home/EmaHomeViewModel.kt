@@ -5,11 +5,6 @@ import com.carmabs.domain.model.LoginRequest
 import com.carmabs.domain.usecase.LoginUseCase
 import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.presentation.base.BaseViewModel
-import com.carmabs.ema.presentation.ui.backdata.EmaBackToolbarViewModel
-import com.carmabs.ema.presentation.ui.backdata.creation.EmaBackUserCreationViewModel
-import com.carmabs.ema.presentation.ui.backdata.userlist.EmaBackUserViewModel
-import com.carmabs.ema.presentation.ui.error.EmaErrorToolbarViewModel
-import com.carmabs.ema.presentation.ui.error.EmaErrorViewModel
 
 /**
  * Project: Ema
@@ -25,6 +20,24 @@ class EmaHomeViewModel(private val loginUseCase: LoginUseCase) : BaseViewModel<E
 
     }
 
+    override fun onResultListenerSetup() {
+        //When two or more resultReceived WITH THE SAME CODE are active, for example in this case,
+        //this receiver and the EmaHomeToolbarViewModel receiver, only the last one is executed.
+        //ActivityCreated -> EmaHomeToolbarViewModel added -> Fragment created -> EEmaHomeViewModel added->
+        //only this result received is executed.
+
+
+        /* Uncomment to test it
+
+        addOnResultReceived{
+            (it.data as? Pair<*, *>)?.also { pair ->
+                sendSingleEvent(EmaExtraData(extraData = pair))
+            }
+        }
+
+        */
+    }
+
     override fun createInitialViewState(): EmaHomeState = EmaHomeState()
 
     private fun doLogin() {
@@ -35,7 +48,6 @@ class EmaHomeViewModel(private val loginUseCase: LoginUseCase) : BaseViewModel<E
                         val user = loginUseCase.execute(LoginRequest(it.userName, it.userPassword))
                         updateViewState()
                         sendSingleEvent(EmaExtraData(EVENT_MESSAGE,"Congratulations"))
-                        setResult(0,1)
                         navigate(EmaHomeNavigator.Navigation.User(user))
                     },
                     {
