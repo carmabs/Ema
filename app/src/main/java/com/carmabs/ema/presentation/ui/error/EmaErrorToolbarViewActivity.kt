@@ -17,7 +17,8 @@ import kotlin.math.roundToInt
 
 /**
  *
- * We show how to attach  a view model to any view through EmaView interface
+ * Activity that inherits from EmaActivity, overrideTheme is false, so we take EmaTheme
+ *
  *
  **/
 class EmaErrorToolbarViewActivity : EmaActivity<EmaErrorToolbarState, EmaErrorToolbarViewModel, EmaErrorNavigator.Navigation>() {
@@ -42,12 +43,15 @@ class EmaErrorToolbarViewActivity : EmaActivity<EmaErrorToolbarState, EmaErrorTo
     }
 
     private fun configureToolbar() {
+
+        //With EMA activity you can customize the toolbar
         toolbar.apply {
             val whiteColor = ContextCompat.getColor(applicationContext, android.R.color.white)
             setBackgroundColor(ContextCompat.getColor(applicationContext, R.color.colorPrimary))
             logo = getDrawable(R.drawable.ic_error_toolbar)
             setTitleTextColor(whiteColor)
             titleMarginStart = resources.getDimension(R.dimen.space_medium).roundToInt().toDp(context)
+
         }
     }
 
