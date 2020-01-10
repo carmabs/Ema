@@ -13,4 +13,6 @@ interface EmaBaseNavigator<T : EmaNavigationState> {
     fun navigate(navigationState: T){
         navigationState.navigateWith(this)
     }
+
+    fun navigateBack():Boolean
 }

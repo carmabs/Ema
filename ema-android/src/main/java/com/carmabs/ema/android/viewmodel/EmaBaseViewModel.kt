@@ -161,6 +161,13 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> : Vie
     }
 
     /**
+     * Method use to notify a navigation back event
+     */
+    protected fun navigateBack() {
+        this.navigationState.value = null
+    }
+
+    /**
      * Methods which must implement the default state of the view
      * @return the default state of the view
      */

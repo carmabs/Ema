@@ -20,6 +20,24 @@ class EmaHomeViewModel(private val loginUseCase: LoginUseCase) : BaseViewModel<E
 
     }
 
+    override fun onResultListenerSetup() {
+        //When two or more resultReceived WITH THE SAME CODE are active, for example in this case,
+        //this receiver and the EmaHomeToolbarViewModel receiver, only the last one is executed.
+        //ActivityCreated -> EmaHomeToolbarViewModel added -> Fragment created -> EEmaHomeViewModel added->
+        //only this result received is executed.
+
+
+        /* Uncomment to test it
+
+        addOnResultReceived{
+            (it.data as? Pair<*, *>)?.also { pair ->
+                sendSingleEvent(EmaExtraData(extraData = pair))
+            }
+        }
+
+        */
+    }
+
     override fun createInitialViewState(): EmaHomeState = EmaHomeState()
 
     private fun doLogin() {
@@ -27,7 +45,7 @@ class EmaHomeViewModel(private val loginUseCase: LoginUseCase) : BaseViewModel<E
             executeUseCaseWithException(
                     {
                         loading()
-                        val user = loginUseCase.doLogin(LoginRequest(it.userName, it.userPassword))
+                        val user = loginUseCase.execute(LoginRequest(it.userName, it.userPassword))
                         updateViewState()
                         sendSingleEvent(EmaExtraData(EVENT_MESSAGE,"Congratulations"))
                         navigate(EmaHomeNavigator.Navigation.User(user))
@@ -93,5 +111,4 @@ class EmaHomeViewModel(private val loginUseCase: LoginUseCase) : BaseViewModel<E
     fun onActionDialogErrorAccept() {
         updateViewState()
     }
-
 }

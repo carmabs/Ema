@@ -8,6 +8,7 @@ import com.carmabs.ema.core.navigator.EmaNavigationState
 import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.presentation.base.BaseFragment
 import kotlinx.android.synthetic.main.fragment_user.*
+import kotlinx.android.synthetic.main.layout_ema_header.*
 
 
 class EmaUserFragment : BaseFragment<EmaUserState, EmaUserViewModel, EmaNavigationState>() {
