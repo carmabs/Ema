@@ -2,4 +2,5 @@
 <resources>
     <string name="back_no_user_added">Ningun usuario ha sido añadido todavía</string>
     <string name="error_user_created">Usuarios creados: %d</string>
+    <string name="ema_home_last_user">Last user created: %s on %s</string>
 </resources>

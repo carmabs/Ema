@@ -6,7 +6,7 @@ import com.carmabs.ema.presentation.ui.backdata.userlist.EmaBackUserViewModel
 
 /**
  *
-*
+ *
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
@@ -20,7 +20,7 @@ class EmaErrorToolbarViewModel : EmaViewModel<EmaErrorToolbarState, EmaErrorNavi
     }
 
     override fun onResultListenerSetup() {
-        addOnResultReceived(EmaBackUserViewModel.RESULT_USER_NUMBER){
+        addOnResultReceived(EmaBackUserViewModel.RESULT_USER_NUMBER) {
             sendSingleEvent(EmaExtraData(extraData = it.data as Int))
         }
     }
@@ -29,14 +29,14 @@ class EmaErrorToolbarViewModel : EmaViewModel<EmaErrorToolbarState, EmaErrorNavi
         hideToolbar()
     }
 
-    fun showToolbar(){
-        updateViewState{
+    fun showToolbar() {
+        updateViewState {
             copy(visibility = true)
         }
     }
 
-    fun hideToolbar(){
-        updateViewState{
+    fun hideToolbar() {
+        updateViewState {
             copy(visibility = false)
         }
     }

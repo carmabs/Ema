@@ -1,6 +1,7 @@
 package com.carmabs.ema.android.ui
 
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.carmabs.ema.android.extra.EmaReceiverModel
@@ -17,8 +18,8 @@ import com.carmabs.ema.android.extra.EmaResultModel
  */
 class EmaResultViewModel : ViewModel() {
 
-    companion object{
-        const val RESULT_ID_DEFAULT = -1
+    companion object {
+        const val RESULT_ID_DEFAULT = -15834
     }
 
     private val resultMap: HashMap<Int, EmaResultModel> = HashMap()
@@ -27,39 +28,51 @@ class EmaResultViewModel : ViewModel() {
     /**
      * Observable to notify result event when it is set up
      */
-    val resultEvent: MutableLiveData<EmaResultModel> = MutableLiveData()
+    val resultEvent: LiveData<EmaResultModel> = MutableLiveData()
 
     /**
      * Observable to notify result receiver invocation event when it is launched
      */
-    val resultReceiverEvent: MutableLiveData<EmaReceiverModel> = MutableLiveData()
+    val resultReceiverEvent: LiveData<EmaReceiverModel> = MutableLiveData()
 
     /**
      * Used for notify result data between views
-     * @param result notified
+     * @param emaResultModel notified
      */
-
-    internal fun setResult(emaResultModel: EmaResultModel) {
+    internal fun addResult(emaResultModel: EmaResultModel) {
         resultMap[emaResultModel.id] = emaResultModel
-        resultEvent.value = emaResultModel
+        (resultEvent as MutableLiveData).apply { value = emaResultModel }
     }
 
+    /**
+     * Notify the results to all receivers are listening to them. The owner code is the id of
+     * the class (viewmodel) is notifying, to avoid notify results that are not theirs
+     */
     internal fun notifyResults(ownerCode: Int) {
+
         val keysToRemove = mutableListOf<Int>()
+
+        //Map for avoid iteration exception if a result is added on receiver invocation
+        val receiverExecutions = mutableListOf<()->Unit>()
+
         resultMap.forEach {
             val data = it.value
             val key = it.key
             val ownerId = data.ownerId
-            if(ownerCode == ownerId ) {
-                receiverMap[key]?.let { receiver ->
-                    if (ownerCode != receiver.ownerCode) {
-                        receiver.function.invoke(data)
+            if (ownerCode == ownerId) {
+                receiverExecutions.add {
+                    receiverMap[key]?.let { receiver ->
+                        if (ownerCode != receiver.ownerCode) {
+                            receiver.function.invoke(data)
+                        }
+                        (resultReceiverEvent as MutableLiveData).apply { value = receiver }
+                        keysToRemove.add(key)
                     }
-                    resultReceiverEvent.value = receiver
-                    keysToRemove.add(key)
                 }
             }
         }
+
+        receiverExecutions.forEach { it.invoke() }
 
         keysToRemove.forEach {
             resultMap.remove(it)
@@ -69,10 +82,9 @@ class EmaResultViewModel : ViewModel() {
         keysToRemove.clear()
     }
 
-    internal fun removeResultReceiver(code:Int = RESULT_ID_DEFAULT){
-        receiverMap.remove(code)
-    }
-
+    /**
+     * Add listener when result is notified
+     */
     fun addResultReceiver(receiver: EmaReceiverModel) {
         receiverMap[receiver.resultId] = receiver
     }

@@ -35,10 +35,11 @@ class EmaBackUserCreationViewModel(private val resourceManager: ResourceManager)
             name.isEmpty() -> sendSingleEvent(EmaExtraData(extraData = resourceManager.getResultErrorFillName()))
             surname.isEmpty() -> sendSingleEvent(EmaExtraData(extraData = resourceManager.getResultErrorFillSurname()))
             else -> {
-                setResult(RESULT_USER, EmaBackUserModel(
+                addResult(EmaBackUserModel(
                         name = name,
                         surname = surname
-                ))
+                ),RESULT_USER)
+                addResult(Pair(name,System.currentTimeMillis()))
                 navigateBack()
             }
         }

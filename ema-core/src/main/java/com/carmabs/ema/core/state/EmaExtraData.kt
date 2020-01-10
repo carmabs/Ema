@@ -6,4 +6,9 @@ package com.carmabs.ema.core.state
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
 
-data class EmaExtraData(val type: Int = 0, val extraData: Any? = null) : EmaBaseState
+data class EmaExtraData(val type: Int = DEFAULT_ID, val extraData: Any? = null) : EmaBaseState
+{
+    companion object{
+       const val DEFAULT_ID = 0
+    }
+}

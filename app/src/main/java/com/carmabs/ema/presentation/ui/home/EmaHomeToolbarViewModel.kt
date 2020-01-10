@@ -1,7 +1,7 @@
 package com.carmabs.ema.presentation.ui.home
 
+import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.presentation.base.BaseViewModel
-import com.carmabs.ema.presentation.ui.backdata.creation.EmaBackUserCreationViewModel
 
 /**
  * Project: Ema
@@ -15,8 +15,10 @@ class EmaHomeToolbarViewModel : BaseViewModel<EmaHomeToolbarState, EmaHomeNaviga
     }
 
     override fun onResultListenerSetup() {
-       addOnResultReceived(EmaBackUserCreationViewModel.RESULT_USER){
-           val p = it
+       addOnResultReceived{
+           (it.data as? Pair<*, *>)?.also { pair ->
+               sendSingleEvent(EmaExtraData(extraData = pair))
+           }
        }
     }
 
