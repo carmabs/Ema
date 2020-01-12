@@ -16,7 +16,7 @@ abstract class EmaToolbarFragmentActivity : EmaFragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
 
         //To enable support action bar
-        if(!overrideTheme) setTheme(R.style.EmaTheme_NoActionBar)
+        if (!overrideTheme) setTheme(R.style.EmaTheme_NoActionBar)
         super.onCreate(savedInstanceState)
     }
 
@@ -30,6 +30,12 @@ abstract class EmaToolbarFragmentActivity : EmaFragmentActivity() {
      * The toolbar container for the activity
      */
     protected lateinit var toolbarLayout: AppBarLayout
+
+
+    /**
+     * Title for toolbar. If it is null the label inside navigation layout for the view is set.
+     */
+    abstract fun provideToolbarTitle(): String?
 
     /**
      * Setup the toolbar
@@ -54,8 +60,15 @@ abstract class EmaToolbarFragmentActivity : EmaFragmentActivity() {
         setSupportActionBar(tbToolbar)
         toolbarLayout = lToolbar
         toolbar = tbToolbar
-        getToolbarTitle()?.let { supportActionBar?.title = it }
         setupActionBarWithNavController(navController)
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+           setToolbarTitle(provideToolbarTitle())
+
+        }
+    }
+
+    protected fun setToolbarTitle(title:String?){
+        title?.also { supportActionBar?.title = it }
     }
 
     /**
@@ -71,11 +84,6 @@ abstract class EmaToolbarFragmentActivity : EmaFragmentActivity() {
     protected open fun showToolbar() {
         toolbarLayout.visibility = View.VISIBLE
     }
-
-    /**
-     * Get the toolbar title
-     */
-    abstract fun getToolbarTitle(): String?
 
     /**
      * The layout set up for the activity

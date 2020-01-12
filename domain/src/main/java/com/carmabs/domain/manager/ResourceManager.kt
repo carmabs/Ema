@@ -15,4 +15,6 @@ interface ResourceManager {
     fun getResultErrorFillName():String
 
     fun getResultErrorFillSurname():String
+
+    fun getHomeUserToolbarTitle(): String
 }

@@ -1,6 +1,7 @@
 package com.carmabs.ema.presentation.ui.home
 
 import com.carmabs.domain.exception.UserEmptyException
+import com.carmabs.domain.manager.ResourceManager
 import com.carmabs.domain.model.LoginRequest
 import com.carmabs.domain.usecase.LoginUseCase
 import com.carmabs.ema.core.state.EmaExtraData
@@ -16,6 +17,8 @@ import com.carmabs.ema.presentation.base.BaseViewModel
  * Created by: Carlos Mateo Benito on 20/1/19.
  */
 class EmaHomeViewModel(private val loginUseCase: LoginUseCase) : BaseViewModel<EmaHomeState, EmaHomeNavigator.Navigation>() {
+
+    var toolbarViewModel: EmaHomeToolbarViewModel?=null
 
     companion object{
         const val EVENT_MESSAGE = 1000

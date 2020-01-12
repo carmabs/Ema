@@ -12,6 +12,7 @@ import com.carmabs.ema.presentation.ui.backdata.creation.EmaBackUserCreationView
 import com.carmabs.ema.presentation.ui.error.EmaErrorViewModel
 import com.carmabs.ema.presentation.ui.home.EmaHomeToolbarViewModel
 import com.carmabs.ema.presentation.ui.home.EmaHomeViewModel
+import com.carmabs.ema.presentation.ui.user.EmaUserViewModel
 import org.kodein.di.Kodein
 import org.kodein.di.generic.bind
 import org.kodein.di.generic.instance
@@ -40,7 +41,7 @@ fun fragmentInjection(fragment: Fragment) = Kodein.Module(name = "FragmentModule
 
     bind<EmaHomeViewModel>() with singleton { EmaHomeViewModel(instance()) }
 
-    bind<EmaErrorViewModel>() with singleton { EmaErrorViewModel() }
+    bind<EmaUserViewModel>() with singleton { EmaUserViewModel(instance()) }
 
     bind<EmaBackUserViewModel>() with singleton { EmaBackUserViewModel() }
 
