@@ -23,4 +23,8 @@ class AndroidResourceManager(private val context: Context) : ResourceManager {
     override fun getResultErrorFillSurname(): String {
         return context.getString(R.string.back_result_fill_surname)
     }
+
+    override fun getHomeUserToolbarTitle(): String {
+        return context.getString(R.string.user_toolbar_title)
+    }
 }

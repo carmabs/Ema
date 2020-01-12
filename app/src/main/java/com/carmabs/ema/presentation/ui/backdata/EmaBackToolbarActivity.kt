@@ -23,7 +23,7 @@ class EmaBackToolbarActivity : BaseActivity<EmaBackToolbarState, EmaBackToolbarV
 
     override fun getNavGraph(): Int = R.navigation.navigation_ema_back
 
-    override fun getToolbarTitle(): String? = null
+    override fun provideToolbarTitle(): String? = null
 
     override val viewModelSeed: EmaBackToolbarViewModel by instance()
 

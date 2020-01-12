@@ -12,5 +12,5 @@ import com.carmabs.ema.core.state.EmaBaseState
  * Created by: Carlos Mateo Benito on 20/1/19.
  */
 data class EmaHomeToolbarState(
-        val default: Boolean = false
+        val toolbarTitle: String? = null
 ) : EmaBaseState

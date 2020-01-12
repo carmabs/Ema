@@ -7,12 +7,12 @@
     <fragment
         android:id="@+id/emaBackResultFragment"
         android:name="com.carmabs.ema.presentation.ui.backdata.creation.EmaBackUserCreationFragment"
-        android:label="EmaBackResultFragment"
+        android:label="@string/back_toolbar_title"
         tools:layout="@layout/fragment_back_result"/>
     <fragment
         android:id="@+id/emaBackFragment"
         android:name="com.carmabs.ema.presentation.ui.backdata.userlist.EmaBackUserFragment"
-        android:label="EmaBackFragment"
+        android:label="@string/back_result_toolbar_title"
         tools:layout="@layout/fragment_back">
         <action
             android:id="@+id/action_emaBackFragment_to_emaBackResultFragment"
