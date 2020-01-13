@@ -24,8 +24,6 @@ class EmaUserFragment : BaseFragment<EmaUserState, EmaUserViewModel, EmaNavigati
 
     override val navigator: EmaNavigator<EmaNavigationState>? = null
 
-    override val inputStateKey: String = EmaUserState::class.java.name
-
     private val toolbarViewModel: EmaHomeToolbarViewModel by instance()
 
     lateinit var adapter: EmaUserAdapter
@@ -48,8 +46,6 @@ class EmaUserFragment : BaseFragment<EmaUserState, EmaUserViewModel, EmaNavigati
     override val viewModelSeed: EmaUserViewModel by instance()
 
     override fun onNormal(data: EmaUserState) {
-        tvUserName.text = data.name
-        tvUserSurname.text = data.surname
         setupRecyclerList(data)
     }
 

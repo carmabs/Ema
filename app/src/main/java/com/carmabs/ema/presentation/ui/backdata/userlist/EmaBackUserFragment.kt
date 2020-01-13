@@ -21,9 +21,8 @@ import org.kodein.di.generic.instance
 
 class EmaBackUserFragment : BaseFragment<EmaBackUserState, EmaBackUserViewModel, EmaBackNavigator.Navigation>() {
 
-    override val inputStateKey: String? = null
-
     private val adapter : EmaBackUserAdapter by lazy { EmaBackUserAdapter() }
+
     override fun onInitialized(viewModel: EmaBackUserViewModel) {
         setupRecycler()
         setupButton(viewModel)

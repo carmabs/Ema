@@ -11,6 +11,7 @@ import com.carmabs.ema.android.ui.EmaActivity
 import com.carmabs.ema.core.navigator.EmaBaseNavigator
 import com.carmabs.ema.core.navigator.EmaNavigationState
 import com.carmabs.ema.core.state.EmaBaseState
+import java.io.Serializable
 
 /**
  *  *<p>
@@ -52,7 +53,8 @@ interface EmaNavigator<NS : EmaNavigationState> : EmaBaseNavigator<NS> {
     /**
      * Navigate to new activity with result handling
      * @param mainActivity activity will launch the next one
-     * @param destinationActivity new destination activity
+     * @param destinationActivity new destination activity class
+     * @param data the data set up for next view, use addInputState
      * @param requestCode code for result
      * @param finishMain if [mainActivity] must be finished when [destinationActivity] is launched
      */

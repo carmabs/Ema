@@ -10,6 +10,7 @@ import com.carmabs.ema.android.extra.EmaReceiverModel
 import com.carmabs.ema.android.extra.EmaResultModel
 import com.carmabs.ema.android.viewmodel.EmaFactory
 import com.carmabs.ema.android.viewmodel.EmaViewModel
+import com.carmabs.ema.core.constants.STRING_EMPTY
 import com.carmabs.ema.core.navigator.EmaNavigationState
 import com.carmabs.ema.core.state.EmaBaseState
 import com.carmabs.ema.core.state.EmaState
@@ -25,13 +26,15 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
     /**
      * The view model of the fragment
      */
-    private var vm: VM? = null
+    private lateinit var vm: VM
 
     /**
      * The key id for incoming data through Bundle in fragment instantiation.This is set up when other fragment/activity
      * launches a fragment with arguments provided by Bundle
      */
-    abstract val inputStateKey: String?
+    protected open val inputStateKey: String by lazy {
+        vm.getCurrentState()?.let { it::class.java.name } ?: STRING_EMPTY
+    }
 
     /**
      * Called once the view model is instantiated
@@ -115,8 +118,8 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
         super.onPause()
         val owner: LifecycleOwner = if (fragmentViewModelScope) this else requireActivity()
         removeExtraViewModels()
-        vm?.unBindObservables(owner)
-        vm?.resultViewModel?.unBindObservables(this)
+        vm.unBindObservables(owner)
+        vm.resultViewModel.unBindObservables(this)
 
     }
 
