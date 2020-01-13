@@ -11,7 +11,11 @@ class EmaErrorViewFragment : BaseFragment<EmaErrorState, EmaErrorViewModel, EmaE
 
     override val inputStateKey: String? = null
 
-    override val viewModelSeed: EmaErrorViewModel by instance()
+    /**
+     * If you wouldn't want to use dependency injection you can provide it instantiating the class.
+     * Not recommended
+     */
+    override val viewModelSeed: EmaErrorViewModel = EmaErrorViewModel()
 
     private val toolbarViewModelSeed: EmaErrorToolbarViewModel by instance()
 

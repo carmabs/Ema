@@ -40,6 +40,8 @@ class EmaHomeFragment : BaseFragment<EmaHomeState, EmaHomeViewModel, EmaHomeNavi
 
     override val viewModelSeed: EmaHomeViewModel by instance()
 
+    private val homeToolbarViewModel:EmaHomeToolbarViewModel by instance()
+
     override val navigator: EmaHomeNavigator  by instance()
 
     //As we can see we can use an instance by kodein or generate it by class instance
@@ -49,6 +51,8 @@ class EmaHomeFragment : BaseFragment<EmaHomeState, EmaHomeViewModel, EmaHomeNavi
     /////////////////////////////////////////////////////////////////////////////////
 
     override fun onInitialized(viewModel: EmaHomeViewModel) {
+        val toolbarViewModel = addExtraViewModel(homeToolbarViewModel,this,activity)
+        viewModel.toolbarViewModel = toolbarViewModel
         setupButtons(viewModel)
         setupDialog(viewModel)
     }

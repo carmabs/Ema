@@ -4,6 +4,7 @@ import androidx.core.content.ContextCompat
 import com.carmabs.ema.R
 import com.carmabs.ema.android.ui.EmaActivity
 import com.carmabs.ema.core.state.EmaExtraData
+import com.carmabs.ema.presentation.base.BaseActivity
 import com.carmabs.ema.presentation.injection.activityInjection
 import org.kodein.di.Kodein
 import org.kodein.di.generic.instance
@@ -18,11 +19,11 @@ import org.kodein.di.generic.instance
  * Date: 2019-11-07
  */
 
-class EmaBackToolbarActivity : EmaActivity<EmaBackToolbarState, EmaBackToolbarViewModel, EmaBackNavigator.Navigation>() {
+class EmaBackToolbarActivity : BaseActivity<EmaBackToolbarState, EmaBackToolbarViewModel, EmaBackNavigator.Navigation>() {
 
     override fun getNavGraph(): Int = R.navigation.navigation_ema_back
 
-    override fun getToolbarTitle(): String? = null
+    override fun provideToolbarTitle(): String? = null
 
     override val viewModelSeed: EmaBackToolbarViewModel by instance()
 

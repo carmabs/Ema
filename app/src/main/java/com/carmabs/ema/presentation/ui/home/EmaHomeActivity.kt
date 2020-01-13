@@ -27,15 +27,20 @@ class EmaHomeActivity : BaseActivity<EmaHomeToolbarState,EmaHomeToolbarViewModel
 
     }
 
-    override fun getToolbarTitle(): String? {
-        return "HOLA"
-    }
+    override fun provideToolbarTitle(): String? = getString(R.string.home_toolbar_title)
+
+    /**
+     * Variable used to enable the theme used in manifest. Otherwise it will use the EmaTheme,
+     * It is set as true by default.
+     */
+    override val overrideTheme: Boolean = false
 
     override val viewModelSeed: EmaHomeToolbarViewModel by instance()
 
     override val navigator: EmaHomeNavigator by instance()
 
     override fun onStateNormal(data: EmaHomeToolbarState) {
+        setToolbarTitle(data.toolbarTitle)
 
     }
 
@@ -54,7 +59,7 @@ class EmaHomeActivity : BaseActivity<EmaHomeToolbarState,EmaHomeToolbarViewModel
                              val sdf = SimpleDateFormat("hh:mm",Locale.getDefault())
                              val date = sdf.format(Date(timestamp))
                              Toast.makeText(this,String.format(
-                                     getString(R.string.ema_home_last_user),it.first,date
+                                     getString(R.string.home_last_user),it.first,date
                              ),Toast.LENGTH_SHORT).show()
                              return
                          } catch (e: Exception) { }
