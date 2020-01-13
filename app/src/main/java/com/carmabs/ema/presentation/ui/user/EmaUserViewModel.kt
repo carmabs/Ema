@@ -1,10 +1,14 @@
 package com.carmabs.ema.presentation.ui.user
 
+import com.carmabs.domain.manager.ResourceManager
 import com.carmabs.ema.core.navigator.EmaNavigationState
 import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.presentation.base.BaseViewModel
+import com.carmabs.ema.presentation.ui.home.EmaHomeToolbarViewModel
 
-class EmaUserViewModel : BaseViewModel<EmaUserState, EmaNavigationState>() {
+class EmaUserViewModel(private val resourceManager: ResourceManager) : BaseViewModel<EmaUserState, EmaNavigationState>() {
+
+    var toolbarViewModel: EmaHomeToolbarViewModel? = null
 
     companion object{
         const val SINGLE_EVENT_GROUP = 0
@@ -12,7 +16,8 @@ class EmaUserViewModel : BaseViewModel<EmaUserState, EmaNavigationState>() {
     }
 
     override fun onStartFirstTime(statePreloaded: Boolean) {
-       val list =  createListItems()
+        toolbarViewModel?.setToolbarTitle(resourceManager.getHomeUserToolbarTitle())
+        val list =  createListItems()
         updateViewState {
             copy(itemList = list)
         }

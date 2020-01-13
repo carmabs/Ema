@@ -27,5 +27,11 @@ class EmaHomeToolbarViewModel : BaseViewModel<EmaHomeToolbarState, EmaHomeNaviga
        }
     }
 
+    fun setToolbarTitle(title:String){
+        updateViewState {
+            copy(toolbarTitle = title)
+        }
+    }
+
     override fun createInitialViewState(): EmaHomeToolbarState = EmaHomeToolbarState()
 }

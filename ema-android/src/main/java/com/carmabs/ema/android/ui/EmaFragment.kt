@@ -65,6 +65,8 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
         }
     }
 
+    protected open fun provideToolbarTitle(): String? = null
+
     /**
      * Add a view model observer to current fragment
      * @param viewModelAttachedSeed is the view model seed will used as factory instance if there is no previous
@@ -153,8 +155,8 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
     }
 
     /**
-    * Override to do logic if it is required when result receiver is invoked
-    */
+     * Override to do logic if it is required when result receiver is invoked
+     */
     override fun onResultReceiverInvokeEvent(emaReceiverModel: EmaReceiverModel) {
 
     }
