@@ -31,8 +31,6 @@ class EmaErrorToolbarViewActivity : EmaActivity<EmaErrorToolbarState, EmaErrorTo
 
     override val navigator: EmaErrorNavigator by instance()
 
-    override val inputStateKey: String? = null
-
     private lateinit var vm: EmaErrorToolbarViewModel
 
     override fun injectActivityModule(kodein: Kodein.MainBuilder): Kodein.Module? = activityInjection(this)

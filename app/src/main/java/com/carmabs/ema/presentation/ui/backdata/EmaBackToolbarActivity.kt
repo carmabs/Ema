@@ -29,8 +29,6 @@ class EmaBackToolbarActivity : BaseActivity<EmaBackToolbarState, EmaBackToolbarV
 
     override val navigator: EmaBackNavigator by instance()
 
-    override val inputStateKey: String? = null
-
     override fun injectActivityModule(kodein: Kodein.MainBuilder): Kodein.Module? = activityInjection(this)
 
     override fun onInitialized(viewModel: EmaBackToolbarViewModel) {
