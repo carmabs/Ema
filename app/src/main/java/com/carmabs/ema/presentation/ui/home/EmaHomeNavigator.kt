@@ -24,9 +24,9 @@ class EmaHomeNavigator(override val navController: NavController, val activity: 
 
     sealed class Navigation : EmaNavigationState {
 
-        class User(private val user: com.carmabs.domain.model.User) : Navigation() {
+        class User(private val emaUserState: EmaUserState) : Navigation() {
             override fun navigateWith(navigator: EmaBaseNavigator<out EmaNavigationState>) {
-                (navigator as? EmaHomeNavigator)?.toUser(user)
+                (navigator as? EmaHomeNavigator)?.toUser(emaUserState)
             }
         }
 
@@ -49,16 +49,14 @@ class EmaHomeNavigator(override val navController: NavController, val activity: 
                 R.id.action_homeViewFragment_self)
     }
 
-    private fun toUser(user: User) {
+    private fun toUser(emaUserState: EmaUserState) {
         navigateWithAction(
                 R.id.action_homeViewFragment_to_userFragment,
-                addInputState(EmaUserState(user.name, user.surname))
-        )
+                addInputState(emaUserState))
     }
 
     private fun toError() {
+        //Use this method to enable back data to activity
         navigateToEmaActivityWithResult(activity, Intent(activity,EmaErrorToolbarViewActivity::class.java))
-      /*  navigateWithAction(
-                R.id.action_homeViewFragment_to_emaErrorViewActivity)*/
     }
 }

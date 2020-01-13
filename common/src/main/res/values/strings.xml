@@ -11,6 +11,7 @@
     <string name="home_check_credentials">Por favor, revisa tus datos</string>
     <string name="home_loading_title_message">Obteniendo datos de usuario</string>
     <string name="home_user">Usuario:</string>
+    <string name="home_congratulations">¡¡Felicidades!!</string>
     <string name="home_last_user">Ultimo usuario creado: %s a las %s</string>
     <string name="home_toolbar_title">EMA INICIO</string>
     <string name="home_password">Contraseña:</string>

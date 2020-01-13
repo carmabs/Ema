@@ -11,7 +11,6 @@ import com.carmabs.ema.android.ui.EmaActivity
 import com.carmabs.ema.core.navigator.EmaBaseNavigator
 import com.carmabs.ema.core.navigator.EmaNavigationState
 import com.carmabs.ema.core.state.EmaBaseState
-import java.io.Serializable
 
 /**
  *  *<p>
@@ -66,6 +65,19 @@ interface EmaNavigator<NS : EmaNavigationState> : EmaBaseNavigator<NS> {
             }
         }?:throw ClassCastException("The launcher activity and the destination activity must" +
                 "extend from EmaActivity")
+    }
+
+    /**
+     * Navigates back
+     * @return true if a fragment has been popped, false if backstack is empty, in that case, finish
+     * the activity provided.
+     */
+    fun navigateBack(activity: Activity): Boolean {
+        val hasMoreFragments = navController.popBackStack()
+        if(!hasMoreFragments)
+            activity.finish()
+
+        return hasMoreFragments
     }
 
     /**
