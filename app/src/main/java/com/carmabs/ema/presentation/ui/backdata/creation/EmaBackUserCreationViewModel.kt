@@ -22,9 +22,8 @@ class EmaBackUserCreationViewModel(private val resourceManager: ResourceManager)
         const val RESULT_USER = 0
     }
 
-    override fun createInitialViewState(): EmaBackUserCreationState {
-        return EmaBackUserCreationState()
-    }
+    override val initialViewState: EmaBackUserCreationState = EmaBackUserCreationState()
+
 
     override fun onStartFirstTime(statePreloaded: Boolean) {
         loading()

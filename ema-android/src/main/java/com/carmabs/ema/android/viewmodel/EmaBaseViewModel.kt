@@ -66,7 +66,7 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> : Vie
     /**
      * The state of the view.
      */
-    protected var state: S? = null
+    internal var state: S? = null
 
     /**
      * To determine if the view must be updated when view model is created automatically

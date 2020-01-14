@@ -22,8 +22,6 @@ class EmaHomeViewModel(
         private val resourceManager: ResourceManager
 ) : BaseViewModel<EmaHomeState, EmaHomeNavigator.Navigation>() {
 
-    var toolbarViewModel: EmaHomeToolbarViewModel? = null
-
     companion object {
         const val EVENT_MESSAGE = 1000
     }
@@ -50,7 +48,9 @@ class EmaHomeViewModel(
         */
     }
 
-    override fun createInitialViewState(): EmaHomeState = EmaHomeState()
+
+
+    override val initialViewState: EmaHomeState = EmaHomeState()
 
     private fun doLogin() {
         checkViewState {

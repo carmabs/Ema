@@ -14,7 +14,7 @@ class EmaErrorViewModel : EmaViewModel<EmaErrorState, EmaErrorNavigator.Navigati
 
     }
 
-    override fun createInitialViewState(): EmaErrorState = EmaErrorState()
+    override val initialViewState: EmaErrorState = EmaErrorState()
 
     fun onActionToolbar() {
         updateViewState { copy(showToolbarViewVisibility = false) }
