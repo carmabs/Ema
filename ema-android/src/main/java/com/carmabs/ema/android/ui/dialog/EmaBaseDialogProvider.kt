@@ -20,31 +20,41 @@ abstract class EmaBaseDialogProvider constructor(private val fragmentManager: Fr
 
     override fun show(dialogData: EmaDialogData?) {
 
-        if(dialog==null)
+        if (dialog == null)
             dialog = generateDialog() as EmaBaseDialog<EmaDialogData>
 
         dialog?.let { dialog ->
             dialog.dialogListener = dialogListener
             dialog.data = dialogData
-            if(!dialog.isVisible)
-                dialog.show(fragmentManager,javaClass.canonicalName.hashCode().toString())
+            if (!dialog.isVisible)
+                dialog.show(fragmentManager, getTag())
 
         }
     }
 
     override fun hide() {
         dialog?.let {
-            if(!it.isHidden) {
-                Log.d(this.javaClass.name,"Loading dialog totally hidden")
+            if (!it.isHidden) {
+                Log.d(this.javaClass.name, "Loading dialog totally hidden")
                 it.dismissAllowingStateLoss()
             }
+        } ?: also { _ ->
+            val oldDialog = fragmentManager.findFragmentByTag(getTag())
+            oldDialog?.also {
+                fragmentManager.beginTransaction().remove(it).commit()
+            }
+
         }
         dialog = null
     }
 
     override var dialogListener: EmaDialogListener? = null
-            set(value) {
-                field = value
-                dialog?.dialogListener = value
-            }
+        set(value) {
+            field = value
+            dialog?.dialogListener = value
+        }
+
+    private fun getTag():String{
+        return javaClass.canonicalName.hashCode().toString()
+    }
 }
