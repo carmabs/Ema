@@ -33,7 +33,7 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
      * launches a fragment with arguments provided by Bundle
      */
     protected open val inputStateKey: String by lazy {
-        vm.getCurrentState()?.let { it::class.java.name } ?: STRING_EMPTY
+        vm.initialViewState.javaClass.name
     }
 
     /**

@@ -21,7 +21,7 @@ class MockRepository : Repository {
     override suspend fun login(loginRequest: LoginRequest): User {
         delay(2000)
        if(loginRequest.name.equals("Admin",true) && loginRequest.password=="1234")
-           return User("EMA", "MVVM Architecture, powered by Carmabs")
+           return User("Admin", "EMA based on MVVM Architecture, powered by Carmabs")
         else throw LoginException()
     }
 }

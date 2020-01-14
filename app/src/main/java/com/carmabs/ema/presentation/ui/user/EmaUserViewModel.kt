@@ -33,9 +33,8 @@ class EmaUserViewModel(private val resourceManager: ResourceManager) : BaseViewM
     }
 
 
-    override fun createInitialViewState(): EmaUserState {
-       return EmaUserState()
-    }
+    override val initialViewState: EmaUserState = EmaUserState()
+
 
     fun onActionUserClicked(item: EmaUserItemModel) {
         val eventID = when(item.type){

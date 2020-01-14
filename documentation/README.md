@@ -779,7 +779,7 @@ It must implement the following class:
 ~~~kotlin
 abstract class EmaViewModel<S, NS : EmaNavigationState> : EmaBaseViewModel<EmaState<S>, NS>(){
 		
-		abstract fun createInitialViewState(): S
+		abstract val initialViewState: S
 		
 		abstract fun onStartFirstTime(statePreloaded: Boolean)
 }
@@ -807,12 +807,12 @@ Both <mark>must have the same type declaration that the **EmaView declaration** 
 
 Once we have defined the ***EmaViewModel***, we must override the following parameters:
 
-* **override fun createInitialViewState(): S** 
+* **override val initialViewState: S**
 
    Here we must provide the default state object of the ***ViewModel***.
    
     ~~~kotlin
-    override fun createInitialViewState(): EmaUserState = EmaUserState()
+    override val initialViewState: EmaUserState = EmaUserState()
     ~~~
 
 * **override fun onStartFirstTime(statePreloaded: Boolean)**

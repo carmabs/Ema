@@ -19,9 +19,9 @@ class EmaBackUserViewModel : EmaViewModel<EmaBackUserState, EmaBackNavigator.Nav
     companion object {
         const val RESULT_USER_NUMBER = 1000
     }
-    override fun createInitialViewState(): EmaBackUserState {
-        return EmaBackUserState()
-    }
+
+    override val initialViewState: EmaBackUserState = EmaBackUserState()
+
 
     override fun onStartFirstTime(statePreloaded: Boolean) {
 

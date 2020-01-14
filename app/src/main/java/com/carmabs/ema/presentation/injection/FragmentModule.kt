@@ -39,7 +39,7 @@ fun fragmentInjection(fragment: Fragment) = Kodein.Module(name = "FragmentModule
 
     bind<EmaBaseDialogProvider>(tag = DIALOG_TAG_LOADING) with provider { LoadingDialogProvider(instance()) }
 
-    bind<EmaHomeViewModel>() with singleton { EmaHomeViewModel(instance()) }
+    bind<EmaHomeViewModel>() with singleton { EmaHomeViewModel(instance(),instance()) }
 
     bind<EmaUserViewModel>() with singleton { EmaUserViewModel(instance()) }
 

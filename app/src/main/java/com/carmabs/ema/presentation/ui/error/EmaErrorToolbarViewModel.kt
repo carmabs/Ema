@@ -13,7 +13,7 @@ import com.carmabs.ema.presentation.ui.backdata.userlist.EmaBackUserViewModel
 
 class EmaErrorToolbarViewModel : EmaViewModel<EmaErrorToolbarState, EmaErrorNavigator.Navigation>() {
 
-    override fun createInitialViewState(): EmaErrorToolbarState = EmaErrorToolbarState()
+    override val initialViewState: EmaErrorToolbarState = EmaErrorToolbarState()
 
     override fun onStartFirstTime(statePreloaded: Boolean) {
 

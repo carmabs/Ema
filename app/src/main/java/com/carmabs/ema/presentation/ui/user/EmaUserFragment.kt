@@ -26,7 +26,7 @@ class EmaUserFragment : BaseFragment<EmaUserState, EmaUserViewModel, EmaNavigati
 
     private val toolbarViewModel: EmaHomeToolbarViewModel by instance()
 
-    lateinit var adapter: EmaUserAdapter
+    private lateinit var adapter: EmaUserAdapter
 
     override fun onInitialized(viewModel: EmaUserViewModel) {
         val toolbarViewModel = addExtraViewModel(toolbarViewModel,this,requireActivity())
@@ -46,6 +46,8 @@ class EmaUserFragment : BaseFragment<EmaUserState, EmaUserViewModel, EmaNavigati
     override val viewModelSeed: EmaUserViewModel by instance()
 
     override fun onNormal(data: EmaUserState) {
+        tvUserName.text = data.name
+        tvUserSurname.text = data.surname
         setupRecyclerList(data)
     }
 

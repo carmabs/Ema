@@ -73,7 +73,7 @@ abstract class EmaViewModel<S, NS : EmaNavigationState> : EmaBaseViewModel<EmaSt
         return viewState?.let {
             checkStateFunction.invoke(it)
         } ?: let {
-            val initialState = createInitialViewState()
+            val initialState = initialViewState
             viewState = initialState
             checkStateFunction.invoke(initialState)
         }
@@ -113,7 +113,7 @@ abstract class EmaViewModel<S, NS : EmaNavigationState> : EmaBaseViewModel<EmaSt
      */
     final override fun createInitialState(): EmaState<S> {
         if (viewState == null) {
-            viewState = createInitialViewState()
+            viewState = initialViewState
         }
 
         return EmaState.Normal(viewState!!)
@@ -129,7 +129,7 @@ abstract class EmaViewModel<S, NS : EmaNavigationState> : EmaBaseViewModel<EmaSt
     /**
      * Generate the initial state of the view
      */
-    abstract fun createInitialViewState(): S
+    abstract val initialViewState: S
 
     /**
      * Set a result for previous view when the current one is destroyed

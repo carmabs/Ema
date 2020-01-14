@@ -40,7 +40,7 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
      * launches a fragment with arguments provided by Bundle
      */
     protected open val inputStateKey: String by lazy {
-        vm.getCurrentState()?.let { it::class.java.name } ?: STRING_EMPTY
+        vm.initialViewState.javaClass.name
     }
 
 
@@ -220,7 +220,7 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
                         keySet()?.forEach { idResult ->
                             getSerializable(idResult)?.also {
                                 val resultModel = it as EmaResultModel
-                                vm?.apply {
+                                vm.apply {
                                     resultViewModel.addResult(resultModel)
                                     resultViewModel.notifyResults(resultModel.ownerId)
                                 }
