@@ -21,8 +21,6 @@ import org.kodein.di.generic.instance
 
 class EmaBackUserCreationFragment : BaseFragment<EmaBackUserCreationState, EmaBackUserCreationViewModel, EmaBackNavigator.Navigation>() {
 
-    override val inputStateKey: String? = null
-
     override fun onInitialized(viewModel: EmaBackUserCreationViewModel) {
         setupButtons(viewModel)
         setupEditTexts(viewModel)

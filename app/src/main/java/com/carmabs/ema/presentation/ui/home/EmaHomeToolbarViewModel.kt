@@ -33,5 +33,5 @@ class EmaHomeToolbarViewModel : BaseViewModel<EmaHomeToolbarState, EmaHomeNaviga
         }
     }
 
-    override fun createInitialViewState(): EmaHomeToolbarState = EmaHomeToolbarState()
+    override val initialViewState: EmaHomeToolbarState = EmaHomeToolbarState()
 }

@@ -9,8 +9,6 @@ import org.kodein.di.generic.instance
 
 class EmaErrorViewFragment : BaseFragment<EmaErrorState, EmaErrorViewModel, EmaErrorNavigator.Navigation>() {
 
-    override val inputStateKey: String? = null
-
     /**
      * If you wouldn't want to use dependency injection you can provide it instantiating the class.
      * Not recommended

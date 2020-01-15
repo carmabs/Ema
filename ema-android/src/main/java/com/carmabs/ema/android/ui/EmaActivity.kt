@@ -12,6 +12,7 @@ import com.carmabs.ema.android.extra.EmaReceiverModel
 import com.carmabs.ema.android.extra.EmaResultModel
 import com.carmabs.ema.android.viewmodel.EmaFactory
 import com.carmabs.ema.android.viewmodel.EmaViewModel
+import com.carmabs.ema.core.constants.STRING_EMPTY
 import com.carmabs.ema.core.navigator.EmaNavigationState
 import com.carmabs.ema.core.state.EmaBaseState
 import com.carmabs.ema.core.state.EmaState
@@ -32,13 +33,15 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
     /**
      * The view model of the fragment
      */
-    private var vm: VM? = null
+    private lateinit var vm: VM
 
     /**
-     * The key id for incoming data through Bundle in fragment instantiation.This is set up when other fragment/activity
+     * The key id for incoming data through Bundle in activity instantiation.This is set up when other fragment/activity
      * launches a fragment with arguments provided by Bundle
      */
-    abstract val inputStateKey: String?
+    protected open val inputStateKey: String by lazy {
+        vm.initialViewState.javaClass.name
+    }
 
 
     /**
@@ -169,8 +172,9 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
      */
     override fun onPause() {
         super.onPause()
-        vm?.unBindObservables(this)
-        vm?.resultViewModel?.unBindObservables(this)
+        removeExtraViewModels()
+        vm.unBindObservables(this)
+        vm.resultViewModel.unBindObservables(this)
     }
 
     /**
@@ -216,7 +220,7 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
                         keySet()?.forEach { idResult ->
                             getSerializable(idResult)?.also {
                                 val resultModel = it as EmaResultModel
-                                vm?.apply {
+                                vm.apply {
                                     resultViewModel.addResult(resultModel)
                                     resultViewModel.notifyResults(resultModel.ownerId)
                                 }

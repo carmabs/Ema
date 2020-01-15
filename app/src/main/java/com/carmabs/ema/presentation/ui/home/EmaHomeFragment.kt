@@ -34,13 +34,9 @@ import org.kodein.di.generic.instance
  */
 class EmaHomeFragment : BaseFragment<EmaHomeState, EmaHomeViewModel, EmaHomeNavigator.Navigation>() {
 
-    override val inputStateKey: String? = null
-
     override fun getFragmentLayout(): Int = R.layout.fragment_home
 
     override val viewModelSeed: EmaHomeViewModel by instance()
-
-    private val homeToolbarViewModel:EmaHomeToolbarViewModel by instance()
 
     override val navigator: EmaHomeNavigator  by instance()
 
@@ -51,8 +47,6 @@ class EmaHomeFragment : BaseFragment<EmaHomeState, EmaHomeViewModel, EmaHomeNavi
     /////////////////////////////////////////////////////////////////////////////////
 
     override fun onInitialized(viewModel: EmaHomeViewModel) {
-        val toolbarViewModel = addExtraViewModel(homeToolbarViewModel,this,activity)
-        viewModel.toolbarViewModel = toolbarViewModel
         setupButtons(viewModel)
         setupDialog(viewModel)
     }

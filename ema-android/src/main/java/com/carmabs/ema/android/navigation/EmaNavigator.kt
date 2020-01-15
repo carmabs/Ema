@@ -52,7 +52,8 @@ interface EmaNavigator<NS : EmaNavigationState> : EmaBaseNavigator<NS> {
     /**
      * Navigate to new activity with result handling
      * @param mainActivity activity will launch the next one
-     * @param destinationActivity new destination activity
+     * @param destinationActivity new destination activity class
+     * @param data the data set up for next view, use addInputState
      * @param requestCode code for result
      * @param finishMain if [mainActivity] must be finished when [destinationActivity] is launched
      */
@@ -64,6 +65,19 @@ interface EmaNavigator<NS : EmaNavigationState> : EmaBaseNavigator<NS> {
             }
         }?:throw ClassCastException("The launcher activity and the destination activity must" +
                 "extend from EmaActivity")
+    }
+
+    /**
+     * Navigates back
+     * @return true if a fragment has been popped, false if backstack is empty, in that case, finish
+     * the activity provided.
+     */
+    fun navigateBack(activity: Activity): Boolean {
+        val hasMoreFragments = navController.popBackStack()
+        if(!hasMoreFragments)
+            activity.finish()
+
+        return hasMoreFragments
     }
 
     /**

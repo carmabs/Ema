@@ -6,6 +6,7 @@ import com.carmabs.domain.model.LoginRequest
 import com.carmabs.domain.usecase.LoginUseCase
 import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.presentation.base.BaseViewModel
+import com.carmabs.ema.presentation.ui.user.EmaUserState
 
 /**
  *  *<p>
@@ -16,11 +17,12 @@ import com.carmabs.ema.presentation.base.BaseViewModel
  *
  * Created by: Carlos Mateo Benito on 20/1/19.
  */
-class EmaHomeViewModel(private val loginUseCase: LoginUseCase) : BaseViewModel<EmaHomeState, EmaHomeNavigator.Navigation>() {
+class EmaHomeViewModel(
+        private val loginUseCase: LoginUseCase,
+        private val resourceManager: ResourceManager
+) : BaseViewModel<EmaHomeState, EmaHomeNavigator.Navigation>() {
 
-    var toolbarViewModel: EmaHomeToolbarViewModel?=null
-
-    companion object{
+    companion object {
         const val EVENT_MESSAGE = 1000
     }
 
@@ -46,7 +48,9 @@ class EmaHomeViewModel(private val loginUseCase: LoginUseCase) : BaseViewModel<E
         */
     }
 
-    override fun createInitialViewState(): EmaHomeState = EmaHomeState()
+
+
+    override val initialViewState: EmaHomeState = EmaHomeState()
 
     private fun doLogin() {
         checkViewState {
@@ -55,11 +59,18 @@ class EmaHomeViewModel(private val loginUseCase: LoginUseCase) : BaseViewModel<E
                         loading()
                         val user = loginUseCase.execute(LoginRequest(it.userName, it.userPassword))
                         updateViewState()
-                        sendSingleEvent(EmaExtraData(EVENT_MESSAGE,"Congratulations"))
-                        navigate(EmaHomeNavigator.Navigation.User(user))
+                        sendSingleEvent(EmaExtraData(EVENT_MESSAGE, resourceManager.getCongratulations()))
+                        navigate(
+                                EmaHomeNavigator.Navigation.User(
+                                        EmaUserState(
+                                                name = user.name,
+                                                surname = user.surname
+                                        )
+                                )
+                        )
                     },
-                    {
-                        e -> notifyError(e)
+                    { e ->
+                        notifyError(e)
                         navigate(EmaHomeNavigator.Navigation.Error)
                     }
             )
@@ -82,7 +93,7 @@ class EmaHomeViewModel(private val loginUseCase: LoginUseCase) : BaseViewModel<E
         }
     }
 
-    fun onActionRemember(isChecked:Boolean) {
+    fun onActionRemember(isChecked: Boolean) {
         updateViewState(false) {
             copy(rememberUser = isChecked)
         }
