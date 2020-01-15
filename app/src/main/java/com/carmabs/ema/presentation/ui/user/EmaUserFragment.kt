@@ -17,6 +17,12 @@ import org.kodein.di.generic.instance
 
 
 /**
+ *  *  *<p>
+ * Copyright (c) 2020, Carmabs. All rights reserved.
+ * </p>
+ *
+ * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
+ *
  * The toolbar title is set up by provideFixedToolbarTitle() method
  * Use the EmaTheme because it isn,t overriden by parent activity
  * Use the EmaRecycleAdapter with multiple layout in same RecyclerView
