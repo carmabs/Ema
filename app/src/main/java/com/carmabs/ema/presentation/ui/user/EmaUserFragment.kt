@@ -15,10 +15,12 @@ import org.kodein.di.generic.instance
 
 
 /**
- * The toolbar title is set up by provideToolbarTitle() method
+ * The toolbar title is set up by provideFixedToolbarTitle() method
  * Use the EmaTheme because it isn,t overriden by parent activity
  * Use the EmaRecycleAdapter with multiple layout in same RecyclerView
  * Transition animation set in navigation_ema_home
+ * Add extra view model to get access to EmaHomeToolbarViewModel (View model can be shared if it
+ * is attached to activity scope)
  */
 class EmaUserFragment : BaseFragment<EmaUserState, EmaUserViewModel, EmaNavigationState>() {
 

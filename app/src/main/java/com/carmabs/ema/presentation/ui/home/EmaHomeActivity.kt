@@ -25,7 +25,7 @@ class EmaHomeActivity : BaseActivity<EmaHomeToolbarState,EmaHomeToolbarViewModel
 
     }
 
-    override fun provideToolbarTitle(): String? = getString(R.string.home_toolbar_title)
+    override fun provideFixedToolbarTitle(): String? = getString(R.string.home_toolbar_title)
 
     /**
      * Variable used to enable the theme used in manifest. Otherwise it will use the EmaTheme,

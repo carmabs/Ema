@@ -33,9 +33,10 @@ abstract class EmaToolbarFragmentActivity : EmaFragmentActivity() {
 
 
     /**
-     * Title for toolbar. If it is null the label inside navigation layout for the view is set.
+     * Title for toolbar. If it is null the label xml tag in navigation layout is set for the toolbar
+     * title, otherwise this title will be set for all fragments inside this activity.
      */
-    abstract fun provideToolbarTitle(): String?
+    abstract fun provideFixedToolbarTitle(): String?
 
     /**
      * Setup the toolbar
@@ -62,13 +63,12 @@ abstract class EmaToolbarFragmentActivity : EmaFragmentActivity() {
         toolbar = tbToolbar
         setupActionBarWithNavController(navController)
         navController.addOnDestinationChangedListener { _, destination, _ ->
-           setToolbarTitle(provideToolbarTitle())
-
+            setToolbarTitle(provideFixedToolbarTitle())
         }
     }
 
-    protected fun setToolbarTitle(title:String?){
-        title?.also { supportActionBar?.title = it }
+    protected fun setToolbarTitle(title: String?) {
+        supportActionBar?.title = title ?: provideFixedToolbarTitle() ?: navController.currentDestination?.label
     }
 
     /**
