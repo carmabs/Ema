@@ -31,4 +31,8 @@ class AndroidResourceManager(private val context: Context) : ResourceManager {
     override fun getCongratulations(): String {
         return context.getString(R.string.home_congratulations)
     }
+
+    override fun getNumberPeople(number: Int): String {
+        return String.format(context.getString(R.string.user_number_people),number)
+    }
 }

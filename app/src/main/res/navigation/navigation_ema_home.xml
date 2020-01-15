@@ -29,7 +29,7 @@
     <fragment
         android:id="@+id/UserViewFragment"
         android:name="com.carmabs.ema.presentation.ui.user.EmaUserFragment"
-        android:label="RememberUserViewFragment"
+        android:label="@string/user_toolbar_title"
         tools:layout="@layout/fragment_user">
     </fragment>
     <activity

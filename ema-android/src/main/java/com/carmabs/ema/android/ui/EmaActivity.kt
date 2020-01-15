@@ -109,7 +109,7 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
      * Methods called when view model has been created
      * @param viewModel
      */
-    final override fun onViewModelInitalized(viewModel: VM) {
+    final override fun onViewModelInitialized(viewModel: VM) {
         vm = viewModel
         onInitialized(viewModel)
     }

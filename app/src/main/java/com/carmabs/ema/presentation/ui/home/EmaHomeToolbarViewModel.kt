@@ -14,7 +14,6 @@ import com.carmabs.ema.presentation.base.BaseViewModel
  */
 class EmaHomeToolbarViewModel : BaseViewModel<EmaHomeToolbarState, EmaHomeNavigator.Navigation>() {
 
-
     override fun onStartFirstTime(statePreloaded: Boolean) {
 
     }
@@ -27,7 +26,7 @@ class EmaHomeToolbarViewModel : BaseViewModel<EmaHomeToolbarState, EmaHomeNaviga
        }
     }
 
-    fun setToolbarTitle(title:String){
+    fun setToolbarTitle(title:String?){
         updateViewState {
             copy(toolbarTitle = title)
         }

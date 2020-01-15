@@ -19,4 +19,6 @@ interface ResourceManager {
     fun getHomeUserToolbarTitle(): String
 
     fun getCongratulations(): String
+
+    fun getNumberPeople(number: Int): String
 }
