@@ -59,7 +59,7 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
         val resultViewModel = ViewModelProviders.of(fragmentActivity)[EmaResultViewModel::class.java]
         vm.resultViewModel = resultViewModel
 
-        onViewModelInitalized(vm)
+        onViewModelInitialized(vm)
 
         vm.onStart(inputState?.let { EmaState.Normal(it) })
         vm.observableState.observe(fragment ?: fragmentActivity, Observer(this::onDataUpdated))
@@ -126,7 +126,7 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
      * Called once the view model have been provided. Here must go the view set up
      * @param viewModel of the view
      */
-    fun onViewModelInitalized(viewModel: VM)
+    fun onViewModelInitialized(viewModel: VM)
 
     /**
      * Called when view model trigger an update view event
