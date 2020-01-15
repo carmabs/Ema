@@ -36,8 +36,7 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
     val navigator: EmaBaseNavigator<NS>?
 
     /**
-     * The key id for incoming data through Bundle in fragment instantiation.This is set up when other fragment/activity
-     * launches a fragment with arguments provided by Bundle
+     * The state set up form previous views when it is launched.
      */
     val inputState: S?
 

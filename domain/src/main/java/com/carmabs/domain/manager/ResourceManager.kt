@@ -17,4 +17,6 @@ interface ResourceManager {
     fun getResultErrorFillSurname():String
 
     fun getHomeUserToolbarTitle(): String
+
+    fun getCongratulations(): String
 }

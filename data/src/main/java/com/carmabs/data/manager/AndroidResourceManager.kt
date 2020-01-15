@@ -27,4 +27,8 @@ class AndroidResourceManager(private val context: Context) : ResourceManager {
     override fun getHomeUserToolbarTitle(): String {
         return context.getString(R.string.user_toolbar_title)
     }
+
+    override fun getCongratulations(): String {
+        return context.getString(R.string.home_congratulations)
+    }
 }

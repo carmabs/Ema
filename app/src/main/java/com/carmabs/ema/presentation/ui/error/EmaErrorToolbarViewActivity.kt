@@ -16,7 +16,8 @@ import kotlin.math.roundToInt
 
 /**
  *
- * Activity that inherits from EmaActivity, overrideTheme is false, so we take EmaTheme
+ * Activity that inherits from EmaActivity, overrideTheme is false, so we take EmaTheme, for that reason
+ * status bar in this screen has EmaTheme colorPrimaryDark color
  * We can override toolbar background
  *
  *
@@ -30,8 +31,6 @@ class EmaErrorToolbarViewActivity : EmaActivity<EmaErrorToolbarState, EmaErrorTo
     override val viewModelSeed: EmaErrorToolbarViewModel by instance()
 
     override val navigator: EmaErrorNavigator by instance()
-
-    override val inputStateKey: String? = null
 
     private lateinit var vm: EmaErrorToolbarViewModel
 

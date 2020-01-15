@@ -11,6 +11,7 @@
     <string name="home_check_credentials">Please, check your data</string>
     <string name="home_loading_title_message">Getting user data</string>
     <string name="home_user">User:</string>
+    <string name="home_congratulations">Congratulations</string>
     <string name="home_password">Password:</string>
     <string name="home_identify">Identify to access app services</string>
     <string name="home_toolbar_title">EMA HOME</string>

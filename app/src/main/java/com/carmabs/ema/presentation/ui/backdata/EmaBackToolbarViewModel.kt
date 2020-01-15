@@ -15,9 +15,8 @@ import com.carmabs.ema.presentation.ui.backdata.creation.EmaBackUserCreationView
 
 class EmaBackToolbarViewModel : EmaViewModel<EmaBackToolbarState, EmaBackNavigator.Navigation>() {
 
-    override fun createInitialViewState(): EmaBackToolbarState {
-        return EmaBackToolbarState()
-    }
+    override val initialViewState: EmaBackToolbarState = EmaBackToolbarState()
+
 
     override fun onStartFirstTime(statePreloaded: Boolean) {
 

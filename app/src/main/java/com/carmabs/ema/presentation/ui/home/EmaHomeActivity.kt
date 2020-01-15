@@ -21,8 +21,6 @@ class EmaHomeActivity : BaseActivity<EmaHomeToolbarState,EmaHomeToolbarViewModel
 
     override fun getNavGraph(): Int = R.navigation.navigation_ema_home
 
-    override val inputStateKey: String? = null
-
     override fun onInitialized(viewModel: EmaHomeToolbarViewModel) {
 
     }

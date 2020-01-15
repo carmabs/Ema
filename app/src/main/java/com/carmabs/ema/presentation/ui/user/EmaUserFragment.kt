@@ -24,11 +24,9 @@ class EmaUserFragment : BaseFragment<EmaUserState, EmaUserViewModel, EmaNavigati
 
     override val navigator: EmaNavigator<EmaNavigationState>? = null
 
-    override val inputStateKey: String = EmaUserState::class.java.name
-
     private val toolbarViewModel: EmaHomeToolbarViewModel by instance()
 
-    lateinit var adapter: EmaUserAdapter
+    private lateinit var adapter: EmaUserAdapter
 
     override fun onInitialized(viewModel: EmaUserViewModel) {
         val toolbarViewModel = addExtraViewModel(toolbarViewModel,this,requireActivity())
