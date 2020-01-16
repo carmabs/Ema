@@ -2,6 +2,9 @@ package com.carmabs.ema.presentation.ui.home
 
 import android.widget.Toast
 import com.carmabs.ema.R
+import com.carmabs.ema.android.extension.DATE_FORMAT_HHMM
+import com.carmabs.ema.android.extension.getFormattedString
+import com.carmabs.ema.android.extension.toDateFormat
 import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.presentation.base.BaseActivity
 import org.kodein.di.generic.instance
@@ -54,11 +57,10 @@ class EmaHomeActivity : BaseActivity<EmaHomeToolbarState,EmaHomeToolbarViewModel
                  (data.extraData as? Pair<*, *>)?.also {
                      (it.second as? Long)?.also { timestamp ->
                          try {
-                             val sdf = SimpleDateFormat("hh:mm",Locale.getDefault())
-                             val date = sdf.format(Date(timestamp))
-                             Toast.makeText(this,String.format(
-                                     getString(R.string.home_last_user),it.first,date
-                             ),Toast.LENGTH_SHORT).show()
+                             val date = timestamp.toDateFormat(DATE_FORMAT_HHMM)
+                             Toast.makeText(this,
+                                     R.string.home_last_user.getFormattedString(this,it.first,date),
+                                     Toast.LENGTH_SHORT).show()
                              return
                          } catch (e: Exception) { }
                      }

@@ -4,7 +4,9 @@ import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.carmabs.ema.R
+import com.carmabs.ema.android.extension.getFormattedString
 import com.carmabs.ema.android.navigation.EmaNavigator
+import com.carmabs.ema.core.extension.getFormattedString
 import com.carmabs.ema.core.navigator.EmaNavigationState
 import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.presentation.base.BaseFragment
@@ -69,7 +71,7 @@ class EmaUserFragment : BaseFragment<EmaUserState, EmaUserViewModel, EmaNavigati
                 itemLeft?.also {
                     Toast.makeText(
                             requireContext(),
-                            String.format(getString(R.string.user_hello_user), itemLeft.name),
+                            R.string.user_hello_user.getFormattedString(requireContext(), itemLeft.name),
                             Toast.LENGTH_SHORT)
                             .show()
                 }
@@ -80,7 +82,7 @@ class EmaUserFragment : BaseFragment<EmaUserState, EmaUserViewModel, EmaNavigati
                 itemRight?.also {
                     Toast.makeText(
                             requireContext(),
-                            String.format(getString(R.string.user_hello_group), itemRight.number),
+                            R.string.user_hello_group.getFormattedString(requireContext(), itemRight.number),
                             Toast.LENGTH_SHORT)
                             .show()
 

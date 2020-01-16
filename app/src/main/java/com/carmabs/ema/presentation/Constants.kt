@@ -10,5 +10,3 @@ package com.carmabs.ema.presentation
 
 const val DIALOG_TAG_LOADING = "LOADING"
 const val DIALOG_TAG_SIMPLE = "SIMPLE"
-
-const val STRING_EMPTY = ""
