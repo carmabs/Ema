@@ -4,6 +4,7 @@ import com.carmabs.domain.exception.UserEmptyException
 import com.carmabs.domain.manager.ResourceManager
 import com.carmabs.domain.model.LoginRequest
 import com.carmabs.domain.usecase.LoginUseCase
+import com.carmabs.ema.core.constants.STRING_EMPTY
 import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.presentation.base.BaseViewModel
 import com.carmabs.ema.presentation.ui.user.EmaUserState
@@ -101,13 +102,13 @@ class EmaHomeViewModel(
 
     fun onActionDeletePassword() {
         updateViewState {
-            copy(userPassword = "")
+            copy(userPassword = STRING_EMPTY)
         }
     }
 
     fun onActionDeleteUser() {
         updateViewState {
-            copy(userName = "")
+            copy(userName = STRING_EMPTY)
         }
     }
 

@@ -1,5 +1,6 @@
 package com.carmabs.ema.presentation.ui.home
 
+import com.carmabs.ema.core.constants.STRING_EMPTY
 import com.carmabs.ema.core.state.EmaBaseState
 
 /**
@@ -12,8 +13,9 @@ import com.carmabs.ema.core.state.EmaBaseState
  * Created by: Carlos Mateo Benito on 20/1/19.
  */
 data class EmaHomeState(
-        val userName: String = "",
-        val userPassword: String = "",
+        val userName: String = STRING_EMPTY,
+        val userPassword: String = STRING_EMPTY,
         val showPassword: Boolean = false,
-        val rememberUser: Boolean = false
+        val rememberUser: Boolean = false,
+        val test:String?=null
 ) : EmaBaseState
