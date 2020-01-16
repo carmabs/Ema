@@ -5,7 +5,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import com.carmabs.ema.R
+import com.carmabs.ema.android.extension.getFormattedString
 import com.carmabs.ema.android.ui.EmaRecyclerAdapter
+import com.carmabs.ema.core.extension.getFormattedString
 import kotlinx.android.synthetic.main.item_left.view.*
 import kotlinx.android.synthetic.main.item_right.view.*
 
@@ -37,12 +39,12 @@ class EmaUserAdapter(private val viewModel: EmaUserViewModel,
 
             EmaUserItemModel.Type.LEFT -> {
                 val leftItem = item as EmaUserLeftModel
-                tvItemLeft.text = String.format(context.resources.getString(R.string.user_name),leftItem.name)
+                tvItemLeft.text = R.string.user_name.getFormattedString(context,leftItem.name)
             }
 
             EmaUserItemModel.Type.RIGHT -> {
                 val rightItem = item as EmaUserRightModel
-                tvItemRight.text = String.format(context.resources.getString(R.string.user_number_people),rightItem.number)
+                tvItemRight.text = R.string.user_number_people.getFormattedString(context,rightItem.number)
             }
         }
 

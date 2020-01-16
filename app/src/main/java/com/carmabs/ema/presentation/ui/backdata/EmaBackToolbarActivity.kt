@@ -23,13 +23,11 @@ class EmaBackToolbarActivity : BaseActivity<EmaBackToolbarState, EmaBackToolbarV
 
     override fun getNavGraph(): Int = R.navigation.navigation_ema_back
 
-    override fun provideToolbarTitle(): String? = null
+    override fun provideFixedToolbarTitle(): String? = null
 
     override val viewModelSeed: EmaBackToolbarViewModel by instance()
 
     override val navigator: EmaBackNavigator by instance()
-
-    override fun injectActivityModule(kodein: Kodein.MainBuilder): Kodein.Module? = activityInjection(this)
 
     override fun onInitialized(viewModel: EmaBackToolbarViewModel) {
         toolbar.apply {
