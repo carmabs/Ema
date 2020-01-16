@@ -1,7 +1,7 @@
 package com.carmabs.ema.presentation.ui.backdata.creation
 
+import com.carmabs.ema.core.constants.STRING_EMPTY
 import com.carmabs.ema.core.state.EmaBaseState
-import com.carmabs.ema.presentation.STRING_EMPTY
 
 /**
  *<p>

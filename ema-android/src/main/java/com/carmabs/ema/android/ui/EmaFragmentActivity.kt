@@ -12,7 +12,7 @@ import com.carmabs.ema.android.R
  *
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
-abstract class EmaFragmentActivity : EmaBaseActivity(), EmaViewUtils {
+abstract class EmaFragmentActivity : EmaBaseActivity() {
 
     override fun onCreateActivity(savedInstanceState: Bundle?) {
         setupNavigation()

@@ -5,7 +5,7 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.carmabs.ema.R
-import com.carmabs.ema.android.extension.toDp
+import com.carmabs.ema.android.extension.*
 import com.carmabs.ema.android.ui.EmaActivity
 import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.presentation.injection.activityInjection
@@ -26,7 +26,7 @@ class EmaErrorToolbarViewActivity : EmaActivity<EmaErrorToolbarState, EmaErrorTo
 
     override fun getNavGraph(): Int = R.navigation.navigation_ema_error
 
-    override fun provideToolbarTitle(): String? = getString(R.string.error_toolbar_title)
+    override fun provideFixedToolbarTitle(): String? = getString(R.string.error_toolbar_title)
 
     override val viewModelSeed: EmaErrorToolbarViewModel by instance()
 
@@ -45,11 +45,11 @@ class EmaErrorToolbarViewActivity : EmaActivity<EmaErrorToolbarState, EmaErrorTo
 
         //With EMA activity you can customize the toolbar
         toolbar.apply {
-            val whiteColor = ContextCompat.getColor(applicationContext, android.R.color.white)
-            setBackgroundColor(ContextCompat.getColor(applicationContext, R.color.colorPrimary))
+            val whiteColor = android.R.color.white.getColorCompat(applicationContext)
+            setBackgroundColor(R.color.colorPrimary.getColorCompat(applicationContext))
             logo = getDrawable(R.drawable.ic_error_toolbar)
             setTitleTextColor(whiteColor)
-            titleMarginStart = resources.getDimension(R.dimen.space_medium).roundToInt().toDp(context)
+            titleMarginStart = resources.getDimension(R.dimen.space_medium).roundToInt().dpToPx(context)
 
         }
     }
@@ -70,7 +70,7 @@ class EmaErrorToolbarViewActivity : EmaActivity<EmaErrorToolbarState, EmaErrorTo
     }
 
     override fun onSingleEvent(data: EmaExtraData) {
-        Toast.makeText(this, getFormattedString(this, R.string.error_user_created, data.extraData as Int), Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, R.string.error_user_created.getFormattedString(this, data.extraData as Int), Toast.LENGTH_SHORT).show()
 
     }
 

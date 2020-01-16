@@ -3,6 +3,7 @@ package com.carmabs.ema.presentation.ui.backdata.userlist;
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.carmabs.ema.R
+import com.carmabs.ema.android.extension.checkVisibility
 import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.presentation.base.BaseFragment
 import com.carmabs.ema.presentation.ui.backdata.EmaBackNavigator
@@ -50,7 +51,7 @@ class EmaBackUserFragment : BaseFragment<EmaBackUserState, EmaBackUserViewModel,
     override fun onNormal(data: EmaBackUserState) {
         adapter.updateList(data.listUsers)
         tvBackNoUsers.visibility = checkVisibility(data.noUserVisibility)
-        rvBack.visibility = checkVisibility(!data.noUserVisibility,gone = false)
+        rvBack.visibility = checkVisibility(!data.noUserVisibility, gone = false)
     }
 
     override fun onLoading(data: EmaExtraData) {
