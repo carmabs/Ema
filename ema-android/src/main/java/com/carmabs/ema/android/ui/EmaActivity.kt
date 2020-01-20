@@ -126,7 +126,10 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
      */
     private val extraViewModelMap: MutableList<EmaViewModel<*, *>> by lazy { mutableListOf<EmaViewModel<*, *>>() }
 
-
+    /**
+     * Previous state for comparing state properties update
+     */
+    override var previousState: S? = null
     /**
      * Add a view model observer to current fragment
      * @param viewModelAttachedSeed is the view model seed will used as factory instance if there is no previous

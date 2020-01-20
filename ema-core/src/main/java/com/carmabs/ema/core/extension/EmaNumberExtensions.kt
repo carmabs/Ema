@@ -31,3 +31,7 @@ fun Long?.checNull(defaultValue: Long = LONG_ZERO): Long {
 fun Double?.checkNull(defaultValue: Double = DOUBLE_ZERO): Double {
     return this ?: defaultValue
 }
+
+fun Boolean?.checkNull(defaultValue: Boolean = false): Boolean {
+    return this ?: defaultValue
+}

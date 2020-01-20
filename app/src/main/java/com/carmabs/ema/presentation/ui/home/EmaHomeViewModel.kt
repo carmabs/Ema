@@ -119,6 +119,9 @@ class EmaHomeViewModel(
     }
 
     fun onActionUserWrite(user: String) {
+        //We put it as false to avoid to update unnecesary the view, it has the edit text updated with
+        //text when you write on it, but you need to save the state if for example, there is a device
+        //rotation and the view is recreated
         updateViewState(false) {
             copy(userName = user)
         }

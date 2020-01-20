@@ -60,5 +60,5 @@ fun getScreenMetrics(context: Context): DisplayMetrics{
  */
 fun <T> checkUpdate(oldValue: T, newValue: T, action: (T) -> Unit) {
     if (oldValue != newValue)
-        action.invoke(newValue)
+        action(newValue)
 }
