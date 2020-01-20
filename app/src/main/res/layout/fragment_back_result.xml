@@ -7,7 +7,7 @@
     android:background="@color/white"
     android:orientation="vertical">
 
-    <EditText
+    <com.carmabs.ema.android.extra.EmaEditText
         android:id="@+id/etBackResultName"
         style="@style/EditTextUser"
         android:layout_width="0dp"
@@ -20,7 +20,7 @@
         app:layout_constraintTop_toBottomOf="@+id/textView3"
         tools:text="Carmabs" />
 
-    <EditText
+    <com.carmabs.ema.android.extra.EmaEditText
         android:id="@+id/etBackResultSurname"
         style="@style/EditTextUser"
         android:layout_width="0dp"
@@ -63,13 +63,15 @@
 
     <TextView
         android:id="@+id/textView5"
+        style="@style/TextHugeTitle"
+        android:textSize="@dimen/letter_big"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:text="@string/back_result_title"
-        style="@style/TextHugeTitle"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
