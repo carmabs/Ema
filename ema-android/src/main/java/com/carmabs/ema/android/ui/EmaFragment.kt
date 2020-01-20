@@ -70,6 +70,10 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
     protected open fun provideToolbarTitle(): String? = null
 
     /**
+     * Previous state for comparing state properties update
+     */
+    override var previousState: S? = null
+    /**
      * Add a view model observer to current fragment
      * @param viewModelAttachedSeed is the view model seed will used as factory instance if there is no previous
      * view model retained by the OS
