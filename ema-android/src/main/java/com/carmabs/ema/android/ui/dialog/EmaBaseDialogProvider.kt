@@ -35,7 +35,7 @@ abstract class EmaBaseDialogProvider constructor(private val fragmentManager: Fr
     override fun hide() {
         dialog?.let {
             if (!it.isHidden) {
-                Log.d(this.javaClass.name, "Loading dialog totally hidden")
+                Log.d(this.javaClass.name, "Alternative dialog totally hidden")
                 it.dismissAllowingStateLoss()
             }
         } ?: also { _ ->

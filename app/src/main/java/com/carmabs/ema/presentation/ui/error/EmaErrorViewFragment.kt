@@ -39,7 +39,7 @@ class EmaErrorViewFragment : BaseFragment<EmaErrorState, EmaErrorViewModel, EmaE
         bErrorToolbar.visibility = if (data.showToolbarViewVisibility) View.VISIBLE else View.GONE
     }
 
-    override fun onLoading(data: EmaExtraData) {
+    override fun onAlternative(data: EmaExtraData) {
     }
 
     override fun onSingle(data: EmaExtraData) {

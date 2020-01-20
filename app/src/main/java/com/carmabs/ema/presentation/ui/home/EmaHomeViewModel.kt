@@ -42,7 +42,7 @@ class EmaHomeViewModel(
 
         addOnResultReceived{
             (it.data as? Pair<*, *>)?.also { pair ->
-                sendSingleEvent(EmaExtraData(extraData = pair))
+                notifySingleEvent(EmaExtraData(extraData = pair))
             }
         }
 
@@ -53,13 +53,13 @@ class EmaHomeViewModel(
     override val initialViewState: EmaHomeState = EmaHomeState()
 
     private fun doLogin() {
-        checkViewState {
+        checkDataState {
             executeUseCaseWithException(
                     {
-                        loading()
+                        updateAlternativeState()
                         val user = loginUseCase.execute(LoginRequest(it.userName, it.userPassword))
-                        updateViewState()
-                        sendSingleEvent(EmaExtraData(EVENT_MESSAGE, resourceManager.getCongratulations()))
+                        updateNormalState()
+                        notifySingleEvent(EmaExtraData(EVENT_MESSAGE, resourceManager.getCongratulations()))
                         navigate(
                                 EmaHomeNavigator.Navigation.User(
                                         EmaUserState(
@@ -70,7 +70,7 @@ class EmaHomeViewModel(
                         )
                     },
                     { e ->
-                        notifyError(e)
+                        updateErrorState(e)
                         navigate(EmaHomeNavigator.Navigation.Error)
                     }
             )
@@ -78,61 +78,61 @@ class EmaHomeViewModel(
     }
 
     fun onActionLogin() {
-        checkViewState {
+        checkDataState {
             when {
-                it.userName.isEmpty() -> notifyError(UserEmptyException())
-                it.userPassword.isEmpty() -> notifyError(UserEmptyException())
+                it.userName.isEmpty() -> updateErrorState(UserEmptyException())
+                it.userPassword.isEmpty() -> updateErrorState(UserEmptyException())
                 else -> doLogin()
             }
         }
     }
 
     fun onActionShowPassword() {
-        updateViewState {
+        updateNormalState {
             copy(showPassword = !showPassword)
         }
     }
 
     fun onActionRemember(isChecked: Boolean) {
-        updateViewState(false) {
+        updateNormalState {
             copy(rememberUser = isChecked)
         }
     }
 
     fun onActionDeletePassword() {
-        updateViewState {
+        updateNormalState {
             copy(userPassword = STRING_EMPTY)
         }
     }
 
     fun onActionDeleteUser() {
-        updateViewState {
+        updateNormalState(false) {
             copy(userName = STRING_EMPTY)
         }
     }
 
 
     fun onActionUserWrite(user: String) {
-        //We put it as false to avoid to update unnecesary the view, it has the edit text updated with
+        //We only want to update the data of the view without notifying it, it has the edit text updated with
         //text when you write on it, but you need to save the state if for example, there is a device
         //rotation and the view is recreated, to set the text with last value saved on state
 
-        updateViewState(false) {
+        updateDataState {
             copy(userName = user)
         }
     }
 
     fun onActionPasswordWrite(password: String) {
-        updateViewState(false) {
+        updateDataState {
             copy(userPassword = password)
         }
     }
 
     fun onActionDialogErrorCancel() {
-        updateViewState()
+        updateNormalState()
     }
 
     fun onActionDialogErrorAccept() {
-        updateViewState()
+        updateNormalState()
     }
 }
