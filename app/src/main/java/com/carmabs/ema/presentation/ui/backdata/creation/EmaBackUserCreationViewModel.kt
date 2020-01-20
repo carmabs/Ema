@@ -37,8 +37,8 @@ class EmaBackUserCreationViewModel(private val resourceManager: ResourceManager)
                 addResult(EmaBackUserModel(
                         name = name,
                         surname = surname
-                ),RESULT_USER)
-                addResult(Pair(name,System.currentTimeMillis()))
+                ), RESULT_USER)
+                addResult(Pair(name, System.currentTimeMillis()))
                 navigateBack()
             }
         }

@@ -3,6 +3,8 @@ package com.carmabs.ema.presentation.ui.backdata.creation
 import android.widget.Toast
 import com.carmabs.ema.R
 import com.carmabs.ema.android.extra.EmaTextWatcher
+import com.carmabs.ema.core.constants.STRING_EMPTY
+import com.carmabs.ema.core.extension.checkNull
 import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.presentation.base.BaseFragment
 import com.carmabs.ema.presentation.ui.backdata.EmaBackNavigator
@@ -17,6 +19,8 @@ import org.kodein.di.generic.instance
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  *
  * Date: 2019-11-07
+ *
+ * Use of EmaEditText.
  */
 
 class EmaBackUserCreationFragment : BaseFragment<EmaBackUserCreationState, EmaBackUserCreationViewModel, EmaBackNavigator.Navigation>() {
@@ -28,13 +32,30 @@ class EmaBackUserCreationFragment : BaseFragment<EmaBackUserCreationState, EmaBa
 
     private fun setupEditTexts(viewModel: EmaBackUserCreationViewModel) {
 
-        etBackResultName.addTextChangedListener(EmaTextWatcher {
-            viewModel.onActionNameWrite(it)
-        })
+        ///With EmaEditText is not necessary the following code to add a textwatcher to update the
+        ///state in viewmodel
 
-        etBackResultSurname.addTextChangedListener(EmaTextWatcher {
-            viewModel.onActionSurnameWrite(it)
-        })
+        /*
+        etBackResultSurname.addTextChangedListener(object : TextWatcher {
+               override fun afterTextChanged(s: Editable?) {
+               }
+
+               override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+               }
+
+               override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                   viewModel.onActionSurnameWrite(s?.toString() ?: STRING_EMPTY)
+               }
+        })*/
+
+        ///Use the next code ///
+
+        etBackResultName.setEmaTextWatcherListener {
+            viewModel.onActionNameWrite(it.checkNull())
+        }
+        etBackResultSurname.setEmaTextWatcherListener {
+            viewModel.onActionSurnameWrite(it.checkNull())
+        }
     }
 
 
@@ -57,6 +78,10 @@ class EmaBackUserCreationFragment : BaseFragment<EmaBackUserCreationState, EmaBa
     override val navigator: EmaBackNavigator by instance()
 
     override fun onNormal(data: EmaBackUserCreationState) {
+
+        ///Using the EmaEditText it handles text updates to avoid infinite loops described in
+        ///HomeViewFragment
+
         etBackResultName.setText(data.name)
         etBackResultSurname.setText(data.surname)
     }
