@@ -16,10 +16,10 @@ sealed class EmaState<T>(val data: T) : EmaBaseState {
     class Normal<T>(data: T) : EmaState<T>(data = data)
 
     /**
-     * State that represents a loading state of a view.
-     * @constructor T is the state model of the view, data represents the current state of the view, dataLoading respresents extra dataLoading to handle the loading state
+     * State that represents an alternative state of a view.
+     * @constructor T is the state model of the view, data represents the current state of the view, dataAlternative respresents extra dataAlternative to handle the alternative state
      */
-    class Loading<T>(data: T, val dataLoading: EmaExtraData = EmaExtraData()) : EmaState<T>(data)
+    class Alternative<T>(data: T, val dataAlternative: EmaExtraData = EmaExtraData()) : EmaState<T>(data)
 
     /**
      * State that represents an error state of a view

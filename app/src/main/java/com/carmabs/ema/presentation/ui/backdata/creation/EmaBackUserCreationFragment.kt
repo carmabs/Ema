@@ -86,7 +86,7 @@ class EmaBackUserCreationFragment : BaseFragment<EmaBackUserCreationState, EmaBa
         etBackResultSurname.setText(data.surname)
     }
 
-    override fun onLoading(data: EmaExtraData) {
+    override fun onAlternative(data: EmaExtraData) {
     }
 
     override fun onSingle(data: EmaExtraData) {

@@ -192,7 +192,7 @@ class EmaHomeFragment : BaseFragment<EmaHomeState, EmaHomeViewModel, EmaHomeNavi
         }
     }
 
-    override fun onLoading(data: EmaExtraData) {
+    override fun onAlternative(data: EmaExtraData) {
         showLoadingDialog()
     }
 

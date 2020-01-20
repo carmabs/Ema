@@ -29,7 +29,7 @@ class EmaBackUserViewModel : EmaViewModel<EmaBackUserState, EmaBackNavigator.Nav
 
     override fun onResultListenerSetup() {
         addOnResultReceived(EmaBackUserCreationViewModel.RESULT_USER){
-            updateViewState {
+            updateNormalState {
                 val mutableList = listUsers.toMutableList()
                 mutableList.add(it.data as EmaBackUserModel)
                 addResult(mutableList.size,RESULT_USER_NUMBER)

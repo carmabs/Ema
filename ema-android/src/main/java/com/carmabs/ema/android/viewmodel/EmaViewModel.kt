@@ -37,18 +37,67 @@ abstract class EmaViewModel<S, NS : EmaNavigationState> : EmaBaseViewModel<EmaSt
     }
 
     /**
-     * Update the current state and update the view by default
+     * Update the current state and update the normal view state by default
      * @param notifyView updates the view
      * @param changeStateFunction create the new state
      */
-    protected fun updateViewState(notifyView: Boolean = true, changeStateFunction: S.() -> S) {
+    @Deprecated("Use updateNormalState, that always update the state to Normal and notify the view, to update only" +
+            " the data of the state without notifying the current state to the view, use updateDataState")
+    protected fun updateNormalState(notifyView: Boolean = true, changeStateFunction: S.() -> S) {
+        viewState?.let {
+            viewState = changeStateFunction(it)
+            viewState?.let { newState ->
+                state = updateData(newState)
+            }
+            if (notifyView) updateNormalState()
+        }
+
+    }
+
+    /**
+     * Update the data of the state without notifying it to the view.
+     */
+    private fun updateData(newState: S): EmaState<S> {
+        return when (state) {
+            is EmaState.Error -> {
+                val errorState = state as EmaState.Error
+                EmaState.Error(newState, errorState.error)
+            }
+            is EmaState.Normal -> {
+                EmaState.Normal(newState)
+            }
+
+            is EmaState.Alternative -> {
+                val alternativeState = state as EmaState.Alternative
+                EmaState.Alternative(newState, alternativeState.dataAlternative)
+            }
+            null -> EmaState.Normal(newState)
+        }
+    }
+
+    /**
+     * Update the current state and update the normal view state by default
+     * @param notifyView updates the view
+     * @param changeStateFunction create the new state
+     */
+    protected open fun updateNormalState(changeStateFunction: S.() -> S) {
         viewState?.let {
             viewState = changeStateFunction.invoke(it)
             viewState?.let { newState -> state = EmaState.Normal(newState) }
-
-            if (notifyView) updateViewState()
+            updateNormalState()
         }
 
+    }
+
+    /**
+     * Update the data of current state without notify it to the view.
+     * @param changeStateFunction create the new state
+     */
+    protected fun updateDataState(changeStateFunction: S.() -> S) {
+        viewState?.let {
+            viewState = changeStateFunction.invoke(it)
+            viewState?.let { newState -> state = updateData(newState) }
+        }
     }
 
     /**
@@ -56,7 +105,7 @@ abstract class EmaViewModel<S, NS : EmaNavigationState> : EmaBaseViewModel<EmaSt
      * Use the EmaState -> Normal
      * @param state of the view
      */
-    protected fun updateViewState() {
+    protected open fun updateNormalState() {
         state?.let {
             viewState?.let { currentState ->
                 super.updateView(EmaState.Normal(currentState))
@@ -69,7 +118,7 @@ abstract class EmaViewModel<S, NS : EmaNavigationState> : EmaBaseViewModel<EmaSt
      * @param checkStateFunction function to check the current state
      * @return the value returned by [checkStateFunction]
      */
-    fun <T> checkViewState(checkStateFunction: (S) -> T): T {
+    fun <T> checkDataState(checkStateFunction: (S) -> T): T {
         return viewState?.let {
             checkStateFunction.invoke(it)
         } ?: let {
@@ -84,7 +133,7 @@ abstract class EmaViewModel<S, NS : EmaNavigationState> : EmaBaseViewModel<EmaSt
      * Use the EmaState -> Error
      * @param error generated
      */
-    protected fun notifyError(error: Throwable) {
+    protected open fun updateErrorState(error: Throwable) {
         viewState?.let {
             super.updateView(EmaState.Error(it, error))
         } ?: throwInitialStateException()
@@ -92,23 +141,23 @@ abstract class EmaViewModel<S, NS : EmaNavigationState> : EmaBaseViewModel<EmaSt
     }
 
     /**
-     * Used for trigger a loading event on the view
-     * Use the EmaState -> Loading
-     * @param data with loading information
+     * Used for trigger a updateAlternativeState event on the view
+     * Use the EmaState -> Alternative
+     * @param data with updateAlternativeState information
      */
-    protected fun loading(data: EmaExtraData? = null) {
+    protected open fun updateAlternativeState(data: EmaExtraData? = null) {
         viewState?.let { state ->
-            val loadingData: EmaState.Loading<S> = data?.let {
-                EmaState.Loading(state, dataLoading = it)
-            } ?: EmaState.Loading(state)
+            val alternativeData: EmaState.Alternative<S> = data?.let {
+                EmaState.Alternative(state, dataAlternative = it)
+            } ?: EmaState.Alternative(state)
 
-            super.updateView(loadingData)
+            super.updateView(alternativeData)
         } ?: throwInitialStateException()
 
     }
 
     /**
-     * Generate the initial state with EmaState to trigger normal/loading/error states
+     * Generate the initial state with EmaState to trigger normal/updateAlternativeState/error states
      * for the view.
      */
     final override fun createInitialState(): EmaState<S> {
