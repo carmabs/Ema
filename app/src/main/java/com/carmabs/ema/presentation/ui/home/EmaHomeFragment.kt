@@ -154,7 +154,15 @@ class EmaHomeFragment : BaseFragment<EmaHomeState, EmaHomeViewModel, EmaHomeNavi
 
         //////THIS TWO METHODS ARE SIMILAR, USE IT DEPENDING YOUR USE CASE/////
 
-        //Use this to check if values are different
+        //Use this to check if values are different, this way you avoid to call ViewModel
+        //due to TextWatcher and the chance to generate infinite loop:
+        //Example : etUser change s
+        // -> TextWatcher calls viewmodel
+        // -> Viewmodel update the view
+        // -> etUser set the data.userName
+        // -> TextWatcher calls viewmodel
+        // -> ¡INFINITE LOOP!
+        //
         checkUpdate(etUser.text.toString(),data.userName) {
             etUser.setText(data.userName)
         }
