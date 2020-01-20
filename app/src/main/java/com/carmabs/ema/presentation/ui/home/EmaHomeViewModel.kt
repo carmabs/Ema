@@ -50,7 +50,6 @@ class EmaHomeViewModel(
     }
 
 
-
     override val initialViewState: EmaHomeState = EmaHomeState()
 
     private fun doLogin() {
@@ -112,18 +111,20 @@ class EmaHomeViewModel(
         }
     }
 
-    fun onActionPasswordWrite(password: String) {
-        updateViewState(false) {
-            copy(userPassword = password)
-        }
-    }
 
     fun onActionUserWrite(user: String) {
         //We put it as false to avoid to update unnecesary the view, it has the edit text updated with
         //text when you write on it, but you need to save the state if for example, there is a device
-        //rotation and the view is recreated
+        //rotation and the view is recreated, to set the text with last value saved on state
+
         updateViewState(false) {
             copy(userName = user)
+        }
+    }
+
+    fun onActionPasswordWrite(password: String) {
+        updateViewState(false) {
+            copy(userPassword = password)
         }
     }
 

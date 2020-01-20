@@ -2,6 +2,7 @@ package com.carmabs.ema.android.extra
 
 import android.text.Editable
 import android.text.TextWatcher
+import android.widget.EditText
 import com.carmabs.ema.core.constants.STRING_EMPTY
 
 /**
@@ -14,21 +15,40 @@ import com.carmabs.ema.core.constants.STRING_EMPTY
  * Date: 2019-11-08
  */
 
-class EmaTextWatcher(private val action: (String) -> Unit) : TextWatcher {
+class EmaTextWatcher(private val editText: EditText, private val action: (String?) -> Unit) {
 
     private var previousText = STRING_EMPTY
+    private val textWatcher: TextWatcher by lazy {
+        object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                val newText = s?.toString() ?: STRING_EMPTY
+                if (newText != previousText) {
+                    removeListener()
+                    action(newText)
+                    restoreListener()
+                }
+            }
 
-    override fun afterTextChanged(s: Editable?) {
-        val newText = s?.toString() ?: STRING_EMPTY
-        if (newText != previousText)
-            action.invoke(newText)
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                previousText = s?.toString() ?: STRING_EMPTY
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+        }
     }
 
-    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-        previousText = s?.toString() ?: STRING_EMPTY
+    init {
+        editText.addTextChangedListener(textWatcher)
     }
 
-    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+    fun removeListener(): TextWatcher {
+        editText.removeTextChangedListener(textWatcher)
+        return textWatcher
+    }
 
+    fun restoreListener() {
+        editText.addTextChangedListener(textWatcher)
     }
 }
