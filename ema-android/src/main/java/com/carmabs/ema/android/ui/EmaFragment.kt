@@ -1,12 +1,13 @@
 package com.carmabs.ema.android.ui
 
 import android.os.Bundle
-import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import com.carmabs.ema.android.extra.EmaReceiverModel
+import com.carmabs.ema.android.extra.EmaResultModel
 import com.carmabs.ema.android.viewmodel.EmaFactory
 import com.carmabs.ema.android.viewmodel.EmaViewModel
 import com.carmabs.ema.core.navigator.EmaNavigationState
@@ -24,13 +25,15 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
     /**
      * The view model of the fragment
      */
-    private var vm: VM? = null
+    private lateinit var vm: VM
 
     /**
      * The key id for incoming data through Bundle in fragment instantiation.This is set up when other fragment/activity
      * launches a fragment with arguments provided by Bundle
      */
-    abstract val inputStateKey: String?
+    protected open val inputStateKey: String by lazy {
+        vm.initialViewState.javaClass.name
+    }
 
     /**
      * Called once the view model is instantiated
@@ -51,12 +54,10 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
     private val extraViewModelList: MutableList<EmaViewModel<*, *>> by lazy { mutableListOf<EmaViewModel<*, *>>() }
 
     /**
-     * The view model is instantiated on fragment creation
-     * @param view which inflated the fragment
-     * @param savedInstanceState saved data for recreation
+     * The view model is instantiated on fragment resume.
      */
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onResume() {
+        super.onResume()
         activity?.let {
             initializeViewModel(it,
                     if (fragmentViewModelScope)
@@ -64,9 +65,14 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
                     else
                         null)
         }
-
     }
 
+    protected open fun provideToolbarTitle(): String? = null
+
+    /**
+     * Previous state for comparing state properties update
+     */
+    override var previousState: S? = null
     /**
      * Add a view model observer to current fragment
      * @param viewModelAttachedSeed is the view model seed will used as factory instance if there is no previous
@@ -103,7 +109,7 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
      * Methods called when view model has been created
      * @param viewModel
      */
-    override fun onViewModelInitalized(viewModel: VM) {
+    final override fun onViewModelInitialized(viewModel: VM) {
         vm = viewModel
         onInitialized(viewModel)
     }
@@ -111,11 +117,13 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
     /**
      * Destroy the view and unbind the observers from view model
      */
-    override fun onDestroyView() {
-        super.onDestroyView()
+    override fun onPause() {
+        super.onPause()
         val owner: LifecycleOwner = if (fragmentViewModelScope) this else requireActivity()
         removeExtraViewModels()
-        vm?.unBindObservables(owner)
+        vm.unBindObservables(owner)
+        vm.resultViewModel.unBindObservables(this)
+
     }
 
     /**
@@ -143,5 +151,19 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
 
     fun setInputState(inState: S) {
         arguments = Bundle().apply { putSerializable(inputStateKey, inState) }
+    }
+
+    /**
+     * Override to do logic if it is required when result is setted
+     */
+    override fun onResultSetEvent(emaResultModel: EmaResultModel) {
+
+    }
+
+    /**
+     * Override to do logic if it is required when result receiver is invoked
+     */
+    override fun onResultReceiverInvokeEvent(emaReceiverModel: EmaReceiverModel) {
+
     }
 }

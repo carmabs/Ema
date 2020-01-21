@@ -6,8 +6,13 @@ import com.carmabs.injection.appDataInjection
 import org.kodein.di.Kodein
 
 /**
- * Project: Ema
- * Created by: cmateob on 21/1/19.
+ *  *<p>
+ * Copyright (c) 2020, Carmabs. All rights reserved.
+ * </p>
+ *
+ * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
+ *
+ * Created by: Carlos Mateo Benito on 21/1/19.
  */
 class EmaSampleApplication : EmaApplication() {
     override fun injectAppModule(kodein: Kodein.MainBuilder): Kodein.Module? {

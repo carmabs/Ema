@@ -39,24 +39,20 @@ android {
 dependencies {
 
     //Navigation
-    implementation emaAndroid.navigationFragment
-    implementation emaAndroid.navigationUI
+    api emaAndroid.navigationFragment
+    api emaAndroid.navigationUI
 
     //Architecture components
-    implementation emaAndroid.lifecycle
-
-    //Kotlin
-    implementation emaAndroid.kotlin
-    implementation emaAndroid.coroutines
+    api emaAndroid.lifecycle
 
     //Kodein
-    implementation emaAndroid.kodein
-    implementation emaAndroid.kodeinAndroid
+    api emaAndroid.kodein
+    api emaAndroid.kodeinAndroid
 
     //UI
-    implementation emaAndroid.constraint
-    implementation emaAndroid.design
-    implementation emaAndroid.material
+    api emaAndroid.constraint
+    api emaAndroid.design
+    api emaAndroid.material
 
-    implementation project(path: ':ema-core')
+    api project(path: ':ema-core')
 }

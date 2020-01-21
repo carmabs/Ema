@@ -2,22 +2,22 @@ package com.carmabs.ema.presentation.ui.error
 
 import android.view.View
 import com.carmabs.ema.R
-import com.carmabs.ema.android.navigation.EmaNavigator
 import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.presentation.base.BaseFragment
-import com.carmabs.ema.presentation.ui.home.EmaHomeNavigator
 import kotlinx.android.synthetic.main.fragment_error.*
 import org.kodein.di.generic.instance
 
-class EmaErrorViewFragment : BaseFragment<EmaErrorState, EmaErrorViewModel, EmaHomeNavigator.Navigation>() {
+class EmaErrorViewFragment : BaseFragment<EmaErrorState, EmaErrorViewModel, EmaErrorNavigator.Navigation>() {
 
-    override val inputStateKey: String? = null
+    /**
+     * If you wouldn't want to use dependency injection you can provide it instantiating the class.
+     * Not recommended
+     */
+    override val viewModelSeed: EmaErrorViewModel = EmaErrorViewModel()
 
-    override val viewModelSeed: EmaErrorViewModel by instance()
+    private val toolbarViewModelSeed: EmaErrorToolbarViewModel by instance()
 
-    private val toolbarViewModelSeed: EmaToolbarViewModel by instance()
-
-    override val navigator: EmaNavigator<EmaHomeNavigator.Navigation> by instance<EmaHomeNavigator>()
+    override val navigator: EmaErrorNavigator by instance()
 
     override fun onInitialized(viewModel: EmaErrorViewModel) {
         viewModel.toolbarViewModel = addExtraViewModel(toolbarViewModelSeed, this, requireActivity()) {
@@ -28,6 +28,7 @@ class EmaErrorViewFragment : BaseFragment<EmaErrorState, EmaErrorViewModel, EmaH
 
     private fun setupButtons(viewModel: EmaErrorViewModel) {
         bErrorToolbar.setOnClickListener { viewModel.onActionToolbar() }
+        bErrorAddUser.setOnClickListener { viewModel.onActionAddUser() }
     }
 
     override fun onNormal(data: EmaErrorState) {
@@ -38,7 +39,7 @@ class EmaErrorViewFragment : BaseFragment<EmaErrorState, EmaErrorViewModel, EmaH
         bErrorToolbar.visibility = if (data.showToolbarViewVisibility) View.VISIBLE else View.GONE
     }
 
-    override fun onLoading(data: EmaExtraData) {
+    override fun onAlternative(data: EmaExtraData) {
     }
 
     override fun onSingle(data: EmaExtraData) {

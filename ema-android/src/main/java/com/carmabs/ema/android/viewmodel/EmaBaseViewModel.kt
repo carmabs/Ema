@@ -66,7 +66,7 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> : Vie
     /**
      * The state of the view.
      */
-    protected var state: S? = null
+    internal var state: S? = null
 
     /**
      * To determine if the view must be updated when view model is created automatically
@@ -114,18 +114,6 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> : Vie
     fun getSingleObservableState(): LiveData<EmaExtraData> = singleObservableState
 
     /**
-     * Update the current state and update the view by default
-     * @param notifyView updates the view
-     * @param changeStateFunction create the new state
-     */
-    protected fun updateView(notifyView: Boolean = true, changeStateFunction: S.() -> S) {
-        state?.let {
-            state = changeStateFunction.invoke(it)
-            if (notifyView) updateView(it)
-        }
-    }
-
-    /**
      * Check the current view state
      * @param checkStateFunction function to check the current state
      */
@@ -139,7 +127,7 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> : Vie
      * Method used to update the state of the view. It will be notified to the observers
      * @param state Tee current state of the view
      */
-    protected fun updateView(state: S) {
+    protected open fun updateView(state: S) {
         this.state = state
         this.observableState.value = state
     }
@@ -148,7 +136,7 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> : Vie
      * Method used to notify to the observer for a single event that will be notified only once time.
      * It a new observer is attached, it will not be notified
      */
-    protected fun sendSingleEvent(extraData: EmaExtraData) {
+    protected open fun notifySingleEvent(extraData: EmaExtraData) {
         this.singleObservableState.value = extraData
     }
 
@@ -156,8 +144,15 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> : Vie
      * Method use to notify a navigation event
      * @param navigation The object that represent the destination of the navigation
      */
-    protected fun navigate(navigation: NS) {
+    protected open fun navigate(navigation: NS) {
         this.navigationState.value = navigation
+    }
+
+    /**
+     * Method use to notify a navigation back event
+     */
+    protected open fun navigateBack() {
+        this.navigationState.value = null
     }
 
     /**

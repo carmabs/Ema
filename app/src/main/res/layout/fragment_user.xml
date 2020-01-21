@@ -7,37 +7,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/tvUserName"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="40dp"
-        android:layout_marginEnd="8dp"
-        android:gravity="center"
-        android:textSize="@dimen/letter_big_huge"
-        android:textStyle="bold"
-        tools:text="Nombre de usuario"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_chainStyle="spread"/>
+    <include
+        android:id="@+id/lUserEmaHeader"
+        layout="@layout/layout_ema_header"
+        />
 
     <TextView
-        android:id="@+id/tvUserSurname"
-        android:layout_width="0dp"
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginTop="16dp"
         android:gravity="center"
-        tools:text="Apellido de usuario"
-        android:textSize="@dimen/letter_big"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvUserName"/>
+        android:text="@string/ema_recycler_adapter_sample"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@+id/lUserEmaHeader"
+        app:layout_constraintStart_toStartOf="@+id/lUserEmaHeader"
+        app:layout_constraintTop_toBottomOf="@+id/lUserEmaHeader" />
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvUser"
@@ -48,15 +34,5 @@
         app:layout_constraintTop_toBottomOf="@+id/textView2"
         tools:layout_editor_absoluteX="20dp" />
 
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="@string/ema_recycler_adapter_sample"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="@+id/tvUserSurname"
-        app:layout_constraintStart_toStartOf="@+id/tvUserSurname"
-        app:layout_constraintTop_toBottomOf="@+id/tvUserSurname" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

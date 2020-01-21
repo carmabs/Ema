@@ -2,11 +2,11 @@ rootProject.ext {
 
     //Libraries
 
-    navigationVersion = "2.0.0"
+    navigationVersion = "2.1.0"
 
-    lifecycleVersion = "2.0.0"
+    lifecycleVersion = "2.1.0"
 
-    kodeinVersion = "5.3.0"
+    kodeinVersion = "6.5.1"
 
     constraintVersion = "1.1.3"
 
@@ -14,19 +14,19 @@ rootProject.ext {
 
     materialVersion = "1.0.0"
 
-    coroutinesVersion = "1.0.1"
+    coroutinesVersion = "1.3.0"
 
-    coreVersion = "1.1.0"
+    coreVersion = "1.2.0"
 
     extJUnitVersion = "1.1.0"
 
-    rulesVersion = "1.1.1"
+    rulesVersion = "1.2.0"
 
-    mockitoVersion = "2.23.4"
+    mockitoVersion = "3.2.4"
 
     archTesting = "1.1.1"
 
-    espressoVersion = "3.1.1"
+    espressoVersion = "3.2.0"
 
 
     ema = [
@@ -34,21 +34,11 @@ rootProject.ext {
             minSdk     : 21,
             compileSdk : 28,
             targetSdk  : 28,
-            versionCode: 1,
-            versionName: "1.0.0"
+            versionCode: 2,
+            versionName: "2.0.0"
     ]
 
     appDependencies = [
-            navigationFragment: "androidx.navigation:navigation-fragment-ktx:" + project.navigationVersion,
-            navigationUI      : "androidx.navigation:navigation-ui-ktx:" + project.navigationVersion,
-            constraint        : "androidx.constraintlayout:constraintlayout:" + project.constraintVersion,
-            kotlin            : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:" + project.kotlinVersion,
-            design            : "com.android.support:design:" + project.designVersion,
-            material          : "com.google.android.material:material:" + project.materialVersion,
-            lifecycle         : "androidx.lifecycle:lifecycle-extensions:" + project.lifecycleVersion,
-            kodein            : "org.kodein.di:kodein-di-generic-jvm:" + project.kodeinVersion,
-            kodeinAndroid     : "org.kodein.di:kodein-di-framework-android-x:" + project.kodeinVersion,
-            coroutines        : 'org.jetbrains.kotlinx:kotlinx-coroutines-android:' + project.coroutinesVersion
     ]
 
     dataDependencies = [
@@ -57,15 +47,12 @@ rootProject.ext {
     ]
 
     domainDependencies = [
-            kotlin    : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:" + project.kotlinVersion,
-            coroutines: 'org.jetbrains.kotlinx:kotlinx-coroutines-android:' + project.coroutinesVersion
     ]
 
     commonDependencies = [
     ]
 
     injectionDependencies = [
-            kotlin       : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:" + project.kotlinVersion,
             kodein       : "org.kodein.di:kodein-di-generic-jvm:" + project.kodeinVersion,
             kodeinAndroid: "org.kodein.di:kodein-di-framework-android-x:" + project.kodeinVersion,
     ]
@@ -76,10 +63,7 @@ rootProject.ext {
     ]
 
     emaTesting = [
-            lifecycle  : "androidx.lifecycle:lifecycle-extensions:" + project.lifecycleVersion,
             espresso   : "androidx.test.espresso:espresso-core:" + project.espressoVersion,
-            kotlin     : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:" + project.kotlinVersion,
-            coroutines : 'org.jetbrains.kotlinx:kotlinx-coroutines-android:' + project.coroutinesVersion,
             core       : "androidx.test:core:" + project.coreVersion,
             coreKotlin : "androidx.test:core-ktx:" + project.coreVersion,
             junit      : "androidx.test.ext:junit:" + project.extJUnitVersion,
@@ -93,13 +77,11 @@ rootProject.ext {
             navigationFragment: "androidx.navigation:navigation-fragment-ktx:" + project.navigationVersion,
             navigationUI      : "androidx.navigation:navigation-ui-ktx:" + project.navigationVersion,
             constraint        : "androidx.constraintlayout:constraintlayout:" + project.constraintVersion,
-            kotlin            : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:" + project.kotlinVersion,
             design            : "com.android.support:design:" + project.designVersion,
             material          : "com.google.android.material:material:" + project.materialVersion,
             lifecycle         : "androidx.lifecycle:lifecycle-extensions:" + project.lifecycleVersion,
             kodein            : "org.kodein.di:kodein-di-generic-jvm:" + project.kodeinVersion,
             kodeinAndroid     : "org.kodein.di:kodein-di-framework-android-x:" + project.kodeinVersion,
-            coroutines        : 'org.jetbrains.kotlinx:kotlinx-coroutines-android:' + project.coroutinesVersion
     ]
 
 }

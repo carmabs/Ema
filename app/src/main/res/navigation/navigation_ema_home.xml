@@ -13,21 +13,28 @@
         tools:layout="@layout/fragment_home">
         <action
             android:id="@+id/action_homeViewFragment_to_userFragment"
-            app:destination="@id/UserViewFragment" />
+            app:destination="@id/UserViewFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
         <action
             android:id="@+id/action_homeViewFragment_to_emaErrorViewActivity"
             app:destination="@id/emaErrorViewActivity" />
+        <action
+            android:id="@+id/action_homeViewFragment_self"
+            app:destination="@id/homeViewFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/UserViewFragment"
         android:name="com.carmabs.ema.presentation.ui.user.EmaUserFragment"
-        android:label="RememberUserViewFragment"
+        android:label="@string/user_toolbar_title"
         tools:layout="@layout/fragment_user">
     </fragment>
     <activity
         android:id="@+id/emaErrorViewActivity"
-        android:name="com.carmabs.ema.presentation.ui.error.EmaErrorViewActivity"
+        android:name="com.carmabs.ema.presentation.ui.error.EmaErrorToolbarViewActivity"
         android:label="EmaErrorViewActivity" />
 
 
