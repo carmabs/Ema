@@ -92,7 +92,8 @@ interface EmaNavigator<NS : EmaNavigationState> : EmaBaseNavigator<NS> {
 
     /**
      * Navigates back
-     * @return true if a fragment has been popped, false if backstack is empty
+     * @return true if the stack was popped and the user has been navigated to another
+     * destination, false otherwise
      */
     override fun navigateBack(): Boolean {
         return navController.popBackStack()

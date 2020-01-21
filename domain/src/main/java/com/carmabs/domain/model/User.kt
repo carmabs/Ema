@@ -3,9 +3,10 @@ package com.carmabs.domain.model
 import java.io.Serializable
 
 /**
- * TODO: Add a class header comment.
+ *  *<p>
+ * Copyright (c) 2020, Carmabs. All rights reserved.
+ * </p>
  *
-*
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */

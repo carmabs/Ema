@@ -47,7 +47,7 @@ class SimpleDialog : EmaBaseDialog<SimpleDialogData>() {
 
                 view.bDialogSimpleNo.text = cancel
 
-                isCancelable = true
+                isCancelable = false
             }
     }
 }

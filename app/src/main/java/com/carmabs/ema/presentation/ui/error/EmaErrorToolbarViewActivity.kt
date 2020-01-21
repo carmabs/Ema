@@ -65,7 +65,7 @@ class EmaErrorToolbarViewActivity : EmaActivity<EmaErrorToolbarState, EmaErrorTo
             hideToolbar()
     }
 
-    override fun onStateLoading(data: EmaExtraData) {
+    override fun onStateAlternative(data: EmaExtraData) {
 
     }
 

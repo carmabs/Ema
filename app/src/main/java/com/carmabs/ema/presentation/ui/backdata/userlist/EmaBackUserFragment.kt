@@ -54,7 +54,7 @@ class EmaBackUserFragment : BaseFragment<EmaBackUserState, EmaBackUserViewModel,
         rvBack.visibility = checkVisibility(!data.noUserVisibility, gone = false)
     }
 
-    override fun onLoading(data: EmaExtraData) {
+    override fun onAlternative(data: EmaExtraData) {
 
     }
 

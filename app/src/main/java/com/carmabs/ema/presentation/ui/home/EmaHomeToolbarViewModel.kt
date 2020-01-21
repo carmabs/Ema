@@ -21,13 +21,13 @@ class EmaHomeToolbarViewModel : BaseViewModel<EmaHomeToolbarState, EmaHomeNaviga
     override fun onResultListenerSetup() {
        addOnResultReceived{
            (it.data as? Pair<*, *>)?.also { pair ->
-               sendSingleEvent(EmaExtraData(extraData = pair))
+               notifySingleEvent(EmaExtraData(extraData = pair))
            }
        }
     }
 
     fun setToolbarTitle(title:String?){
-        updateViewState {
+        updateNormalState {
             copy(toolbarTitle = title)
         }
     }
