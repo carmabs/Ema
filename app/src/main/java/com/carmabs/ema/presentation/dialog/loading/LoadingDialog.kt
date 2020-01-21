@@ -21,6 +21,6 @@ class LoadingDialog : EmaBaseDialog<LoadingDialogData>() {
         view.tvDialogLoadingTitle.text = data.title
         view.tvDialogLoadingMessage.text = data.message
 
-        isCancelable = true
+        isCancelable = false
     }
 }
