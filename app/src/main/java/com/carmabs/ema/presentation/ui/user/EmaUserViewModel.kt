@@ -1,7 +1,6 @@
 package com.carmabs.ema.presentation.ui.user
 
 import com.carmabs.domain.manager.ResourceManager
-import com.carmabs.ema.core.constants.STRING_EMPTY
 import com.carmabs.ema.core.navigator.EmaNavigationState
 import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.presentation.base.BaseViewModel
@@ -18,7 +17,7 @@ class EmaUserViewModel(private val resourceManager: ResourceManager) : BaseViewM
 
     override fun onStartFirstTime(statePreloaded: Boolean) {
         val list = createListItems()
-        updateViewState {
+        updateNormalState {
             copy(itemList = list)
         }
     }
@@ -48,7 +47,7 @@ class EmaUserViewModel(private val resourceManager: ResourceManager) : BaseViewM
             }
         }
 
-        sendSingleEvent(EmaExtraData(eventID, item))
+        notifySingleEvent(EmaExtraData(eventID, item))
     }
 
     override fun onCleared() {

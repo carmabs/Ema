@@ -45,7 +45,7 @@ class EmaHomeActivity : BaseActivity<EmaHomeToolbarState,EmaHomeToolbarViewModel
 
     }
 
-    override fun onStateLoading(data: EmaExtraData) {
+    override fun onStateAlternative(data: EmaExtraData) {
 
     }
 

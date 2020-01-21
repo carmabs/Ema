@@ -21,7 +21,7 @@ class EmaErrorToolbarViewModel : EmaViewModel<EmaErrorToolbarState, EmaErrorNavi
 
     override fun onResultListenerSetup() {
         addOnResultReceived(EmaBackUserViewModel.RESULT_USER_NUMBER) {
-            sendSingleEvent(EmaExtraData(extraData = it.data as Int))
+            notifySingleEvent(EmaExtraData(extraData = it.data as Int))
         }
     }
 
@@ -30,13 +30,13 @@ class EmaErrorToolbarViewModel : EmaViewModel<EmaErrorToolbarState, EmaErrorNavi
     }
 
     fun showToolbar() {
-        updateViewState {
+        updateNormalState {
             copy(visibility = true)
         }
     }
 
     fun hideToolbar() {
-        updateViewState {
+        updateNormalState {
             copy(visibility = false)
         }
     }

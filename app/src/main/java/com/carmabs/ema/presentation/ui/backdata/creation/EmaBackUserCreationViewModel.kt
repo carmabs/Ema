@@ -26,13 +26,13 @@ class EmaBackUserCreationViewModel(private val resourceManager: ResourceManager)
 
 
     override fun onStartFirstTime(statePreloaded: Boolean) {
-        loading()
+        updateAlternativeState()
     }
 
     fun onActionAddUser(name: String, surname: String) {
         when {
-            name.isEmpty() -> sendSingleEvent(EmaExtraData(extraData = resourceManager.getResultErrorFillName()))
-            surname.isEmpty() -> sendSingleEvent(EmaExtraData(extraData = resourceManager.getResultErrorFillSurname()))
+            name.isEmpty() -> notifySingleEvent(EmaExtraData(extraData = resourceManager.getResultErrorFillName()))
+            surname.isEmpty() -> notifySingleEvent(EmaExtraData(extraData = resourceManager.getResultErrorFillSurname()))
             else -> {
                 addResult(EmaBackUserModel(
                         name = name,
@@ -45,13 +45,13 @@ class EmaBackUserCreationViewModel(private val resourceManager: ResourceManager)
     }
 
     fun onActionNameWrite(name: String) {
-        updateViewState {
+        updateNormalState {
             copy(name = name)
         }
     }
 
     fun onActionSurnameWrite(surname: String) {
-        updateViewState {
+        updateNormalState {
             copy(surname = surname)
         }
     }

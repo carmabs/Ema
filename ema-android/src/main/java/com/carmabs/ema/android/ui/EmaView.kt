@@ -17,7 +17,6 @@ import com.carmabs.ema.core.state.EmaState
 import java.lang.Exception
 import kotlin.jvm.internal.PropertyReference0
 import kotlin.reflect.KProperty
-import kotlin.reflect.KProperty0
 
 
 /**
@@ -74,7 +73,7 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
         vm.onStart(inputState?.let { EmaState.Normal(it) })
         vm.observableState.observe(fragment ?: fragmentActivity, Observer(this::onDataUpdated))
         vm.singleObservableState.observe(fragment
-                ?: fragmentActivity, Observer(this::onSingleDataSent))
+                ?: fragmentActivity, Observer(this::onSingleData))
         vm.navigationState.observe(fragment
                 ?: fragmentActivity, Observer(this::onNavigation))
 
@@ -91,8 +90,8 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
     fun onDataUpdated(state: EmaState<S>) {
         onStateNormal(state.data)
         when (state) {
-            is EmaState.Loading -> {
-                onStateLoading(state.dataLoading)
+            is EmaState.Alternative -> {
+                onStateAlternative(state.dataAlternative)
             }
             is EmaState.Error -> {
                 onStateError(state.error)
@@ -174,7 +173,7 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
      * Called when view model trigger an only once notified event
      * @param data for extra information
      */
-    fun onSingleDataSent(data: EmaExtraData) {
+    fun onSingleData(data: EmaExtraData) {
         onSingleEvent(data)
     }
 
@@ -201,14 +200,14 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
     fun onStateNormal(data: S)
 
     /**
-     * Called when view model trigger a loading event
-     * @param data with information about loading
+     * Called when view model trigger a updateAlternativeState event
+     * @param data with information about updateAlternativeState
      */
-    fun onStateLoading(data: EmaExtraData)
+    fun onStateAlternative(data: EmaExtraData)
 
     /**
      * Called when view model trigger an only once notified event.Not called when the view is first time attached to the view model
-     * @param data with information about loading
+     * @param data with information about updateAlternativeState
      */
     fun onSingleEvent(data: EmaExtraData)
 
@@ -240,9 +239,10 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
 
     /**
      * Called when view model trigger a navigation back event
+     * @return True
      */
-    fun navigateBack() {
-        navigator?.navigateBack()
+    fun navigateBack():Boolean {
+        return navigator?.navigateBack()?:false
     }
 
 

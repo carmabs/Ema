@@ -1,9 +1,10 @@
 package com.carmabs.domain.exception
 
 /**
- * TODO: Add a class header comment.
+ *  *<p>
+ * Copyright (c) 2020, Carmabs. All rights reserved.
+ * </p>
  *
-*
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */

@@ -40,7 +40,7 @@ class EmaBackToolbarActivity : BaseActivity<EmaBackToolbarState, EmaBackToolbarV
 
     }
 
-    override fun onStateLoading(data: EmaExtraData) {
+    override fun onStateAlternative(data: EmaExtraData) {
 
     }
 

@@ -65,7 +65,7 @@ class EmaUserFragment : BaseFragment<EmaUserState, EmaUserViewModel, EmaNavigati
         adapter.updateList(data.itemList)
     }
 
-    override fun onLoading(data: EmaExtraData) {
+    override fun onAlternative(data: EmaExtraData) {
 
     }
 
