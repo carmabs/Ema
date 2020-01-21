@@ -9,9 +9,9 @@ import com.carmabs.ema.presentation.injection.fragmentInjection
 import org.kodein.di.Kodein
 
 /**
- * TODO: Add a class header comment.
- *
-*
+ *  *<p>
+ * Copyright (c) 2020, Carmabs. All rights reserved.
+ * </p>
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
@@ -26,8 +26,8 @@ abstract class BaseFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : Ema
         onNormal(data)
     }
 
-    override fun onStateLoading(data: EmaExtraData) {
-        onLoading(data)
+    override fun onStateAlternative(data: EmaExtraData) {
+        onAlternative(data)
     }
 
     override fun onSingleEvent(data: EmaExtraData) {
@@ -40,7 +40,7 @@ abstract class BaseFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : Ema
 
     abstract fun onNormal(data: S)
 
-    abstract fun onLoading(data: EmaExtraData)
+    abstract fun onAlternative(data: EmaExtraData)
 
     abstract fun onSingle(data: EmaExtraData)
 

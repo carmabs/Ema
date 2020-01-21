@@ -11,9 +11,9 @@ import kotlin.math.roundToInt
  */
 
 /**
- * Convert pixel integer to dp
+ * Convert a dp integer to pixel
  */
-fun Int.toDp(context: Context):Int {
+fun Int.dpToPx(context: Context):Int {
     return TypedValue.applyDimension(
             TypedValue.COMPLEX_UNIT_DIP, toFloat(), context.resources.displayMetrics).roundToInt()
 }

@@ -5,7 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/colorAccent"
+    style="?attr/emaAppBarLayoutStyle"
     android:id="@+id/emaAppBarLayout">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -13,10 +13,10 @@
         android:layout_height="?attr/actionBarSize">
 
         <androidx.appcompat.widget.Toolbar
+            style="?attr/emaActionBarStyle"
             android:id="@+id/emaToolbar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/colorAccent"
             android:contentInsetStart="0dp"
             android:contentInsetLeft="0dp"
             android:contentInsetEnd="0dp"

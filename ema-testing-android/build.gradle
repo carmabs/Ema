@@ -26,24 +26,21 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
+    }
+
 }
 
 dependencies {
     implementation project(":ema-android")
-    implementation project(":ema-core")
     implementation project(":ema-testing-core")
 
     //androidTest
-    implementation emaTesting.lifecycle
     implementation emaTesting.core
     implementation emaTesting.coreKotlin
-    implementation emaTesting.junit
-    implementation emaTesting.junitKotlin
-    implementation emaTesting.rules
-    implementation emaTesting.mockito
     implementation emaTesting.espresso
     implementation emaTesting.archTesting
-    implementation emaTesting.kotlin
 }
 
 repositories {

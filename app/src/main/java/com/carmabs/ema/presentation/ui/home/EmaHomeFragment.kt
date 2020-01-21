@@ -10,6 +10,8 @@ import com.carmabs.domain.exception.LoginException
 import com.carmabs.domain.exception.PasswordEmptyException
 import com.carmabs.domain.exception.UserEmptyException
 import com.carmabs.ema.R
+import com.carmabs.ema.android.extension.checkUpdate
+import com.carmabs.ema.core.constants.STRING_EMPTY
 import com.carmabs.ema.core.dialog.EmaDialogProvider
 import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.presentation.DIALOG_TAG_LOADING
@@ -24,12 +26,18 @@ import kotlinx.android.synthetic.main.layout_user.*
 import org.kodein.di.generic.instance
 
 /**
- * Project: Ema
- * Created by: cmateob on 20/1/19.
+ *  *<p>
+ * Copyright (c) 2020, Carmabs. All rights reserved.
+ * </p>
+ *
+ * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
+ *
+ * Created by: Carlos Mateo Benito on 20/1/19.
+ *
+ * Use of bindForUpdate and checkUpdate
+ * Use of ReceiverListener
  */
 class EmaHomeFragment : BaseFragment<EmaHomeState, EmaHomeViewModel, EmaHomeNavigator.Navigation>() {
-
-    override val inputStateKey: String? = null
 
     override fun getFragmentLayout(): Int = R.layout.fragment_home
 
@@ -80,7 +88,9 @@ class EmaHomeFragment : BaseFragment<EmaHomeState, EmaHomeViewModel, EmaHomeNavi
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                viewModel.onActionUserWrite(s?.toString() ?: "")
+
+                //Always the text is changed it has to be notified to ViewModel to update its state
+                viewModel.onActionUserWrite(s?.toString() ?: STRING_EMPTY)
             }
         })
         etPassword.addTextChangedListener(object : TextWatcher {
@@ -93,7 +103,9 @@ class EmaHomeFragment : BaseFragment<EmaHomeState, EmaHomeViewModel, EmaHomeNavi
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                viewModel.onActionPasswordWrite(s?.toString() ?: "")
+
+                //Always the text is changed it has to be notified to ViewModel to update its state
+                viewModel.onActionPasswordWrite(s?.toString() ?: STRING_EMPTY)
             }
 
         })
@@ -139,11 +151,33 @@ class EmaHomeFragment : BaseFragment<EmaHomeState, EmaHomeViewModel, EmaHomeNavi
         hideErrors()
         hideLoading()
 
-        if (etUser.text.toString() != data.userName)
-            etUser.setText(data.userName)
 
-        if (etPassword.text.toString() != data.userPassword)
+        //////THIS TWO METHODS ARE SIMILAR, USE IT DEPENDING YOUR USE CASE/////
+
+        //Use this to check if values are different, this way you avoid to call ViewModel
+        //due to TextWatcher and the chance to generate infinite loop:
+        //Example : etUser change s
+        // -> TextWatcher calls viewmodel
+        // -> Viewmodel update the view
+        // -> etUser set the data.userName
+        // -> TextWatcher calls viewmodel
+        // -> ¡INFINITE LOOP!
+        //
+        checkUpdate(etUser.text.toString(),data.userName) {
+            etUser.setText(data.userName)
+        }
+
+        //Use this to execute the set view value operation only if the selected state property has been
+        //updated.
+        //This could be very use to execute animations on views, this way the animation only will be executed
+        //when the value has been updated, not everytime state view is updated.
+
+
+        bindForUpdate(data::userPassword) {
             etPassword.setText(data.userPassword)
+        }
+
+        //////////////////////////////////////////////////////////////////////
 
         swLightLoginRememberPassword.isChecked = data.rememberUser
 
@@ -152,11 +186,13 @@ class EmaHomeFragment : BaseFragment<EmaHomeState, EmaHomeViewModel, EmaHomeNavi
                 etPassword.transformationMethod = PasswordTransformationMethod.getInstance()
             } else {
                 etPassword.transformationMethod = null
+
             }
+            etPassword.setSelection(etPassword.text.length)
         }
     }
 
-    override fun onLoading(data: EmaExtraData) {
+    override fun onAlternative(data: EmaExtraData) {
         showLoadingDialog()
     }
 

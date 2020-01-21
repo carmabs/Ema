@@ -3,11 +3,9 @@ apply plugin: 'com.github.dcendents.android-maven'
 group = 'com.github.carmabs'
 
 dependencies {
-    implementation emaTesting.kotlin
-    implementation emaTesting.coroutines
-    implementation project(":ema-core")
-    implementation emaTesting.junit
-    implementation emaTesting.junitKotlin
-    implementation emaTesting.rules
-    implementation emaTesting.mockito
+    api project(":ema-core")
+    api emaTesting.junit
+    api emaTesting.junitKotlin
+    api emaTesting.rules
+    api emaTesting.mockito
 }
