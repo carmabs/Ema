@@ -29,7 +29,7 @@ abstract class EmaBaseFragment : Fragment(), KodeinAware {
         }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val layoutRes = getFragmentLayout()
+        val layoutRes = layoutId
         if (layoutRes == 0) {
             throw IllegalArgumentException(
                     "getLayoutRes() returned 0, which is not allowed. "
@@ -44,7 +44,7 @@ abstract class EmaBaseFragment : Fragment(), KodeinAware {
     /**
      * Specify the layout of the fragment to be inflated in the [EmaBaseFragment.onCreateView]
      */
-    protected abstract fun getFragmentLayout(): Int
+    protected abstract val layoutId : Int
 
     /**
      * The child classes implement this methods to return the module that provides the fragment scope objects

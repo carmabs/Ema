@@ -14,9 +14,7 @@ import kotlinx.android.synthetic.main.dialog_simple.view.*
  */
 class SimpleDialog : EmaBaseDialog<SimpleDialogData>() {
 
-    override fun getLayout(): Int {
-        return R.layout.dialog_simple
-    }
+    override val layoutId: Int =  R.layout.dialog_simple
 
     override fun setupData(data: SimpleDialogData, view: View) {
             with(data){

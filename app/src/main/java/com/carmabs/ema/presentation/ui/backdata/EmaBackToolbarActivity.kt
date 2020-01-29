@@ -21,7 +21,7 @@ import org.kodein.di.generic.instance
 
 class EmaBackToolbarActivity : BaseActivity<EmaBackToolbarState, EmaBackToolbarViewModel, EmaBackNavigator.Navigation>() {
 
-    override fun getNavGraph(): Int = R.navigation.navigation_ema_back
+    override val navGraph: Int = R.navigation.navigation_ema_back
 
     override fun provideFixedToolbarTitle(): String? = null
 
