@@ -71,7 +71,7 @@ class EmaBackUserCreationFragment : BaseFragment<EmaBackUserCreationState, EmaBa
         }
     }
 
-    override fun getFragmentLayout(): Int = R.layout.fragment_back_result
+    override val layoutId: Int = R.layout.fragment_back_result
 
     override val viewModelSeed: EmaBackUserCreationViewModel by instance()
 

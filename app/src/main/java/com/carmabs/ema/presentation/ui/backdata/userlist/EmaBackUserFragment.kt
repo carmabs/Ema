@@ -42,7 +42,7 @@ class EmaBackUserFragment : BaseFragment<EmaBackUserState, EmaBackUserViewModel,
 
     override val fragmentViewModelScope: Boolean = true
 
-    override fun getFragmentLayout(): Int  = R.layout.fragment_back
+    override val layoutId: Int  = R.layout.fragment_back
 
     override val viewModelSeed: EmaBackUserViewModel by instance()
 

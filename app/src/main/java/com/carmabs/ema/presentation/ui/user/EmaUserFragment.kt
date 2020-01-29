@@ -51,7 +51,7 @@ class EmaUserFragment : BaseFragment<EmaUserState, EmaUserViewModel, EmaNavigati
         rvUser.adapter = adapter
     }
 
-    override fun getFragmentLayout(): Int = R.layout.fragment_user
+    override val layoutId: Int = R.layout.fragment_user
 
     override val viewModelSeed: EmaUserViewModel by instance()
 
