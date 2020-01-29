@@ -34,14 +34,14 @@ abstract class EmaBaseActivity : AppCompatActivity(), NavHost, KodeinAware {
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(getLayout())
+        setContentView(layoutId)
         onCreateActivity(savedInstanceState)
     }
 
     /**
      * @return The layout ID that's gonna be the activity view.
      */
-    protected abstract fun getLayout(): Int
+    protected abstract val layoutId: Int
 
     /**
      * Method called once the content view of activity has been set

@@ -48,5 +48,5 @@ class EmaErrorViewFragment : BaseFragment<EmaErrorState, EmaErrorViewModel, EmaE
     override fun onError(error: Throwable) {
     }
 
-    override fun getFragmentLayout(): Int = R.layout.fragment_error
+    override val layoutId: Int = R.layout.fragment_error
 }

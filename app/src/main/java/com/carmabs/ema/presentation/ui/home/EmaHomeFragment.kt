@@ -39,7 +39,7 @@ import org.kodein.di.generic.instance
  */
 class EmaHomeFragment : BaseFragment<EmaHomeState, EmaHomeViewModel, EmaHomeNavigator.Navigation>() {
 
-    override fun getFragmentLayout(): Int = R.layout.fragment_home
+    override val layoutId: Int = R.layout.fragment_home
 
     override val viewModelSeed: EmaHomeViewModel by instance()
 
