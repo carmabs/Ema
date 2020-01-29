@@ -37,7 +37,7 @@ abstract class EmaBaseDialog<T : EmaDialogData> : DialogFragment(), DialogInterf
     /**
      * Specify the layout to be inflated in the [EmaBaseDialog.onCreateView].
      */
-    protected abstract fun getLayout(): Int
+    protected abstract val layoutId: Int
 
     /**
      * Setup data for UI
@@ -61,7 +61,7 @@ abstract class EmaBaseDialog<T : EmaDialogData> : DialogFragment(), DialogInterf
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        val view = inflater.inflate(getLayout(), container, false)
+        val view = inflater.inflate(layoutId, container, false)
         dialog?.window?.apply {
                 setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
                 requestFeature(Window.FEATURE_NO_TITLE)

@@ -88,9 +88,8 @@ abstract class EmaToolbarFragmentActivity : EmaFragmentActivity() {
     /**
      * The layout set up for the activity
      */
-    override fun getLayout(): Int {
-        return R.layout.ema_toolbar_activity
-    }
+    override val layoutId: Int = R.layout.ema_toolbar_activity
+
 
     /**
      * Set true if activity use a custom theme to avoid the EmaTheme_NoActionBar theme set up
