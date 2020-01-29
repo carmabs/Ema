@@ -24,7 +24,7 @@ import kotlin.math.roundToInt
  **/
 class EmaErrorToolbarViewActivity : EmaActivity<EmaErrorToolbarState, EmaErrorToolbarViewModel, EmaErrorNavigator.Navigation>() {
 
-    override fun getNavGraph(): Int = R.navigation.navigation_ema_error
+    override val navGraph: Int = R.navigation.navigation_ema_error
 
     override fun provideFixedToolbarTitle(): String? = getString(R.string.error_toolbar_title)
 

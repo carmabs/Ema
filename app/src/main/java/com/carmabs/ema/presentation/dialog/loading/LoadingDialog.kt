@@ -13,9 +13,7 @@ import kotlinx.android.synthetic.main.dialog_loading.view.*
  */
 class LoadingDialog : EmaBaseDialog<LoadingDialogData>() {
 
-    override fun getLayout(): Int {
-        return R.layout.dialog_loading
-    }
+    override val layoutId: Int = R.layout.dialog_loading
 
     override fun setupData(data: LoadingDialogData, view: View) {
         view.tvDialogLoadingTitle.text = data.title

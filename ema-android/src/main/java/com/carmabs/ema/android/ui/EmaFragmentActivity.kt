@@ -38,14 +38,14 @@ abstract class EmaFragmentActivity : EmaBaseActivity() {
      * Setup the navigation path for navigation architecture components
      */
     private fun setupNavigation() {
-        navController.setGraph(getNavGraph(), intent.extras)
+        navController.setGraph(navGraph, intent.extras)
     }
 
 
     /**
      * Get the navigation resource for the activity [R.navigation]
      */
-    abstract fun getNavGraph(): Int
+    abstract val navGraph: Int
 
 
     /**
@@ -64,7 +64,5 @@ abstract class EmaFragmentActivity : EmaBaseActivity() {
     /**
      * The layout id for the activity
      */
-    override fun getLayout(): Int {
-        return R.layout.ema_activity_fragment
-    }
+    override val layoutId: Int = R.layout.ema_activity_fragment
 }
