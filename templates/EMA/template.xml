@@ -1,0 +1,41 @@
+
+<template format="4"
+        revision="1"
+        name="EMA feature"
+        description="Creates a new EMA feature with MVVM classes - ViewModel, Activity/Fragment, Navigator  and State">
+ 
+    <category value="Carmabs"/>
+    <formfactor value="Mobile"/>
+ 
+    <parameter 
+        id="functionalityName"
+        name="Functionality Name"
+        type="string"
+        constraints="class|nonempty"
+        help="The name of the functionality that requires MVVM views"/>
+
+    <parameter 
+        id="createNavigator"
+        name="Create navigator"
+        type="boolean"
+        default = "false"
+        help="Create Navigator class defined before"/>
+
+    <parameter 
+        id="navigator"
+        name="Navigator name"
+        type="string"
+        constraints="class|noempty"
+        visibility="!createNavigator"
+        help="Navigator class name for functionality navigation"/>
+
+    <parameter 
+        id="addActivity"
+        name="Add activity to functionality"
+        type="boolean"
+        default="false"/>
+
+    <globals file="globals.xml.ftl" />
+    <execute file="recipe.xml.ftl" />
+ 
+</template>
