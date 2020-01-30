@@ -1,8 +1,8 @@
 package com.carmabs.ema.presentation.ui.backdata.creation
 
 import com.carmabs.domain.manager.ResourceManager
-import com.carmabs.ema.android.viewmodel.EmaViewModel
 import com.carmabs.ema.core.state.EmaExtraData
+import com.carmabs.ema.presentation.base.BaseViewModel
 import com.carmabs.ema.presentation.ui.backdata.EmaBackNavigator
 import com.carmabs.ema.presentation.ui.backdata.userlist.EmaBackUserModel
 
@@ -16,7 +16,7 @@ import com.carmabs.ema.presentation.ui.backdata.userlist.EmaBackUserModel
  * Date: 2019-11-07
  */
 
-class EmaBackUserCreationViewModel(private val resourceManager: ResourceManager) : EmaViewModel<EmaBackUserCreationState, EmaBackNavigator.Navigation>() {
+class EmaBackUserCreationViewModel(private val resourceManager: ResourceManager) : BaseViewModel<EmaBackUserCreationState, EmaBackNavigator.Navigation>() {
 
     companion object {
         const val RESULT_USER = 0
