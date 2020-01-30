@@ -1,10 +1,10 @@
 package com.carmabs.ema.presentation.ui.error
 
-import com.carmabs.ema.android.viewmodel.EmaViewModel
 import com.carmabs.ema.core.state.EmaState
+import com.carmabs.ema.presentation.base.BaseViewModel
 
 
-class EmaErrorViewModel : EmaViewModel<EmaErrorState, EmaErrorNavigator.Navigation>() {
+class EmaErrorViewModel : BaseViewModel<EmaErrorState, EmaErrorNavigator.Navigation>() {
 
     lateinit var toolbarViewModel: EmaErrorToolbarViewModel
 

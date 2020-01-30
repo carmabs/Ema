@@ -1,6 +1,6 @@
 package com.carmabs.ema.presentation.ui.backdata.userlist;
 
-import com.carmabs.ema.android.viewmodel.EmaViewModel
+import com.carmabs.ema.presentation.base.BaseViewModel
 import com.carmabs.ema.presentation.ui.backdata.EmaBackNavigator
 import com.carmabs.ema.presentation.ui.backdata.creation.EmaBackUserCreationViewModel
 
@@ -14,7 +14,7 @@ import com.carmabs.ema.presentation.ui.backdata.creation.EmaBackUserCreationView
  * Date: 2019-11-07
  */
 
-class EmaBackUserViewModel : EmaViewModel<EmaBackUserState, EmaBackNavigator.Navigation>() {
+class EmaBackUserViewModel : BaseViewModel<EmaBackUserState, EmaBackNavigator.Navigation>() {
 
     companion object {
         const val RESULT_USER_NUMBER = 1000

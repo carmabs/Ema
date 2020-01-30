@@ -1,7 +1,6 @@
 package com.carmabs.ema.presentation.ui.backdata
 
-import com.carmabs.ema.android.viewmodel.EmaViewModel
-import com.carmabs.ema.presentation.ui.backdata.creation.EmaBackUserCreationViewModel
+import com.carmabs.ema.presentation.base.BaseViewModel
 
 /**
  *<p>
@@ -13,7 +12,7 @@ import com.carmabs.ema.presentation.ui.backdata.creation.EmaBackUserCreationView
  * Date: 2019-11-07
  */
 
-class EmaBackToolbarViewModel : EmaViewModel<EmaBackToolbarState, EmaBackNavigator.Navigation>() {
+class EmaBackToolbarViewModel : BaseViewModel<EmaBackToolbarState, EmaBackNavigator.Navigation>() {
 
     override val initialViewState: EmaBackToolbarState = EmaBackToolbarState()
 
