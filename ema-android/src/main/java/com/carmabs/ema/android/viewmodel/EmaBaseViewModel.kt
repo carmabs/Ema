@@ -79,7 +79,7 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> : Vie
      * @param inputState
      * @return true if it's the first time is started
      */
-    open fun onStart(inputState: S? = null): Boolean {
+    internal open fun onStart(inputState: S? = null): Boolean {
         val firstTime = if (state == null) {
             val initialStatus = inputState ?: createInitialState()
             state = initialStatus
@@ -88,10 +88,20 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> : Vie
         } else false
         if (updateOnInitialization)
             observableState.value = state
+
+        onResume(firstTime)
         return firstTime
     }
 
+    /**
+     * Called when view is created by first time, it means, it is added to the stack
+     */
     abstract fun onStartFirstTime(statePreloaded: Boolean)
+
+    /**
+     * Called always the view goes to the foreground
+     */
+    abstract fun onResume(firstTime:Boolean)
 
     /**
      * Get observable state as LiveDaya to avoid state setting from the view
