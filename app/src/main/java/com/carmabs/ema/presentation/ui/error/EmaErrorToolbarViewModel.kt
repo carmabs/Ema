@@ -1,7 +1,8 @@
 package com.carmabs.ema.presentation.ui.error
 
-import com.carmabs.ema.android.viewmodel.EmaViewModel
 import com.carmabs.ema.core.state.EmaExtraData
+import com.carmabs.ema.core.state.EmaState
+import com.carmabs.ema.presentation.base.BaseViewModel
 import com.carmabs.ema.presentation.ui.backdata.userlist.EmaBackUserViewModel
 
 /**
@@ -11,7 +12,7 @@ import com.carmabs.ema.presentation.ui.backdata.userlist.EmaBackUserViewModel
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
 
-class EmaErrorToolbarViewModel : EmaViewModel<EmaErrorToolbarState, EmaErrorNavigator.Navigation>() {
+class EmaErrorToolbarViewModel : BaseViewModel<EmaErrorToolbarState, EmaErrorNavigator.Navigation>() {
 
     override val initialViewState: EmaErrorToolbarState = EmaErrorToolbarState()
 
