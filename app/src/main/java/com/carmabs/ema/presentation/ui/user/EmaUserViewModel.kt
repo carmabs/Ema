@@ -17,7 +17,7 @@ class EmaUserViewModel(private val resourceManager: ResourceManager) : BaseViewM
 
     override fun onStartFirstTime(statePreloaded: Boolean) {
         val list = createListItems()
-        updateNormalState {
+        updateToNormalState {
             copy(itemList = list)
         }
     }
