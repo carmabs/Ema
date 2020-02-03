@@ -15,14 +15,14 @@ class EmaErrorViewModel : BaseViewModel<EmaErrorState, EmaErrorNavigator.Navigat
     override val initialViewState: EmaErrorState = EmaErrorState()
 
     fun onActionToolbar() {
-        updateNormalState { copy(showToolbarViewVisibility = false) }
+        updateToNormalState { copy(showToolbarViewVisibility = false) }
         toolbarViewModel.showToolbar()
     }
 
     fun onToolbarUpdated(toolbarState: EmaState<EmaErrorToolbarState>) {
         when (toolbarState) {
             is EmaState.Normal -> {
-                updateNormalState {
+                updateToNormalState {
                     copy(showToolbarViewVisibility = !toolbarState.data.visibility)
                 }
             }

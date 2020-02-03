@@ -1,7 +1,6 @@
 package com.carmabs.ema.presentation.ui.error
 
 import com.carmabs.ema.core.state.EmaExtraData
-import com.carmabs.ema.core.state.EmaState
 import com.carmabs.ema.presentation.base.BaseViewModel
 import com.carmabs.ema.presentation.ui.backdata.userlist.EmaBackUserViewModel
 
@@ -31,13 +30,13 @@ class EmaErrorToolbarViewModel : BaseViewModel<EmaErrorToolbarState, EmaErrorNav
     }
 
     fun showToolbar() {
-        updateNormalState {
+        updateToNormalState {
             copy(visibility = true)
         }
     }
 
     fun hideToolbar() {
-        updateNormalState {
+        updateToNormalState {
             copy(visibility = false)
         }
     }

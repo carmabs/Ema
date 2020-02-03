@@ -26,7 +26,7 @@ class EmaBackUserCreationViewModel(private val resourceManager: ResourceManager)
 
 
     override fun onStartFirstTime(statePreloaded: Boolean) {
-        updateAlternativeState()
+        updateToAlternativeState()
     }
 
     fun onActionAddUser(name: String, surname: String) {
@@ -45,13 +45,13 @@ class EmaBackUserCreationViewModel(private val resourceManager: ResourceManager)
     }
 
     fun onActionNameWrite(name: String) {
-        updateNormalState {
+        updateToNormalState {
             copy(name = name)
         }
     }
 
     fun onActionSurnameWrite(surname: String) {
-        updateNormalState {
+        updateToNormalState {
             copy(surname = surname)
         }
     }
