@@ -9,6 +9,10 @@ class ${functionalityName}ViewModel: EmaViewModel<${functionalityName}State,<#if
     
     }
 
+    override fun onResume(firstTime:Boolean){
+
+    }
+
    override val initialViewState: ${functionalityName}State = ${functionalityName}State()
    
 }
