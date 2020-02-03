@@ -56,9 +56,9 @@ class EmaHomeViewModel(
         checkDataState {
             executeUseCaseWithException(
                     {
-                        updateAlternativeState()
+                        updateToAlternativeState()
                         val user = loginUseCase.execute(LoginRequest(it.userName, it.userPassword))
-                        updateNormalState()
+                        updateToNormalState()
                         notifySingleEvent(EmaExtraData(EVENT_MESSAGE, resourceManager.getCongratulations()))
                         navigate(
                                 EmaHomeNavigator.Navigation.User(
@@ -70,7 +70,7 @@ class EmaHomeViewModel(
                         )
                     },
                     { e ->
-                        updateErrorState(e)
+                        updateToErrorState(e)
                         navigate(EmaHomeNavigator.Navigation.Error)
                     }
             )
@@ -80,27 +80,27 @@ class EmaHomeViewModel(
     fun onActionLogin() {
         checkDataState {
             when {
-                it.userName.isEmpty() -> updateErrorState(UserEmptyException())
-                it.userPassword.isEmpty() -> updateErrorState(UserEmptyException())
+                it.userName.isEmpty() -> updateToErrorState(UserEmptyException())
+                it.userPassword.isEmpty() -> updateToErrorState(UserEmptyException())
                 else -> doLogin()
             }
         }
     }
 
     fun onActionShowPassword() {
-        updateNormalState {
+        updateToNormalState {
             copy(showPassword = !showPassword)
         }
     }
 
     fun onActionRemember(isChecked: Boolean) {
-        updateNormalState {
+        updateToNormalState {
             copy(rememberUser = isChecked)
         }
     }
 
     fun onActionDeletePassword() {
-        updateNormalState {
+        updateToNormalState {
             copy(userPassword = STRING_EMPTY)
         }
     }
@@ -129,10 +129,10 @@ class EmaHomeViewModel(
     }
 
     fun onActionDialogErrorCancel() {
-        updateNormalState()
+        updateToNormalState()
     }
 
     fun onActionDialogErrorAccept() {
-        updateNormalState()
+        updateToNormalState()
     }
 }
