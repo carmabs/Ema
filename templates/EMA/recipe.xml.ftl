@@ -4,7 +4,7 @@
    
     <@kt.addAllKotlinDependencies />
     <instantiate from="src/app_package/ViewModel.kt.ftl"
-                   to="${escapeXmlAttribute(srcOut)}/${functionalityName}Model.kt" />
+                   to="${escapeXmlAttribute(srcOut)}/${functionalityName}ViewModel.kt" />
 
     <#if addActivity>
     <instantiate from="src/app_package/MVVMViewActivity.kt.ftl"
