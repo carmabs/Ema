@@ -36,23 +36,6 @@ abstract class EmaViewModel<S, NS : EmaNavigationState> : EmaBaseViewModel<EmaSt
         //Calls to [addOnResultReceived] if they are needed
     }
 
-    /**
-     * Update the current state and update the normal view state by default
-     * @param notifyView updates the view
-     * @param changeStateFunction create the new state
-     */
-    @Deprecated("Use updateNormalState, that always update the state to Normal and notify the view, to update only" +
-            " the data of the state without notifying the current state to the view, use updateDataState")
-    protected fun updateNormalState(notifyView: Boolean = true, changeStateFunction: S.() -> S) {
-        viewState?.let {
-            viewState = changeStateFunction(it)
-            viewState?.let { newState ->
-                state = updateData(newState)
-            }
-            if (notifyView) updateNormalState()
-        }
-
-    }
 
     /**
      * Update the data of the state without notifying it to the view.
@@ -80,11 +63,11 @@ abstract class EmaViewModel<S, NS : EmaNavigationState> : EmaBaseViewModel<EmaSt
      * @param notifyView updates the view
      * @param changeStateFunction create the new state
      */
-    protected open fun updateNormalState(changeStateFunction: S.() -> S) {
+    protected open fun updateToNormalState(changeStateFunction: S.() -> S) {
         viewState?.let {
             viewState = changeStateFunction.invoke(it)
             viewState?.let { newState -> state = EmaState.Normal(newState) }
-            updateNormalState()
+            updateToNormalState()
         }
 
     }
@@ -105,7 +88,7 @@ abstract class EmaViewModel<S, NS : EmaNavigationState> : EmaBaseViewModel<EmaSt
      * Use the EmaState -> Normal
      * @param state of the view
      */
-    protected open fun updateNormalState() {
+    protected open fun updateToNormalState() {
         state?.let {
             viewState?.let { currentState ->
                 super.updateView(EmaState.Normal(currentState))
@@ -133,7 +116,7 @@ abstract class EmaViewModel<S, NS : EmaNavigationState> : EmaBaseViewModel<EmaSt
      * Use the EmaState -> Error
      * @param error generated
      */
-    protected open fun updateErrorState(error: Throwable) {
+    protected open fun updateToErrorState(error: Throwable) {
         viewState?.let {
             super.updateView(EmaState.Error(it, error))
         } ?: throwInitialStateException()
@@ -145,7 +128,7 @@ abstract class EmaViewModel<S, NS : EmaNavigationState> : EmaBaseViewModel<EmaSt
      * Use the EmaState -> Alternative
      * @param data with updateAlternativeState information
      */
-    protected open fun updateAlternativeState(data: EmaExtraData? = null) {
+    protected open fun updateToAlternativeState(data: EmaExtraData? = null) {
         viewState?.let { state ->
             val alternativeData: EmaState.Alternative<S> = data?.let {
                 EmaState.Alternative(state, dataAlternative = it)
