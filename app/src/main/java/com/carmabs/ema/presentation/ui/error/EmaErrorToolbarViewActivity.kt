@@ -45,8 +45,8 @@ class EmaErrorToolbarViewActivity : EmaActivity<EmaErrorToolbarState, EmaErrorTo
 
         //With EMA activity you can customize the toolbar
         toolbar.apply {
-            val whiteColor = android.R.color.white.getColorCompat(applicationContext)
-            setBackgroundColor(R.color.colorPrimary.getColorCompat(applicationContext))
+            val whiteColor = android.R.color.white.getColor(applicationContext)
+            setBackgroundColor(R.color.colorPrimary.getColor(applicationContext))
             logo = getDrawable(R.drawable.ic_error_toolbar)
             setTitleTextColor(whiteColor)
             titleMarginStart = resources.getDimension(R.dimen.space_medium).roundToInt().dpToPx(context)

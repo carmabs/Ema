@@ -1,4 +1,4 @@
-# EMA
+# EMA V2
 
 **EMA** is a library to implement the architecture of an Android app by an easy and confortable way, getting an structured code, testable and maintaneable, and using the patterns recommended by Android Team. The library is based on :
 
@@ -29,12 +29,12 @@
 
 * **NORMAL:** It will be used to set the normal state of the screen, for example the data that is usually shown to the user.
 
-* **LOADING:** It should be used to show an alternative state, for example, when a loading or confirmation dialog is shown to the user.
+* **ALTERNATIVE:** It should be used to show an alternative state, for example, when a loading or confirmation dialog is shown to the user.
 
 * **ERROR:** It is used to handle the visual state when an error has been produced.
 
 >
->***The feature can have only one of these states, <mark>passing always through NORMAL state</mark> just before in case of LOADING/ERROR states, this way the NORMAL data state is always drawn if a activity/fragment recreation is launched.***
+>***The feature can have only one of these states, <mark>passing always through NORMAL state</mark> just before in case of ALTERNATIVE/ERROR states, this way the NORMAL data state is always drawn if a activity/fragment recreation is launched.***
 >
  
 
@@ -142,7 +142,7 @@ It has support for the following features:
 	~~~
 	
 >
-> ***The input state of the new screen <mark>only can be setted if the next screen is a fragment</mark>***
+> ***The input state of the new screen <mark>only can be setted independently if the next screen is a fragment or activity</mark>***
 >	
 
 ### <a name="ema-usecases">EMA USE CASES</a>
@@ -185,7 +185,7 @@ The main features of ***EmaUseCase*** are:
 
 ### <a name="ema-viewmodel">EMA VIEW MODEL</a>
 
-This is one of the most powerfull class of **EMA**, with the ***EmaViewFragment***.
+This is one of the most powerfull class of **EMA**, with the ***EmaFragment/EmaActivity***.
 
 It is the **wrapper of the View State** and allows to manipulate it by a reactive way
 sending events to all the views that have been suscribed to it.
@@ -197,11 +197,11 @@ These are the main features of ***EmaViewModel***:
 * **Set view states:**
 	- **Set NORMAL state for the view:**
 
-		With ***updateViewState()*** you can change the current state of the view.
+		With ***updateToNormalState()*** you can change the current state of the view.
 	Inside the body of the function the ***@this*** pointer will give you access to 	the current state of the view, and you will have to **return the new state**, for example with the **copy** operator, due to **EmaStates** should be ***data*** classes.
 	
 		~~~kotlin
-	 	updateViewState(updateView:Boolean) {
+	 	updateToNormalState {
             copy(
                 		userName = "Sample User Name",
                 		remembered = !remembered                    
@@ -212,32 +212,20 @@ These are the main features of ***EmaViewModel***:
   		The view will be notified with the userName as *"Sample User Name"* and
   		remembered with the opposite value saved before.
 	
-		>
-		> **The argument *updateView* is set up as true by default. If you put the value as false, the internal state 		      > of the view (inside the viewmodel) will be updated, but the <mark>view will not be notified</mark>. This is  		     > useful when you want to save the state of a view, for example a *CheckBox*, which itself changes it visual 		  > state to checked/unchecked and you want retain it if there is a configuration change as rotation without 		     > create an infinite loop.**
-		>
-		>
-		> **Example:**
-		>
-		>	 
-		> **A checkBox has a listener to notify the *ViewModel* the user has checked the button (it is 				>updated to check/uncheck automatically):** 
-		>
-		> * **The *ViewModel* updates the view with updateViewState()**
-		> * **The view is notified and the checkbox is updated again**
-		> * **The listener call again ViewModel**
-		> * **The *ViewModel* notify the view**
-		> * **<mark>INFINITE LOOP !!</mark>**
-		>	 	
-		> ![EMA navigator](EmaInfiniteLoop.png) 
-	
-	-  **Set LOADING state for the view:**
 		
-		With ***loading()*** you can set an alternative state for the view passing ***EmaExtraData*** if it is needed for the alternative data.
+	-  **Set ALTERNATIVE state for the view:**
+		
+		With ***updateToAlternativeState()*** you can set an alternative state for the view passing ***EmaExtraData*** if it is needed for the alternative data.
 		> 
-		> ***EmaExtraData*** is ***null*** by default.
+		***EmaExtraData*** is provided by dafault with the following parameters:
+		
+		>* ***type*** = ***0***
+		
+		>* ***extraData*** =  ***null***
 		> 
 	
 		~~~ kotlin
- 		loading(
+ 		updateToAlternativeState(
  			EmaExtraData(
  				type:Int,
  				extraData:Any?
@@ -247,34 +235,58 @@ These are the main features of ***EmaViewModel***:
 	
 	- **Set ERROR state for the view:**
 
-		With ***notifyError*** you can set an error state for the view passing the ***Throwable*** which 		determine the exception to nofity.
+		With ***updateToErrorState*** you can set an error state for the view passing the ***Throwable*** which 		determine the exception to nofity.
 	
 		~~~ kotlin
-		notifyError(exception: Throwable)
+		updateToErrorState(exception: Throwable)
 		~~~
 	
 	**States Flow**
 
 	![EMA states](EmaStates.png)
 
-* **Send single events:**
+* **Update data state:**	
+	With ***updateDataState()*** you can update the internal state of the view (inside the viewmodel) but the <mark> view will not be notified</mark> . This is  useful when you want to save the state of a view, for example a ***CheckBox***, which itself changes it visual state to checked/unchecked and you want retain it if there is a configuration change as rotation without create an infinite loop.
+	
+	~~~ kotlin
+ 	checkDataState{ state ->
+ 		// some code 
+ 	}
+	~~~ 
+	>
+	**Example:**
+	>	
+	**A checkBox has a listener to notify the *ViewModel* the user has checked the button (it is >updated to check/uncheck automatically):** 
+	>
+	>* **The *ViewModel* updates the view with updateToNormalState()**
+	>* **The view is notified and the checkbox is updated again**
+	>* **The listener call again ViewModel**
+	>* **The *ViewModel* notify the view**
+	>* **<mark>INFINITE LOOP !!</mark>**
+		 	
+	>
+	![EMA navigator](EmaInfiniteLoop.png) 
+	
 
-   Due to the nature of ***ViewModel***, if a fragment/activity recreation happens, the last **ViewModel State** will be invoked on the view attached.
+* **Notify single events:**
+
+   Due to the nature of ***ViewModel***, if a fragment/activity recreation happens, the last **ViewModel State** will be invoked once the view is attached.
 
 	>  
-	> **For example:**
-	> 
-	> **If the last state of the ViewModel was the LOADING state, the *onStateLoading()* method of the 	fragment/activity attached will be executed after recreation.**
-	> 
-	> **To avoid this fact, the developer can use the *sendSingleEvent()* to execute logic that only has like 	a *Toast*, then if a fragment/activiy is recreated, the *Toast* will not be executed again.**
+	**For example:**
+	 
+	>
+	**If the last state of the ViewModel was the ALTERNATIVE state, the *onStateAlternative()* method of the fragment/activity attached will be executed after recreation.**
+	
+	To avoid this fact, the developer can use the ***notifySingleEvent()*** to execute logic that only has like 	a ***Toast***, then if a fragment/activiy is recreated, the ***Toast*** will not be executed again.
    
     ~~~ kotlin
-   	sendSingleEvent(data:EmaExtraData)
+   notifySingleEvent(data:EmaExtraData)
     ~~~	
 	
 * **Launch tasks in background**
 
-	With ***executeUseCase()*** and ***executeUseCaseWithException()*** you will execute all code inside the lambda function in a background thread through coroutines. You could notify ***updateViewState()*** events with no problem because these coroutines are executed in ***Dispatchers.Main*** so you will not receive the exception :
+	With ***executeUseCase()*** and ***executeUseCaseWithException()*** you will execute all code inside the lambda function in a background thread through coroutines. You could ***change the state to any (NORMAL/ALTERNATIVE/ERROR)*** with no problem because these coroutines are executed in ***Dispatchers.Main*** so you will not receive the exception :
 
      ~~~ kotlin	
 	  android.view.ViewRoot$CalledFromWrongThreadException: 
@@ -291,7 +303,7 @@ These are the main features of ***EmaViewModel***:
        val responseLogin  = loginUseCase
                    				.execute(requestLogin)
                    				.await()
-       updateViewState()  
+       updateToNormalState()  
        
     }
 	~~~
@@ -305,12 +317,12 @@ These are the main features of ***EmaViewModel***:
                    val responseLogin  = loginUseCase
                    							.execute(requestLogin)
                    							.await()
-                   updateViewState()  
+                   updateToNormalState()  
                 },
                 {   // THE BLOCK TO HANDLE THE EXCEPTION
                 		
                 		e ->                      
-                    		notifyError(e)
+                    		updateToErrorState(e)
                 }
     )
     ~~~
@@ -325,41 +337,99 @@ These are the main features of ***EmaViewModel***:
  	~~~
 
 	You have to pass as argument an object that implements ***EmaNavigationState*** interface, it should implemented by a sealed class as you can see in [EMA NAVIGATION](#ema-navigation). This way the developer only could choose the available navigations from the screen, and all the navigation implementation logic is in the same place.
+	
+* **Navigate back**
 
+	Use this method to navigate to the previous fragment. 
+	
+	~~~kotlin
+ 	navigateBack()
+ 	~~~
+ 	
+ 	If it is the last fragment, you could check the result of navigateBack() overriding it on an [EmaFragment](#ema-view) child and finish the activity if you would want navigate to the previous activity.
+ 	
+* **Set results**
+	
+	There is a common task that an activity or fragment to set a result data for previous fragments/activities. To set a result for previous views, use the method:
+	 
+	 ~~~kotlin
+	 addResult(data:Serializable,code:Int)
+	 ~~~
+	 
+	 The ***data*** must be serializable and the ***code*** is the identifier for the result in previous views.
+	 
+	 To listen the result in previous fragment/activities you should set a listener overriding this method of its viewmodel and add the result receiver inside it:
+	 
+	 ~~~kotlin
+	override fun onResultListenerSetup(){
+	 		addOnResultReceived(RESULT_IDENTIFIER)			{ emaResult ->
+        		val data = emaResult.data
+        		///Update the view with the data for example
+       	}
+    }
+     ~~~	
+    
+    	
+    >* Code is not mandatory, if it is not setted it uses a default one.
+    >* When a resultReceived is called, the result is consumed, you need to set the result again if you want to use in other previous fragments/activity viewmodel.
+    >* If there is a resultReceived listener with same code at the same level, for example, in the fragment and its content activity, the last created one has priority, in this case, only the fragment viewmodel result receiver will be executed.
+    	
+
+	The result ***<mark>can be listened on any previous fragment/activity viewmodel on the stack</mark>***, not only the last one. These fragments/activites must be inherit from *EmaFragment/EmaActivity* and in case of add a result receiver listener in an activity, the ***EmaActivity must be launched with the following method*** in ***EmaNavigator***.
+	
+	
+	~~~kotlin
+	fun navigateToEmaActivityWithResult(mainEmaActivity: Activity, destinationEmaActivity: Intent, finishMain: Boolean = false) 
+	~~~
+    
 
 * **Control start lifecyle flow**
 
-	We can access to the start control flow to make the proper logic according to the requeriments. This start flow is attached to the scope of the view model that we explain in [EMA VIEW FRAGMENT](#ema-view).
-
-	- **onStart**
-
-		This method is called every time this fragment/activity attached is created/recreated, so every logic the developer wants to be executed at this time, should be implemented here overriding the method.
-
-		Examples when it is called:
- 
-		* There is a configuration  change, like rotation.
-		* Fragment goes from background to foreground.
-
-		In resume, every time the view is created, the method is called.
-
+	We can access to the start control flow to make the proper logic according to the requeriments. This start flow is attached to the scope of the view model that we explain in [EMA FRAGMENT](#ema-view).
 
 	- **onStartFirstTime**
 
 		This method is called only the first time the fragment/activity is created, if there is a recreation due to a configuration change, or the fragments/activities goes from background to foreground, this method is **not** called.
 
-		In resume, the method is called **only** when the fragment/activity is **added to the backstack**.
-	
-	**EMA Lifecycle**
-	
-	![EMA lifecycle](EmaLifecycle.png)
+		In resume, the method is called **only** when the fragment/activity is **added to the stack**.
+		
+		As argument has a boolean called statePreloaded that means if the state has been set up by the previous view.
+		
+		~~~kotlin
+ 		onStartFirstTime(statePreloaded:Boolean)
+ 		~~~
+		
+	- **onResume**
 
-### <a name="ema-view_fragment">EMA VIEW FRAGMENT</a>
+		This method is called every time this fragment/activity goes to foreground, so every logic the developer wants to be executed at this time, should be implemented here overriding the method.
 
-This class handles all the data provided by the [EMA VIEW MODEL](#ema-viewmodel) to show it in the view.
+		Examples when it is called:
+ 
+		* There is a configuration  change, like rotation.
+		* Fragment goes from background to foreground.
+		
+		As argument has a boolean called firsTime that means if it is the first time that onResume is called.
+		
+		~~~kotlin
+ 		onResume(firstTime:Boolean)
+ 		~~~
+	
+	
+*	**EMA Fragment Lifecycle**
+	
+	![EMA lifecycle](EmaLifeCycleFragment.png)
+	
+*	**EMA Activity Lifecycle**
+	
+	![EMA lifecycle](EmaLifeCycleActivity.png)
+
+### <a name="ema-view_fragment">EMA FRAGMENT/EMA ACTIVITY</a>
+
+This class handles all the data provided by the [EMA VIEWMODEL](#ema-viewmodel) to show it in the view.
 
 All the view **data assignation** must be done here, as the **binding between** the view **listeners** and their corresponding methods in the **ViewModel**.
 
-The main features of ***EmaViewFragment*** are:
+The main features of ***EmaFragment*** are:
 
 * **<a name="ema-viewmodel-initalized">Access to the viewmodel</a>**
 
@@ -410,9 +480,30 @@ The main features of ***EmaViewFragment*** are:
 
 	- **onStateNormal(data:S):**
 	
-		Here should go the view assignation data
+		Here it should go the view assignation data. 
+		
+		>For animations or expensive view operations you can use <mark>***bindForUpdate/bindForUpdateWithPrevious***</mark> method that allow you to execute an operation only if an attribute of the state has been changed.
+		
+		>As argument you only have to put the state attribute with :: sintax and it will check if the state is different than previous one and will execute the action.
+		
+		>Example:
+		>
+		 ~~~kotlin
+		 override fun onNormal(data: EmaHomeState) {
+         	bindForUpdate(data::userPassword) { newPasssword ->
+            		etPassword.setText(newPassword)
+          }
+          /* To access to previous values use this
+          bindForUpdateWithPrevious(data::userPassword) { oldPassword,newPasssword ->
+            		etPassword.setText(newPassword)
+          }
+          */
+		 ~~~
+		
+		> This will set the editText etPassword data only if userPassword attribute has changed.
+		
 	
-	- **onStateLoading(data:EmaExtraData):**
+	- **onStateAlternative(data:EmaExtraData):**
 	
 		The logic relative to alternative view states, for example, when a dialog is shown, should be implemented here.
 	
@@ -436,7 +527,7 @@ The main features of ***EmaViewFragment*** are:
 		
 		>* **ViewModel launchs a Single Event.**
 		>* **There is a recreation of the fragment/activity.**
-		>* **The previous state is executed (Normal/Loading/Error).**
+		>* **The previous state is executed (Normal/Alternative/Error).**
 
 	 
 * **<a name="ema-viewmodel-scope">Define the scope of ViewModel</a>**
@@ -458,17 +549,17 @@ The main features of ***EmaViewFragment*** are:
 	A fragment can need to listen events from its parent class container or other view, for example the updates of an activity toolbar, for that reason **extra ViewModels** can be attached to the fragment. To do that, you can use the method:
 
 	 ~~~kotlin
-	 addExtraViewModel : EmaViewModel
+	 addExtraViewModel(viewModel : EmaViewModel,fragment : Fragment, activity : FragmentActivity,observerFunction: ((attachedState: EmaState<AS>) -> Unit)
 	 ~~~
-	You must provide the listener function which will receive the <mark>extra **ViewModel** state updates</mark>, and the method will return the view model attached, this way you can use it if you want to **modify some behaviour defined in the parent container class ViewModel**.
-	
+	 
+	You must provide the **currentFragment**, the **parent activity** if you want to use the **viewmodel with activityScope <mark>(shared viewmodel)</mark>**,  and the listener function which will receive the extra **ViewModel** state updates, and the method will return the view model attached, this way you can use it if you want to **modify some behaviour defined in the parent container class ViewModel**.
 		
 
-### <a name="ema-activity">EMA VIEW ACTIVITY</a>
+### <a name="ema-activity">EMA ACTIVITY</a>
 
 **EMA** follows the Android Team patterns so it recommends use a single activity app as fragment container.
 
-There are two types of activities availables:
+There are three types of activities availables:
 
 * **EmaFragmentActivity**
 
@@ -495,13 +586,30 @@ There are two types of activities availables:
 	
 	* **<a name="ema_activity_toolbar_fragment_toolbars">Handle toolbar</a>**
 	
-		You can manipulate the visibility of the toolbar with ***showToolbar()*** and ***hideToolbar()*** methods, set the title overriding the method ***getToolbarTitle():String?***, and access to the ***toolbar(Toolbar)*** and ***toolbarLayout(AppBarLayout)*** properties for more advance customizations.
+		You can manipulate the visibility of the toolbar with ***showToolbar()*** and ***hideToolbar()*** methods, set the title overriding the method ***setToolbarTitle(title:String)***, and access to the ***toolbar(Toolbar)*** and ***toolbarLayout(AppBarLayout)*** properties for more advance customizations.
 
 		
 		In this case, the default layout is an empty layout, but with a toolbar layout, so if you want to override the layout for custom design, you <mark>must provide additionally in the layout a ***Toolbar*** identified by ***id : emaToolbar*** and an ***AppBarLayout*** identified by ***id : emaAppBarLayout***</mark>.
-	
+		
 	>
 	**If it possible attach a viewmodel for activity extending from *EmaView*, but we will explain it on [EmaViewDeclaration](#ema-view_declaration)**
+	
+		
+* **EmaActivity**
+
+	It is the EmaToolbarFragmentActivity with the viewmodel attached, it has the same behaviour and features than EmaFragment, so read [EMA FRAGMENT](#ema-view_fragment) to know all features.
+	
+	As ***additional feature***, you can add a 
+result handler from other activities with the method:
+
+	~~~kotlin
+	fun addOnActivityResultHandler(requestCode: Int, function: (Int, Int, Intent?) -> Unit)
+	
+	//requestCode -> The code for next activity result
+	//function -> The onActivityResult arguments for  that request code
+	~~~
+	
+	
 
 
 ## Implementation
@@ -548,8 +656,6 @@ You must implement the following interface:
 ~~~kotlin
 interface EmaView<S: EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigationState> {
 
- 	 val inputStateKey: String?
-    
     val viewModelSeed: VM
     
     val navigator: EmaBaseNavigator<NS>?
@@ -558,15 +664,20 @@ interface EmaView<S: EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigationS
   
     fun onStateNormal(data: S)
        
-    fun onStateLoading(data: EmaExtraData)
+    fun onStateAlternative(data: EmaExtraData)
 
     fun onSingleEvent(data: EmaExtraData)
 
     fun onStateError(error: Throwable)
+    
+    fun onResultSetEvent(emaResultModel: EmaResultModel)
+
+    fun onResultReceiverInvokeEvent(emaReceiverModel: EmaReceiverModel)
+
 }
 ~~~
 
-The parameters we can see on the definiton of ***EmaView*** are the following:
+The parameters we can see on the definiton of ***EmaView<S: EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigationState>*** are the following:
 
 * **EMA STATE (S):**
 
@@ -584,17 +695,15 @@ The parameters we can see on the definiton of ***EmaView*** are the following:
 	This navigation class must extend the [EmaNavigationState](#ema-navigation_state_definition) class.
 	
 
-About the attibutes and methods you must override, they are the following ones:
+About the attributes and methods you must override, they are the following ones:
 
-* **override val inputStateKey: String?**
-	
-	This will define the input state key value that the current view will use to receive the state from previous views if they laucnh this one. To enable it, the *inputStateKey* must be the **EMA STATE class names** , or the key we had defined in the ***addInputState*** method in the ***EmaNavigator*** class. See [EMA NAVIGATION](#ema-navigation).
-	
-	It can be **null** if not ***inputStateKey*** feature is enabled.
-	
-	~~~kotlin
-	override val inputStateKey: String = EmaUserState::class.java.name
-	~~~
+* **override fun onResultSetEvent(emaResultModel: EmaResultModel)**
+
+	When a result is set on a viewmodel, this event is launched.
+
+* **fun onResultReceiverInvokeEvent(emaReceiverModel: EmaReceiverModel)**
+
+	When a result receiver is invoked, this event is launched.
 
 * **override val viewModelSeed: VM** 
 
@@ -632,14 +741,21 @@ fun initializeViewModel(fragmentActivity: FragmentActivity, fragment: Fragment? 
 	
 This method **initialize** the **ViewModel** on the scope you define, for example, if you provide a ***FragmentActivity*** only, the **ViewModel** will persist during all the ***Activty*** lifecycle, if you provide as well a fragment, the **ViewModel** will persist only during the ***Fragment*** lifecyle.
 
-The method **should be called on the view creation**, for example, if you implements the **EmaView** on an **Activity**, this should be created in ***onCreate*** method.
+The method **should be called everytime the view is shown on foreground**, for example, if you implements the **EmaView** on an **Activity**, this should be created in ***onResume*** method. 
+
+To unbind the view for the updates when screen goes to background, you should call to the ***viewmodel unbindObservables()*** method in ***onPause()*** method, otherwise due to ***onResume() initialization***, view observers could be duplicated.
+
 
 ~~~kotlin
- override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+  override fun onResume {
+        super.onResume()
         initializeViewModel(this)
    		 .......
     }
+    
+  override fun onPause(){ 
+        vm.unBindObservables(this)
+  }
 ~~~
 
 ### <a name="ema-activity_declaration">EMA ACTIVITY DECLARATION</a>
@@ -651,7 +767,7 @@ It must implement one of the following classes:
 ~~~kotlin
 abstract class EmaFragmentActivity : EmaBaseActivity() {
   
-    abstract fun getNavGraph(): Int
+    abstract val navGraph: Int
     
     abstract fun injectActivityModule(kodein: Kodein.MainBuilder): Kodein.Module?
 }
@@ -662,9 +778,9 @@ abstract class EmaFragmentActivity : EmaBaseActivity() {
 ~~~kotlin
 abstract class EmaToolbarFragmentActivity : EmaFragmentActivity() {
 
-  	 abstract fun getNavGraph(): Int
+  	 abstract val navGraph: Int
   	 
-  	 abstract fun getToolbarTitle(): String?
+  	 abstract fun provideFixedToolbar(): String?
   	 
   	 abstract fun injectActivityModule(kodein: Kodein.MainBuilder): Kodein.Module?
 }
@@ -672,6 +788,10 @@ abstract class EmaToolbarFragmentActivity : EmaFragmentActivity() {
 
 Depending the class implemented, we must override the following parameters:
 
+* **override val navGraph: Int**
+
+	We must provide the navigation graph layout resource that [Android Navigation Library](https://developer.android.com/guide/navigation/navigation-design-graph) use to define all posible navigations.
+	
 * **override fun injectActivityModule(kodein: Kodein.MainBuilder): Kodein.Module?**
 
 	The ***KODEIN*** injection module must be assigned here to provide the object assignation by ***instance()*** methods. The object defined by this module will have the **same lifecyle that the activity**.
@@ -686,18 +806,14 @@ Depending the class implemented, we must override the following parameters:
      	bind<LoginNavigator>() with singleton { LoginNavigator(instance(), instance()) }
 
         ~~~
+* **override fun provideFixedToolbarTitle(): String?**
+	
+	We must provide the string showed as title in the toolbar. If it is provided, the title will be fixed for all fragment independently of the label setted on the fragments in navigation layout.
+	
 
-* **override fun getNavGraph(): Int**
-
-	We must provide the navigation graph layout resource that [Android Navigation Library](https://developer.android.com/guide/navigation/navigation-design-graph) use to define all posible navigations.
-	
-* **override fun getToolbarTitle(): String?**
-	
-	We must provide the string showed as title in the toolbar.
-	
 Some <mark>**OPTIONAL**</mark> parameters to override are:
-
-* **override fun getLayout(): Int** 
+	
+* **override val layoutId: Int**
 	
 	By default **EMA activties** provide an empty layout with the ***NavHostFragment*** container, so if you want to override the layout for custom design, it <mark>must have a **NavHostFragment** container identified by ***id : navHostFragment***</mark>.
 	
@@ -707,8 +823,11 @@ Some <mark>**OPTIONAL**</mark> parameters to override are:
 
 	It is set by default as ***false***. Due to **EMA** uses ***SupportActionBar*** it has a default theme set up. If you want to set a custom theme for the activity, you should override the value to ***true***.
 	
->
->If you want to use a **ViewModel** for activies, you can implement the interface [EmaView](#ema-view_declaration)
+* **override fun inputStateKey: String**
+
+	By default is the state class name, but you can override it if you want. If it is overriden the input state key provided by the navigators in *addInputState* method must match with this value.
+
+
 
 
 ### <a name="ema-fragment_declaration">EMA FRAGMENT DECLARATION</a>
@@ -723,7 +842,7 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
 	
 	abstract val fragmentViewModelScope: Boolean 
 	
-	abstract fun getFragmentLayout(): Int 
+	abstract val layoutId: Int 
 	
 	abstract fun injectFragmentModule(kodein: Kodein.MainBuilder): Kodein.Module?
 }
@@ -742,12 +861,12 @@ Once we have defined the ***EmaFragment***, we must override the following param
 	override val fragmentViewModelScope: Boolean = true
 	~~~
 
-* **override fun getFragmentLayout(): Int**
+* **override val layoutId: Int**
 
 	You must provide the fragment layout resource ID.
 
 	~~~
-	override fun getFragmentLayout(): Int = R.layout.fragment_user	~~~
+	override val layoutId: Int = R.layout.fragment_user	~~~
 
 * **override fun injectFragmentModule(kodein: Kodein.MainBuilder): Kodein.Module?**
 
@@ -782,6 +901,8 @@ abstract class EmaViewModel<S, NS : EmaNavigationState> : EmaBaseViewModel<EmaSt
 		abstract val initialViewState: S
 		
 		abstract fun onStartFirstTime(statePreloaded: Boolean)
+		
+		abstract fun onResume(firstTime: Boolean)
 }
 ~~~
 
@@ -824,6 +945,26 @@ Once we have defined the ***EmaViewModel***, we must override the following para
 		///LOAD INITIAL DATA
     }
    ~~~
+   
+* **override fun onResume(firstTime: Boolean)**
+ 
+	This method will be called everytime the view goes to foreground. It has a parameter to check if is the first time the view has gone to foreground.
+	
+	~~~kotlin
+	override fun onResume(firstTime: Boolean) {
+		///REFRESH DATA
+   }
+   ~~~
+   
+Some ***OPTIONAL*** parameters are:
+
+* **override val updateOnInitialization**
+
+	Set this value as false if you want to avoid notify to the view the normal state when view model is attached.
+	
+* **override val onResultListenerSetup**
+
+	Override this methos to setup the result receivers to check if a result has been sent to this model to a later viewmodel.
 
 ### <a name="ema-navigator_declaration">EMA NAVIGATOR DECLARATION</a>
 
@@ -977,7 +1118,7 @@ To provide these modules, **EMA** classes provide the following methods:
 * **EmaActivity:**
 
 	~~~kotlin
-	class EmaAFragmentActivity() {
+	class EmaFragmentActivity() {
     
     	override fun injectActivityModule(kodein: Kodein.MainBuilder): Kodein.Module?{
     	//RETURN ACTIVITY KODEIN DEPENDECY MODULE
@@ -1065,15 +1206,15 @@ abstract class BaseFragment<S : EmaBaseState, VM : BaseViewModel<S, NS>, NS : Em
         }
     }
 
-    override fun onStateLoading(data: EmaExtraData) {
-        onLoading(data)
+    override fun onStateAlternative(data: EmaExtraData) {
+        onAlternative(data)
     }
 
     override fun onStateNormal(data: S) {
        onNormal(data)
     }
 
-    abstract fun onLoading(data: EmaExtraData)
+    abstract fun onAlternative(data: EmaExtraData)
 
     abstract fun onNormal(data: S)
 
@@ -1090,7 +1231,7 @@ abstract class BaseFragment<S : EmaBaseState, VM : BaseViewModel<S, NS>, NS : Em
     }
 }
 ~~~
-In this case we create this abstract class to handle some **common features for fragment implementation** like **fragment injection** or **view model scope**, as well,  we **override the state functions**  to apply default behaviours in ***[onStateNormal],[onStateError],[onStateLoading]*** if it are needed.
+In this case we create this abstract class to handle some **common features for fragment implementation** like **fragment injection** or **view model scope**, as well,  we **override the state functions**  to apply default behaviours in ***[onStateNormal],[onStateError],[onStateAlternative]*** if it are needed.
 
 For example you can see we define a **hide keyboard behaviour** every time a navigation is done, or **handle common errors** every time a **ViewModel** notify an error.
 
@@ -1185,7 +1326,7 @@ For layout design its no recommendable use dimens attributes for every margin be
 	
 ## <a name="ema-architecture_repositories">REPOSITORIES MUST BE ONLY ACCESSED INSIDE AN USECASE</a>
 
-The repositories should be accessed directly. It must be accessed thorough an UseCase. This way all the logic applied to obtain some kind of data can be reusable.
+The repositories shouldn't be accessed directly. It must be accessed thorough an UseCase. This way all the logic applied to obtain some kind of data can be reusable.
 
 
 # TOOLS
@@ -1289,7 +1430,7 @@ To create a dialog provider we need implement/extend the following EMA classes:
 
 | Overriding methods/fields        | Description                                                        |
 | :------------------------------: | :----------------------------------------------------------------  |
-| getLayout():Int                  | The layout xml resource                                            |
+| layout:Int                  | The layout xml resource                                            |
 | setupData(data: T, view:View)    | Here you will have access to the dialog layout view elements through *view* for setting their values with *data*   
 
 * **EmaBaseDialogProvider**
@@ -1328,7 +1469,7 @@ interface SimpleDialogListener : EmaDialogListener {
 ~~~kotlin
 class SimpleDialog : EmaBaseDialog<SimpleDialogData>() {
 
-    override fun getLayout(): Int {
+    override val layoutId: Int {
         return R.layout.dialog_simple
     }
 
@@ -1456,7 +1597,301 @@ The same tasks can be achieved with ***[Deferred](https://kotlinlang.org/docs/re
  	
  val asyncManager: AsyncManager = DefaultAsyncManager()
  ~~~
+ 
+## <a name="ema-tools_recycler_adapter">EmaRecyclerAdapter</a>
+
+A very common task in Android is to create lists with RecyclerViews and provide their adapters with its repective viewholders.
+
+EMA provide an Adapter for RecyclerView that implements all this boilerplate by itself and provide full adapter functionality implementing very few methods.
+
+###Recycler features
+
+EmaRecyclerAdapter has the following features:
+
+* ***Add item to the list***
+ 
+	Add item to the list without updating the view.
+
+	~~~kotlin
+fun addItem(item: I, position: Int) {
+        listItems.add(position, item)
+    }
+	~~~
+
+	You can set the position of the item, if position is not defined it add it to the last one.
 	
+* ***Update list***
+
+	Update the list, clear the current list and set the new list, updating the view.
+
+	~~~kotlin
+fun updateList(listUpdate: List<I>) 
+	~~~   
+    
+
+* ***Update item***
+
+	Update the current item and updates the view with new values.
+
+	~~~kotlin
+fun updateItem(item: I) 
+	~~~
+
+	The item must be an instance of the list.
+
+
+###Recycler declaration
+
+To implement it you must provide in its declaration the model is going to represent the item <I> and provide a default list in its constructor.
+
+ ~~~kotlin
+	abstract class EmaRecyclerAdapter<I>{                    
+	  abstract val listItems: MutableList<I>
+	}
+ ~~~
+ 
+Then you must provide/override the following attributes:
+
+* ***Set the item layout***
+
+	Provide the layout resource is going to define the item view. If there are diferent layouts for the itemss in the recycler, set is as null.
+
+	~~~kotlin
+	protected abstract val layoutItemId: Int?
+	~~~
+
+	If you want to provide a custom layout instead of a layout id, you can use the enableMultiViewHolder described below.
+ 	
+* ***Set views of the layout***
+ 	
+ 	This method is an extension of the item layout so you can set directly access directly to the views contained in the layout and set their parameters.
+ 	
+	If a viewType have been provided overriding the   ***getItemViewType(position: Int)*** method, you have access to it to know which view layout is accessed in this method.
+
+	~~~kotlin
+	protected abstract fun View.bind(item: I, viewType: 	Int)
+	~~~
+
+If the layouts shown on the recycler view are different or custom (A class, not resource id), to provide them you must use the following feature:
+
+* ***Set custom or different layouts in same recycler***
+
+	You must override the following method:
+	
+  	~~~kotlin
+    override val enableMultiViewHolder: ((view: ViewGroup, viewType: Int) -> EmaAdapterViewHolder)? 	~~~
+ 
+ 	And return an EmaAdapterViewHolder with the proper layout. You only must to instantiate it and set on its constructor the layout view.
+ 
+ 	Example:
+ 	
+ 	~~~kotlin
+  override val enableMultiViewHolder: ((view: ViewGroup, viewType: Int) -> EmaAdapterViewHolder)? = { view, viewType ->
+
+        when (EmaUserItemModel.getFromId(viewType)) {
+            EmaUserItemModel.Type.LEFT -> EmaAdapterViewHolder(LayoutInflater.from(view.context).inflate(R.layout.item_left, view, false), viewType)
+            EmaUserItemModel.Type.RIGHT -> EmaAdapterViewHolder(LayoutInflater.from(view.context).inflate(R.layout.item_right, view, false), viewType)
+        }
+    }
+    ~~~
+    
+	Then in the ***View.bind(item: I, viewType: 	Int)*** methods described above, check the viewType and set the view parameters.
+	
+	Here there is a full multiViewHolder example:
+	
+	~~~kotlin
+	class EmaUserAdapter(private val viewModel: EmaUserViewModel,
+                     override val listItems: MutableList<EmaUserItemModel> = mutableListOf()) : EmaRecyclerAdapter<EmaUserItemModel>() {
+
+
+    override fun getItemViewType(position: Int): Int {
+        return listItems[position].type.id
+    }
+
+    override val layoutItemId: Int? = null
+
+    override fun View.bind(item: EmaUserItemModel, viewType: Int) {
+
+        when (EmaUserItemModel.getFromId(viewType)) {
+
+            EmaUserItemModel.Type.LEFT -> {
+                val leftItem = item as EmaUserLeftModel
+                tvItemLeft.text = R.string.user_name.getFormattedString(context,leftItem.name)
+            }
+
+            EmaUserItemModel.Type.RIGHT -> {
+                val rightItem = item as EmaUserRightModel
+                tvItemRight.text = R.string.user_number_people.getFormattedString(context,rightItem.number)
+            }
+        }
+
+        setOnClickListener { viewModel.onActionUserClicked(item) }
+    }
+
+
+    override val enableMultiViewHolder: ((view: ViewGroup, viewType: Int) -> EmaAdapterViewHolder)? = { view, viewType ->
+
+        when (EmaUserItemModel.getFromId(viewType)) {
+            EmaUserItemModel.Type.LEFT -> EmaAdapterViewHolder(LayoutInflater.from(view.context).inflate(R.layout.item_left, view, false), viewType)
+            EmaUserItemModel.Type.RIGHT -> EmaAdapterViewHolder(LayoutInflater.from(view.context).inflate(R.layout.item_right, view, false), viewType)
+        }
+    }
+    ~~~
+    
+##<a name="ema-tools_edittext">EmaEditText</a>
+
+There is possible that when update a editText in onNormal, if it has setted a TextWatcher it could generate an infinite loop because the following flow can happen:
+
+![EMA EditText Infinite Loop](EmaInfiniteEditTextLoop.png)  
+
+To avoid that use the EmaEditText, it has these two methods:
+
+* ***Set text***
+	
+	This method set the text in editText and avoid to generate the infinite loop with TextWatcher case described before checking if the previous text is different to execute the update.
+	
+	~~~kotlin
+	fun setText(text:String)
+	~~~
+
+* ***Set TextWatcher***
+
+	Add a text update listener to the EditText without needing of implementing the TextWatcher methods. Useful to notify updates to viewmodel state.
+	
+	~~~kotlin
+fun setEmaTextWatcherListener(listener: (String?) -> Unit)
+	~~~
+
+	Example:
+	
+	~~~kotlin
+ 	override fun onInitialized(viewModel: EmaHomeViewModel) {
+        setupEditText(viewModel)
+    }
+
+    private fun setupEditTexts(viewModel: EmaHomeViewModel) {
+        etHomeUser.setEmaTextWatcherListener {
+            viewModel.onActionUserWrite(it.checkNull())
+        }
+        
+    override fun onNormal(data: EmaHomeState) {
+        etHomeUser.setText(data.name)
+    }      
+	~~~
+
+
+
+## <a name="ema-tools_extensions">Extensions</a>
+
+EMA provides some extensions to make developer implementations easier:
+
+### <a name="ema-tools_extensions_view">View</a>
+
+* ***inline fun View.afterMeasured(crossinline f: View.() -> Unit)***
+
+Make view tasks after it has been measured
+
+* ***fun checkVisibility(visibility: Boolean, gone: Boolean = true): Int***
+
+Returns View visibility based on boolean
+If ***visibility == true*** returns VISIBLE.
+If ***visibility == false*** returns INVISIBLE.
+If ***gone == true*** returns GONE when ***visibility == false***
+
+* ***fun <T> checkUpdate(oldValue: T, newValue: T, action: (T) -> Unit)***
+
+Executes an action if values are different
+
+### <a name="ema-tools_extensions_display">Display</a>
+
+* ***fun getScreenMetrics(context: Context): DisplayMetrics***
+
+Get display metrics
+
+* ***fun Int.dpToPx(context: Context): Int***
+
+Convert a dp integer to pixel
+
+### <a name="ema-tools_extensions_resources">Resources</a>
+
+* ***fun Int.getColor(context: Context): Int***
+
+Get color from a @ColorRes
+
+* ***Int.getFormattedString(context: Context, vararg data: Any?): String***
+
+Get a string through a @StringRes formatted with  params defined in data
+
+Example:
+
+Hello world %d -> data = 1 -> Hello world 1
+
+
+### <a name="ema-tools_extensions_date">Date</a>
+
+* ***String.toTimeStamp(dateFormat: String): Long***
+
+Convert a string with provided format to timestamp. Returns 0 if string format is not valid.
+
+* ***Long.toDateFormat(dateFormat: String):String***
+
+Convert a long timestamp to a string with provided format. Returns empty string if format is not valid.
+
+### <a name="ema-tools_extensions_number">Number</a>
+
+* ***fun T?.checkNull(defaultValue: T = T_ZERO): T***
+
+Check a nullable number and return the non nullable value. If it is null, it returns the default value provided or 0 by default.
+
+### <a name="ema-tools_extensions_string">String</a>
+
+* ***fun String?.checkNull(defaultValue: String = STRING_EMPTY): String***
+
+Check a nullable string and return the non nullable value. If it is null, it returns the default value provided or empty string by default.
+
+* ***fun String.getFormattedString(vararg data: Any?): String***
+
+Returns a formatted string filled with formatted data.
+
+Example:
+
+Hello world %d -> data = 1 -> Hello world 1
+
+
+## <a name="ema-tools_constants">Constants</a>
+
+EMA provides some constants for common tasks and avoid magic numbers.
+
+### <a name="ema-tools_constants_date">Dates</a>
+
+~~~kotlin
+const val DATE_FORMAT_DDMMYYYY_HHMM = "dd/MM/yyyy HH:mm"
+const val DATE_FORMAT_DDMMYYYY = "dd/MM/yyyy"
+const val DATE_FORMAT_YYYYMMDD = "yyyy/MM/dd"
+const val DATE_FORMAT_MMDDYYYY = "MM/dd/yyyy"
+const val DATE_FORMAT_HHMM = "HH:mm"
+~~~
+
+### <a name="ema-tools_constants_date">Numbers</a>
+
+~~~kotlin
+const val INT_ZERO = 0
+const val FLOAT_ZERO = 0f
+const val DOUBLE_ZERO = 0.0
+const val LONG_ZERO = 0L
+const val SHORT_ZERO: Short = 0
+~~~
+
+### <a name="ema-tools_constants_date">Strings</a>
+
+~~~kotlin
+const val STRING_EMPTY = ""
+const val STRING_SPACE = " "
+const val STRING_HYPHEN = "-"
+const val STRING_SLASH = "/"
+const val STRING_DOT = "."
+~~~	
+
 # EXTRA: EMA FEATURE TEMPLATE
 	
 
@@ -1492,18 +1927,11 @@ Once you have been selected the EMA feature, you fill the values:
 
 * ***Functionality name (Mandatory):*** The name of the feature. Ex: Home
 
-* ***Hierarchical ViewModel Parent (Optional):*** The name of the parent of ViewModel if it extends from some class.
-
 * ***Create navigator:*** If you want to create a Navigator for the class.
 
 * ***Navigator name:***  The name of the navigator you want to use.
 
-* ***Hierarchical Fragment Parent (Optional):***  The name of the parent of Fragment if it extends from some class.
-
 * ***Add activity to functionality:*** If you want to create a Navigator for the class.
-
-* ***Hierarchical Activity Parent (Optional):***  The name of the parent of Activity if it extends from some class.
-
 
 ![EMA Template2](EmaTemplate2.png)
 
