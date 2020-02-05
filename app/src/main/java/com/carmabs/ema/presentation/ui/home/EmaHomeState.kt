@@ -16,6 +16,5 @@ data class EmaHomeState(
         val userName: String = STRING_EMPTY,
         val userPassword: String = STRING_EMPTY,
         val showPassword: Boolean = false,
-        val rememberUser: Boolean = false,
-        val test:String?=null
+        val rememberUser: Boolean = false
 ) : EmaBaseState

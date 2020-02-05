@@ -11,6 +11,7 @@ class ${functionalityName}Navigator(override val navController: NavController) :
 
         object Destination : ${functionalityName}Navigator.Navigation() {
             override fun navigateWith(navigator: EmaBaseNavigator<out EmaNavigationState>) {
+              (navigator as? ${functionalityName}Navigator)?.toDestination()
             }
         }
     }
