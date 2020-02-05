@@ -1,10 +1,7 @@
 package com.carmabs.ema.android.extension
 
-import android.content.Context
-import android.util.DisplayMetrics
 import android.view.View
 import android.view.ViewTreeObserver
-import android.view.WindowManager
 
 
 /**
@@ -14,7 +11,7 @@ import android.view.WindowManager
  */
 
 /**
- * Listener to make view tasks after if has been measured
+ * Listener to make view tasks after it has been measured
  */
 inline fun View.afterMeasured(crossinline f: View.() -> Unit) {
     viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
@@ -39,16 +36,6 @@ fun checkVisibility(visibility: Boolean, gone: Boolean = true): Int {
         !visibility && gone -> View.GONE
         else -> View.INVISIBLE
     }
-}
-
-/**
- * Get display metrics
- */
-fun getScreenMetrics(context: Context): DisplayMetrics{
-    val displayMetrics = DisplayMetrics()
-    val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-    windowManager.defaultDisplay.getMetrics(displayMetrics)
-    return displayMetrics
 }
 
 /**
