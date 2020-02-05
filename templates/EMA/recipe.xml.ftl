@@ -7,10 +7,10 @@
                    to="${escapeXmlAttribute(srcOut)}/${functionalityName}ViewModel.kt" />
 
     <#if addActivity>
-    <instantiate from="src/app_package/MVVMViewActivity.kt.ftl"
+    <instantiate from="src/app_package/EMAViewActivity.kt.ftl"
                    to="${escapeXmlAttribute(srcOut)}/${functionalityName}Activity.kt" />
     </#if>
-    <instantiate from="src/app_package/MVVMViewFragment.kt.ftl"
+    <instantiate from="src/app_package/EMAViewFragment.kt.ftl"
                    to="${escapeXmlAttribute(srcOut)}/${functionalityName}Fragment.kt" />
 
     <instantiate from="src/app_package/ViewState.kt.ftl"

@@ -2,7 +2,7 @@
 <template format="4"
         revision="1"
         name="EMA feature"
-        description="Creates a new EMA feature with MVVM classes - ViewModel, Activity/Fragment, Navigator  and State">
+        description="Creates a new EMA feature with the following classes - ViewModel, Activity/Fragment, Navigator  and State">
  
     <category value="Carmabs"/>
     <formfactor value="Mobile"/>
@@ -12,7 +12,7 @@
         name="Functionality Name"
         type="string"
         constraints="class|nonempty"
-        help="The name of the functionality that requires MVVM views"/>
+        help="The name of the functionality that requires EMA views"/>
 
     <parameter 
         id="createNavigator"
