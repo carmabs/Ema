@@ -30,16 +30,12 @@ fun Int.getFormattedString(context: Context, vararg data: Any?): String {
  * Get color from a @ColorRes
  * @param context Application context
  */
-@RequiresApi(Build.VERSION_CODES.M)
-fun Int.getColor(context: Context): Int {
-    return context.resources.getColor(this,context.theme)
-}
 
-/**
- * Get color from a @ColorRes from api lower than 23
- * @param context Application context
- */
-fun Int.getColorCompat(context: Context):Int {
-    return ContextCompat.getColor(context,this)
+fun Int.getColor(context: Context): Int {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        context.resources.getColor(this,context.theme)
+    } else {
+        ContextCompat.getColor(context,this)
+    }
 }
 
