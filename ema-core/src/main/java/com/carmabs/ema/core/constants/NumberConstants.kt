@@ -15,3 +15,6 @@ const val FLOAT_ZERO = 0f
 const val DOUBLE_ZERO = 0.0
 const val LONG_ZERO = 0L
 const val SHORT_ZERO: Short = 0
+
+const val INT_ONE = 1
+const val FLOAT_ONE = 1f
