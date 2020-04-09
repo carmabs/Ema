@@ -42,6 +42,10 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
     abstract fun onInitialized(viewModel: VM)
 
     /**
+     * Automatically updates previousState
+     */
+    override val updatePreviousStateAutomatically: Boolean = true
+    /**
      * The incoming state in fragment instantiation. This is set up when other fragment/activity
      * launches a fragment with arguments provided by Bundle
      */
