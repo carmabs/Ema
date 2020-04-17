@@ -32,10 +32,23 @@ fun Int.getFormattedString(context: Context, vararg data: Any?): String {
  */
 
 fun Int.getColor(context: Context): Int {
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        context.resources.getColor(this,context.theme)
-    } else {
-        ContextCompat.getColor(context,this)
-    }
+    return ContextCompat.getColor(context,this)
 }
 
+fun Int.getDrawable(context: Context): Drawable? {
+    return ContextCompat.getDrawable(context,this)
+}
+
+fun getBitmapFromResource(context: Context, drawableId: Int, width:Int?=null, height:Int?=null): Bitmap {
+    return ContextCompat.getDrawable(context, drawableId)?.let {
+        val drawable: Drawable =it
+        val bitmap: Bitmap = Bitmap.createBitmap(
+            width?:drawable.intrinsicWidth,
+            height?:drawable.intrinsicHeight, Bitmap.Config.ARGB_8888
+        )
+        val canvas = Canvas(bitmap)
+        drawable.setBounds(0, 0, canvas.width, canvas.height)
+        drawable.draw(canvas)
+        bitmap
+    }?:throw Exception("Drawable not found")
+}
