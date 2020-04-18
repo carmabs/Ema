@@ -17,12 +17,14 @@ interface Injector  : KodeinAware {
     val parentKodein: Kodein
 
     override val kodein: Kodein
-        get() = Kodein.lazy {
+
+    fun injectModule(kodeinBuilder: Kodein.MainBuilder):Kodein.Module?
+
+    fun injectKodein() =  Kodein.lazy {
             extend(parentKodein)
             injectModule(this)?.let {
                 import(it)
             }
-        }
+    }
 
-    fun injectModule(kodeinBuilder: Kodein.MainBuilder):Kodein.Module?
 }
