@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import com.carmabs.ema.android.di.Injector
 import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.closestKodein
@@ -18,11 +19,14 @@ import org.kodein.di.android.closestKodein
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
-abstract class EmaBaseLayout : FrameLayout, KodeinAware {
+abstract class EmaBaseLayout : FrameLayout, Injector {
 
-    override val kodein: Kodein by closestKodein()
+    override val parentKodein: Kodein by closestKodein()
+
+    override val kodein: Kodein = parentKodein
 
     private var mainLayout: View? = null
+
     protected var viewsSetup = false
 
     constructor(context: Context) : super(context) {

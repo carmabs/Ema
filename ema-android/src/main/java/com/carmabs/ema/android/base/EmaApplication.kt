@@ -1,6 +1,7 @@
 package com.carmabs.ema.android.base
 
 import android.app.Application
+import com.carmabs.ema.android.di.Injector
 import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.androidXModule
@@ -12,18 +13,21 @@ import org.kodein.di.android.x.androidXModule
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
-abstract class EmaApplication : Application(), KodeinAware {
+abstract class EmaApplication : Application(), Injector {
 
-    override val kodein: Kodein = Kodein {
-        injectAppModule(this)?.let {
-            import(it)
-        }?: androidXModule(this@EmaApplication)
+    override val parentKodein: Kodein= Kodein {
+        androidXModule(this@EmaApplication)
     }
+
+    override val kodein: Kodein = injectKodein()
+
+    final override fun injectModule(kodeinBuilder: Kodein.MainBuilder): Kodein.Module? =
+        injectAppModule(kodeinBuilder)
 
     /**
      * The child classes implement this methods to return the module that provides the app scope objects
      * @param kodein The kodein object which provide the injection
      * @return The Kodein module which makes the injection
      */
-    abstract fun injectAppModule(kodein:Kodein.MainBuilder):Kodein.Module?
+    abstract fun injectAppModule(kodeinBuilder:Kodein.MainBuilder):Kodein.Module?
 }

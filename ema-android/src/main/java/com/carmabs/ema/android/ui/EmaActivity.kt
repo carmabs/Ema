@@ -42,6 +42,10 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
         vm.initialViewState.javaClass.name
     }
 
+    /**
+     * Automatically updates previousState
+     */
+    override val updatePreviousStateAutomatically: Boolean = true
 
     /**
      * The incoming state in fragment instantiation. This is set up when other fragment/activity
