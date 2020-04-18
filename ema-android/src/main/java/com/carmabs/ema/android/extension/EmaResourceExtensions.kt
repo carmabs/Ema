@@ -1,9 +1,14 @@
 package com.carmabs.ema.android.extension
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.drawable.Drawable
 import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
+import java.lang.Exception
+
 
 /**
  *  *<p>

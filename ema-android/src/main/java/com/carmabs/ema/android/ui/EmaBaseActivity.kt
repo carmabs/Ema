@@ -5,8 +5,8 @@ import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavHost
+import com.carmabs.ema.android.di.Injector
 import org.kodein.di.Kodein
-import org.kodein.di.KodeinAware
 import org.kodein.di.android.closestKodein
 
 /**
@@ -16,15 +16,14 @@ import org.kodein.di.android.closestKodein
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
-abstract class EmaBaseActivity : AppCompatActivity(), NavHost, KodeinAware {
+abstract class EmaBaseActivity : AppCompatActivity(), NavHost, Injector {
 
-    private val parentKodein by closestKodein()
-    override val kodein: Kodein = Kodein.lazy {
-        extend(parentKodein)
-        injectActivityModule(this)?.let {
-            import(it)
-        }
-    }
+    final override val parentKodein by closestKodein()
+
+    override val kodein: Kodein = injectKodein()
+
+    final override fun injectModule(kodeinBuilder: Kodein.MainBuilder): Kodein.Module? =
+        injectActivityModule(kodeinBuilder)
 
     /**
      * The onCreate base will set the view specified in [.getLayout] and will
