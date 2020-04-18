@@ -19,6 +19,8 @@ abstract class EmaApplication : Application(), Injector {
         androidXModule(this@EmaApplication)
     }
 
+    override val kodein: Kodein = injectKodein()
+
     final override fun injectModule(kodeinBuilder: Kodein.MainBuilder): Kodein.Module? =
         injectAppModule(kodeinBuilder)
 
