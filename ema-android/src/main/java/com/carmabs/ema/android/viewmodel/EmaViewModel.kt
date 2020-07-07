@@ -76,7 +76,7 @@ abstract class EmaViewModel<S, NS : EmaNavigationState> : EmaBaseViewModel<EmaSt
      * Update the data of current state without notify it to the view.
      * @param changeStateFunction create the new state
      */
-    protected fun updateDataState(changeStateFunction: S.() -> S) {
+    protected open fun updateDataState(changeStateFunction: S.() -> S) {
         viewState?.let {
             viewState = changeStateFunction.invoke(it)
             viewState?.let { newState -> state = updateData(newState) }
@@ -109,6 +109,14 @@ abstract class EmaViewModel<S, NS : EmaNavigationState> : EmaBaseViewModel<EmaSt
             viewState = initialState
             checkStateFunction.invoke(initialState)
         }
+    }
+
+    /**
+     * Check the current view state
+     * @return the current viewState or null if it has not been initialized
+     */
+    fun checkDataStateOrNull():S?{
+        return viewState
     }
 
     /**

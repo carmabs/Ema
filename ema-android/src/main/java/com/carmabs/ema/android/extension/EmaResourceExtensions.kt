@@ -1,8 +1,7 @@
 package com.carmabs.ema.android.extension
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.Canvas
+import android.graphics.*
 import android.graphics.drawable.Drawable
 import android.os.Build
 import androidx.core.content.ContextCompat
@@ -44,7 +43,7 @@ fun Int.getDrawable(context: Context): Drawable? {
     return ContextCompat.getDrawable(context,this)
 }
 
-fun getBitmapFromResource(context: Context, drawableId: Int, width:Int?=null, height:Int?=null): Bitmap {
+fun getBitmapFromResource(context: Context, drawableId: Int, width:Int?=null, height:Int?=null,colorHex:String?=null): Bitmap {
     return ContextCompat.getDrawable(context, drawableId)?.let {
         val drawable: Drawable =it
         val bitmap: Bitmap = Bitmap.createBitmap(
@@ -52,7 +51,10 @@ fun getBitmapFromResource(context: Context, drawableId: Int, width:Int?=null, he
             height?:drawable.intrinsicHeight, Bitmap.Config.ARGB_8888
         )
         val canvas = Canvas(bitmap)
+        // TO ANTIALIAS //
+        canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
         drawable.setBounds(0, 0, canvas.width, canvas.height)
+        colorHex?.also { color -> drawable.setTint(Color.parseColor(color)) }
         drawable.draw(canvas)
         bitmap
     }?:throw Exception("Drawable not found")
