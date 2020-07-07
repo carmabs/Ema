@@ -36,9 +36,11 @@ fun String.toTimeStamp(dateFormat: String): Long = try {
 /**
  * Convert a long timestamp to a string with provided format
  * @param dateFormat Format of the string
+ * @param timeZone TimeZone to format the hour difference
  */
-fun Long.toDateFormat(dateFormat: String): String = try {
+fun Long.toDateFormat(dateFormat: String,timeZone: TimeZone?=null): String = try {
     val formatter = SimpleDateFormat(dateFormat, Locale.getDefault())
+    timeZone?.also { formatter.timeZone = it }
     val date = Date(this)
     formatter.format(date) ?: STRING_EMPTY
 } catch (e: java.lang.Exception) {
