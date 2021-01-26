@@ -104,11 +104,10 @@ abstract class EmaViewModel<S, NS : EmaNavigationState> : EmaBaseViewModel<EmaSt
     fun <T> checkDataState(checkStateFunction: (S) -> T): T {
         return viewState?.let {
             checkStateFunction.invoke(it)
-        } ?: let {
-            val initialState = initialViewState
-            viewState = initialState
-            checkStateFunction.invoke(initialState)
-        }
+        }?:throw Exception("Data state cannot be checked. " +
+                "Check if initial state has not been created" +
+                "or you have execute this function more than once in a very short" +
+                "period of time. In this case use checkDataState { it } to obtain the state")
     }
 
     /**

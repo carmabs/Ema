@@ -21,7 +21,7 @@ abstract class EmaBaseFragment : Fragment(), Injector {
 
     final override val parentKodein: Kodein by closestKodein()
 
-    override val kodein: Kodein = injectKodein()
+    final override val kodein: Kodein = injectKodein()
 
     final override fun injectModule(kodeinBuilder: Kodein.MainBuilder): Kodein.Module? =
         injectFragmentModule(kodeinBuilder)
