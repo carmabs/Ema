@@ -7,8 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import com.carmabs.ema.android.di.Injector
 import org.kodein.di.Kodein
-import org.kodein.di.KodeinAware
 import org.kodein.di.android.closestKodein
 
 
@@ -18,12 +18,23 @@ import org.kodein.di.android.closestKodein
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
-abstract class EmaBaseLayout : FrameLayout, KodeinAware {
+abstract class EmaBaseLayout<T> : FrameLayout, Injector {
 
-    override val kodein: Kodein by closestKodein()
+    override val parentKodein: Kodein by closestKodein()
 
-    private var mainLayout: View? = null
+    override val kodein: Kodein = parentKodein
+
+    protected var mainLayout: View? = null
+
     protected var viewsSetup = false
+
+    var data:T?=null
+    set(value) {
+        field = value
+        mainLayout?.also {
+            setup(it,data)
+        }
+    }
 
     constructor(context: Context) : super(context) {
         onCreateView(context)
@@ -52,7 +63,7 @@ abstract class EmaBaseLayout : FrameLayout, KodeinAware {
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         mainLayout?.let {
-            setup(it)
+            setup(it,data)
             viewsSetup = true
         }
     }
@@ -72,7 +83,7 @@ abstract class EmaBaseLayout : FrameLayout, KodeinAware {
      * Method called once the layout has been inflated implementing the methods [EmaBaseLayout.getLayout]
      * @param mainLayout is the layout inflated instance
      */
-    abstract fun setup(mainLayout: View)
+    abstract fun setup(mainLayout: View,data:T?)
 
 
     /**

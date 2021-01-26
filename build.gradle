@@ -3,11 +3,6 @@ apply from: 'build-system/dependencies.gradle'
 
 buildscript {
 
-    ext.kotlinVersion = '1.3.60'
-    ext.buildGradleVersion = '3.4.2'
-    ext.safeArgsVersion = "1.0.0"
-    ext.publishJitPackVersion = "2.1"
-
     repositories {
         mavenCentral()
         google()

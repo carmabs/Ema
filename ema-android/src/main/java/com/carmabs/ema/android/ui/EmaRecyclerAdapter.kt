@@ -23,6 +23,11 @@ abstract class EmaRecyclerAdapter<I> : RecyclerView.Adapter<EmaViewHolder<I>>() 
     abstract val listItems: MutableList<I>
 
     /**
+     * Listener when item is clicked
+     */
+    private var itemClickListener: ((item: I) -> Unit)? = null
+
+    /**
      * Get the list size
      */
     override fun getItemCount(): Int {
@@ -91,6 +96,14 @@ abstract class EmaRecyclerAdapter<I> : RecyclerView.Adapter<EmaViewHolder<I>>() 
     }
 
     /**
+     * Add listener when item is clicked
+     * @param listener for click on view item
+     */
+    fun setOnItemClickListener(itemClickListener: ((item: I) -> Unit)?) {
+        this.itemClickListener = itemClickListener
+    }
+
+    /**
      * Add item to the list
      * @param item to add
      */
@@ -101,6 +114,9 @@ abstract class EmaRecyclerAdapter<I> : RecyclerView.Adapter<EmaViewHolder<I>>() 
     protected open inner class EmaAdapterViewHolder(view: View, private val viewType: Int) : EmaViewHolder<I>(view) {
         override fun bind(item: I) {
             itemView.bind(item, viewType)
+            itemClickListener?.also { listener ->
+                itemView.setOnClickListener { listener.invoke(item) }
+            } ?: itemView.setOnClickListener(null)
         }
     }
 }

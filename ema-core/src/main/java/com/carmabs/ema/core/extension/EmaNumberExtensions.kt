@@ -35,3 +35,7 @@ fun Double?.checkNull(defaultValue: Double = DOUBLE_ZERO): Double {
 fun Boolean?.checkNull(defaultValue: Boolean = false): Boolean {
     return this ?: defaultValue
 }
+
+fun Float.constraintValue(minLimit: Float, maxLimit: Float): Float {
+    return coerceAtLeast(minLimit).coerceAtMost(maxLimit)
+}
