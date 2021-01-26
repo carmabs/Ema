@@ -98,9 +98,16 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
     ) {
 
         resultViewModel?.also { viewModel.resultViewModel = it }
-
         onViewModelInitialized(viewModel)
-
+    }
+    /**
+     * Method called to start viewModel and bind data updated
+     */
+    fun onStartAndBindData(
+        lifeCycleOwner: LifecycleOwner,
+        viewModel: VM,
+        resultViewModel: EmaResultViewModel? = null
+    ) {
         viewModel.onStart(inputState?.let { EmaState.Normal(it) })
         viewModel.observableState.observe(lifeCycleOwner, Observer(this::onDataUpdated))
         viewModel.singleObservableState.observe(lifeCycleOwner, Observer(this::onSingleData))

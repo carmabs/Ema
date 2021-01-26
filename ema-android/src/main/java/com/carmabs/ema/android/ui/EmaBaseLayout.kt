@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import com.carmabs.ema.android.di.Injector
 import org.kodein.di.Kodein
-import org.kodein.di.KodeinAware
 import org.kodein.di.android.closestKodein
 
 
@@ -19,15 +18,23 @@ import org.kodein.di.android.closestKodein
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
-abstract class EmaBaseLayout : FrameLayout, Injector {
+abstract class EmaBaseLayout<T> : FrameLayout, Injector {
 
     override val parentKodein: Kodein by closestKodein()
 
     override val kodein: Kodein = parentKodein
 
-    private var mainLayout: View? = null
+    protected var mainLayout: View? = null
 
     protected var viewsSetup = false
+
+    var data:T?=null
+    set(value) {
+        field = value
+        mainLayout?.also {
+            setup(it,data)
+        }
+    }
 
     constructor(context: Context) : super(context) {
         onCreateView(context)
@@ -56,7 +63,7 @@ abstract class EmaBaseLayout : FrameLayout, Injector {
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         mainLayout?.let {
-            setup(it)
+            setup(it,data)
             viewsSetup = true
         }
     }
@@ -76,7 +83,7 @@ abstract class EmaBaseLayout : FrameLayout, Injector {
      * Method called once the layout has been inflated implementing the methods [EmaBaseLayout.getLayout]
      * @param mainLayout is the layout inflated instance
      */
-    abstract fun setup(mainLayout: View)
+    abstract fun setup(mainLayout: View,data:T?)
 
 
     /**
