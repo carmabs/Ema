@@ -23,7 +23,8 @@ import com.carmabs.ema.core.state.EmaState
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
 
-abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigationState> : EmaToolbarFragmentActivity(), EmaView<S, VM, NS> {
+abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigationState> :
+    EmaToolbarFragmentActivity(), EmaView<S, VM, NS> {
 
     companion object {
         const val RESULT_DEFAULT_CODE: Int = 57535
@@ -42,6 +43,10 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
         vm.initialViewState.javaClass.name
     }
 
+    /**
+     * Automatically updates previousState
+     */
+    override val updatePreviousStateAutomatically: Boolean = true
 
     /**
      * The incoming state in fragment instantiation. This is set up when other fragment/activity
@@ -81,9 +86,12 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
      */
     override fun onResume() {
         super.onResume()
-        initializeViewModel(this)
+        onStartAndBindData(
+            this,
+            vm,
+            vm.resultViewModel
+        )
     }
-
 
     /**
      * Method use to notify the results of another activities
@@ -129,6 +137,7 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
      * Previous state for comparing state properties update
      */
     override var previousState: S? = null
+
     /**
      * Add a view model observer to current fragment
      * @param viewModelAttachedSeed is the view model seed will used as factory instance if there is no previous
@@ -139,15 +148,22 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
      * @return The view model attached
      */
     protected fun <AS, VM : EmaViewModel<AS, *>> addExtraViewModel(
-            viewModelAttachedSeed: VM,
-            fragment: Fragment? = null,
-            observerFunction: ((attachedState: EmaState<AS>) -> Unit)? = null): VM {
+        viewModelAttachedSeed: VM,
+        fragment: Fragment? = null,
+        observerFunction: ((attachedState: EmaState<AS>) -> Unit)? = null
+    ): VM {
 
         val viewModel =
-                fragment?.let {
-                    ViewModelProviders.of(it, EmaFactory(viewModelAttachedSeed))[viewModelAttachedSeed::class.java]
-                }
-                        ?: ViewModelProviders.of(this, EmaFactory(viewModelAttachedSeed))[viewModelAttachedSeed::class.java]
+            fragment?.let {
+                ViewModelProviders.of(
+                    it,
+                    EmaFactory(viewModelAttachedSeed)
+                )[viewModelAttachedSeed::class.java]
+            }
+                ?: ViewModelProviders.of(
+                    this,
+                    EmaFactory(viewModelAttachedSeed)
+                )[viewModelAttachedSeed::class.java]
 
         observerFunction?.also { viewModel.getObservableState().observe(this, Observer(it)) }
         extraViewModelMap.add(viewModel)
@@ -208,7 +224,11 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
 
     override fun onCreateActivity(savedInstanceState: Bundle?) {
         super.onCreateActivity(savedInstanceState)
-        supportFragmentManager.registerFragmentLifecycleCallbacks(fragmentManagerCycleCallbacks, false)
+        supportFragmentManager.registerFragmentLifecycleCallbacks(
+            fragmentManagerCycleCallbacks,
+            false
+        )
+        initializeViewModel(this)
     }
 
     final override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -247,7 +267,10 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
     /**
      * Use this method to add a activity result handler when a result is received from another activity
      */
-    protected fun addOnActivityResultHandler(requestCode: Int, function: (Int, Int, Intent?) -> Unit) {
+    protected fun addOnActivityResultHandler(
+        requestCode: Int,
+        function: (Int, Int, Intent?) -> Unit
+    ) {
         resultActivityFunctions[requestCode] = function
     }
 

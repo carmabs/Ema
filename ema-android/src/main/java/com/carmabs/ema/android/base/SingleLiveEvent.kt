@@ -1,6 +1,5 @@
 package com.carmabs.ema.android.base
 
-import android.util.Log
 import androidx.annotation.MainThread
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
@@ -21,27 +20,49 @@ import java.util.concurrent.atomic.AtomicBoolean
  */
 class SingleLiveEvent<T> : MutableLiveData<T>() {
 
-    private val mPending = AtomicBoolean(false)
+    private val pending = AtomicBoolean(false)
+    private var observers = mutableMapOf<LifecycleOwner, MutableSet<Observer<in T>>>()
 
     @MainThread
     override fun observe(owner: LifecycleOwner, observer: Observer<in T>) {
+        if (observers.containsKey(owner))
+            observers[owner]?.add(observer)
+        else
+            observers[owner] = mutableSetOf(observer)
 
-        if (hasActiveObservers()) {
-            Log.w(TAG, "Multiple observers registered but only one will be notified of changes.")
-        }
-
-        // Observe the internal MutableLiveData
-        super.observe(owner, Observer<T> { t ->
-            if (mPending.compareAndSet(true, false)) {
-                observer.onChanged(t)
+        super.observe(owner, Observer { t ->
+            if (pending.compareAndSet(true, false)) {
+                observers.forEach { observer ->
+                    observer.value.forEach {
+                        it.onChanged(t)
+                    }
+                }
             }
         })
     }
 
     @MainThread
     override fun setValue(t: T?) {
-        mPending.set(true)
+        pending.set(true)
         super.setValue(t)
+    }
+
+    override fun removeObservers(owner: LifecycleOwner) {
+        observers.remove(owner)
+        super.removeObservers(owner)
+    }
+
+    override fun removeObserver(observer: Observer<in T>) {
+        observers.forEach {
+            it.value.remove(observer)
+        }
+        val resultObservers = mutableMapOf<LifecycleOwner, MutableSet<Observer<in T>>>()
+        observers.entries.forEach {
+            if (it.value.isNotEmpty())
+                resultObservers[it.key] = it.value
+        }
+        observers = resultObservers
+        super.removeObserver(observer)
     }
 
     /**
@@ -56,3 +77,5 @@ class SingleLiveEvent<T> : MutableLiveData<T>() {
         private val TAG = "SingleLiveEvent"
     }
 }
+
+

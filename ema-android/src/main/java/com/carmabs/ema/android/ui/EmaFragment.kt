@@ -1,6 +1,7 @@
 package com.carmabs.ema.android.ui
 
 import android.os.Bundle
+import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.LifecycleOwner
@@ -20,7 +21,8 @@ import com.carmabs.ema.core.state.EmaState
  *
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
-abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigationState> : EmaBaseFragment(), EmaView<S, VM, NS> {
+abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigationState> :
+    EmaBaseFragment(), EmaView<S, VM, NS> {
 
     /**
      * The view model of the fragment
@@ -35,11 +37,29 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
         vm.initialViewState.javaClass.name
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        activity?.let {
+            initializeViewModel(
+                it,
+                if (fragmentViewModelScope)
+                    this
+                else
+                    null
+            )
+        }
+    }
+
     /**
      * Called once the view model is instantiated
      * @param viewModel instantiated
      */
     abstract fun onInitialized(viewModel: VM)
+
+    /**
+     * Automatically updates previousState
+     */
+    override val updatePreviousStateAutomatically: Boolean = true
 
     /**
      * The incoming state in fragment instantiation. This is set up when other fragment/activity
@@ -59,11 +79,14 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
     override fun onResume() {
         super.onResume()
         activity?.let {
-            initializeViewModel(it,
-                    if (fragmentViewModelScope)
-                        this
-                    else
-                        null)
+            onStartAndBindData(
+                if (fragmentViewModelScope)
+                    this
+                else
+                    it,
+                vm,
+                vm.resultViewModel
+            )
         }
     }
 
@@ -73,6 +96,7 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
      * Previous state for comparing state properties update
      */
     override var previousState: S? = null
+
     /**
      * Add a view model observer to current fragment
      * @param viewModelAttachedSeed is the view model seed will used as factory instance if there is no previous
@@ -83,16 +107,23 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
      * @return The view model attached
      */
     protected fun <AS, VM : EmaViewModel<AS, *>> addExtraViewModel(
-            viewModelAttachedSeed: VM,
-            fragment: Fragment,
-            fragmentActivity: FragmentActivity? = null,
-            observerFunction: ((attachedState: EmaState<AS>) -> Unit)? = null): VM {
+        viewModelAttachedSeed: VM,
+        fragment: Fragment,
+        fragmentActivity: FragmentActivity? = null,
+        observerFunction: ((attachedState: EmaState<AS>) -> Unit)? = null
+    ): VM {
 
         val viewModel =
-                fragmentActivity?.let {
-                    ViewModelProviders.of(it, EmaFactory(viewModelAttachedSeed))[viewModelAttachedSeed::class.java]
-                }
-                        ?: ViewModelProviders.of(fragment, EmaFactory(viewModelAttachedSeed))[viewModelAttachedSeed::class.java]
+            fragmentActivity?.let {
+                ViewModelProviders.of(
+                    it,
+                    EmaFactory(viewModelAttachedSeed)
+                )[viewModelAttachedSeed::class.java]
+            }
+                ?: ViewModelProviders.of(
+                    fragment,
+                    EmaFactory(viewModelAttachedSeed)
+                )[viewModelAttachedSeed::class.java]
 
         observerFunction?.also { viewModel.getObservableState().observe(this, Observer(it)) }
         extraViewModelList.add(viewModel)
