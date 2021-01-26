@@ -1,4 +1,4 @@
-package com.carmabs.ema.android.extension
+package com.carmabs.ema.core.extension
 
 import com.carmabs.ema.core.constants.LONG_ZERO
 import com.carmabs.ema.core.constants.STRING_EMPTY
@@ -19,6 +19,7 @@ const val DATE_FORMAT_DDMMYYYY_HHMM = "dd/MM/yyyy HH:mm"
 const val DATE_FORMAT_DDMMYYYY = "dd/MM/yyyy"
 const val DATE_FORMAT_YYYYMMDD = "yyyy/MM/dd"
 const val DATE_FORMAT_MMDDYYYY = "MM/dd/yyyy"
+const val DATE_FORMAT_ISO8601 = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"
 const val DATE_FORMAT_HHMM = "HH:mm"
 
 /**
