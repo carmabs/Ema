@@ -106,8 +106,8 @@ abstract class EmaViewModel<S, NS : EmaNavigationState> : EmaBaseViewModel<EmaSt
             checkStateFunction.invoke(it)
         }?:throw Exception("Data state cannot be checked. " +
                 "Check if initial state has not been created" +
-                "or you have execute this function more than once in a very short" +
-                "period of time. In this case use checkDataState { it } to obtain the state")
+                " or you have execute this function more than once in a very short" +
+                " period of time. In this case use checkDataState { it } to obtain the state")
     }
 
     /**
