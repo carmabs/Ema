@@ -1,8 +1,5 @@
-package com.carmabs.ema.android.viewmodel
+package com.carmabs.ema.core.viewmodel
 
-import com.carmabs.ema.android.extra.EmaReceiverModel
-import com.carmabs.ema.android.extra.EmaResultModel
-import com.carmabs.ema.android.ui.EmaResultViewModel
 import com.carmabs.ema.core.navigator.EmaNavigationState
 import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.core.state.EmaState
@@ -20,7 +17,7 @@ abstract class EmaViewModel<S, NS : EmaNavigationState> : EmaBaseViewModel<EmaSt
      */
     private var viewState: S? = null
 
-    internal lateinit var resultViewModel: EmaResultViewModel
+    lateinit var resultViewModel: EmaResultViewModel
 
     override fun onStart(inputState: EmaState<S>?): Boolean {
         if (viewState == null)
@@ -54,7 +51,7 @@ abstract class EmaViewModel<S, NS : EmaNavigationState> : EmaBaseViewModel<EmaSt
                 val alternativeState = state as EmaState.Alternative
                 EmaState.Alternative(newState, alternativeState.dataAlternative)
             }
-            null -> EmaState.Normal(newState)
+            else -> EmaState.Normal(newState)
         }
     }
 
@@ -193,8 +190,8 @@ abstract class EmaViewModel<S, NS : EmaNavigationState> : EmaBaseViewModel<EmaSt
         resultViewModel.addResultReceiver(emaReceiver)
     }
 
-    override fun onCleared() {
-        super.onCleared()
+    override fun onDestroy() {
+        super.onDestroy()
         resultViewModel.notifyResults(getId())
     }
 

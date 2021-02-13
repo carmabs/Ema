@@ -1,10 +1,5 @@
-package com.carmabs.ema.android.viewmodel
+package com.carmabs.ema.core.viewmodel
 
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import com.carmabs.ema.android.base.SingleLiveEvent
 import com.carmabs.ema.core.concurrency.ConcurrencyManager
 import com.carmabs.ema.core.concurrency.DefaultConcurrencyManager
 import com.carmabs.ema.core.concurrency.tryCatch
@@ -13,6 +8,7 @@ import com.carmabs.ema.core.state.EmaBaseState
 import com.carmabs.ema.core.state.EmaExtraData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.*
 
 
 /**
@@ -27,7 +23,7 @@ import kotlinx.coroutines.Job
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
-abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> : ViewModel() {
+abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> {
 
     /**
      * Observable state that launch event every time a value is set. This value will be the state
@@ -41,14 +37,14 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> : Vie
      *              -> switch has been set again
      *                  -> saved in view model ------> INFINITE LOOP)
      */
-    internal val observableState: MutableLiveData<S> = MutableLiveData()
+    internal val observableState: MutableSharedFlow<S> = MutableSharedFlow()
 
     /**
      * Observable state that launch event every time a value is set. This value will be a [EmaExtraData]
      * object that can contain any type of object. It will be used for
      * events that only has to be notified once to its observers, e.g: A toast message.
      */
-    internal val singleObservableState: SingleLiveEvent<EmaExtraData> = SingleLiveEvent()
+    internal val singleObservableState: MutableSharedFlow<EmaExtraData> = MutableSharedFlow()
 
     /**
      * Observable state that launch event every time a value is set. [NS] value be will a [EmaNavigationState]
@@ -56,7 +52,7 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> : Vie
      * events that only has to be notified once to its observers and is used to notify the navigation
      * events
      */
-    internal val navigationState: SingleLiveEvent<NS> = SingleLiveEvent()
+    internal val navigationState: MutableSharedFlow<NS?> = MutableSharedFlow()
 
     /**
      * Manager to handle the threads where the background tasks are going to be launched
@@ -79,17 +75,22 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> : Vie
      * @param inputState
      * @return true if it's the first time is started
      */
-    internal open fun onStart(inputState: S? = null): Boolean {
+    open fun onStart(inputState: S? = null): Boolean {
         val firstTime = if (state == null) {
             val initialStatus = inputState ?: createInitialState()
             state = initialStatus
             onStartFirstTime(inputState != null)
             true
         } else false
-        if (updateOnInitialization)
-            observableState.value = state
 
-        onResume(firstTime)
+        state?.also {
+            executeUseCase {
+                if (updateOnInitialization)
+                    observableState.emit(it)
+                onResume(firstTime)
+            }
+        }
+
         return firstTime
     }
 
@@ -106,7 +107,7 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> : Vie
     /**
      * Get observable state as LiveDaya to avoid state setting from the view
      */
-    fun getObservableState(): LiveData<S> = observableState
+    fun getObservableState(): SharedFlow<S> = observableState
 
     /**
      * Get current state of view
@@ -116,12 +117,12 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> : Vie
     /**
      * Get navigation state as LiveData to avoid state setting from the view
      */
-    fun getNavigationState(): LiveData<NS> = navigationState
+    fun getNavigationState(): SharedFlow<NS?> = navigationState
 
     /**
      * Get single state as LiveData to avoid state setting from the view
      */
-    fun getSingleObservableState(): LiveData<EmaExtraData> = singleObservableState
+    fun getSingleObservableState(): SharedFlow<EmaExtraData> = singleObservableState
 
     /**
      * Check the current view state
@@ -139,7 +140,9 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> : Vie
      */
     protected open fun updateView(state: S) {
         this.state = state
-        this.observableState.value = state
+        executeUseCase {
+            observableState.emit(state)
+        }
     }
 
     /**
@@ -147,7 +150,9 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> : Vie
      * It a new observer is attached, it will not be notified
      */
     protected open fun notifySingleEvent(extraData: EmaExtraData) {
-        this.singleObservableState.value = extraData
+        executeUseCase {
+            singleObservableState.emit(extraData)
+        }
     }
 
     /**
@@ -155,14 +160,19 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> : Vie
      * @param navigation The object that represent the destination of the navigation
      */
     protected open fun navigate(navigation: NS) {
-        this.navigationState.value = navigation
+        executeUseCase {
+            navigationState.emit( navigation)
+        }
+
     }
 
     /**
      * Method use to notify a navigation back event
      */
     protected open fun navigateBack() {
-        this.navigationState.value = null
+        executeUseCase {
+            navigationState.emit( null)
+        }
     }
 
     /**
@@ -205,18 +215,7 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> : Vie
     /**
      * Method called when the ViewModel is destroyed. It cancell all background pending tasks
      */
-    override fun onCleared() {
+    open fun onDestroy() {
         concurrencyManager.cancelPendingTasks()
-        super.onCleared()
-    }
-
-    /**
-     * Unbind the observables of the lifeCycleOwner
-     * @param lifecycleOwner
-     */
-    fun unBindObservables(lifecycleOwner: LifecycleOwner) {
-        observableState.removeObservers(lifecycleOwner)
-        navigationState.removeObservers(lifecycleOwner)
-        singleObservableState.removeObservers(lifecycleOwner)
     }
 }

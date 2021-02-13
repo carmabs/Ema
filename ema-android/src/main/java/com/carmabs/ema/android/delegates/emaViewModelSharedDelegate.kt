@@ -3,12 +3,12 @@ package com.carmabs.ema.android.delegates
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import com.carmabs.ema.android.ui.EmaAndroidView
 import com.carmabs.ema.android.ui.EmaFragment
-import com.carmabs.ema.android.ui.EmaView
-import com.carmabs.ema.android.viewmodel.EmaViewModel
-import com.carmabs.ema.core.navigator.EmaNavigationState
+import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
 import com.carmabs.ema.core.state.EmaBaseState
 import com.carmabs.ema.core.state.EmaState
+import com.carmabs.ema.core.viewmodel.EmaViewModel
 import kotlin.reflect.KProperty
 
 /**
@@ -21,7 +21,7 @@ import kotlin.reflect.KProperty
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
 @Suppress("ClassName")
-class emaViewModelSharedDelegate<S : EmaBaseState, NS : EmaNavigationState, VM : EmaViewModel<S, NS>>(
+class emaViewModelSharedDelegate<S : EmaBaseState, VM :  EmaAndroidViewModel<out EmaViewModel<S,*>>>(
     private val observerFunction: ((attachedState: EmaState<S>) -> Unit)? = null,
     private val viewModelSeed: () -> VM
 ) {
@@ -30,10 +30,11 @@ class emaViewModelSharedDelegate<S : EmaBaseState, NS : EmaNavigationState, VM :
 
 
     operator fun getValue(thisRef: Any?, property: KProperty<*>): VM {
-        val emaView = (thisRef as? EmaView<S, VM, NS>) ?: throw IllegalAccessException(
-            "You must use this delegate " +
-                    "in an object that inherits from EmaView"
-        )
+        val emaView = (thisRef as? EmaAndroidView<*,*,*>)
+            ?: throw IllegalAccessException(
+                "You must use this delegate " +
+                        "in an object that inherits from EmaView"
+            )
         val activity: FragmentActivity = when (thisRef) {
             is Fragment -> thisRef.requireActivity()
             is FragmentActivity -> thisRef
@@ -47,7 +48,7 @@ class emaViewModelSharedDelegate<S : EmaBaseState, NS : EmaNavigationState, VM :
                 emaView,
                 activity,
                 observerFunction
-            )
+            ) as VM
             else -> throw IllegalAccessException("The view must be a EmaFragment")
         }).apply {
             vm = this
