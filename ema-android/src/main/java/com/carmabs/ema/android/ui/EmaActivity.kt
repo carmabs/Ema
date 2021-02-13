@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import com.carmabs.ema.android.delegates.emaViewModelDelegate
 import com.carmabs.ema.android.extra.EmaActivityResult
 import com.carmabs.ema.android.extra.EmaReceiverModel
 import com.carmabs.ema.android.extra.EmaResultModel
@@ -33,7 +34,7 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
     /**
      * The view model of the fragment
      */
-    private lateinit var vm: VM
+    protected val vm: VM by emaViewModelDelegate(false)
 
     /**
      * The key id for incoming data through Bundle in activity instantiation.This is set up when other fragment/activity
@@ -117,7 +118,6 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
      * @param viewModel
      */
     final override fun onViewModelInitialized(viewModel: VM) {
-        vm = viewModel
         onInitialized(viewModel)
     }
 
@@ -125,13 +125,16 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
      * Called once the view model is instantiated
      * @param viewModel instantiated
      */
-    abstract fun onInitialized(viewModel: VM)
+    @Deprecated("This call is unnecessary, obtain the viewmodel by property vm")
+    protected open fun onInitialized(viewModel: VM){
+
+    }
 
     /**
      * The map which handles the view model attached with their respective scopes, to unbind the observers
      * when the view activity is destroyed
      */
-    private val extraViewModelMap: MutableList<EmaViewModel<*, *>> by lazy { mutableListOf<EmaViewModel<*, *>>() }
+    private val extraViewModelList: MutableList<EmaViewModel<*, *>> by lazy { mutableListOf<EmaViewModel<*, *>>() }
 
     /**
      * Previous state for comparing state properties update
@@ -147,7 +150,7 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
      * @param observerFunction the observer of the view model attached
      * @return The view model attached
      */
-    protected fun <AS, VM : EmaViewModel<AS, *>> addExtraViewModel(
+    fun <AS, VM : EmaViewModel<AS, *>> addExtraViewModel(
         viewModelAttachedSeed: VM,
         fragment: Fragment? = null,
         observerFunction: ((attachedState: EmaState<AS>) -> Unit)? = null
@@ -166,7 +169,7 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
                 )[viewModelAttachedSeed::class.java]
 
         observerFunction?.also { viewModel.getObservableState().observe(this, Observer(it)) }
-        extraViewModelMap.add(viewModel)
+        extraViewModelList.add(viewModel)
 
         return viewModel
     }
@@ -199,10 +202,10 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
      * Remove extra view models attached
      */
     private fun removeExtraViewModels() {
-        extraViewModelMap.forEach {
+        extraViewModelList.forEach {
             it.unBindObservables(this)
         }
-        extraViewModelMap.clear()
+        extraViewModelList.clear()
     }
 
     /**
@@ -228,7 +231,6 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
             fragmentManagerCycleCallbacks,
             false
         )
-        initializeViewModel(this)
     }
 
     final override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

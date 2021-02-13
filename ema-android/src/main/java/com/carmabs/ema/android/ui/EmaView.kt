@@ -66,7 +66,7 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
      * @param fragmentActivity the scope of the view model
      * @param fragment the scope of view model. If it is provided it will be the scope of the view model
      */
-    fun initializeViewModel(fragmentActivity: FragmentActivity, fragment: Fragment? = null) {
+    fun initializeViewModel(fragmentActivity: FragmentActivity, fragment: Fragment? = null):VM {
         val emaFactory = EmaFactory(viewModelSeed)
         val vm = fragment?.let {
             ViewModelProviders.of(it, emaFactory)[viewModelSeed::class.java]
@@ -78,6 +78,8 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
         val owner: LifecycleOwner = fragment ?: fragmentActivity
 
         initializeViewModel(owner, vm, resultViewModel)
+
+        return vm
     }
 
     /**
@@ -238,6 +240,7 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
      * Called once the view model have been provided. Here must go the view set up
      * @param viewModel of the view
      */
+    @Deprecated("This call is unnecessary, obtain the viewmodel by property vm")
     fun onViewModelInitialized(viewModel: VM)
 
     /**
@@ -291,6 +294,4 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
     fun navigateBack(): Boolean {
         return navigator?.navigateBack() ?: false
     }
-
-
 }
