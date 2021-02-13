@@ -1,12 +1,12 @@
 package com.carmabs.ema.android.ui
 
 import android.os.Bundle
-import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import com.carmabs.ema.android.delegates.emaViewModelDelegate
 import com.carmabs.ema.android.extra.EmaReceiverModel
 import com.carmabs.ema.android.extra.EmaResultModel
 import com.carmabs.ema.android.viewmodel.EmaFactory
@@ -27,7 +27,8 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
     /**
      * The view model of the fragment
      */
-    private lateinit var vm: VM
+    protected val vm: VM by emaViewModelDelegate(
+       fragmentViewModelScope = fragmentViewModelScope)
 
     /**
      * The key id for incoming data through Bundle in fragment instantiation.This is set up when other fragment/activity
@@ -37,24 +38,14 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
         vm.initialViewState.javaClass.name
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        activity?.let {
-            initializeViewModel(
-                it,
-                if (fragmentViewModelScope)
-                    this
-                else
-                    null
-            )
-        }
-    }
-
     /**
      * Called once the view model is instantiated
      * @param viewModel instantiated
      */
-    abstract fun onInitialized(viewModel: VM)
+    @Deprecated("This call is unnecessary, obtain the viewmodel by property vm")
+    protected open fun onInitialized(viewModel: VM){
+
+    }
 
     /**
      * Automatically updates previousState
@@ -106,7 +97,7 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
      * @param observerFunction the observer of the view model attached
      * @return The view model attached
      */
-    protected fun <AS, VM : EmaViewModel<AS, *>> addExtraViewModel(
+    internal fun <AS, VM : EmaViewModel<AS, *>> addExtraViewModel(
         viewModelAttachedSeed: VM,
         fragment: Fragment,
         fragmentActivity: FragmentActivity? = null,
@@ -141,7 +132,6 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
      * @param viewModel
      */
     final override fun onViewModelInitialized(viewModel: VM) {
-        vm = viewModel
         onInitialized(viewModel)
     }
 

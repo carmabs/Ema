@@ -3,7 +3,6 @@ package com.carmabs.ema.android.base
 import android.app.Application
 import com.carmabs.ema.android.di.Injector
 import org.kodein.di.Kodein
-import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.androidXModule
 
 /**
