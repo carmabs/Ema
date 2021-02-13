@@ -1,4 +1,4 @@
-package com.carmabs.ema.android.extra
+package com.carmabs.ema.core.viewmodel
 
 import java.io.Serializable
 
@@ -10,8 +10,8 @@ import java.io.Serializable
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
 data class EmaResultModel(
-        internal val id: Int,
-        internal val ownerId: Int,
+        val id: Int,
+        val ownerId: Int,
         val data: Serializable,
         val resultState: Result = Result.Success()) : Serializable {
 

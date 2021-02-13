@@ -1,4 +1,4 @@
-package com.carmabs.ema.android.extra
+package com.carmabs.ema.core.viewmodel
 
 /**
  * Model to handle receiver feature
