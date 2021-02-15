@@ -31,7 +31,7 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
     override val viewModelSeed: VM
         get() = androidViewModelSeed.emaViewModel
 
-    private var viewJob: Job? = null
+    private var viewJob: MutableList<Job>? = null
 
     private val extraViewJobs: MutableList<Job> by lazy {
         mutableListOf<Job>()
@@ -79,6 +79,7 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
     override fun onResume() {
         super.onResume()
         activity?.let {
+            onStopBinding(viewJob)
             viewJob = onStartAndBindData(
                 if (fragmentViewModelScope)
                     this
@@ -149,7 +150,7 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
     override fun onPause() {
         super.onPause()
         removeExtraViewModels()
-        onStopView(viewJob)
+        onStopBinding(viewJob)
     }
 
     /**
