@@ -43,7 +43,7 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
     override val viewModelSeed: VM
         get() = androidViewModelSeed.emaViewModel
 
-    private var viewJob: Job? = null
+    private var viewJob: MutableList<Job>? = null
 
     /**
      * The map which handles the view model attached with their respective scopes, to unbind the observers
@@ -111,6 +111,7 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
      */
     override fun onResume() {
         super.onResume()
+        onStopBinding(viewJob)
         viewJob = onStartAndBindData(
             this,
             vm,
@@ -202,7 +203,7 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
     override fun onPause() {
         super.onPause()
         removeExtraViewModels()
-        onStopView(viewJob)
+        onStopBinding(viewJob)
     }
 
     /**

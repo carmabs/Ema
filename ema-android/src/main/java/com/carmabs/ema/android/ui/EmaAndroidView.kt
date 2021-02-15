@@ -55,12 +55,12 @@ interface EmaAndroidView<S : EmaBaseState, VM : EmaViewModel<S,NS>, NS : EmaNavi
         lifeCycleOwner: LifecycleOwner,
         viewModel: VM,
         resultViewModel: EmaResultViewModel? = null
-    ): Job {
+    ): MutableList<Job> {
         return onStartView(lifeCycleOwner.lifecycleScope,viewModel)
     }
 
     fun onStopBinding(
-     job:Job
+     job:MutableList<Job>?
     ) {
         onStopView(job)
     }

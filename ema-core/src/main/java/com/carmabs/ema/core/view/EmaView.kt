@@ -226,24 +226,32 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
         return navigator?.navigateBack() ?: false
     }
 
-    fun onStartView(coroutineScope: CoroutineScope, viewModel: VM): Job {
-        return coroutineScope.launch {
-            viewModel.apply {
-                onStart(inputState?.let { EmaState.Normal(it) })
-                getObservableState().collect {
-                    onDataUpdated(it)
-                }
-                getSingleObservableState().collect {
-                    onSingleData(it)
-                }
-                getNavigationState().collect {
-                    onNavigation(it)
-                }
+    fun onStartView(coroutineScope: CoroutineScope, viewModel: VM): MutableList<Job> {
+        val jobList = mutableListOf<Job>()
+        viewModel.onStart(inputState?.let { EmaState.Normal(it) })
+        jobList.add(coroutineScope.launch {
+            viewModel.getObservableState().collect {
+                onDataUpdated(it)
             }
-        }
+        })
+        jobList.add(coroutineScope.launch {
+            viewModel.getSingleObservableState().collect {
+                onSingleData(it)
+            }
+        })
+        jobList.add(coroutineScope.launch {
+            viewModel.getNavigationState().collect {
+                onNavigation(it)
+            }
+        })
+
+        return jobList
     }
 
-    fun onStopView(viewJob: Job?) {
-        viewJob?.cancel()
+    fun onStopView(viewJob: MutableList<Job>?) {
+        viewJob?.forEach {
+            it.cancel()
+        }
+        viewJob?.clear()
     }
 }
