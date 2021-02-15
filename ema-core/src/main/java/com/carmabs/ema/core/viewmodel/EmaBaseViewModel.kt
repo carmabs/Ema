@@ -3,6 +3,7 @@ package com.carmabs.ema.core.viewmodel
 import com.carmabs.ema.core.concurrency.ConcurrencyManager
 import com.carmabs.ema.core.concurrency.DefaultConcurrencyManager
 import com.carmabs.ema.core.concurrency.tryCatch
+import com.carmabs.ema.core.constants.INT_ONE
 import com.carmabs.ema.core.navigator.EmaNavigationState
 import com.carmabs.ema.core.state.EmaBaseState
 import com.carmabs.ema.core.state.EmaExtraData
@@ -37,7 +38,9 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> {
      *              -> switch has been set again
      *                  -> saved in view model ------> INFINITE LOOP)
      */
-    internal val observableState: MutableSharedFlow<S> = MutableSharedFlow()
+    internal val observableState: MutableSharedFlow<S> = MutableSharedFlow(
+        replay = INT_ONE
+    )
 
     /**
      * Observable state that launch event every time a value is set. This value will be a [EmaExtraData]
@@ -62,7 +65,7 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> {
     /**
      * The state of the view.
      */
-    internal var state: S? = null
+    internal lateinit var state: S
 
     /**
      * To determine if the view must be updated when view model is created automatically
@@ -76,19 +79,17 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> {
      * @return true if it's the first time is started
      */
     open fun onStart(inputState: S? = null): Boolean {
-        val firstTime = if (state == null) {
+        val firstTime = if (!this::state.isInitialized) {
             val initialStatus = inputState ?: createInitialState()
             state = initialStatus
             onStartFirstTime(inputState != null)
             true
         } else false
 
-        state?.also {
-            executeUseCase {
-                if (updateOnInitialization)
-                    observableState.emit(it)
-                onResume(firstTime)
-            }
+        executeUseCase {
+            if (updateOnInitialization)
+                observableState.emit(state)
+            onResume(firstTime)
         }
 
         return firstTime
@@ -102,7 +103,7 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> {
     /**
      * Called always the view goes to the foreground
      */
-    abstract fun onResume(firstTime:Boolean)
+    abstract fun onResume(firstTime: Boolean)
 
     /**
      * Get observable state as LiveDaya to avoid state setting from the view
@@ -129,9 +130,8 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> {
      * @param checkStateFunction function to check the current state
      */
     protected fun checkState(checkStateFunction: (S) -> Unit) {
-        state?.run {
-            checkStateFunction.invoke(this)
-        }
+        checkStateFunction.invoke(state)
+
     }
 
     /**
@@ -161,7 +161,7 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> {
      */
     protected open fun navigate(navigation: NS) {
         executeUseCase {
-            navigationState.emit( navigation)
+            navigationState.emit(navigation)
         }
 
     }
@@ -171,7 +171,7 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> {
      */
     protected open fun navigateBack() {
         executeUseCase {
-            navigationState.emit( null)
+            navigationState.emit(null)
         }
     }
 
@@ -189,7 +189,10 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> {
      * rest of task, including the parent one, if it is false, only affect to the child class
      * @return the job that can handle the lifecycle of the background task
      */
-    protected fun executeUseCase(fullException: Boolean = false, block: suspend CoroutineScope.() -> Unit): Job {
+    protected fun executeUseCase(
+        fullException: Boolean = false,
+        block: suspend CoroutineScope.() -> Unit
+    ): Job {
         return concurrencyManager.launch(fullException = fullException, block = block)
     }
 
@@ -203,10 +206,12 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> {
      * rest of task, including the parent one, if it is false, only affect to the child class
      * @return the job that can handle the lifecycle of the background task
      */
-    protected fun executeUseCaseWithException(block: suspend CoroutineScope.() -> Unit,
-                                              exceptionBlock: suspend CoroutineScope.(Throwable) -> Unit,
-                                              handleCancellationManually: Boolean = false,
-                                              fullException: Boolean = false): Job {
+    protected fun executeUseCaseWithException(
+        block: suspend CoroutineScope.() -> Unit,
+        exceptionBlock: suspend CoroutineScope.(Throwable) -> Unit,
+        handleCancellationManually: Boolean = false,
+        fullException: Boolean = false
+    ): Job {
         return concurrencyManager.launch(fullException = fullException) {
             tryCatch(block, exceptionBlock, handleCancellationManually)
         }
