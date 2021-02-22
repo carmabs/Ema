@@ -10,6 +10,7 @@ import com.carmabs.ema.core.state.EmaExtraData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.runBlocking
 
 
 /**
@@ -38,7 +39,7 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> {
      *              -> switch has been set again
      *                  -> saved in view model ------> INFINITE LOOP)
      */
-    internal val observableState: MutableSharedFlow<S> = MutableSharedFlow(
+    private val observableState: MutableSharedFlow<S> = MutableSharedFlow(
         replay = INT_ONE
     )
 
@@ -47,7 +48,7 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> {
      * object that can contain any type of object. It will be used for
      * events that only has to be notified once to its observers, e.g: A toast message.
      */
-    internal val singleObservableState: MutableSharedFlow<EmaExtraData> = MutableSharedFlow()
+    private val singleObservableState: MutableSharedFlow<EmaExtraData> = MutableSharedFlow()
 
     /**
      * Observable state that launch event every time a value is set. [NS] value be will a [EmaNavigationState]
@@ -55,7 +56,7 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> {
      * events that only has to be notified once to its observers and is used to notify the navigation
      * events
      */
-    internal val navigationState: MutableSharedFlow<NS?> = MutableSharedFlow()
+    private val navigationState: MutableSharedFlow<NS?> = MutableSharedFlow()
 
     /**
      * Manager to handle the threads where the background tasks are going to be launched
@@ -82,15 +83,22 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> {
         val firstTime = if (!this::state.isInitialized) {
             val initialStatus = inputState ?: createInitialState()
             state = initialStatus
+            runBlocking {
+                if (updateOnInitialization)
+                    observableState.emit(state)
+            }
             onStartFirstTime(inputState != null)
             true
-        } else false
-
-        executeUseCase {
-            if (updateOnInitialization)
+        } else{
+            //We call this to update the data if it has been not be emmitted
+                // if last time was updated by updateDataState
+            runBlocking {
                 observableState.emit(state)
-            onResume(firstTime)
+            }
+            false
         }
+
+        onResume(firstTime)
 
         return firstTime
     }
@@ -113,7 +121,7 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> {
     /**
      * Get current state of view
      */
-    fun getCurrentState(): S? = state
+    fun getCurrentState(): S = state
 
     /**
      * Get navigation state as LiveData to avoid state setting from the view
@@ -125,14 +133,6 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> {
      */
     fun getSingleObservableState(): SharedFlow<EmaExtraData> = singleObservableState
 
-    /**
-     * Check the current view state
-     * @param checkStateFunction function to check the current state
-     */
-    protected fun checkState(checkStateFunction: (S) -> Unit) {
-        checkStateFunction.invoke(state)
-
-    }
 
     /**
      * Method used to update the state of the view. It will be notified to the observers
