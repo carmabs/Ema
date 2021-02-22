@@ -21,8 +21,6 @@ class EmaAndroidResultViewModel(val emaResultViewModel: EmaResultViewModel): Vie
 
     val resultEvent = emaResultViewModel.resultEvent.asLiveData()
 
-
-
     override fun onCleared() {
         super.onCleared()
         emaResultViewModel.onDestroy()

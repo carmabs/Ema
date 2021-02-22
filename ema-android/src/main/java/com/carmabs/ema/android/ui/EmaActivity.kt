@@ -58,7 +58,7 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
     /**
      * The view model of the fragment
      */
-    protected val vm: VM by emaViewModelDelegate(false)
+    protected val vm: VM by emaViewModelDelegate()
 
     /**
      * The key id for incoming data through Bundle in activity instantiation.This is set up when other fragment/activity
@@ -271,6 +271,7 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
             is EmaResultModel.Result.Success -> Activity.RESULT_OK
             is EmaResultModel.Result.Fail -> Activity.RESULT_CANCELED
             is EmaResultModel.Result.Other -> Activity.RESULT_OK
+            else -> Activity.RESULT_CANCELED
         }
     }
 

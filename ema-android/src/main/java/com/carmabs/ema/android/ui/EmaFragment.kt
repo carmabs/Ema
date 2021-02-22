@@ -43,9 +43,7 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
     /**
      * The view model of the fragment
      */
-    protected val vm: VM by emaViewModelDelegate(
-        fragmentViewModelScope = fragmentViewModelScope
-    )
+    protected val vm: VM by emaViewModelDelegate()
 
     /**
      * The key id for incoming data through Bundle in fragment instantiation.This is set up when other fragment/activity
@@ -78,17 +76,15 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
      */
     override fun onResume() {
         super.onResume()
-        activity?.let {
-            onStopBinding(viewJob)
-            viewJob = onStartAndBindData(
-                if (fragmentViewModelScope)
-                    this
-                else
-                    it,
-                vm,
-                vm.resultViewModel
-            )
-        }
+        onStopBinding(viewJob)
+        viewJob = onStartAndBindData(
+            if (fragmentViewModelScope)
+                this
+            else
+                requireActivity(),
+            vm,
+            vm.resultViewModel
+        )
     }
 
     protected open fun provideToolbarTitle(): String? = null
