@@ -3,17 +3,21 @@ package com.carmabs.ema.android.ui
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.lifecycleScope
 import com.carmabs.ema.android.delegates.emaViewModelDelegate
-import com.carmabs.ema.android.extra.EmaReceiverModel
-import com.carmabs.ema.android.extra.EmaResultModel
+import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
 import com.carmabs.ema.android.viewmodel.EmaFactory
-import com.carmabs.ema.android.viewmodel.EmaViewModel
 import com.carmabs.ema.core.navigator.EmaNavigationState
 import com.carmabs.ema.core.state.EmaBaseState
 import com.carmabs.ema.core.state.EmaState
+import com.carmabs.ema.core.viewmodel.EmaReceiverModel
+import com.carmabs.ema.core.viewmodel.EmaResultModel
+import com.carmabs.ema.core.viewmodel.EmaViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 
 /**
@@ -22,13 +26,24 @@ import com.carmabs.ema.core.state.EmaState
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
 abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigationState> :
-    EmaBaseFragment(), EmaView<S, VM, NS> {
+    EmaBaseFragment(), EmaAndroidView<S, VM, NS> {
+
+    override val viewModelSeed: VM
+        get() = androidViewModelSeed.emaViewModel
+
+    private var viewJob: MutableList<Job>? = null
+
+    private val extraViewJobs: MutableList<Job> by lazy {
+        mutableListOf<Job>()
+    }
+
+    override val coroutineScope: CoroutineScope
+        get() = lifecycleScope
 
     /**
      * The view model of the fragment
      */
-    protected val vm: VM by emaViewModelDelegate(
-       fragmentViewModelScope = fragmentViewModelScope)
+    protected val vm: VM by emaViewModelDelegate()
 
     /**
      * The key id for incoming data through Bundle in fragment instantiation.This is set up when other fragment/activity
@@ -38,14 +53,6 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
         vm.initialViewState.javaClass.name
     }
 
-    /**
-     * Called once the view model is instantiated
-     * @param viewModel instantiated
-     */
-    @Deprecated("This call is unnecessary, obtain the viewmodel by property vm")
-    protected open fun onInitialized(viewModel: VM){
-
-    }
 
     /**
      * Automatically updates previousState
@@ -62,23 +69,22 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
      * The list which handles the extra view models attached, to unbind the observers
      * when the view fragment is destroyed
      */
-    private val extraViewModelList: MutableList<EmaViewModel<*, *>> by lazy { mutableListOf<EmaViewModel<*, *>>() }
+    private val extraViewModelList: MutableList<EmaAndroidViewModel<*>> by lazy { mutableListOf<EmaAndroidViewModel<*>>() }
 
     /**
      * The view model is instantiated on fragment resume.
      */
     override fun onResume() {
         super.onResume()
-        activity?.let {
-            onStartAndBindData(
-                if (fragmentViewModelScope)
-                    this
-                else
-                    it,
-                vm,
-                vm.resultViewModel
-            )
-        }
+        onStopBinding(viewJob)
+        viewJob = onStartAndBindData(
+            if (fragmentViewModelScope)
+                this
+            else
+                requireActivity(),
+            vm,
+            vm.resultViewModel
+        )
     }
 
     protected open fun provideToolbarTitle(): String? = null
@@ -97,13 +103,12 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
      * @param observerFunction the observer of the view model attached
      * @return The view model attached
      */
-    internal fun <AS, VM : EmaViewModel<AS, *>> addExtraViewModel(
+    fun <S, VM : EmaAndroidViewModel<out EmaViewModel<S, *>>> addExtraViewModel(
         viewModelAttachedSeed: VM,
         fragment: Fragment,
         fragmentActivity: FragmentActivity? = null,
-        observerFunction: ((attachedState: EmaState<AS>) -> Unit)? = null
+        observerFunction: ((attachedState: EmaState<S>) -> Unit)? = null
     ): VM {
-
         val viewModel =
             fragmentActivity?.let {
                 ViewModelProviders.of(
@@ -116,7 +121,14 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
                     EmaFactory(viewModelAttachedSeed)
                 )[viewModelAttachedSeed::class.java]
 
-        observerFunction?.also { viewModel.getObservableState().observe(this, Observer(it)) }
+        observerFunction?.also {
+            val job = coroutineScope.launch {
+                viewModel.emaViewModel.getObservableState().collect {
+                    observerFunction.invoke(it)
+                }
+            }
+            extraViewJobs.add(job)
+        }
         extraViewModelList.add(viewModel)
 
         return viewModel
@@ -127,33 +139,24 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
      */
     abstract val fragmentViewModelScope: Boolean
 
-    /**
-     * Methods called when view model has been created
-     * @param viewModel
-     */
-    final override fun onViewModelInitialized(viewModel: VM) {
-        onInitialized(viewModel)
-    }
 
     /**
      * Destroy the view and unbind the observers from view model
      */
     override fun onPause() {
         super.onPause()
-        val owner: LifecycleOwner = if (fragmentViewModelScope) this else requireActivity()
         removeExtraViewModels()
-        vm.unBindObservables(owner)
-        vm.resultViewModel.unBindObservables(this)
-
+        onStopBinding(viewJob)
     }
 
     /**
      * Remove extra view models attached
      */
     private fun removeExtraViewModels() {
-        extraViewModelList.forEach {
-            it.unBindObservables(this)
+        extraViewJobs.forEach {
+            it.cancel()
         }
+        extraViewJobs.clear()
         extraViewModelList.clear()
     }
 
