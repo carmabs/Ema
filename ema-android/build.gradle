@@ -53,6 +53,8 @@ dependencies {
     api emaAndroid.kodein
     api emaAndroid.kodeinAndroid
 
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.3.0"
+    implementation emaAndroid.lifecycleKtExtension
     //UI
     api emaAndroid.constraint
     api emaAndroid.design

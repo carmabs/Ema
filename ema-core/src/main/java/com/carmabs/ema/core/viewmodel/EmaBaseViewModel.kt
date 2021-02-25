@@ -1,18 +1,16 @@
-package com.carmabs.ema.android.viewmodel
+package com.carmabs.ema.core.viewmodel
 
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import com.carmabs.ema.android.base.SingleLiveEvent
 import com.carmabs.ema.core.concurrency.ConcurrencyManager
 import com.carmabs.ema.core.concurrency.DefaultConcurrencyManager
 import com.carmabs.ema.core.concurrency.tryCatch
+import com.carmabs.ema.core.constants.INT_ONE
 import com.carmabs.ema.core.navigator.EmaNavigationState
 import com.carmabs.ema.core.state.EmaBaseState
 import com.carmabs.ema.core.state.EmaExtraData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.runBlocking
 
 
 /**
@@ -27,7 +25,7 @@ import kotlinx.coroutines.Job
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
-abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> : ViewModel() {
+abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> {
 
     /**
      * Observable state that launch event every time a value is set. This value will be the state
@@ -41,14 +39,16 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> : Vie
      *              -> switch has been set again
      *                  -> saved in view model ------> INFINITE LOOP)
      */
-    internal val observableState: MutableLiveData<S> = MutableLiveData()
+    private val observableState: MutableSharedFlow<S> = MutableSharedFlow(
+        replay = INT_ONE
+    )
 
     /**
      * Observable state that launch event every time a value is set. This value will be a [EmaExtraData]
      * object that can contain any type of object. It will be used for
      * events that only has to be notified once to its observers, e.g: A toast message.
      */
-    internal val singleObservableState: SingleLiveEvent<EmaExtraData> = SingleLiveEvent()
+    private val singleObservableState: MutableSharedFlow<EmaExtraData> = MutableSharedFlow()
 
     /**
      * Observable state that launch event every time a value is set. [NS] value be will a [EmaNavigationState]
@@ -56,7 +56,7 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> : Vie
      * events that only has to be notified once to its observers and is used to notify the navigation
      * events
      */
-    internal val navigationState: SingleLiveEvent<NS> = SingleLiveEvent()
+    private val navigationState: MutableSharedFlow<NS?> = MutableSharedFlow()
 
     /**
      * Manager to handle the threads where the background tasks are going to be launched
@@ -66,7 +66,7 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> : Vie
     /**
      * The state of the view.
      */
-    internal var state: S? = null
+    internal lateinit var state: S
 
     /**
      * To determine if the view must be updated when view model is created automatically
@@ -79,17 +79,27 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> : Vie
      * @param inputState
      * @return true if it's the first time is started
      */
-    internal open fun onStart(inputState: S? = null): Boolean {
-        val firstTime = if (state == null) {
+    open fun onStart(inputState: S? = null): Boolean {
+        val firstTime = if (!this::state.isInitialized) {
             val initialStatus = inputState ?: createInitialState()
             state = initialStatus
+            runBlocking {
+                if (updateOnInitialization)
+                    observableState.emit(state)
+            }
             onStartFirstTime(inputState != null)
             true
-        } else false
-        if (updateOnInitialization)
-            observableState.value = state
+        } else{
+            //We call this to update the data if it has been not be emmitted
+                // if last time was updated by updateDataState
+            runBlocking {
+                observableState.emit(state)
+            }
+            false
+        }
 
         onResume(firstTime)
+
         return firstTime
     }
 
@@ -101,37 +111,28 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> : Vie
     /**
      * Called always the view goes to the foreground
      */
-    abstract fun onResume(firstTime:Boolean)
+    abstract fun onResume(firstTime: Boolean)
 
     /**
      * Get observable state as LiveDaya to avoid state setting from the view
      */
-    fun getObservableState(): LiveData<S> = observableState
+    fun getObservableState(): SharedFlow<S> = observableState
 
     /**
      * Get current state of view
      */
-    fun getCurrentState(): S? = state
+    fun getCurrentState(): S = state
 
     /**
      * Get navigation state as LiveData to avoid state setting from the view
      */
-    fun getNavigationState(): LiveData<NS> = navigationState
+    fun getNavigationState(): SharedFlow<NS?> = navigationState
 
     /**
      * Get single state as LiveData to avoid state setting from the view
      */
-    fun getSingleObservableState(): LiveData<EmaExtraData> = singleObservableState
+    fun getSingleObservableState(): SharedFlow<EmaExtraData> = singleObservableState
 
-    /**
-     * Check the current view state
-     * @param checkStateFunction function to check the current state
-     */
-    protected fun checkState(checkStateFunction: (S) -> Unit) {
-        state?.run {
-            checkStateFunction.invoke(this)
-        }
-    }
 
     /**
      * Method used to update the state of the view. It will be notified to the observers
@@ -139,7 +140,9 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> : Vie
      */
     protected open fun updateView(state: S) {
         this.state = state
-        this.observableState.value = state
+        executeUseCase {
+            observableState.emit(state)
+        }
     }
 
     /**
@@ -147,7 +150,9 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> : Vie
      * It a new observer is attached, it will not be notified
      */
     protected open fun notifySingleEvent(extraData: EmaExtraData) {
-        this.singleObservableState.value = extraData
+        executeUseCase {
+            singleObservableState.emit(extraData)
+        }
     }
 
     /**
@@ -155,14 +160,19 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> : Vie
      * @param navigation The object that represent the destination of the navigation
      */
     protected open fun navigate(navigation: NS) {
-        this.navigationState.value = navigation
+        executeUseCase {
+            navigationState.emit(navigation)
+        }
+
     }
 
     /**
      * Method use to notify a navigation back event
      */
     protected open fun navigateBack() {
-        this.navigationState.value = null
+        executeUseCase {
+            navigationState.emit(null)
+        }
     }
 
     /**
@@ -179,7 +189,10 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> : Vie
      * rest of task, including the parent one, if it is false, only affect to the child class
      * @return the job that can handle the lifecycle of the background task
      */
-    protected fun executeUseCase(fullException: Boolean = false, block: suspend CoroutineScope.() -> Unit): Job {
+    protected fun executeUseCase(
+        fullException: Boolean = false,
+        block: suspend CoroutineScope.() -> Unit
+    ): Job {
         return concurrencyManager.launch(fullException = fullException, block = block)
     }
 
@@ -193,10 +206,12 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> : Vie
      * rest of task, including the parent one, if it is false, only affect to the child class
      * @return the job that can handle the lifecycle of the background task
      */
-    protected fun executeUseCaseWithException(block: suspend CoroutineScope.() -> Unit,
-                                              exceptionBlock: suspend CoroutineScope.(Throwable) -> Unit,
-                                              handleCancellationManually: Boolean = false,
-                                              fullException: Boolean = false): Job {
+    protected fun executeUseCaseWithException(
+        block: suspend CoroutineScope.() -> Unit,
+        exceptionBlock: suspend CoroutineScope.(Throwable) -> Unit,
+        handleCancellationManually: Boolean = false,
+        fullException: Boolean = false
+    ): Job {
         return concurrencyManager.launch(fullException = fullException) {
             tryCatch(block, exceptionBlock, handleCancellationManually)
         }
@@ -205,18 +220,7 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> : Vie
     /**
      * Method called when the ViewModel is destroyed. It cancell all background pending tasks
      */
-    override fun onCleared() {
+    open fun onDestroy() {
         concurrencyManager.cancelPendingTasks()
-        super.onCleared()
-    }
-
-    /**
-     * Unbind the observables of the lifeCycleOwner
-     * @param lifecycleOwner
-     */
-    fun unBindObservables(lifecycleOwner: LifecycleOwner) {
-        observableState.removeObservers(lifecycleOwner)
-        navigationState.removeObservers(lifecycleOwner)
-        singleObservableState.removeObservers(lifecycleOwner)
     }
 }
