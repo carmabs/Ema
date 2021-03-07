@@ -23,10 +23,9 @@ class FlowBroadcastManager : BroadcastManager {
     }
 
     override suspend fun registerBroadcast(id: String, listener: (Any) -> Unit) {
-        sharedFlow.filter {
-            it.id == id
-        }.map { it.data }.collect {
-            listener.invoke(it)
+        sharedFlow.collect {
+            if(it.id == id)
+                listener.invoke(it.data)
         }
     }
 }
