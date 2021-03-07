@@ -59,6 +59,7 @@ interface EmaAndroidView<S : EmaBaseState, VM : EmaViewModel<S,NS>, NS : EmaNavi
         return onStartView(lifeCycleOwner.lifecycleScope,viewModel)
     }
 
+
     fun onStopBinding(
      job:MutableList<Job>?
     ) {
