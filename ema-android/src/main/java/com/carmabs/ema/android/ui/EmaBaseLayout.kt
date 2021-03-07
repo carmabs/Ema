@@ -36,12 +36,13 @@ abstract class EmaBaseLayout<T:Any> : FrameLayout, Injector {
 
     protected abstract fun createInitialState(): T
 
-    fun updateData(updateAction: T.() -> T) {
+    fun updateData(updateAction: T.() -> T):T {
         checkDataInitialization()
         data = data.let(updateAction)
         mainLayout?.also {
             setup(it, data)
         }
+        return data
     }
 
     fun getData():T{

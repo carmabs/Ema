@@ -247,6 +247,12 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
 
         return jobList
     }
+    /**
+     * Used to notify the view model that view has been gone to foreground.
+     */
+    fun onResumeView(viewModel: VM){
+        viewModel.onResumeView()
+    }
 
     fun onStopView(viewJob: MutableList<Job>?) {
         viewJob?.forEach {
