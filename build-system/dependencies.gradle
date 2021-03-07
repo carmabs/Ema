@@ -40,10 +40,10 @@ rootProject.ext {
 
 
     ema = [
-            buildTools : "28.0.3",
+            buildTools : "30.0.2",
             minSdk     : 21,
-            compileSdk : 28,
-            targetSdk  : 28,
+            compileSdk : 30,
+            targetSdk  : 30,
             versionCode: 6,
             versionName: "2.4.0"
     ]
