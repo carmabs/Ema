@@ -109,14 +109,22 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
     /**
      * Initialize ViewModel on activity creation
      */
-    override fun onResume() {
-        super.onResume()
+    override fun onStart() {
+        super.onStart()
         onStopBinding(viewJob)
         viewJob = onStartAndBindData(
             this,
             vm,
             vm.resultViewModel
         )
+    }
+
+    /**
+     * Notifies the view model that view has been gone to foreground.
+     */
+    override fun onResume() {
+        super.onResume()
+        onResumeView(vm)
     }
 
     /**
@@ -200,8 +208,8 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
     /**
      * Destroy the activity and unbind the observers from view model
      */
-    override fun onPause() {
-        super.onPause()
+    override fun onStop() {
+        super.onStop()
         removeExtraViewModels()
         onStopBinding(viewJob)
     }

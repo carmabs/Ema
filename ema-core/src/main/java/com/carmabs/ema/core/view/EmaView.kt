@@ -84,6 +84,7 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
      * @param field Ema State field to check if it has been changed.
      * @param areEqualComparator Comparator to determine if both objects are equals. Useful for complex objects
      */
+    @Suppress("UNCHECKED_CAST")
     fun <T> bindForUpdate(
         field: KProperty<T>,
         areEqualComparator: ((previous: T?, current: T?) -> Boolean)? = null,
@@ -115,6 +116,7 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
      * @param field Ema State field to check if it has been changed
      * @param areEqualComparator Comparator to determine if both objects are equals. Useful for complex objects
      */
+    @Suppress("UNCHECKED_CAST")
     fun <T> bindForUpdateWithPrevious(
         field: KProperty<T>,
         areEqualComparator: ((previous: T?, current: T?) -> Boolean)? = null,
@@ -214,6 +216,7 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
      * Called when view model trigger a navigation event
      * @param state with info about destination
      */
+    @Suppress("UNCHECKED_CAST")
     fun navigate(state: EmaNavigationState) {
         navigator?.navigate(state as NS)
     }
@@ -246,6 +249,12 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
         })
 
         return jobList
+    }
+    /**
+     * Used to notify the view model that view has been gone to foreground.
+     */
+    fun onResumeView(viewModel: VM){
+        viewModel.onResumeView()
     }
 
     fun onStopView(viewJob: MutableList<Job>?) {
