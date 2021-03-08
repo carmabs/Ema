@@ -69,6 +69,12 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> {
     internal lateinit var state: S
 
     /**
+     * Determine if viewmodel is first time resumed
+     *
+     */
+    private var firstTimeResumed:Boolean = true
+
+    /**
      * To determine if the view must be updated when view model is created automatically
      */
     protected open val updateOnInitialization: Boolean = true
@@ -98,8 +104,6 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> {
             false
         }
 
-        onResume(firstTime)
-
         return firstTime
     }
 
@@ -107,6 +111,14 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> {
      * Called when view is created by first time, it means, it is added to the stack
      */
     abstract fun onStartFirstTime(statePreloaded: Boolean)
+
+    /**
+     * Called when view is shown in foreground
+     */
+    internal fun onResumeView(){
+        onResume(firstTimeResumed)
+        firstTimeResumed = false
+    }
 
     /**
      * Called always the view goes to the foreground

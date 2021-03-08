@@ -71,11 +71,12 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
      */
     private val extraViewModelList: MutableList<EmaAndroidViewModel<*>> by lazy { mutableListOf<EmaAndroidViewModel<*>>() }
 
+
     /**
      * The view model is instantiated on fragment resume.
      */
-    override fun onResume() {
-        super.onResume()
+    override fun onStart() {
+        super.onStart()
         onStopBinding(viewJob)
         viewJob = onStartAndBindData(
             if (fragmentViewModelScope)
@@ -85,6 +86,14 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
             vm,
             vm.resultViewModel
         )
+    }
+
+    /**
+     * Notifies the view model that view has been gone to foreground.
+     */
+    override fun onResume() {
+        super.onResume()
+        onResumeView(vm)
     }
 
     protected open fun provideToolbarTitle(): String? = null
@@ -143,8 +152,8 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
     /**
      * Destroy the view and unbind the observers from view model
      */
-    override fun onPause() {
-        super.onPause()
+    override fun onStop() {
+        super.onStop()
         removeExtraViewModels()
         onStopBinding(viewJob)
     }
