@@ -5,6 +5,7 @@ import android.graphics.*
 import android.graphics.drawable.Drawable
 import android.util.TypedValue
 import androidx.core.content.ContextCompat
+import com.carmabs.ema.core.constants.FLOAT_ONE
 import com.carmabs.ema.core.constants.INT_ZERO
 
 
@@ -67,8 +68,17 @@ fun getBitmapFromResource(
         )
         val canvas = Canvas(bitmap)
         // TO ANTIALIAS //
+        val ratio = drawable.intrinsicWidth/drawable.intrinsicHeight.toFloat()
+        val boundWidth = when{
+            ratio< FLOAT_ONE->bitmap.height*ratio
+            else -> bitmap.width.toFloat()
+        }
+        val boundHeight = when{
+            ratio< FLOAT_ONE-> bitmap.height.toFloat()
+            else -> bitmap.width/ratio
+        }
         canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
-        drawable.setBounds(0, 0, canvas.width, canvas.height)
+        drawable.setBounds((bitmap.width/2f-boundWidth/2f).toInt(), (bitmap.height/2f - boundHeight/2f).toInt(), (bitmap.width/2f + boundWidth/2f).toInt(), (bitmap.height/2f + boundHeight/2f).toInt())
         colorHex?.also { color -> drawable.setTint(Color.parseColor(color)) }
         drawable.draw(canvas)
         bitmap
