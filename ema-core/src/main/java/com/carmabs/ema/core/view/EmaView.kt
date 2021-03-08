@@ -86,9 +86,9 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
      */
     @Suppress("UNCHECKED_CAST")
     fun <T> bindForUpdate(
-        field: KProperty<T>,
-        areEqualComparator: ((previous: T?, current: T?) -> Boolean)? = null,
-        action: (current: T?) -> Unit
+            field: KProperty<T>,
+            areEqualComparator: ((old: T?, new: T?) -> Boolean)? = null,
+            action: (new: T?) -> Unit
     ) {
         val currentClass = (field as PropertyReference0).boundReceiver as? S
         currentClass?.also { _ ->
@@ -118,9 +118,9 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
      */
     @Suppress("UNCHECKED_CAST")
     fun <T> bindForUpdateWithPrevious(
-        field: KProperty<T>,
-        areEqualComparator: ((previous: T?, current: T?) -> Boolean)? = null,
-        action: (previous: T?, current: T?) -> Unit
+            field: KProperty<T>,
+            areEqualComparator: ((old: T?, new: T?) -> Boolean)? = null,
+            action: (old: T?, new: T?) -> Unit
     ) {
         val currentClass = (field as PropertyReference0).boundReceiver as? S
         currentClass?.also { _ ->
