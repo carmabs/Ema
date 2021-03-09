@@ -18,6 +18,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 
 /**
@@ -77,15 +78,17 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
      */
     override fun onStart() {
         super.onStart()
-        onStopBinding(viewJob)
-        viewJob = onStartAndBindData(
-            if (fragmentViewModelScope)
-                this
-            else
-                requireActivity(),
-            vm,
-            vm.resultViewModel
-        )
+        runBlocking {
+            onStopBinding(viewJob)
+            viewJob = onStartAndBindData(
+                if (fragmentViewModelScope)
+                    this@EmaFragment
+                else
+                    requireActivity(),
+                vm,
+                vm.resultViewModel
+            )
+        }
     }
 
     /**
@@ -153,9 +156,11 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
      * Destroy the view and unbind the observers from view model
      */
     override fun onStop() {
-        super.onStop()
         removeExtraViewModels()
-        onStopBinding(viewJob)
+        runBlocking {
+            onStopBinding(viewJob)
+        }
+        super.onStop()
     }
 
     /**
