@@ -61,6 +61,12 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
 
 
     /**
+     * Trigger to start viewmodel only when startViewModel is launched
+     */
+    val startTrigger: EmaViewModelTrigger?
+
+
+    /**
      * Called when view model trigger an update view event
      * @param state of the view
      */
@@ -88,10 +94,10 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
      */
     @Suppress("UNCHECKED_CAST")
     fun <T> bindForUpdate(
-            field: KProperty<T>,
-            areEqualComparator: ((old: T?, new: T?) -> Boolean)? = null,
-            action: (new: T?) -> Unit
-    ):Boolean {
+        field: KProperty<T>,
+        areEqualComparator: ((old: T?, new: T?) -> Boolean)? = null,
+        action: (new: T?) -> Unit
+    ): Boolean {
         var updated = false
         val currentClass = (field as PropertyReference0).boundReceiver as? S
         currentClass?.also { _ ->
@@ -124,10 +130,10 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
      */
     @Suppress("UNCHECKED_CAST")
     fun <T> bindForUpdateWithPrevious(
-            field: KProperty<T>,
-            areEqualComparator: ((old: T?, new: T?) -> Boolean)? = null,
-            action: (old: T?, new: T?) -> Unit
-    ):Boolean {
+        field: KProperty<T>,
+        areEqualComparator: ((old: T?, new: T?) -> Boolean)? = null,
+        action: (old: T?, new: T?) -> Unit
+    ): Boolean {
         var updated = false
         val currentClass = (field as PropertyReference0).boundReceiver as? S
         currentClass?.also { _ ->
@@ -240,7 +246,15 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
 
     fun onStartView(coroutineScope: CoroutineScope, viewModel: VM): MutableList<Job> {
         val jobList = mutableListOf<Job>()
-        viewModel.onStart(inputState?.let { EmaState.Normal(it) })
+        startTrigger?.also {
+            it.triggerAction = {
+                viewModel.onStart(inputState?.let { input -> EmaState.Normal(input) })
+                viewModel.onResumeView()
+            }
+        } ?: also {
+            viewModel.onStart(inputState?.let { input -> EmaState.Normal(input) })
+        }
+
         jobList.add(coroutineScope.launch {
             viewModel.getObservableState().collect {
                 onDataUpdated(it)
@@ -259,18 +273,24 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
 
         return jobList
     }
+
     /**
      * Used to notify the view model that view has been gone to foreground.
      */
-    fun onResumeView(viewModel: VM){
-        viewModel.onResumeView()
+    fun onResumeView(viewModel: VM) {
+        startTrigger?.also {
+            if(it.hasBeenStarted)
+                viewModel.onResumeView()
+        }?:also {
+            viewModel.onResumeView()
+        }
     }
 
     suspend fun onStopView(viewJob: MutableList<Job>?) {
         viewJob?.forEach {
             try {
                 it.cancelAndJoin()
-            }catch (e:java.lang.Exception){
+            } catch (e: java.lang.Exception) {
                 e.printStackTrace()
             }
         }
