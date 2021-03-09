@@ -21,6 +21,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 /**
  *
@@ -111,12 +112,14 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
      */
     override fun onStart() {
         super.onStart()
-        onStopBinding(viewJob)
-        viewJob = onStartAndBindData(
-            this,
-            vm,
-            vm.resultViewModel
-        )
+        runBlocking {
+            onStopBinding(viewJob)
+            viewJob = onStartAndBindData(
+                this@EmaActivity,
+                vm,
+                vm.resultViewModel
+            )
+        }
     }
 
     /**
@@ -211,7 +214,9 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
     override fun onStop() {
         super.onStop()
         removeExtraViewModels()
-        onStopBinding(viewJob)
+        runBlocking {
+            onStopBinding(viewJob)
+        }
     }
 
     /**

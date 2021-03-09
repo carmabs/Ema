@@ -60,7 +60,7 @@ interface EmaAndroidView<S : EmaBaseState, VM : EmaViewModel<S,NS>, NS : EmaNavi
     }
 
 
-    fun onStopBinding(
+    suspend fun onStopBinding(
      job:MutableList<Job>?
     ) {
         onStopView(job)
