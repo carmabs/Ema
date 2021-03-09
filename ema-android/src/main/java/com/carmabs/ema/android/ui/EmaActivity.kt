@@ -14,6 +14,7 @@ import com.carmabs.ema.android.viewmodel.EmaFactory
 import com.carmabs.ema.core.navigator.EmaNavigationState
 import com.carmabs.ema.core.state.EmaBaseState
 import com.carmabs.ema.core.state.EmaState
+import com.carmabs.ema.core.view.EmaViewModelTrigger
 import com.carmabs.ema.core.viewmodel.EmaReceiverModel
 import com.carmabs.ema.core.viewmodel.EmaResultModel
 import com.carmabs.ema.core.viewmodel.EmaViewModel
@@ -60,6 +61,11 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
      * The view model of the fragment
      */
     protected val vm: VM by emaViewModelDelegate()
+
+    /**
+     * Trigger to start viewmodel only when startViewModel is launched
+     */
+    override val startTrigger: EmaViewModelTrigger?=null
 
     /**
      * The key id for incoming data through Bundle in activity instantiation.This is set up when other fragment/activity

@@ -11,6 +11,7 @@ import com.carmabs.ema.android.viewmodel.EmaFactory
 import com.carmabs.ema.core.navigator.EmaNavigationState
 import com.carmabs.ema.core.state.EmaBaseState
 import com.carmabs.ema.core.state.EmaState
+import com.carmabs.ema.core.view.EmaViewModelTrigger
 import com.carmabs.ema.core.viewmodel.EmaReceiverModel
 import com.carmabs.ema.core.viewmodel.EmaResultModel
 import com.carmabs.ema.core.viewmodel.EmaViewModel
@@ -54,6 +55,7 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
         vm.initialViewState.javaClass.name
     }
 
+    override val startTrigger: EmaViewModelTrigger? = null
 
     /**
      * Automatically updates previousState
