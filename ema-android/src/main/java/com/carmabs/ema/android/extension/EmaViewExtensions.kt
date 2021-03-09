@@ -1,5 +1,6 @@
 package com.carmabs.ema.android.extension
 
+import android.animation.Animator
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.Drawable
@@ -8,10 +9,14 @@ import android.graphics.drawable.TransitionDrawable
 import android.os.Build
 import android.view.View
 import android.view.ViewTreeObserver
+import android.view.animation.OvershootInterpolator
 import android.widget.ImageView
 import android.widget.ProgressBar
 import androidx.annotation.ColorInt
 import androidx.core.graphics.drawable.DrawableCompat
+import com.carmabs.ema.android.ANIMATION_DURATION
+import com.carmabs.ema.android.ANIMATION_OVERSHOOT
+import com.carmabs.ema.core.constants.FLOAT_ONE
 import com.carmabs.ema.core.constants.FLOAT_ZERO
 
 
@@ -35,24 +40,80 @@ inline fun View.afterMeasured(crossinline f: View.() -> Unit) {
     })
 }
 
-/**
- * Listener to make view tasks after it has been measured
- */
-fun ImageView.setImageDrawableWithTransition(drawable: Drawable, durationMillis: Int = 350, animateFirstTransition: Boolean = true) {
+
+fun ImageView.setImageDrawableWithTransition(
+    drawable: Drawable,
+    durationMillis: Int = ANIMATION_DURATION,
+    animateFirstTransition: Boolean = true,
+    endAnimationListener: (() -> Unit)? = null
+) {
     getDrawable()?.also {
         val crossFadeTransition = TransitionDrawable(arrayOf(it, drawable))
         crossFadeTransition.isCrossFadeEnabled = true
         setImageDrawable(crossFadeTransition)
         crossFadeTransition.startTransition(durationMillis)
     } ?: also {
-        if(animateFirstTransition) {
+        if (animateFirstTransition) {
             alpha = FLOAT_ZERO
             val animation = animate()
             animation.duration = durationMillis.toLong()
-            animation.alpha(1f)
+            animation.setListener(object : Animator.AnimatorListener {
+                override fun onAnimationStart(animation: Animator?) {
+
+                }
+
+                override fun onAnimationEnd(animation: Animator?) {
+                    endAnimationListener?.invoke()
+                }
+
+                override fun onAnimationCancel(animation: Animator?) {
+
+                }
+
+                override fun onAnimationRepeat(animation: Animator?) {
+
+                }
+
+            })
+            animation.alpha(FLOAT_ONE)
         }
         setImageDrawable(drawable)
     }
+}
+
+
+fun ImageView.setImageWithOvershot(
+    drawable: Drawable,
+    overshoot: Float = ANIMATION_OVERSHOOT,
+    durationMillis: Int = ANIMATION_DURATION,
+    rightDirection: Boolean = true,
+    endAnimationListener: (() -> Unit)? = null
+) {
+    rotation = if (rightDirection) -overshoot else overshoot
+    setImageDrawable(drawable)
+    val animation = animate()
+    animation.rotation(FLOAT_ZERO)
+    animation.interpolator = OvershootInterpolator(overshoot)
+    animation.duration = durationMillis.toLong()
+    animation.setListener(object : Animator.AnimatorListener {
+        override fun onAnimationStart(animation: Animator?) {
+
+        }
+
+        override fun onAnimationEnd(animation: Animator?) {
+            endAnimationListener?.invoke()
+        }
+
+        override fun onAnimationCancel(animation: Animator?) {
+
+        }
+
+        override fun onAnimationRepeat(animation: Animator?) {
+
+        }
+
+    })
+    animation.start()
 }
 
 
@@ -113,9 +174,9 @@ fun ProgressBar.setProgressGradientTintCompat(@ColorInt color: Int) {
 }
 
 fun getColorFromGradient(
-        colors: IntArray,
-        positions: FloatArray,
-        v: Float
+    colors: IntArray,
+    positions: FloatArray,
+    v: Float
 ): Int {
     require(!(colors.size == 0 || colors.size != positions.size))
     if (colors.size == 1) {
@@ -130,7 +191,7 @@ fun getColorFromGradient(
     for (i in 1 until positions.size) {
         if (v <= positions[i]) {
             val t =
-                    (v - positions[i - 1]) / (positions[i] - positions[i - 1])
+                (v - positions[i - 1]) / (positions[i] - positions[i - 1])
             return lerpColor(colors[i - 1], colors[i], t)
         }
     }
@@ -139,11 +200,11 @@ fun getColorFromGradient(
 
 fun lerpColor(colorA: Int, colorB: Int, t: Float): Int {
     val alpha =
-            Math.floor((Color.alpha(colorA) * (1 - t) + Color.alpha(colorB) * t).toDouble()).toInt()
+        Math.floor((Color.alpha(colorA) * (1 - t) + Color.alpha(colorB) * t).toDouble()).toInt()
     val red = Math.floor((Color.red(colorA) * (1 - t) + Color.red(colorB) * t).toDouble()).toInt()
     val green =
-            Math.floor((Color.green(colorA) * (1 - t) + Color.green(colorB) * t).toDouble()).toInt()
+        Math.floor((Color.green(colorA) * (1 - t) + Color.green(colorB) * t).toDouble()).toInt()
     val blue =
-            Math.floor((Color.blue(colorA) * (1 - t) + Color.blue(colorB) * t).toDouble()).toInt()
+        Math.floor((Color.blue(colorA) * (1 - t) + Color.blue(colorB) * t).toDouble()).toInt()
     return Color.argb(alpha, red, green, blue)
 }
