@@ -81,7 +81,6 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
     override fun onStart() {
         super.onStart()
         runBlocking {
-            onStopBinding(viewJob)
             viewJob = onStartAndBindData(
                 if (fragmentViewModelScope)
                     this@EmaFragment
