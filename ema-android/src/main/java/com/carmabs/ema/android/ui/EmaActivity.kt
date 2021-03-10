@@ -119,7 +119,6 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
     override fun onStart() {
         super.onStart()
         runBlocking {
-            onStopBinding(viewJob)
             viewJob = onStartAndBindData(
                 this@EmaActivity,
                 vm,
