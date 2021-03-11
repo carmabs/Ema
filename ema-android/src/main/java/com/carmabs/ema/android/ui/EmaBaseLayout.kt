@@ -40,7 +40,7 @@ abstract class EmaBaseLayout<T:Any> : FrameLayout, Injector {
         checkDataInitialization()
         data = data.let(updateAction)
         mainLayout?.also {
-            setup(it, data)
+            setup(data)
         }
         return data
     }
@@ -87,7 +87,7 @@ abstract class EmaBaseLayout<T:Any> : FrameLayout, Injector {
         checkDataInitialization()
         onViewCreated()
         mainLayout?.let {
-            setup(it, data)
+            it.setup(data)
             viewsSetup = true
         }
     }
@@ -114,7 +114,7 @@ abstract class EmaBaseLayout<T:Any> : FrameLayout, Injector {
      * Method called once the layout has been inflated implementing the methods [EmaBaseLayout.getLayout]
      * @param mainLayout is the layout inflated instance
      */
-    abstract fun setup(mainLayout: View, data: T?)
+     abstract fun View.setup(data: T)
 
 
     /**
