@@ -10,6 +10,7 @@ import com.carmabs.ema.core.viewmodel.EmaResultModel
 import com.carmabs.ema.core.viewmodel.EmaViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlin.jvm.internal.PropertyReference0
@@ -60,6 +61,12 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
 
 
     /**
+     * Trigger to start viewmodel only when startViewModel is launched
+     */
+    val startTrigger: EmaViewModelTrigger?
+
+
+    /**
      * Called when view model trigger an update view event
      * @param state of the view
      */
@@ -83,13 +90,15 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
      * @param action Action to execute. Current value passed in lambda.
      * @param field Ema State field to check if it has been changed.
      * @param areEqualComparator Comparator to determine if both objects are equals. Useful for complex objects
+     * @return true if it has been updated, false otherwise
      */
     @Suppress("UNCHECKED_CAST")
     fun <T> bindForUpdate(
         field: KProperty<T>,
-        areEqualComparator: ((previous: T?, current: T?) -> Boolean)? = null,
-        action: (current: T?) -> Unit
-    ) {
+        areEqualComparator: ((old: T?, new: T?) -> Boolean)? = null,
+        action: (new: T?) -> Unit
+    ): Boolean {
+        var updated = false
         val currentClass = (field as PropertyReference0).boundReceiver as? S
         currentClass?.also { _ ->
             val currentValue = field.get() as T
@@ -101,6 +110,7 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
                     if (areEqualComparator?.invoke(previousValue, currentValue)?.not()
                             ?: (previousValue != currentValue)
                     ) {
+                        updated = true
                         action.invoke(currentValue)
                     }
                 } catch (e: Exception) {
@@ -108,6 +118,7 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
                 }
             } ?: action.invoke(currentValue)
         } ?: println("EMA : Bounding class must be the state of the view")
+        return updated
     }
 
     /**
@@ -115,13 +126,15 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
      * @param action Action to execute. Current and previous value passed in lambda
      * @param field Ema State field to check if it has been changed
      * @param areEqualComparator Comparator to determine if both objects are equals. Useful for complex objects
+     * @return true if it has been updated, false otherwise
      */
     @Suppress("UNCHECKED_CAST")
     fun <T> bindForUpdateWithPrevious(
         field: KProperty<T>,
-        areEqualComparator: ((previous: T?, current: T?) -> Boolean)? = null,
-        action: (previous: T?, current: T?) -> Unit
-    ) {
+        areEqualComparator: ((old: T?, new: T?) -> Boolean)? = null,
+        action: (old: T?, new: T?) -> Unit
+    ): Boolean {
+        var updated = false
         val currentClass = (field as PropertyReference0).boundReceiver as? S
         currentClass?.also { _ ->
             val currentValue = field.get() as T
@@ -133,6 +146,7 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
                     if (areEqualComparator?.invoke(previousValue, currentValue)?.not()
                             ?: (previousValue != currentValue)
                     ) {
+                        updated = true
                         action.invoke(previousValue, currentValue)
                     }
                 } catch (e: Exception) {
@@ -140,6 +154,7 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
                 }
             } ?: action.invoke(null, currentValue)
         } ?: println("EMA : Bounding class must be the state of the view")
+        return updated
     }
 
     /**
@@ -231,7 +246,15 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
 
     fun onStartView(coroutineScope: CoroutineScope, viewModel: VM): MutableList<Job> {
         val jobList = mutableListOf<Job>()
-        viewModel.onStart(inputState?.let { EmaState.Normal(it) })
+        startTrigger?.also {
+            it.triggerAction = {
+                viewModel.onStart(inputState?.let { input -> EmaState.Normal(input) })
+                viewModel.onResumeView()
+            }
+        } ?: also {
+            viewModel.onStart(inputState?.let { input -> EmaState.Normal(input) })
+        }
+
         jobList.add(coroutineScope.launch {
             viewModel.getObservableState().collect {
                 onDataUpdated(it)
@@ -250,16 +273,26 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
 
         return jobList
     }
+
     /**
      * Used to notify the view model that view has been gone to foreground.
      */
-    fun onResumeView(viewModel: VM){
-        viewModel.onResumeView()
+    fun onResumeView(viewModel: VM) {
+        startTrigger?.also {
+            if(it.hasBeenStarted)
+                viewModel.onResumeView()
+        }?:also {
+            viewModel.onResumeView()
+        }
     }
 
-    fun onStopView(viewJob: MutableList<Job>?) {
+    suspend fun onStopView(viewJob: MutableList<Job>?) {
         viewJob?.forEach {
-            it.cancel()
+            try {
+                it.cancelAndJoin()
+            } catch (e: java.lang.Exception) {
+                e.printStackTrace()
+            }
         }
         viewJob?.clear()
     }

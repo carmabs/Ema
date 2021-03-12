@@ -11,6 +11,7 @@ import com.carmabs.ema.android.viewmodel.EmaFactory
 import com.carmabs.ema.core.navigator.EmaNavigationState
 import com.carmabs.ema.core.state.EmaBaseState
 import com.carmabs.ema.core.state.EmaState
+import com.carmabs.ema.core.view.EmaViewModelTrigger
 import com.carmabs.ema.core.viewmodel.EmaReceiverModel
 import com.carmabs.ema.core.viewmodel.EmaResultModel
 import com.carmabs.ema.core.viewmodel.EmaViewModel
@@ -18,6 +19,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 
 /**
@@ -53,6 +55,7 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
         vm.initialViewState.javaClass.name
     }
 
+    override val startTrigger: EmaViewModelTrigger? = null
 
     /**
      * Automatically updates previousState
@@ -77,15 +80,16 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
      */
     override fun onStart() {
         super.onStart()
-        onStopBinding(viewJob)
-        viewJob = onStartAndBindData(
-            if (fragmentViewModelScope)
-                this
-            else
-                requireActivity(),
-            vm,
-            vm.resultViewModel
-        )
+        runBlocking {
+            viewJob = onStartAndBindData(
+                if (fragmentViewModelScope)
+                    this@EmaFragment
+                else
+                    requireActivity(),
+                vm,
+                vm.resultViewModel
+            )
+        }
     }
 
     /**
@@ -153,9 +157,11 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
      * Destroy the view and unbind the observers from view model
      */
     override fun onStop() {
-        super.onStop()
         removeExtraViewModels()
-        onStopBinding(viewJob)
+        runBlocking {
+            onStopBinding(viewJob)
+        }
+        super.onStop()
     }
 
     /**

@@ -20,7 +20,7 @@ abstract class EmaRecyclerAdapter<I> : RecyclerView.Adapter<EmaViewHolder<I>>() 
     /**
      * Items to show in list
      */
-    abstract val listItems: MutableList<I>
+    protected val listItems: MutableList<I> = mutableListOf()
 
     /**
      * Listener when item is clicked
