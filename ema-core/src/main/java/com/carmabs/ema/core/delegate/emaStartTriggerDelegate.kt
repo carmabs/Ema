@@ -1,5 +1,6 @@
-package com.carmabs.ema.core.view
+package com.carmabs.ema.core.delegate
 
+import com.carmabs.ema.core.view.EmaViewModelTrigger
 import kotlin.reflect.KProperty
 
 /**
@@ -11,7 +12,7 @@ import kotlin.reflect.KProperty
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-class emaStartTriggerDelegate {
+class emaStartTriggerDelegate  {
 
     val startTrigger: EmaViewModelTrigger = EmaViewModelTrigger()
 
