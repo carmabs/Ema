@@ -11,6 +11,7 @@ import com.carmabs.ema.android.delegates.emaViewModelDelegate
 import com.carmabs.ema.android.extra.EmaActivityResult
 import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
 import com.carmabs.ema.android.viewmodel.EmaFactory
+import com.carmabs.ema.core.delegate.emaBooleanDelegate
 import com.carmabs.ema.core.navigator.EmaNavigationState
 import com.carmabs.ema.core.state.EmaBaseState
 import com.carmabs.ema.core.state.EmaState
@@ -56,6 +57,16 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
     private val extraViewJobs: MutableList<Job> by lazy {
         mutableListOf<Job>()
     }
+
+    /**
+     * Determines first execution for each one of the state methods. EmaView determines when to set it to false.
+     */
+    final override var isFirstNormalExecution: Boolean by emaBooleanDelegate(true)
+
+    final override var isFirstAlternativeExecution: Boolean by emaBooleanDelegate(true)
+
+    final override var isFirstErrorExecution: Boolean by emaBooleanDelegate(true)
+
 
     /**
      * The view model of the fragment
