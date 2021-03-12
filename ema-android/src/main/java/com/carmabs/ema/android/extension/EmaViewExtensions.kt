@@ -1,14 +1,23 @@
 package com.carmabs.ema.android.extension
 
+import android.animation.Animator
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.TransitionDrawable
 import android.os.Build
 import android.view.View
 import android.view.ViewTreeObserver
+import android.view.animation.OvershootInterpolator
+import android.widget.ImageView
 import android.widget.ProgressBar
 import androidx.annotation.ColorInt
 import androidx.core.graphics.drawable.DrawableCompat
+import com.carmabs.ema.android.ANIMATION_DURATION
+import com.carmabs.ema.android.ANIMATION_OVERSHOOT
+import com.carmabs.ema.core.constants.FLOAT_ONE
+import com.carmabs.ema.core.constants.FLOAT_ZERO
 
 
 /**
@@ -30,6 +39,83 @@ inline fun View.afterMeasured(crossinline f: View.() -> Unit) {
         }
     })
 }
+
+
+fun ImageView.setImageDrawableWithTransition(
+    drawable: Drawable,
+    durationMillis: Int = ANIMATION_DURATION,
+    animateFirstTransition: Boolean = true,
+    endAnimationListener: (() -> Unit)? = null
+) {
+    getDrawable()?.also {
+        val crossFadeTransition = TransitionDrawable(arrayOf(it, drawable))
+        crossFadeTransition.isCrossFadeEnabled = true
+        setImageDrawable(crossFadeTransition)
+        crossFadeTransition.startTransition(durationMillis)
+    } ?: also {
+        if (animateFirstTransition) {
+            alpha = FLOAT_ZERO
+            val animation = animate()
+            animation.duration = durationMillis.toLong()
+            animation.setListener(object : Animator.AnimatorListener {
+                override fun onAnimationStart(animation: Animator?) {
+
+                }
+
+                override fun onAnimationEnd(animation: Animator?) {
+                    endAnimationListener?.invoke()
+                }
+
+                override fun onAnimationCancel(animation: Animator?) {
+
+                }
+
+                override fun onAnimationRepeat(animation: Animator?) {
+
+                }
+
+            })
+            animation.alpha(FLOAT_ONE)
+        }
+        setImageDrawable(drawable)
+    }
+}
+
+
+fun ImageView.setImageWithOvershot(
+    drawable: Drawable,
+    overshoot: Float = ANIMATION_OVERSHOOT,
+    durationMillis: Int = ANIMATION_DURATION,
+    rightDirection: Boolean = true,
+    endAnimationListener: (() -> Unit)? = null
+) {
+    rotation = if (rightDirection) -overshoot else overshoot
+    setImageDrawable(drawable)
+    val animation = animate()
+    animation.rotation(FLOAT_ZERO)
+    animation.interpolator = OvershootInterpolator(overshoot)
+    animation.duration = durationMillis.toLong()
+    animation.setListener(object : Animator.AnimatorListener {
+        override fun onAnimationStart(animation: Animator?) {
+
+        }
+
+        override fun onAnimationEnd(animation: Animator?) {
+            endAnimationListener?.invoke()
+        }
+
+        override fun onAnimationCancel(animation: Animator?) {
+
+        }
+
+        override fun onAnimationRepeat(animation: Animator?) {
+
+        }
+
+    })
+    animation.start()
+}
+
 
 /**
  * Returns View visibility based on boolean
