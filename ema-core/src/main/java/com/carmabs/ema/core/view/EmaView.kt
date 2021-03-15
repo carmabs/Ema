@@ -65,6 +65,11 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
      */
     val startTrigger: EmaViewModelTrigger?
 
+    var isFirstNormalExecution:Boolean
+
+    var isFirstAlternativeExecution :Boolean
+
+    var isFirstErrorExecution :Boolean
 
     /**
      * Called when view model trigger an update view event
@@ -72,11 +77,14 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
      */
     fun onDataUpdated(state: EmaState<S>) {
         onStateNormal(state.data)
+        isFirstNormalExecution = false
         when (state) {
             is EmaState.Alternative -> {
+                isFirstAlternativeExecution = false
                 onStateAlternative(state.dataAlternative)
             }
             is EmaState.Error -> {
+                isFirstErrorExecution = false
                 onStateError(state.error)
             }
         }
