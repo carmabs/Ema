@@ -1,6 +1,6 @@
 package com.carmabs.ema.core.view
 
-import com.carmabs.ema.core.navigator.EmaBaseNavigator
+import com.carmabs.ema.core.navigator.EmaNavigator
 import com.carmabs.ema.core.navigator.EmaNavigationState
 import com.carmabs.ema.core.state.EmaBaseState
 import com.carmabs.ema.core.state.EmaExtraData
@@ -38,9 +38,9 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
     val viewModelSeed: VM
 
     /**
-     * The navigator [EmaBaseNavigator]
+     * The navigator [EmaNavigator]
      */
-    val navigator: EmaBaseNavigator<NS>?
+    val navigator: EmaNavigator<NS>?
 
     /**
      * The state set up form previous views when it is launched.
