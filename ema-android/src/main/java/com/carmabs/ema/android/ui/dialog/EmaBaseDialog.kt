@@ -21,11 +21,7 @@ abstract class EmaBaseDialog<T : EmaDialogData> : DialogFragment(), DialogInterf
 
     var dialogListener: EmaDialogListener? = null
 
-    var data: T? = null
-        set(value) {
-            field = value
-            onDataSetup(value)
-        }
+    private lateinit var data: T
 
     private var isDismissed: Boolean = false
 
@@ -42,7 +38,7 @@ abstract class EmaBaseDialog<T : EmaDialogData> : DialogFragment(), DialogInterf
     /**
      * Setup data for UI
      */
-    protected abstract fun setupData(data: T, view: View)
+    protected abstract fun View.setup(data: T)
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)
@@ -60,6 +56,19 @@ abstract class EmaBaseDialog<T : EmaDialogData> : DialogFragment(), DialogInterf
         return dialog
     }
 
+    private fun checkDataInitialization(){
+        if(!this::data.isInitialized){
+            data = createInitialState()
+        }
+    }
+
+    fun updateData(updateAction: T.() -> T):T {
+        checkDataInitialization()
+        data = data.let(updateAction)
+        contentView?.setup(data)
+        return data
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val view = inflater.inflate(layoutId, container, false)
         dialog?.window?.apply {
@@ -67,21 +76,12 @@ abstract class EmaBaseDialog<T : EmaDialogData> : DialogFragment(), DialogInterf
                 requestFeature(Window.FEATURE_NO_TITLE)
             }
 
-        contentView = view
-
-        onDataSetup(data)
+        contentView = view.apply {
+            checkDataInitialization()
+            setup(data)
+        }
 
         return view
-    }
-
-    private fun onDataSetup(data: Any?) {
-        if (data != null) {
-            (data as? T)?.apply {
-                contentView?.also { view ->
-                    setupData(this, view)
-                }
-            } ?: throw Exception("Data type not matching with the dialog")
-        }
     }
 
     override fun onResume() {
@@ -91,7 +91,7 @@ abstract class EmaBaseDialog<T : EmaDialogData> : DialogFragment(), DialogInterf
             val size = Point()
             display.getSize(size)
 
-            data?.run {
+            data.run {
                 val width = proportionWidth?.let { (it * size.x).toInt() }
                         ?: ViewGroup.LayoutParams.WRAP_CONTENT
                 val height = proportionHeight?.let { (it * size.y).toInt() }
@@ -120,9 +120,11 @@ abstract class EmaBaseDialog<T : EmaDialogData> : DialogFragment(), DialogInterf
         }
     }
 
+    protected abstract fun createInitialState(): T
+
     override fun onDestroyView() {
         contentView = null
-        data = null
+        data = createInitialState()
         dialogListener = null
         super.onDestroyView()
     }
