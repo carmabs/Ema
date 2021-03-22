@@ -12,20 +12,24 @@ import com.carmabs.ema.core.dialog.EmaDialogProvider
  *
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
-abstract class EmaBaseDialogProvider constructor(private val fragmentManager: FragmentManager) : EmaDialogProvider {
+abstract class EmaAndroidDialogProvider constructor(private val fragmentManager: FragmentManager) : EmaDialogProvider {
 
     private var dialog: EmaBaseDialog<EmaDialogData>? = null
 
-    abstract fun generateDialog(): EmaBaseDialog<*>
+    abstract fun generateDialog(dialogData: EmaDialogData?): EmaBaseDialog<*>
 
     override fun show(dialogData: EmaDialogData?) {
 
         if (dialog == null)
-            dialog = generateDialog() as EmaBaseDialog<EmaDialogData>
+            dialog = generateDialog(dialogData) as EmaBaseDialog<EmaDialogData>
 
         dialog?.let { dialog ->
             dialog.dialogListener = dialogListener
-            dialog.data = dialogData
+            dialogData?.also {
+                dialog.updateData {
+                    it
+                }
+            }
             if (!dialog.isVisible)
                 dialog.show(fragmentManager, getTag())
 
@@ -55,6 +59,6 @@ abstract class EmaBaseDialogProvider constructor(private val fragmentManager: Fr
         }
 
     private fun getTag():String{
-        return javaClass.canonicalName.hashCode().toString()
+        return javaClass.name.toString()
     }
 }
