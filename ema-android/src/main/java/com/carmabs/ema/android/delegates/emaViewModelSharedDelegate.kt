@@ -21,16 +21,17 @@ import kotlin.reflect.KProperty
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
 @Suppress("ClassName")
-class emaViewModelSharedDelegate<S : EmaBaseState, VM :  EmaAndroidViewModel<out EmaViewModel<S,*>>>(
+class emaViewModelSharedDelegate<S : EmaBaseState, VM : EmaAndroidViewModel<out EmaViewModel<S, *>>>(
     private val observerFunction: ((attachedState: EmaState<S>) -> Unit)? = null,
     private val viewModelSeed: () -> VM
+
 ) {
 
     private var vm: VM? = null
 
 
     operator fun getValue(thisRef: Any?, property: KProperty<*>): VM {
-        val emaView = (thisRef as? EmaAndroidView<*,*,*>)
+        val emaView = (thisRef as? EmaAndroidView<*, *, *>)
             ?: throw IllegalAccessException(
                 "You must use this delegate " +
                         "in an object that inherits from EmaView"
@@ -43,12 +44,14 @@ class emaViewModelSharedDelegate<S : EmaBaseState, VM :  EmaAndroidViewModel<out
         }
 
         return vm ?: (when (emaView) {
-            is EmaFragment -> emaView.addExtraViewModel(
-                viewModelSeed.invoke(),
-                emaView,
-                activity,
-                observerFunction
-            ) as VM
+            is EmaFragment -> {
+                emaView.addExtraViewModel(
+                    viewModelSeed.invoke(),
+                    emaView,
+                    activity,
+                    observerFunction
+                ) as VM
+            }
             else -> throw IllegalAccessException("The view must be a EmaFragment")
         }).apply {
             vm = this
