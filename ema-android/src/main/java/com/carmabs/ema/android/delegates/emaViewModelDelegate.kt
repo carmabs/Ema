@@ -7,6 +7,7 @@ import com.carmabs.ema.android.ui.EmaAndroidView
 import com.carmabs.ema.android.ui.EmaFragment
 import com.carmabs.ema.core.navigator.EmaNavigationState
 import com.carmabs.ema.core.state.EmaBaseState
+import com.carmabs.ema.core.viewmodel.EmaResultHandler
 import com.carmabs.ema.core.viewmodel.EmaViewModel
 import kotlin.reflect.KProperty
 
@@ -20,7 +21,7 @@ import kotlin.reflect.KProperty
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
 @Suppress("ClassName")
-class emaViewModelDelegate<S : EmaBaseState, NS : EmaNavigationState, VM : EmaViewModel<S, NS>> {
+class emaViewModelDelegate<S : EmaBaseState, NS : EmaNavigationState, VM : EmaViewModel<S, NS>>() {
 
     private var vm: VM? = null
 
