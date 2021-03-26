@@ -3,14 +3,13 @@ package com.carmabs.ema.core.viewmodel
 import com.carmabs.ema.core.navigator.EmaNavigationState
 import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.core.state.EmaState
-import java.io.Serializable
 
 /**
  * View model to handle view states.
  *
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
-abstract class EmaViewModel<S:Any, NS : EmaNavigationState> :
+abstract class EmaViewModel<S : Any, NS : EmaNavigationState> :
     EmaBaseViewModel<EmaState<S>, NS>() {
 
     /**
@@ -18,7 +17,7 @@ abstract class EmaViewModel<S:Any, NS : EmaNavigationState> :
      */
     private lateinit var viewState: S
 
-    lateinit var resultViewModel: EmaResultViewModel
+    private val emaResultHandler: EmaResultHandler = EmaResultHandler.getInstance()
 
     override fun onStart(inputState: EmaState<S>?): Boolean {
         if (!this::viewState.isInitialized)
@@ -133,10 +132,10 @@ abstract class EmaViewModel<S:Any, NS : EmaNavigationState> :
     /**
      * Set a result for previous view when the current one is destroyed
      */
-    protected fun addResult(data: Serializable, code: Int = EmaResultViewModel.RESULT_ID_DEFAULT) {
-        resultViewModel.addResult(
+    protected fun addResult(data: Any, code: Int = EmaResultHandler.RESULT_ID_DEFAULT) {
+        emaResultHandler.addResult(
             EmaResultModel(
-                id = code,
+                code = code,
                 ownerId = getId(),
                 data = data
             )
@@ -147,20 +146,20 @@ abstract class EmaViewModel<S:Any, NS : EmaNavigationState> :
      * Set the listener for back data when the result view is destroyed
      */
     protected fun addOnResultReceived(
-        code: Int = EmaResultViewModel.RESULT_ID_DEFAULT,
+        code: Int = EmaResultHandler.RESULT_ID_DEFAULT,
         receiver: (EmaResultModel) -> Unit
     ) {
         val emaReceiver = EmaReceiverModel(
-            ownerCode = getId(),
-            resultId = code,
+            ownerId = getId(),
+            resultCode = code,
             function = receiver
         )
-        resultViewModel.addResultReceiver(emaReceiver)
+        emaResultHandler.addResultReceiver(emaReceiver)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        resultViewModel.notifyResults(getId())
+        emaResultHandler.notifyResults(getId())
     }
 
     fun getId(): Int {

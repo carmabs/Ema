@@ -1,14 +1,10 @@
 package com.carmabs.ema.android.ui
 
-import android.app.Activity
 import android.content.Intent
-import android.os.Bundle
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.lifecycleScope
 import com.carmabs.ema.android.delegates.emaViewModelDelegate
-import com.carmabs.ema.android.extra.EmaActivityResult
 import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
 import com.carmabs.ema.android.viewmodel.EmaFactory
 import com.carmabs.ema.core.delegate.emaBooleanDelegate
@@ -16,14 +12,14 @@ import com.carmabs.ema.core.navigator.EmaNavigationState
 import com.carmabs.ema.core.state.EmaBaseState
 import com.carmabs.ema.core.state.EmaState
 import com.carmabs.ema.core.view.EmaViewModelTrigger
-import com.carmabs.ema.core.viewmodel.EmaReceiverModel
-import com.carmabs.ema.core.viewmodel.EmaResultModel
+import com.carmabs.ema.core.viewmodel.EmaResultHandler
 import com.carmabs.ema.core.viewmodel.EmaViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import org.kodein.di.generic.instance
 
 /**
  *
@@ -67,7 +63,6 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
 
     final override var isFirstErrorExecution: Boolean by emaBooleanDelegate(true)
 
-
     /**
      * The view model of the fragment
      */
@@ -98,33 +93,6 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
     override val inputState: S? by lazy { getInState() }
 
     /**
-     * Activity result model. It if checked to notify result to viewmodels.
-     */
-    private var activityResult: EmaActivityResult? = null
-
-    /**
-     * Activity result function to execute the viewmodel function when activity result is received.
-     */
-    private val resultActivityFunctions: HashMap<Int, ((Int, Int, Intent?) -> Unit)> by lazy {
-        hashMapOf<Int, ((Int, Int, Intent?) -> Unit)>()
-    }
-
-    /**
-     * Fragment lifeCycle callbacks to notify results when fragment is added, this guarantee a fragment receiver
-     * has preference if the container activity has the same receiver, only one will be executed.
-     *
-     * Notify the results after fragments are created and viewmodels initalized
-     */
-    private val fragmentManagerCycleCallbacks: FragmentManager.FragmentLifecycleCallbacks by lazy {
-        object : FragmentManager.FragmentLifecycleCallbacks() {
-            override fun onFragmentResumed(fm: FragmentManager, f: Fragment) {
-                super.onFragmentResumed(fm, f)
-                notifyResults()
-            }
-        }
-    }
-
-    /**
      * Initialize ViewModel on activity creation
      */
     override fun onStart() {
@@ -132,8 +100,7 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
         runBlocking {
             viewJob = onStartAndBindData(
                 this@EmaActivity,
-                vm,
-                vm.resultViewModel
+                vm
             )
         }
     }
@@ -144,25 +111,6 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
     override fun onResume() {
         super.onResume()
         onResumeView(vm)
-    }
-
-    /**
-     * Method use to notify the results of another activities
-     */
-    private fun notifyResults() {
-
-        //Check the activity result to launch the result function. It is implemented here
-        //because onResume is executed after onActivityResult and here the view model is already
-        //initialized, otherwise the function wouldn't be executed on viewmodel
-
-        activityResult?.apply {
-            resultActivityFunctions.forEach {
-                if (it.key == requestCode)
-                    it.value.invoke(requestCode, requestCode, data)
-            }
-
-            resultActivityFunctions.remove(requestCode)
-        }
     }
 
     /**
@@ -244,79 +192,5 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
         }
         extraViewJobs.clear()
         extraViewModelList.clear()
-    }
-
-    /**
-     * Called everytime a result is setted on viewmodel
-     */
-    override fun onResultSetEvent(emaResultModel: EmaResultModel) {
-        setResult(parseResult(emaResultModel.resultState), intent.apply {
-            putExtra(emaResultModel.id.toString(), emaResultModel)
-        })
-    }
-
-    /**
-     * Called everytime a receiver is invoked on viewmodel
-     */
-    override fun onResultReceiverInvokeEvent(emaReceiverModel: EmaReceiverModel) {
-        intent.removeExtra(emaReceiverModel.resultId.toString())
-    }
-
-
-    override fun onCreateActivity(savedInstanceState: Bundle?) {
-        super.onCreateActivity(savedInstanceState)
-        supportFragmentManager.registerFragmentLifecycleCallbacks(
-            fragmentManagerCycleCallbacks,
-            false
-        )
-    }
-
-    final override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        activityResult = EmaActivityResult(requestCode, resultCode, data)
-        when (requestCode) {
-            RESULT_DEFAULT_CODE -> {
-
-                resultActivityFunctions[requestCode] = { _, _, _ ->
-                    data?.extras?.apply {
-                        keySet()?.forEach { idResult ->
-                            getSerializable(idResult)?.also {
-                                val resultModel = it as EmaResultModel
-                                vm.apply {
-                                    resultViewModel.addResult(resultModel)
-                                    resultViewModel.notifyResults(resultModel.ownerId)
-                                }
-                            }
-                        }
-                    }
-
-                }
-            }
-        }
-    }
-
-    private fun parseResult(emaResultModel: EmaResultModel.Result): Int {
-        return when (emaResultModel) {
-            is EmaResultModel.Result.Success -> Activity.RESULT_OK
-            is EmaResultModel.Result.Fail -> Activity.RESULT_CANCELED
-            is EmaResultModel.Result.Other -> Activity.RESULT_OK
-            else -> Activity.RESULT_CANCELED
-        }
-    }
-
-
-    /**
-     * Use this method to add a activity result handler when a result is received from another activity
-     */
-    protected fun addOnActivityResultHandler(
-        requestCode: Int,
-        function: (Int, Int, Intent?) -> Unit
-    ) {
-        resultActivityFunctions[requestCode] = function
-    }
-
-    override fun onDestroy() {
-        supportFragmentManager.unregisterFragmentLifecycleCallbacks(fragmentManagerCycleCallbacks)
-        super.onDestroy()
     }
 }
