@@ -127,7 +127,7 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
      * @return The view model attached
      */
     fun <S, VM : EmaAndroidViewModel<out EmaViewModel<S, *>>> addExtraViewModel(
-        viewModelAttachedSeed: VM,
+        viewModelAttachedSeed: EmaAndroidViewModel<*>,
         fragment: Fragment,
         fragmentActivity: FragmentActivity? = null,
         observerFunction: ((attachedState: EmaState<S>) -> Unit)? = null
@@ -147,14 +147,14 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
         observerFunction?.also {
             val job = coroutineScope.launch {
                 viewModel.emaViewModel.getObservableState().collect {
-                    observerFunction.invoke(it)
+                    observerFunction.invoke(it as EmaState<S>)
                 }
             }
             extraViewJobs.add(job)
         }
         extraViewModelList.add(viewModel)
 
-        return viewModel
+        return viewModel as VM
     }
 
     /**
