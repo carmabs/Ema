@@ -96,8 +96,7 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
                     this@EmaFragment
                 else
                     requireActivity(),
-                vm,
-                vm.resultViewModel
+                vm
             )
         }
     }
@@ -200,19 +199,5 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
 
     fun setInputState(inState: S) {
         arguments = Bundle().apply { putSerializable(inputStateKey, inState) }
-    }
-
-    /**
-     * Override to do logic if it is required when result is setted
-     */
-    override fun onResultSetEvent(emaResultModel: EmaResultModel) {
-
-    }
-
-    /**
-     * Override to do logic if it is required when result receiver is invoked
-     */
-    override fun onResultReceiverInvokeEvent(emaReceiverModel: EmaReceiverModel) {
-
     }
 }

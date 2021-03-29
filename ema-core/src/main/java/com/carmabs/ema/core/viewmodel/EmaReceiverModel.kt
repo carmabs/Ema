@@ -8,7 +8,7 @@ package com.carmabs.ema.core.viewmodel
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
 data class EmaReceiverModel(
-        val resultId: Int,
+        val resultCode: Int,
+        val ownerId:Int,
         internal val function: (EmaResultModel) -> Unit,
-        internal val ownerCode: Int
 )
