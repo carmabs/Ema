@@ -94,7 +94,7 @@ abstract class EmaViewModel<S : Any, NS : EmaNavigationState> :
 
 
     /**
-     * Used for trigger a updateAlternativeState event on the view
+     * Used for trigger an updateAlternativeState event on the view
      * Use the EmaState -> Alternative
      * @param data with updateAlternativeState information
      */
@@ -106,6 +106,15 @@ abstract class EmaViewModel<S : Any, NS : EmaNavigationState> :
     }
 
     /**
+     * Used for trigger an updateErrorState event on the view
+     * Use the EmaState -> Error
+     * @param error with the exception object
+     */
+    protected open fun updateToErrorState(error: Throwable) {
+        super.updateView(EmaState.Error(viewState, error))
+    }
+
+        /**
      * Generate the initial state with EmaState to trigger normal/updateAlternativeState/error states
      * for the view.
      */
@@ -116,6 +125,7 @@ abstract class EmaViewModel<S : Any, NS : EmaNavigationState> :
 
         return EmaState.Normal(viewState)
     }
+
 
     /**
      * Throws exception if the state of the view has not been initialized
