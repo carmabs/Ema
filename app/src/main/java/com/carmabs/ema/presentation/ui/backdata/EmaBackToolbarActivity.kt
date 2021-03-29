@@ -1,12 +1,11 @@
 package com.carmabs.ema.presentation.ui.backdata;
 
+import android.os.Bundle
 import androidx.core.content.ContextCompat
 import com.carmabs.ema.R
-import com.carmabs.ema.android.ui.EmaActivity
+import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
 import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.presentation.base.BaseActivity
-import com.carmabs.ema.presentation.injection.activityInjection
-import org.kodein.di.Kodein
 import org.kodein.di.generic.instance
 
 /**
@@ -29,11 +28,13 @@ class EmaBackToolbarActivity : BaseActivity<EmaBackToolbarState, EmaBackToolbarV
 
     override val navigator: EmaBackNavigator by instance()
 
-    override fun onInitialized(viewModel: EmaBackToolbarViewModel) {
+    override val androidViewModelSeed: EmaAndroidViewModel<EmaBackToolbarViewModel> by instance<EmaAndroidBackToolbarViewModel>()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         toolbar.apply {
             setBackgroundColor(ContextCompat.getColor(this@EmaBackToolbarActivity, R.color.colorPrimary))
         }
-
     }
 
     override fun onStateNormal(data: EmaBackToolbarState) {
