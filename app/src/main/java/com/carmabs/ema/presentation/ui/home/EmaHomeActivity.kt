@@ -2,14 +2,13 @@ package com.carmabs.ema.presentation.ui.home
 
 import android.widget.Toast
 import com.carmabs.ema.R
-import com.carmabs.ema.android.extension.DATE_FORMAT_HHMM
 import com.carmabs.ema.android.extension.getFormattedString
-import com.carmabs.ema.android.extension.toDateFormat
+import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
+import com.carmabs.ema.core.extension.DATE_FORMAT_HHMM
+import com.carmabs.ema.core.extension.toDateFormat
 import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.presentation.base.BaseActivity
 import org.kodein.di.generic.instance
-import java.text.SimpleDateFormat
-import java.util.*
 
 /**
  *  *<p>
@@ -24,9 +23,7 @@ class EmaHomeActivity : BaseActivity<EmaHomeToolbarState,EmaHomeToolbarViewModel
 
     override val navGraph: Int = R.navigation.navigation_ema_home
 
-    override fun onInitialized(viewModel: EmaHomeToolbarViewModel) {
-
-    }
+    override val androidViewModelSeed: EmaAndroidViewModel<EmaHomeToolbarViewModel> by instance<EmaAndroidHomeToolbarViewModel>()
 
     override fun provideFixedToolbarTitle(): String? = getString(R.string.home_toolbar_title)
 
@@ -35,8 +32,6 @@ class EmaHomeActivity : BaseActivity<EmaHomeToolbarState,EmaHomeToolbarViewModel
      * It is set as true by default.
      */
     override val overrideTheme: Boolean = false
-
-    override val viewModelSeed: EmaHomeToolbarViewModel by instance()
 
     override val navigator: EmaHomeNavigator by instance()
 
