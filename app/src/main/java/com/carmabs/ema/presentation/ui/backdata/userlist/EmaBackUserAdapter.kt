@@ -15,7 +15,7 @@ import kotlinx.android.synthetic.main.item_back_user.view.*
  * Date: 2019-11-07
  */
 
-class EmaBackUserAdapter(override val listItems: MutableList<EmaBackUserModel> = mutableListOf()) : EmaRecyclerAdapter<EmaBackUserModel>() {
+class EmaBackUserAdapter : EmaRecyclerAdapter<EmaBackUserModel>() {
 
     override val layoutItemId: Int = R.layout.item_back_user
 
