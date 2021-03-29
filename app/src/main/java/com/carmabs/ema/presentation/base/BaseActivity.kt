@@ -1,9 +1,9 @@
 package com.carmabs.ema.presentation.base
 
 import com.carmabs.ema.android.ui.EmaActivity
-import com.carmabs.ema.android.viewmodel.EmaViewModel
 import com.carmabs.ema.core.navigator.EmaNavigationState
 import com.carmabs.ema.core.state.EmaBaseState
+import com.carmabs.ema.core.viewmodel.EmaViewModel
 import com.carmabs.ema.presentation.injection.activityInjection
 import org.kodein.di.Kodein
 

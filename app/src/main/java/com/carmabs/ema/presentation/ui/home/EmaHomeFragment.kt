@@ -1,5 +1,6 @@
 package com.carmabs.ema.presentation.ui.home
 
+import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.text.method.PasswordTransformationMethod
@@ -11,6 +12,7 @@ import com.carmabs.domain.exception.PasswordEmptyException
 import com.carmabs.domain.exception.UserEmptyException
 import com.carmabs.ema.R
 import com.carmabs.ema.android.extension.checkUpdate
+import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
 import com.carmabs.ema.core.constants.STRING_EMPTY
 import com.carmabs.ema.core.dialog.EmaDialogProvider
 import com.carmabs.ema.core.state.EmaExtraData
@@ -41,7 +43,7 @@ class EmaHomeFragment : BaseFragment<EmaHomeState, EmaHomeViewModel, EmaHomeNavi
 
     override val layoutId: Int = R.layout.fragment_home
 
-    override val viewModelSeed: EmaHomeViewModel by instance()
+    override val androidViewModelSeed: EmaAndroidViewModel<EmaHomeViewModel> by instance<EmaAndroidHomeViewModel>()
 
     override val navigator: EmaHomeNavigator  by instance()
 
@@ -51,9 +53,10 @@ class EmaHomeFragment : BaseFragment<EmaHomeState, EmaHomeViewModel, EmaHomeNavi
     private val loadingDialog: EmaDialogProvider by instance(tag = DIALOG_TAG_LOADING)
     /////////////////////////////////////////////////////////////////////////////////
 
-    override fun onInitialized(viewModel: EmaHomeViewModel) {
-        setupButtons(viewModel)
-        setupDialog(viewModel)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupButtons(vm)
+        setupDialog(vm)
     }
 
     private fun setupDialog(viewModel: EmaHomeViewModel) {

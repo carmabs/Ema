@@ -1,8 +1,9 @@
 package com.carmabs.ema.presentation.dialog.simple
 
 import androidx.fragment.app.FragmentManager
+import com.carmabs.ema.android.ui.dialog.EmaAndroidDialogProvider
 import com.carmabs.ema.android.ui.dialog.EmaBaseDialog
-import com.carmabs.ema.android.ui.dialog.EmaBaseDialogProvider
+import com.carmabs.ema.core.dialog.EmaDialogData
 
 /**
  * Simple dialog implementation
@@ -11,6 +12,6 @@ import com.carmabs.ema.android.ui.dialog.EmaBaseDialogProvider
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
 
-class SimpleDialogProvider constructor(fragmentManager: FragmentManager) : EmaBaseDialogProvider(fragmentManager) {
-    override fun generateDialog(): EmaBaseDialog<*> = SimpleDialog()
+class SimpleDialogProvider constructor(fragmentManager: FragmentManager) : EmaAndroidDialogProvider(fragmentManager) {
+    override fun generateDialog(dialogData: EmaDialogData?): EmaBaseDialog<*> = SimpleDialog()
 }

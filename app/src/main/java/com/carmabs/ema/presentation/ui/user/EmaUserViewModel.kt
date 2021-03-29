@@ -50,10 +50,10 @@ class EmaUserViewModel(private val resourceManager: ResourceManager) : BaseViewM
         notifySingleEvent(EmaExtraData(eventID, item))
     }
 
-    override fun onCleared() {
+    override fun onDestroy() {
         //To restore the default title, if not next time activity goes to foreground, this title
         //will be set in the toolbar
         toolbarViewModel?.setToolbarTitle(null)
-        super.onCleared()
+        super.onDestroy()
     }
 }

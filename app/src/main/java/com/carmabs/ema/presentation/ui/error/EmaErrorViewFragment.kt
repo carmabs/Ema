@@ -1,7 +1,10 @@
 package com.carmabs.ema.presentation.ui.error
 
+import android.os.Bundle
 import android.view.View
 import com.carmabs.ema.R
+import com.carmabs.ema.android.delegates.emaViewModelSharedDelegate
+import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
 import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.presentation.base.BaseFragment
 import kotlinx.android.synthetic.main.fragment_error.*
@@ -13,17 +16,24 @@ class EmaErrorViewFragment : BaseFragment<EmaErrorState, EmaErrorViewModel, EmaE
      * If you wouldn't want to use dependency injection you can provide it instantiating the class.
      * Not recommended
      */
-    override val viewModelSeed: EmaErrorViewModel = EmaErrorViewModel()
+    private val toolbarSeed: EmaAndroidErrorToolbarViewModel by instance()
 
-    private val toolbarViewModelSeed: EmaErrorToolbarViewModel by instance()
+    private val toolbarViewModel: EmaAndroidErrorToolbarViewModel by emaViewModelSharedDelegate(
+            {
+                vm.onToolbarUpdated(it)
+            },
+            {
+                toolbarSeed
+            }
+    )
 
     override val navigator: EmaErrorNavigator by instance()
 
-    override fun onInitialized(viewModel: EmaErrorViewModel) {
-        viewModel.toolbarViewModel = addExtraViewModel(toolbarViewModelSeed, this, requireActivity()) {
-            viewModel.onToolbarUpdated(it)
-        }
-        setupButtons(viewModel)
+    override val androidViewModelSeed: EmaAndroidViewModel<EmaErrorViewModel> by instance<EmaAndroidErrorViewModel>()
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        vm.toolbarViewModel = toolbarViewModel.emaViewModel
+        setupButtons(vm)
     }
 
     private fun setupButtons(viewModel: EmaErrorViewModel) {
@@ -48,5 +58,6 @@ class EmaErrorViewFragment : BaseFragment<EmaErrorState, EmaErrorViewModel, EmaE
     override fun onError(error: Throwable) {
     }
 
-    override val layoutId: Int = R.layout.fragment_error
+    override
+    val layoutId: Int = R.layout.fragment_error
 }

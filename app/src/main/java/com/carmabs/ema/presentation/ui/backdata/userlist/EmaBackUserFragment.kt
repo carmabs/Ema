@@ -1,9 +1,12 @@
 package com.carmabs.ema.presentation.ui.backdata.userlist;
 
+import android.os.Bundle
+import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.carmabs.ema.R
 import com.carmabs.ema.android.extension.checkVisibility
+import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
 import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.presentation.base.BaseFragment
 import com.carmabs.ema.presentation.ui.backdata.EmaBackNavigator
@@ -24,9 +27,12 @@ class EmaBackUserFragment : BaseFragment<EmaBackUserState, EmaBackUserViewModel,
 
     private val adapter : EmaBackUserAdapter by lazy { EmaBackUserAdapter() }
 
-    override fun onInitialized(viewModel: EmaBackUserViewModel) {
+    override val androidViewModelSeed: EmaAndroidViewModel<EmaBackUserViewModel> by instance<EmaAndroidBackUserViewModel>()
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         setupRecycler()
-        setupButton(viewModel)
+        setupButton(vm)
     }
 
     private fun setupButton(viewModel: EmaBackUserViewModel) {

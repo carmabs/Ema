@@ -1,7 +1,7 @@
 package com.carmabs.ema.presentation.base
 
-import com.carmabs.ema.android.navigation.EmaNavigator
 import com.carmabs.ema.core.navigator.EmaNavigationState
+import com.carmabs.ema.core.navigator.EmaNavigator
 
 /**
  *  *<p>
