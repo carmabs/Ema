@@ -18,24 +18,43 @@ import org.kodein.di.android.closestKodein
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
-abstract class EmaBaseLayout<T> : FrameLayout, Injector {
+abstract class EmaBaseLayout<T:Any> : FrameLayout, Injector {
 
-    override val parentKodein: Kodein by closestKodein()
+    final override val parentKodein: Kodein by closestKodein()
 
-    override val kodein: Kodein = parentKodein
-
-    protected var mainLayout: View? = null
-
-    protected var viewsSetup = false
-
-    var data:T?=null
-    set(value) {
-        field = value
-        mainLayout?.also {
-            setup(it,data)
-        }
+    final override val kodein: Kodein by lazy {
+        injectKodein()
     }
 
+    var mainLayout: View? = null
+        private set
+
+    var viewsSetup = false
+        private set
+
+    private lateinit var data: T
+
+    protected abstract fun createInitialState(): T
+
+    fun updateData(updateAction: T.() -> T):T {
+        checkDataInitialization()
+        data = data.let(updateAction)
+        mainLayout?.also {
+            setup(data)
+        }
+        return data
+    }
+
+    fun getData():T{
+        checkDataInitialization()
+        return data
+    }
+
+    private fun checkDataInitialization(){
+        if(!this::data.isInitialized){
+            data = createInitialState()
+        }
+    }
     constructor(context: Context) : super(context) {
         onCreateView(context)
     }
@@ -44,7 +63,11 @@ abstract class EmaBaseLayout<T> : FrameLayout, Injector {
         onCreateView(context, attrs)
     }
 
-    constructor(ctx: Context, attrs: AttributeSet, defStyleAttr: Int) : super(ctx, attrs, defStyleAttr) {
+    constructor(ctx: Context, attrs: AttributeSet, defStyleAttr: Int) : super(
+        ctx,
+        attrs,
+        defStyleAttr
+    ) {
         onCreateView(context, attrs)
     }
 
@@ -53,19 +76,27 @@ abstract class EmaBaseLayout<T> : FrameLayout, Injector {
         val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val v = inflater.inflate(getLayoutId(), this) as ViewGroup
         mainLayout = v.getChildAt(0)
-
         handleAttributes(attrs)
     }
 
     /**
      * Setup called once the windows has been attached
      */
-    override fun onAttachedToWindow() {
+    final override fun onAttachedToWindow() {
         super.onAttachedToWindow()
+        checkDataInitialization()
+        onViewCreated()
         mainLayout?.let {
-            setup(it,data)
+            it.setup(data)
             viewsSetup = true
         }
+    }
+
+    /**
+     * Called once the view has been created
+     */
+    protected open fun onViewCreated(){
+        //IMPLEMENT BY CHILD CLASSES IF IT IS NECESSARY
     }
 
     /**
@@ -83,7 +114,7 @@ abstract class EmaBaseLayout<T> : FrameLayout, Injector {
      * Method called once the layout has been inflated implementing the methods [EmaBaseLayout.getLayout]
      * @param mainLayout is the layout inflated instance
      */
-    abstract fun setup(mainLayout: View,data:T?)
+     abstract fun View.setup(data: T)
 
 
     /**
@@ -100,7 +131,7 @@ abstract class EmaBaseLayout<T> : FrameLayout, Injector {
             attrs?.let { _ ->
                 val ta = context.obtainStyledAttributes(set, attrs, 0, 0)
                 try {
-                    setupAttributes(ta!!)
+                    setupAttributes(ta)
                 } finally {
                     ta.recycle()
                 }

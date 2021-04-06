@@ -14,7 +14,7 @@ rootProject.ext {
 
     materialVersion = "1.0.0"
 
-    coroutinesVersion = "1.3.0"
+    coroutinesVersion = "1.4.0"
 
     coreVersion = "1.2.0"
 
@@ -28,22 +28,17 @@ rootProject.ext {
 
     espressoVersion = "3.2.0"
 
-    kotlinVersion = '1.3.60'
+    kotlinVersion = '1.4.31'
 
-    buildGradleVersion = '3.4.2'
-
-    safeArgsVersion = "1.0.0"
-
-    publishJitPackVersion = "2.1"
-
+    lifecycleKtExtensionVersion='2.3.0'
 
     ema = [
-            buildTools : "28.0.3",
+            buildTools : "30.0.2",
             minSdk     : 21,
-            compileSdk : 28,
-            targetSdk  : 28,
-            versionCode: 6,
-            versionName: "2.4.0"
+            compileSdk : 30,
+            targetSdk  : 30,
+            versionCode: 7,
+            versionName: "3.0.0"
     ]
 
     appDependencies = [
@@ -82,14 +77,15 @@ rootProject.ext {
     ]
 
     emaAndroid = [
-            navigationFragment: "androidx.navigation:navigation-fragment-ktx:" + project.navigationVersion,
-            navigationUI      : "androidx.navigation:navigation-ui-ktx:" + project.navigationVersion,
-            constraint        : "androidx.constraintlayout:constraintlayout:" + project.constraintVersion,
-            design            : "com.android.support:design:" + project.designVersion,
-            material          : "com.google.android.material:material:" + project.materialVersion,
-            lifecycle         : "androidx.lifecycle:lifecycle-extensions:" + project.lifecycleVersion,
-            kodein            : "org.kodein.di:kodein-di-generic-jvm:" + project.kodeinVersion,
-            kodeinAndroid     : "org.kodein.di:kodein-di-framework-android-x:" + project.kodeinVersion,
+            navigationFragment  : "androidx.navigation:navigation-fragment-ktx:" + project.navigationVersion,
+            navigationUI        : "androidx.navigation:navigation-ui-ktx:" + project.navigationVersion,
+            constraint          : "androidx.constraintlayout:constraintlayout:" + project.constraintVersion,
+            design              : "com.android.support:design:" + project.designVersion,
+            material            : "com.google.android.material:material:" + project.materialVersion,
+            lifecycle           : "androidx.lifecycle:lifecycle-extensions:" + project.lifecycleVersion,
+            kodein              : "org.kodein.di:kodein-di-generic-jvm:" + project.kodeinVersion,
+            kodeinAndroid       : "org.kodein.di:kodein-di-framework-android-x:" + project.kodeinVersion,
+            lifecycleKtExtension: "androidx.lifecycle:lifecycle-runtime-ktx:" + project.lifecycleKtExtensionVersion
     ]
 
 }

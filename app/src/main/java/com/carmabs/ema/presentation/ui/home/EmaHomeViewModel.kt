@@ -53,7 +53,7 @@ class EmaHomeViewModel(
     override val initialViewState: EmaHomeState = EmaHomeState()
 
     private fun doLogin() {
-        checkDataState {
+        getDataState().also {
             executeUseCaseWithException(
                     {
                         updateToAlternativeState()
@@ -78,7 +78,7 @@ class EmaHomeViewModel(
     }
 
     fun onActionLogin() {
-        checkDataState {
+        getDataState().also {
             when {
                 it.userName.isEmpty() -> updateToErrorState(UserEmptyException())
                 it.userPassword.isEmpty() -> updateToErrorState(UserEmptyException())

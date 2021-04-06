@@ -1,16 +1,19 @@
 package com.carmabs.ema.presentation.ui.user
 
+import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.carmabs.ema.R
+import com.carmabs.ema.android.delegates.emaViewModelSharedDelegate
 import com.carmabs.ema.android.extension.getFormattedString
-import com.carmabs.ema.android.navigation.EmaNavigator
-import com.carmabs.ema.core.extension.getFormattedString
+import com.carmabs.ema.android.navigation.EmaAndroidNavigator
+import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
 import com.carmabs.ema.core.navigator.EmaNavigationState
 import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.presentation.base.BaseFragment
-import com.carmabs.ema.presentation.ui.home.EmaHomeToolbarViewModel
+import com.carmabs.ema.presentation.ui.home.EmaAndroidHomeToolbarViewModel
 import kotlinx.android.synthetic.main.fragment_user.*
 import kotlinx.android.synthetic.main.layout_ema_header.*
 import org.kodein.di.generic.instance
@@ -32,17 +35,22 @@ import org.kodein.di.generic.instance
  */
 class EmaUserFragment : BaseFragment<EmaUserState, EmaUserViewModel, EmaNavigationState>() {
 
-    override val navigator: EmaNavigator<EmaNavigationState>? = null
+    override val navigator: EmaAndroidNavigator<EmaNavigationState>? = null
 
-    private val toolbarViewModel: EmaHomeToolbarViewModel by instance()
+    override val androidViewModelSeed: EmaAndroidViewModel<EmaUserViewModel> by instance<EmaAndroidUserViewModel>()
+
+    private val toolbarSeed  by instance<EmaAndroidHomeToolbarViewModel>()
+
+    private val toolbarViewModel: EmaAndroidHomeToolbarViewModel by emaViewModelSharedDelegate{
+        toolbarSeed
+    }
 
     private lateinit var adapter: EmaUserAdapter
 
-    override fun onInitialized(viewModel: EmaUserViewModel) {
-        val toolbarViewModel = addExtraViewModel(toolbarViewModel,this,requireActivity())
-        viewModel.toolbarViewModel = toolbarViewModel
-        setupRecycler(viewModel)
-
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        vm.toolbarViewModel = toolbarViewModel.emaViewModel
+        setupRecycler(vm)
     }
 
     private fun setupRecycler(viewModel: EmaUserViewModel) {

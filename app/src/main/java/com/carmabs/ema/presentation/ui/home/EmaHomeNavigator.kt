@@ -4,10 +4,9 @@ import android.app.Activity
 import android.content.Intent
 import androidx.navigation.NavController
 import com.carmabs.ema.R
-import com.carmabs.ema.android.navigation.EmaNavigator
-import com.carmabs.ema.core.navigator.EmaBaseNavigator
+import com.carmabs.ema.android.navigation.EmaAndroidNavigator
 import com.carmabs.ema.core.navigator.EmaNavigationState
-import com.carmabs.domain.model.User
+import com.carmabs.ema.core.navigator.EmaNavigator
 import com.carmabs.ema.presentation.ui.error.EmaErrorToolbarViewActivity
 import com.carmabs.ema.presentation.ui.user.EmaUserState
 
@@ -20,25 +19,25 @@ import com.carmabs.ema.presentation.ui.user.EmaUserState
  *
  * Created by: Carlos Mateo Benito on 20/1/19.
  */
-class EmaHomeNavigator(override val navController: NavController, val activity: Activity) : EmaNavigator<EmaHomeNavigator.Navigation> {
+class EmaHomeNavigator(override val navController: NavController, override val activity: Activity) : EmaAndroidNavigator<EmaHomeNavigator.Navigation> {
 
     sealed class Navigation : EmaNavigationState {
 
         class User(private val emaUserState: EmaUserState) : Navigation() {
-            override fun navigateWith(navigator: EmaBaseNavigator<out EmaNavigationState>) {
+            override fun navigateWith(navigator: EmaNavigator<out EmaNavigationState>) {
                 (navigator as? EmaHomeNavigator)?.toUser(emaUserState)
             }
         }
 
         object Self : Navigation() {
-            override fun navigateWith(navigator: EmaBaseNavigator<out EmaNavigationState>) {
+            override fun navigateWith(navigator: EmaNavigator<out EmaNavigationState>) {
                 (navigator as? EmaHomeNavigator)?.toSelf()
             }
         }
 
 
         object Error: Navigation() {
-            override fun navigateWith(navigator: EmaBaseNavigator<out EmaNavigationState>) {
+            override fun navigateWith(navigator: EmaNavigator<out EmaNavigationState>) {
                 (navigator as? EmaHomeNavigator)?.toError()
             }
         }

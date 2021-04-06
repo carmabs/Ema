@@ -3,9 +3,9 @@ package com.carmabs.ema.presentation.ui.error
 import android.app.Activity
 import android.content.Intent
 import androidx.navigation.NavController
-import com.carmabs.ema.android.navigation.EmaNavigator
-import com.carmabs.ema.core.navigator.EmaBaseNavigator
+import com.carmabs.ema.android.navigation.EmaAndroidNavigator
 import com.carmabs.ema.core.navigator.EmaNavigationState
+import com.carmabs.ema.core.navigator.EmaNavigator
 import com.carmabs.ema.presentation.ui.backdata.EmaBackToolbarActivity
 
 /**
@@ -19,13 +19,13 @@ import com.carmabs.ema.presentation.ui.backdata.EmaBackToolbarActivity
  */
 class EmaErrorNavigator(
         override val navController: NavController,
-        private val activity: Activity
-) : EmaNavigator<EmaErrorNavigator.Navigation> {
+        override val activity: Activity
+) : EmaAndroidNavigator<EmaErrorNavigator.Navigation> {
 
     sealed class Navigation : EmaNavigationState {
 
         object BackUser : Navigation() {
-            override fun navigateWith(navigator: EmaBaseNavigator<out EmaNavigationState>) {
+            override fun navigateWith(navigator: EmaNavigator<out EmaNavigationState>) {
                 (navigator as? EmaErrorNavigator)?.toBackUser()
             }
         }

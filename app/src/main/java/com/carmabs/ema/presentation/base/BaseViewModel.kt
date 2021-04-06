@@ -1,7 +1,7 @@
 package com.carmabs.ema.presentation.base
 
-import com.carmabs.ema.android.viewmodel.EmaViewModel
 import com.carmabs.ema.core.navigator.EmaNavigationState
+import com.carmabs.ema.core.viewmodel.EmaViewModel
 
 /**
  *  *<p>
@@ -12,7 +12,7 @@ import com.carmabs.ema.core.navigator.EmaNavigationState
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
 
-abstract class BaseViewModel<S, NS : EmaNavigationState> : EmaViewModel<S, NS> (){
+abstract class BaseViewModel<S:Any, NS : EmaNavigationState> : EmaViewModel<S, NS>(){
 
     override fun onResume(firstTime: Boolean) {
         //Override if you want to do some task everytime the view goes

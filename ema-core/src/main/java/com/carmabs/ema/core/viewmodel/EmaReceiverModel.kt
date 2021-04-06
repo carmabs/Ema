@@ -1,4 +1,4 @@
-package com.carmabs.ema.android.extra
+package com.carmabs.ema.core.viewmodel
 
 /**
  * Model to handle receiver feature
@@ -8,7 +8,7 @@ package com.carmabs.ema.android.extra
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
 data class EmaReceiverModel(
-        val resultId: Int,
+        val resultCode: Int,
+        val ownerId:Int,
         internal val function: (EmaResultModel) -> Unit,
-        internal val ownerCode: Int
 )

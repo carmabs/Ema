@@ -7,8 +7,10 @@ import androidx.annotation.IdRes
 import androidx.navigation.NavController
 import androidx.navigation.NavDirections
 import androidx.navigation.NavOptions
+import androidx.navigation.Navigator
+import androidx.navigation.fragment.FragmentNavigator
 import com.carmabs.ema.android.ui.EmaActivity
-import com.carmabs.ema.core.navigator.EmaBaseNavigator
+import com.carmabs.ema.core.navigator.EmaNavigator
 import com.carmabs.ema.core.navigator.EmaNavigationState
 import com.carmabs.ema.core.state.EmaBaseState
 
@@ -22,9 +24,11 @@ import com.carmabs.ema.core.state.EmaBaseState
  * Navigator to handle navigation through navController
  * Created by: Carlos Mateo Benito on 20/1/19.
  */
-interface EmaNavigator<NS : EmaNavigationState> : EmaBaseNavigator<NS> {
+interface EmaAndroidNavigator<NS : EmaNavigationState> : EmaNavigator<NS> {
 
     val navController: NavController
+
+    val activity:Activity
 
     /**
      * Set the initial state for the incoming fragment. Only work for fragment at the same activity
@@ -44,8 +48,8 @@ interface EmaNavigator<NS : EmaNavigationState> : EmaBaseNavigator<NS> {
      * @param data
      * @param navOptions
      */
-    fun navigateWithAction(@IdRes actionID: Int, data: Bundle? = null, navOptions: NavOptions? = null) {
-        navController.navigate(actionID, data, navOptions)
+    fun navigateWithAction(@IdRes actionID: Int, data: Bundle? = null, navOptions: NavOptions? = null,extras: FragmentNavigator.Extras?=null) {
+        navController.navigate(actionID, data, navOptions,extras)
     }
 
 
@@ -67,35 +71,36 @@ interface EmaNavigator<NS : EmaNavigationState> : EmaBaseNavigator<NS> {
                 "extend from EmaActivity")
     }
 
-    /**
-     * Navigates back
-     * @return true if a fragment has been popped, false if backstack is empty, in that case, finish
-     * the activity provided.
-     */
-    fun navigateBack(activity: Activity): Boolean {
-        val hasMoreFragments = navController.popBackStack()
-        if(!hasMoreFragments)
-            activity.finish()
-
-        return hasMoreFragments
-    }
 
     /**
      * Navigate with android architecture components within navDirections safeargs
      * @param navDirections
      * @param navOptions
      */
-    fun navigateWithDirections(navDirections: NavDirections, navOptions: NavOptions? = null) {
-        navController.navigate(navDirections, navOptions)
+    fun navigateWithDirections(navDirections: NavDirections,navOptions: NavOptions? = null) {
+        navController.navigate( navDirections,navOptions)
+    }
+
+    /**
+     * Navigate with android architecture components within navDirections safeargs
+     * @param navDirections
+     * @param navExtras
+     */
+    fun navigateWithDirections(navDirections: NavDirections,extras: Navigator.Extras) {
+        navController.navigate(navDirections,extras)
     }
 
 
     /**
      * Navigates back
-     * @return true if the stack was popped and the user has been navigated to another
-     * destination, false otherwise
+     * @return true if a fragment has been popped, false if backstack is empty, in that case, finish
+     * the activity provided.
      */
     override fun navigateBack(): Boolean {
-        return navController.popBackStack()
+        val hasMoreFragments = navController.popBackStack()
+        if(!hasMoreFragments)
+            activity.finish()
+
+        return hasMoreFragments
     }
 }
