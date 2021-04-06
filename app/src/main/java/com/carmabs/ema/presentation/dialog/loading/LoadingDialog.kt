@@ -15,10 +15,14 @@ class LoadingDialog : EmaBaseDialog<LoadingDialogData>() {
 
     override val layoutId: Int = R.layout.dialog_loading
 
-    override fun setupData(data: LoadingDialogData, view: View) {
-        view.tvDialogLoadingTitle.text = data.title
-        view.tvDialogLoadingMessage.text = data.message
+    override fun View.setup(data: LoadingDialogData) {
+        tvDialogLoadingTitle.text = data.title
+        tvDialogLoadingMessage.text = data.message
 
         isCancelable = false
+    }
+
+    override fun createInitialState(): LoadingDialogData {
+        return LoadingDialogData()
     }
 }

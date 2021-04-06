@@ -29,6 +29,10 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
+    }
+
     packagingOptions {
         pickFirst 'META-INF/kotlinx-io.kotlin_module'
         pickFirst 'META-INF/ema-android_debug.kotlin_module'
@@ -49,6 +53,8 @@ dependencies {
     api emaAndroid.kodein
     api emaAndroid.kodeinAndroid
 
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.3.0"
+    implementation emaAndroid.lifecycleKtExtension
     //UI
     api emaAndroid.constraint
     api emaAndroid.design

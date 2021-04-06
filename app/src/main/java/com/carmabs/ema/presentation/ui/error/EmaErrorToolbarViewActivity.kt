@@ -1,12 +1,15 @@
 package com.carmabs.ema.presentation.ui.error
 
+import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
-import androidx.core.content.ContextCompat
 import com.carmabs.ema.R
-import com.carmabs.ema.android.extension.*
+import com.carmabs.ema.android.extension.dpToPx
+import com.carmabs.ema.android.extension.getColor
+import com.carmabs.ema.android.extension.getFormattedString
 import com.carmabs.ema.android.ui.EmaActivity
+import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
 import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.presentation.injection.activityInjection
 import org.kodein.di.Kodein
@@ -28,17 +31,16 @@ class EmaErrorToolbarViewActivity : EmaActivity<EmaErrorToolbarState, EmaErrorTo
 
     override fun provideFixedToolbarTitle(): String? = getString(R.string.error_toolbar_title)
 
-    override val viewModelSeed: EmaErrorToolbarViewModel by instance()
+    override val androidViewModelSeed: EmaAndroidViewModel<EmaErrorToolbarViewModel> by instance<EmaAndroidErrorToolbarViewModel>()
 
     override val navigator: EmaErrorNavigator by instance()
 
-    private lateinit var vm: EmaErrorToolbarViewModel
-
     override fun injectActivityModule(kodein: Kodein.MainBuilder): Kodein.Module? = activityInjection(this)
 
-    override fun onInitialized(viewModel: EmaErrorToolbarViewModel) {
-        vm = viewModel
+    override fun onCreateActivity(savedInstanceState: Bundle?) {
+        super.onCreateActivity(savedInstanceState)
         configureToolbar()
+
     }
 
     private fun configureToolbar() {

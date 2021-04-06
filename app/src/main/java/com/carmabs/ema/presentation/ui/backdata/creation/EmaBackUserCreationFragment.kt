@@ -1,9 +1,10 @@
 package com.carmabs.ema.presentation.ui.backdata.creation
 
+import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import com.carmabs.ema.R
-import com.carmabs.ema.android.extra.EmaTextWatcher
-import com.carmabs.ema.core.constants.STRING_EMPTY
+import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
 import com.carmabs.ema.core.extension.checkNull
 import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.presentation.base.BaseFragment
@@ -25,9 +26,11 @@ import org.kodein.di.generic.instance
 
 class EmaBackUserCreationFragment : BaseFragment<EmaBackUserCreationState, EmaBackUserCreationViewModel, EmaBackNavigator.Navigation>() {
 
-    override fun onInitialized(viewModel: EmaBackUserCreationViewModel) {
-        setupButtons(viewModel)
-        setupEditTexts(viewModel)
+    override val androidViewModelSeed: EmaAndroidViewModel<EmaBackUserCreationViewModel> by instance<EmaAndroidBackUserCreationViewModel>()
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        setupButtons(vm)
+        setupEditTexts(vm)
     }
 
     private fun setupEditTexts(viewModel: EmaBackUserCreationViewModel) {

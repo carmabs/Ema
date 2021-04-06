@@ -2,10 +2,13 @@ package com.carmabs.ema.android.extension
 
 import android.content.Context
 import android.graphics.*
+import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.util.TypedValue
 import androidx.core.content.ContextCompat
+import com.carmabs.ema.core.constants.FLOAT_ONE
 import com.carmabs.ema.core.constants.INT_ZERO
+import java.io.ByteArrayOutputStream
 
 
 /**
@@ -52,6 +55,14 @@ fun @receiver:androidx.annotation.DrawableRes Int.getDrawable(context: Context):
     return ContextCompat.getDrawable(context, this)!!
 }
 
+fun @receiver:androidx.annotation.DrawableRes Int.getByteArray(context: Context): ByteArray {
+    val drawable = getDrawable(context)
+    val bitmap = (drawable as BitmapDrawable).bitmap
+    val stream = ByteArrayOutputStream()
+    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+    return  stream.toByteArray()
+}
+
 fun getBitmapFromResource(
     context: Context,
     drawableId: Int,
@@ -67,8 +78,22 @@ fun getBitmapFromResource(
         )
         val canvas = Canvas(bitmap)
         // TO ANTIALIAS //
+        val ratio = drawable.intrinsicWidth / drawable.intrinsicHeight.toFloat()
+        val boundWidth = when {
+            ratio < FLOAT_ONE -> bitmap.height * ratio
+            else -> bitmap.width.toFloat()
+        }
+        val boundHeight = when {
+            ratio < FLOAT_ONE -> bitmap.height.toFloat()
+            else -> bitmap.width / ratio
+        }
         canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
-        drawable.setBounds(0, 0, canvas.width, canvas.height)
+        drawable.setBounds(
+            (bitmap.width / 2f - boundWidth / 2f).toInt(),
+            (bitmap.height / 2f - boundHeight / 2f).toInt(),
+            (bitmap.width / 2f + boundWidth / 2f).toInt(),
+            (bitmap.height / 2f + boundHeight / 2f).toInt()
+        )
         colorHex?.also { color -> drawable.setTint(Color.parseColor(color)) }
         drawable.draw(canvas)
         bitmap
@@ -84,8 +109,8 @@ fun getBitmapCropFromResource(
 
     val bitmap: Bitmap = BitmapFactory.decodeResource(context.resources, drawableId)
 
-    val w = width?:bitmap.width
-    val h = height?:bitmap.height
+    val w = width ?: bitmap.width
+    val h = height ?: bitmap.height
 
     val sourceWidth: Int = bitmap.width
     val sourceHeight: Int = bitmap.height
@@ -97,8 +122,8 @@ fun getBitmapCropFromResource(
     // Compute the scaling factors to fit the new height and width, respectively.
     // To cover the final image, the final scaling will be the bigger
     // of these two.
-    val xScale = w  / sourceWidth.toFloat()
-    val yScale = w  / sourceHeight.toFloat()
+    val xScale = w / sourceWidth.toFloat()
+    val yScale = w / sourceHeight.toFloat()
     val scale = xScale.coerceAtLeast(yScale)
 
     // Now get the size of the source bitmap when scaled

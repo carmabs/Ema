@@ -1,6 +1,7 @@
 package com.carmabs.ema.android.extension
 
 import android.graphics.*
+import java.io.ByteArrayOutputStream
 
 /**
  * Created by Carlos Mateo Benito on 2020-07-13.
@@ -24,7 +25,7 @@ fun Bitmap.getRoundedCornerBitmap(
     val pAlias = paint.isAntiAlias
     val pXferMode = paint.xfermode
 
-    rect.set(0,0,width,height)
+    rect.set(0, 0, width, height)
     rectF.set(rect)
     val roundPx = pixels.toFloat()
     paint.isAntiAlias = true
@@ -38,4 +39,14 @@ fun Bitmap.getRoundedCornerBitmap(
     paint.color = pColor
     paint.isAntiAlias = pAlias
     return output
+}
+
+fun Bitmap.toByteArray(): ByteArray {
+    val stream = ByteArrayOutputStream()
+    compress(Bitmap.CompressFormat.JPEG, 100, stream)
+    return stream.toByteArray()
+}
+
+fun ByteArray.toBitmap(): Bitmap {
+    return BitmapFactory.decodeByteArray(this, 0, size);
 }

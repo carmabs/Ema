@@ -1,11 +1,11 @@
 package com.carmabs.ema.presentation.ui.backdata
 
+import android.app.Activity
 import androidx.navigation.NavController
 import com.carmabs.ema.R
-import com.carmabs.ema.android.navigation.EmaNavigator
-import com.carmabs.ema.core.navigator.EmaBaseNavigator
+import com.carmabs.ema.android.navigation.EmaAndroidNavigator
 import com.carmabs.ema.core.navigator.EmaNavigationState
-import com.carmabs.ema.presentation.ui.error.EmaErrorNavigator
+import com.carmabs.ema.core.navigator.EmaNavigator
 
 /**
  *<p>
@@ -18,13 +18,14 @@ import com.carmabs.ema.presentation.ui.error.EmaErrorNavigator
  */
 
 class EmaBackNavigator(
-        override val navController: NavController
-) : EmaNavigator<EmaBackNavigator.Navigation> {
+        override val navController: NavController,
+        override val activity: Activity
+) : EmaAndroidNavigator<EmaBackNavigator.Navigation> {
 
     sealed class Navigation : EmaNavigationState {
 
         object Result : Navigation() {
-            override fun navigateWith(navigator: EmaBaseNavigator<out EmaNavigationState>) {
+            override fun navigateWith(navigator: EmaNavigator<out EmaNavigationState>) {
                 (navigator as? EmaBackNavigator)?.toResult()
             }
         }

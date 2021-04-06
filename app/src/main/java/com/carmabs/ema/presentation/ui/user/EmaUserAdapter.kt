@@ -19,8 +19,7 @@ import kotlinx.android.synthetic.main.item_right.view.*
  * Date: 2019-09-25
  */
 
-class EmaUserAdapter(private val viewModel: EmaUserViewModel,
-                     override val listItems: MutableList<EmaUserItemModel> = mutableListOf()) : EmaRecyclerAdapter<EmaUserItemModel>() {
+class EmaUserAdapter(private val viewModel: EmaUserViewModel) : EmaRecyclerAdapter<EmaUserItemModel>() {
 
 
     override fun getItemViewType(position: Int): Int {
