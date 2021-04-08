@@ -96,13 +96,13 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
      * Initialize ViewModel on activity creation
      */
     override fun onStart() {
-        super.onStart()
         runBlocking {
             viewJob = onStartAndBindData(
                 this@EmaActivity,
                 vm
             )
         }
+        super.onStart()
     }
 
     /**

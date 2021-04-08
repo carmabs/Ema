@@ -56,6 +56,7 @@ class EmaHomeFragment : BaseFragment<EmaHomeState, EmaHomeViewModel, EmaHomeNavi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupDialog(vm)
+        setupButtons(vm)
     }
 
     private fun setupDialog(viewModel: EmaHomeViewModel) {
@@ -191,11 +192,6 @@ class EmaHomeFragment : BaseFragment<EmaHomeState, EmaHomeViewModel, EmaHomeNavi
 
             }
             etPassword.setSelection(etPassword.text.length)
-        }
-
-        //Set the listeners here to avoid listener invocation after recreation
-        if(isFirstNormalExecution){
-            setupButtons(vm)
         }
     }
 
