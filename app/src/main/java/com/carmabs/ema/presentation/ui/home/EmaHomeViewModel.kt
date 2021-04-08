@@ -94,7 +94,7 @@ class EmaHomeViewModel(
     }
 
     fun onActionRemember(isChecked: Boolean) {
-        updateToNormalState {
+        updateDataState {
             copy(rememberUser = isChecked)
         }
     }

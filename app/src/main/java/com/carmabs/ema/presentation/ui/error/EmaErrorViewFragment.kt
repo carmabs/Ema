@@ -32,8 +32,12 @@ class EmaErrorViewFragment : BaseFragment<EmaErrorState, EmaErrorViewModel, EmaE
     override val androidViewModelSeed: EmaAndroidViewModel<EmaErrorViewModel> by instance<EmaAndroidErrorViewModel>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        vm.toolbarViewModel = toolbarViewModel.emaViewModel
         setupButtons(vm)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        vm.toolbarViewModel = toolbarViewModel.emaViewModel
     }
 
     private fun setupButtons(viewModel: EmaErrorViewModel) {
