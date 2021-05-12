@@ -112,49 +112,5 @@ fun getBitmapCropFromResource(
     val w = width ?: bitmap.width
     val h = height ?: bitmap.height
 
-    val sourceWidth: Int = bitmap.width
-    val sourceHeight: Int = bitmap.height
-
-    // Compute the scaling factors to fit the new height and width, respectively.
-    // To cover the final image, the final scaling will be the bigger
-    // of these two.
-
-    // Compute the scaling factors to fit the new height and width, respectively.
-    // To cover the final image, the final scaling will be the bigger
-    // of these two.
-    val xScale = w / sourceWidth.toFloat()
-    val yScale = w / sourceHeight.toFloat()
-    val scale = xScale.coerceAtLeast(yScale)
-
-    // Now get the size of the source bitmap when scaled
-
-    // Now get the size of the source bitmap when scaled
-    val scaledWidth = scale * sourceWidth
-    val scaledHeight = scale * sourceHeight
-
-    // Let's find out the upper left coordinates if the scaled bitmap
-    // should be centered in the new size give by the parameters
-
-    // Let's find out the upper left coordinates if the scaled bitmap
-    // should be centered in the new size give by the parameters
-    val left: Float = (w - scaledWidth) / 2
-    val top: Float = (h - scaledHeight) / 2
-
-    // The target rectangle for the new, scaled version of the source bitmap will now
-    // be
-
-    // The target rectangle for the new, scaled version of the source bitmap will now
-    // be
-    val targetRect = RectF(left, top, left + scaledWidth, top + scaledHeight)
-
-    // Finally, we create a new bitmap of the specified size and draw our new,
-    // scaled bitmap onto it.
-
-    // Finally, we create a new bitmap of the specified size and draw our new,
-    // scaled bitmap onto it.
-    val dest = Bitmap.createBitmap(w, h, bitmap.getConfig())
-    val canvas = Canvas(dest)
-    canvas.drawBitmap(bitmap, null, targetRect, null)
-
-    return dest
+    return bitmap.resize(w,h)
 }
