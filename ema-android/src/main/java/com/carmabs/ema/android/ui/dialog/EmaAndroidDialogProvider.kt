@@ -61,4 +61,6 @@ abstract class EmaAndroidDialogProvider constructor(private val fragmentManager:
     private fun getTag():String{
         return javaClass.name.toString()
     }
+
+
 }
