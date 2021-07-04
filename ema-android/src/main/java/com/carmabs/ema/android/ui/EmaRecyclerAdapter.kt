@@ -40,7 +40,7 @@ abstract class EmaRecyclerAdapter<I> : RecyclerView.Adapter<EmaViewHolder<I>>() 
      * @param position current item position in recycler view
      */
     override fun onBindViewHolder(holder: EmaViewHolder<I>, position: Int) {
-        holder.bind(listItems[position])
+        holder.bind(listItems[position],position,listItems.size)
     }
 
 
@@ -63,7 +63,7 @@ abstract class EmaRecyclerAdapter<I> : RecyclerView.Adapter<EmaViewHolder<I>>() 
     /**
      * Method to set the view parameters from each item
      */
-    protected abstract fun View.bind(item: I, viewType: Int)
+    protected abstract fun View.bind(item: I, viewType: Int,position: Int,size: Int)
 
     /**
      * Function to implement different viewHolders depending the viewType provided. Use only if you want to use different
@@ -112,8 +112,8 @@ abstract class EmaRecyclerAdapter<I> : RecyclerView.Adapter<EmaViewHolder<I>>() 
     }
 
     protected open inner class EmaAdapterViewHolder(view: View, private val viewType: Int) : EmaViewHolder<I>(view) {
-        override fun bind(item: I) {
-            itemView.bind(item, viewType)
+        override fun bind(item: I,position: Int,size:Int) {
+            itemView.bind(item, viewType,position,size)
             itemClickListener?.also { listener ->
                 itemView.setOnClickListener { listener.invoke(item) }
             } ?: itemView.setOnClickListener(null)
