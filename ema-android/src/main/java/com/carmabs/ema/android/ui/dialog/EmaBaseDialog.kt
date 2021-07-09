@@ -27,7 +27,8 @@ abstract class EmaBaseDialog<T : EmaDialogData> : DialogFragment(), DialogInterf
 
     private var contentView: View? = null
 
-    protected open val disableBackButton = !isCancelable
+    protected open val disableBackButton
+        get() = !isCancelable
 
 
     /**
