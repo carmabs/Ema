@@ -79,6 +79,11 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> {
      */
     protected open val updateOnInitialization: Boolean = true
 
+    /**
+     * Determine if the viewmodel has initialized its state
+     */
+    var hasBeenInitialized:Boolean = false
+    private set
 
     /**
      * Methos called the first time ViewModel is created
@@ -104,6 +109,7 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> {
             false
         }
 
+        hasBeenInitialized = true
         return firstTime
     }
 
