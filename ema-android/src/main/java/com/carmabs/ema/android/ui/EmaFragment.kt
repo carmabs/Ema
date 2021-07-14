@@ -1,6 +1,9 @@
 package com.carmabs.ema.android.ui
 
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProviders
@@ -51,6 +54,17 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
     final override var isFirstAlternativeExecution: Boolean by emaBooleanDelegate(true)
 
     final override var isFirstErrorExecution: Boolean by emaBooleanDelegate(true)
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        isFirstNormalExecution = true
+        isFirstAlternativeExecution = true
+        isFirstErrorExecution = true
+        return super.onCreateView(inflater, container, savedInstanceState)
+    }
 
     /**
      * The view model of the fragment
