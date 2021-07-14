@@ -19,6 +19,10 @@ import com.carmabs.ema.core.dialog.EmaDialogListener
  */
 abstract class EmaBaseDialog<T : EmaDialogData> : DialogFragment(), DialogInterface.OnShowListener {
 
+    companion object {
+        private const val KEY_DIALOG_DATA = "KEY_DIALOG_DATA"
+    }
+
     var dialogListener: EmaDialogListener? = null
 
     private lateinit var data: T
@@ -43,6 +47,9 @@ abstract class EmaBaseDialog<T : EmaDialogData> : DialogFragment(), DialogInterf
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)
+        (savedInstanceState?.getSerializable(KEY_DIALOG_DATA) as? T)?.also {
+            data = it
+        }
         dialog.setOnShowListener(this)
         dialog.setOnKeyListener { _, keyCode, event ->
             dialogListener?.let {
@@ -57,25 +64,29 @@ abstract class EmaBaseDialog<T : EmaDialogData> : DialogFragment(), DialogInterf
         return dialog
     }
 
-    private fun checkDataInitialization(){
-        if(!this::data.isInitialized){
+    private fun checkDataInitialization() {
+        if (!this::data.isInitialized) {
             data = createInitialState()
         }
     }
 
-    fun updateData(updateAction: T.() -> T):T {
+    fun updateData(updateAction: T.() -> T): T {
         checkDataInitialization()
         data = data.let(updateAction)
         contentView?.setup(data)
         return data
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         val view = inflater.inflate(layoutId, container, false)
         dialog?.window?.apply {
-                setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-                requestFeature(Window.FEATURE_NO_TITLE)
-            }
+            setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            requestFeature(Window.FEATURE_NO_TITLE)
+        }
 
         contentView = view.apply {
             checkDataInitialization()
@@ -87,20 +98,19 @@ abstract class EmaBaseDialog<T : EmaDialogData> : DialogFragment(), DialogInterf
 
     override fun onResume() {
         super.onResume()
-        dialog?.window?.also{win ->
+        dialog?.window?.also { win ->
             val display = win.windowManager.defaultDisplay
             val size = Point()
             display.getSize(size)
 
             data.run {
                 val width = proportionWidth?.let { (it * size.x).toInt() }
-                        ?: ViewGroup.LayoutParams.WRAP_CONTENT
+                    ?: ViewGroup.LayoutParams.WRAP_CONTENT
                 val height = proportionHeight?.let { (it * size.y).toInt() }
-                        ?: ViewGroup.LayoutParams.WRAP_CONTENT
+                    ?: ViewGroup.LayoutParams.WRAP_CONTENT
                 win.setLayout(width, height)
             }
         }
-
 
 
     }
@@ -109,7 +119,6 @@ abstract class EmaBaseDialog<T : EmaDialogData> : DialogFragment(), DialogInterf
         if (isDismissed)
             dismissAllowingStateLoss()
     }
-
 
     override fun show(manager: FragmentManager, tag: String?) {
         manager.apply {
@@ -121,13 +130,14 @@ abstract class EmaBaseDialog<T : EmaDialogData> : DialogFragment(), DialogInterf
         }
     }
 
-
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putSerializable(KEY_DIALOG_DATA, data)
+    }
 
     protected abstract fun createInitialState(): T
 
     override fun onDestroyView() {
         contentView = null
-        data = createInitialState()
         dialogListener = null
         super.onDestroyView()
     }
