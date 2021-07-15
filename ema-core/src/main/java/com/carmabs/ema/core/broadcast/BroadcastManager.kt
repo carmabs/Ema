@@ -11,5 +11,5 @@ package com.carmabs.ema.core.broadcast
  */
 interface BroadcastManager {
    suspend fun sendBroadcastEvent(event:EmaBroadcastEvent)
-   suspend fun registerBroadcast(id: String, listener: (Any) -> Unit)
+   suspend fun registerBroadcast(id: String, listener: suspend (Any) -> Unit)
 }
