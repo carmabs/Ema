@@ -6,6 +6,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.util.TypedValue
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toBitmap
 import com.carmabs.ema.core.constants.FLOAT_ONE
 import com.carmabs.ema.core.constants.INT_ZERO
 import java.io.ByteArrayOutputStream
@@ -55,12 +56,34 @@ fun @receiver:androidx.annotation.DrawableRes Int.getDrawable(context: Context):
     return ContextCompat.getDrawable(context, this)!!
 }
 
+fun @receiver:androidx.annotation.DrawableRes Int.getBitmap(
+    context: Context,
+    width: Int? = null,
+    height: Int? = null
+): Bitmap {
+    return when {
+        width != null && height != null -> {
+            ContextCompat.getDrawable(context, this)!!.toBitmap(width = width, height = height)
+        }
+        width != null -> {
+            ContextCompat.getDrawable(context, this)!!.toBitmap(width = width)
+        }
+        height != null -> {
+            ContextCompat.getDrawable(context, this)!!.toBitmap(height = height)
+        }
+        else -> {
+            ContextCompat.getDrawable(context, this)!!.toBitmap()
+        }
+
+    }
+}
+
 fun @receiver:androidx.annotation.DrawableRes Int.getByteArray(context: Context): ByteArray {
     val drawable = getDrawable(context)
     val bitmap = (drawable as BitmapDrawable).bitmap
     val stream = ByteArrayOutputStream()
     bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
-    return  stream.toByteArray()
+    return stream.toByteArray()
 }
 
 fun getBitmapFromResource(
@@ -112,5 +135,5 @@ fun getBitmapCropFromResource(
     val w = width ?: bitmap.width
     val h = height ?: bitmap.height
 
-    return bitmap.resize(w,h)
+    return bitmap.resize(w, h)
 }
