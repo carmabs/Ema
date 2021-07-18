@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.CallSuper
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProviders
@@ -118,6 +119,7 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
     /**
      * Notifies the view model that view has been gone to foreground.
      */
+    @CallSuper
     override fun onResume() {
         super.onResume()
         onResumeView(vm)

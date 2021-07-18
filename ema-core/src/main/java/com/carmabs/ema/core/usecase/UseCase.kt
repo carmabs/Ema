@@ -1,9 +1,5 @@
 package com.carmabs.ema.core.usecase
 
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
-
 /**
  * Base class to handle every use case.
  *
@@ -20,33 +16,16 @@ import kotlinx.coroutines.withContext
 interface UseCase<I, O> {
 
     /**
-     * Executes a function inside a background thread provided by dispatcher
+     * Executes a function inside a background thread by async way
      * @return the object with the return value
      */
-    suspend fun execute(input: I): O {
-        return withContext(dispatcher) { useCaseFunction(input) }
-    }
+    suspend fun execute(input: I): O
 
     /**
-     * Executes a function inside a background thread provided by dispatcher blocking the thread until
+     * Executes a function inside blocking the thread until
      * the result is delivered
      * @return the object with the return value
      */
-    fun executeSync(input: I): O {
-        return runBlocking {
-                useCaseFunction(input)
-        }
-    }
+    fun executeSync(input: I): O
 
-
-    /**
-     * Function to implement by child classes to execute the code associated to data retrieving.
-     * It will be executed on background thread
-     */
-    suspend fun useCaseFunction(input: I): O
-
-    /**
-     * Dispatcher used for useCase execution
-     */
-    val dispatcher: CoroutineDispatcher
 }

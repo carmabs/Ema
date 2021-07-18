@@ -18,7 +18,7 @@ import kotlinx.coroutines.withContext
  * @param O Output.Must be the model object that the use case must return
  */
 
-abstract class EmaUseCase<I, O>:UseCase<I,O> {
+abstract class EmaUseCase<I, O> : UseCase<I, O> {
 
     /**
      * Executes a function inside a background thread provided by dispatcher
@@ -42,9 +42,16 @@ abstract class EmaUseCase<I, O>:UseCase<I,O> {
     }
 
     /**
+     * Function to implement by child classes to execute the code associated to data retrieving.
+     * It will be executed on background thread
+     */
+    protected abstract suspend fun useCaseFunction(input: I): O
+
+
+    /**
      * Dispatcher used for useCase execution
      */
-    override val dispatcher: CoroutineDispatcher = Dispatchers.IO
+    open val dispatcher: CoroutineDispatcher = Dispatchers.IO
 
 
 }
