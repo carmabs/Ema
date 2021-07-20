@@ -31,7 +31,10 @@ abstract class EmaAndroidDialogProvider constructor(private val fragmentManager:
             }
             dialog?.let { dialog ->
                 updateDialogData(dialog, dialogData)
-                if (!dialog.isVisible) {
+                //Because fragment manager works asynchronously,
+                // check it to avoid that fragment has been added exception
+                fragmentManager.executePendingTransactions()
+                if (!dialog.isVisible && !dialog.isAdded) {
                     dialog.show(fragmentManager, getTag())
                 }
 
