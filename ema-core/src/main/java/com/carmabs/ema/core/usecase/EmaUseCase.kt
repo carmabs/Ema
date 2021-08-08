@@ -33,11 +33,22 @@ abstract class EmaUseCase<I, O> : UseCase<I, O> {
      * the result is delivered
      * @return the object with the return value
      */
-    override fun executeSync(input: I): O {
+    override fun executeSyncInDispatcher(input: I): O {
         return runBlocking {
             withContext(dispatcher) {
                 useCaseFunction(input)
             }
+        }
+    }
+
+    /**
+     * Executes a function inside the current thread by dispatcher blocking the thread until
+     * the result is delivered
+     * @return the object with the return value
+     */
+    override fun executeSyncInCurrentThread(input: I): O {
+        return runBlocking {
+           useCaseFunction(input)
         }
     }
 
