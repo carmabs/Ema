@@ -1,11 +1,13 @@
 package com.carmabs.ema.android.ui
 
+
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import androidx.recyclerview.widget.RecyclerView
 import java.lang.RuntimeException
+import java.util.*
 
 /**
  * Adapter to implement the list view interface in recycler views
@@ -75,7 +77,7 @@ abstract class EmaRecyclerAdapter<I> : RecyclerView.Adapter<EmaViewHolder<I>>() 
      * Update the adapter with a new list
      * @param listUpdate to set in the adapter
      */
-    fun updateList(listUpdate: List<I>) {
+    open fun updateList(listUpdate: List<I>) {
         listItems.apply {
             clear()
             addAll(listUpdate)
@@ -87,7 +89,7 @@ abstract class EmaRecyclerAdapter<I> : RecyclerView.Adapter<EmaViewHolder<I>>() 
      * Update the item of the list if exists. It must have the same memory reference
      * @param item to update
      */
-    fun updateItem(item: I) {
+    open fun updateItem(item: I) {
         val index = listItems.indexOf(item)
         if (index > -1) {
             listItems[index] = item
@@ -99,7 +101,7 @@ abstract class EmaRecyclerAdapter<I> : RecyclerView.Adapter<EmaViewHolder<I>>() 
      * Add listener when item is clicked
      * @param listener for click on view item
      */
-    fun setOnItemClickListener(itemClickListener: ((item: I) -> Unit)?) {
+    open fun setOnItemClickListener(itemClickListener: ((item: I) -> Unit)?) {
         this.itemClickListener = itemClickListener
     }
 
@@ -107,7 +109,7 @@ abstract class EmaRecyclerAdapter<I> : RecyclerView.Adapter<EmaViewHolder<I>>() 
      * Add item to the list
      * @param item to add
      */
-    fun addItem(item: I, position: Int = listItems.size) {
+    open fun addItem(item: I, position: Int = listItems.size) {
         listItems.add(position, item)
     }
 
