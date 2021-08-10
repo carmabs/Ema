@@ -10,8 +10,8 @@ import android.os.ResultReceiver
 import androidx.core.app.JobIntentService
 import com.carmabs.ema.android.di.Injector
 import kotlinx.coroutines.runBlocking
-import org.kodein.di.Kodein
-import org.kodein.di.android.closestKodein
+import org.kodein.di.DI
+import org.kodein.di.android.closestDI
 
 
 /**
@@ -31,9 +31,9 @@ import org.kodein.di.android.closestKodein
  **/
 abstract class EmaJobService : JobIntentService(), Injector {
 
-    override val parentKodein: Kodein by closestKodein()
+    override val parentKodein: DI by closestDI()
 
-    override val kodein: Kodein
+    override val di: DI
         get() = injectKodein()
 
     companion object {

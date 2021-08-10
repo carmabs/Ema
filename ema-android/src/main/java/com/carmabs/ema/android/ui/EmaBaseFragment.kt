@@ -6,8 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.carmabs.ema.android.di.Injector
-import org.kodein.di.Kodein
-import org.kodein.di.android.x.closestKodein
+import org.kodein.di.DI
+import org.kodein.di.android.x.closestDI
 
 
 /**
@@ -19,11 +19,13 @@ import org.kodein.di.android.x.closestKodein
  */
 abstract class EmaBaseFragment : Fragment(), Injector {
 
-    final override val parentKodein: Kodein by closestKodein()
+    final override val parentKodein: DI by closestDI()
 
-    final override val kodein: Kodein = injectKodein()
+    final override val di: DI by lazy {
+        injectKodein()
+    }
 
-    final override fun injectModule(kodeinBuilder: Kodein.MainBuilder): Kodein.Module? =
+    final override fun injectModule(kodeinBuilder: DI.MainBuilder): DI.Module? =
         injectFragmentModule(kodeinBuilder)
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -49,7 +51,7 @@ abstract class EmaBaseFragment : Fragment(), Injector {
      * @param kodein The kodein object which provide the injection
      * @return The Kodein module which makes the injection
      */
-    abstract fun injectFragmentModule(kodein:Kodein.MainBuilder):Kodein.Module?
+    abstract fun injectFragmentModule(kodein:DI.MainBuilder):DI.Module?
 
 
 

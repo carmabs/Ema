@@ -6,7 +6,7 @@ import com.carmabs.ema.core.state.EmaBaseState
 import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.core.viewmodel.EmaViewModel
 import com.carmabs.ema.presentation.injection.fragmentInjection
-import org.kodein.di.Kodein
+import org.kodein.di.DI
 
 /**
  *  *<p>
@@ -20,7 +20,7 @@ abstract class BaseFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : Ema
 
     override val fragmentViewModelScope: Boolean = true
 
-    override fun injectFragmentModule(kodein: Kodein.MainBuilder): Kodein.Module?  = fragmentInjection(this)
+    override fun injectFragmentModule(kodein: DI.MainBuilder): DI.Module?  = fragmentInjection(this)
 
     override fun onStateNormal(data: S) {
         onNormal(data)

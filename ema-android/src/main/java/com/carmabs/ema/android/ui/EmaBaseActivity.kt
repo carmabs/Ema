@@ -6,8 +6,8 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavHost
 import com.carmabs.ema.android.di.Injector
-import org.kodein.di.Kodein
-import org.kodein.di.android.closestKodein
+import org.kodein.di.DI
+import org.kodein.di.android.closestDI
 
 /**
  *
@@ -18,11 +18,13 @@ import org.kodein.di.android.closestKodein
  */
 abstract class EmaBaseActivity : AppCompatActivity(), NavHost, Injector {
 
-    final override val parentKodein by closestKodein()
+    final override val parentKodein by closestDI()
 
-    override val kodein: Kodein = injectKodein()
+    override val di: DI by lazy {
+        injectKodein()
+    }
 
-    final override fun injectModule(kodeinBuilder: Kodein.MainBuilder): Kodein.Module? =
+    final override fun injectModule(kodeinBuilder: DI.MainBuilder): DI.Module? =
         injectActivityModule(kodeinBuilder)
 
     /**
@@ -53,5 +55,5 @@ abstract class EmaBaseActivity : AppCompatActivity(), NavHost, Injector {
      * @param kodein The kodein object which provide the injection
      * @return The Kodein module which makes the injection
      */
-    abstract fun injectActivityModule(kodein: Kodein.MainBuilder): Kodein.Module?
+    abstract fun injectActivityModule(kodein: DI.MainBuilder): DI.Module?
 }

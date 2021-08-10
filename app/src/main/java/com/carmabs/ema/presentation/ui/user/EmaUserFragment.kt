@@ -16,7 +16,7 @@ import com.carmabs.ema.presentation.base.BaseFragment
 import com.carmabs.ema.presentation.ui.home.EmaAndroidHomeToolbarViewModel
 import kotlinx.android.synthetic.main.fragment_user.*
 import kotlinx.android.synthetic.main.layout_ema_header.*
-import org.kodein.di.generic.instance
+import org.kodein.di.instance
 
 
 /**

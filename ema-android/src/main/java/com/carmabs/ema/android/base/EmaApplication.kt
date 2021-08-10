@@ -3,7 +3,7 @@ package com.carmabs.ema.android.base
 import android.app.Application
 import com.carmabs.ema.android.di.Injector
 import com.carmabs.ema.android.di.emaInjectionModule
-import org.kodein.di.Kodein
+import org.kodein.di.DI
 import org.kodein.di.android.x.androidXModule
 
 /**
@@ -15,13 +15,13 @@ import org.kodein.di.android.x.androidXModule
  */
 abstract class EmaApplication : Application(), Injector {
 
-    override val parentKodein: Kodein= Kodein {
+    override val parentKodein: DI= DI {
         androidXModule(this@EmaApplication)
     }
 
-    override val kodein: Kodein = injectKodein()
+    override val di: DI = injectKodein()
 
-    final override fun injectModule(kodeinBuilder: Kodein.MainBuilder): Kodein.Module? {
+    final override fun injectModule(kodeinBuilder: DI.MainBuilder): DI.Module? {
         kodeinBuilder.import(emaInjectionModule())
         return injectAppModule(kodeinBuilder)
     }
@@ -32,5 +32,5 @@ abstract class EmaApplication : Application(), Injector {
      * @param kodein The kodein object which provide the injection
      * @return The Kodein module which makes the injection
      */
-    abstract fun injectAppModule(kodeinBuilder:Kodein.MainBuilder):Kodein.Module?
+    abstract fun injectAppModule(kodeinBuilder:DI.MainBuilder):DI.Module?
 }
