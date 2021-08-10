@@ -1,7 +1,7 @@
 package com.carmabs.ema.android.di
 
-import org.kodein.di.Kodein
-import org.kodein.di.KodeinAware
+import org.kodein.di.DI
+import org.kodein.di.DIAware
 
 /**
  * Created by Carlos Mateo Benito on 2020-03-09.
@@ -12,15 +12,15 @@ import org.kodein.di.KodeinAware
  *
  * @author <a href=“mailto:cmateo.benito@atsistemas.com”>Carlos Mateo Benito</a>
  */
-interface Injector  : KodeinAware {
+interface Injector  : DIAware {
 
-    val parentKodein: Kodein
+    val parentKodein: DI
 
-    override val kodein: Kodein
+    override val di: DI
 
-    fun injectModule(kodeinBuilder: Kodein.MainBuilder):Kodein.Module?
+    fun injectModule(kodeinBuilder: DI.MainBuilder):DI.Module?
 
-    fun injectKodein() =  Kodein.lazy {
+    fun injectKodein() =  DI.lazy {
             extend(parentKodein)
             injectModule(this)?.let {
                 import(it)

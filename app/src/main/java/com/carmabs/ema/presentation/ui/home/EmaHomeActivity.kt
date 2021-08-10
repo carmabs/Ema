@@ -8,7 +8,7 @@ import com.carmabs.ema.core.extension.DATE_FORMAT_HHMM
 import com.carmabs.ema.core.extension.toDateFormat
 import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.presentation.base.BaseActivity
-import org.kodein.di.generic.instance
+import org.kodein.di.instance
 
 /**
  *  *<p>
