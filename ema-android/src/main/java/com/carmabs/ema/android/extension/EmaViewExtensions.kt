@@ -29,7 +29,7 @@ import com.carmabs.ema.core.constants.FLOAT_ZERO
 /**
  * Listener to make view tasks after it has been measured
  */
-inline fun View.afterMeasured(crossinline f: View.() -> Unit) {
+inline fun <T : View> T.afterMeasured(crossinline f: T.() -> Unit) {
     viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
         override fun onGlobalLayout() {
             if (measuredWidth > 0 && measuredHeight > 0) {
