@@ -25,7 +25,7 @@ import com.carmabs.ema.presentation.dialog.simple.SimpleDialogProvider
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.layout_password.*
 import kotlinx.android.synthetic.main.layout_user.*
-import org.kodein.di.generic.instance
+import org.kodein.di.instance
 
 /**
  *  *<p>

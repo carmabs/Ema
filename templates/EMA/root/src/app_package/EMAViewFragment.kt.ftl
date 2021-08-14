@@ -4,12 +4,12 @@ import com.carmabs.ema.android.ui.EmaFragment
 import com.carmabs.ema.android.navigation.EmaNavigator
 import com.carmabs.ema.core.state.EmaExtraData
 
-import org.kodein.di.Kodein
-import org.kodein.di.generic.instance
+import org.kodein.di.DI
+import org.kodein.di.instance
 
 class ${functionalityName}Fragment : EmaFragment<${functionalityName}State, ${functionalityName}ViewModel, <#if navigator?has_content>${navigator}<#else>${functionalityName}Navigator</#if>.Navigation>() {
 
-    override fun injectFragmentModule(kodein: Kodein.MainBuilder): Kodein.Module? = null
+    override fun injectFragmentModule(kodein: DI.MainBuilder): DI.Module? = null
 
     override val fragmentViewModelScope: Boolean = true
 

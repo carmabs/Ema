@@ -49,7 +49,6 @@ dependencies {
     api emaAndroid.lifecycle
 
     //Kodein
-    api emaAndroid.kodein
     api emaAndroid.kodeinAndroid
 
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.3.0"

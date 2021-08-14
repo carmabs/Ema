@@ -17,11 +17,11 @@ import com.carmabs.ema.presentation.ui.home.EmaAndroidHomeViewModel
 import com.carmabs.ema.presentation.ui.home.EmaHomeViewModel
 import com.carmabs.ema.presentation.ui.user.EmaAndroidUserViewModel
 import com.carmabs.ema.presentation.ui.user.EmaUserViewModel
-import org.kodein.di.Kodein
-import org.kodein.di.generic.bind
-import org.kodein.di.generic.instance
-import org.kodein.di.generic.provider
-import org.kodein.di.generic.singleton
+import org.kodein.di.DI
+import org.kodein.di.bind
+import org.kodein.di.instance
+import org.kodein.di.provider
+import org.kodein.di.singleton
 
 /**
  *  *<p>
@@ -33,7 +33,7 @@ import org.kodein.di.generic.singleton
  * Created by: Carlos Mateo Benito on 20/1/19.
  */
 
-fun fragmentInjection(fragment: Fragment) = Kodein.Module(name = "FragmentModule") {
+fun fragmentInjection(fragment: Fragment) = DI.Module(name = "FragmentModule") {
 
     bind<Fragment>() with singleton { fragment }
 

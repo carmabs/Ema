@@ -11,7 +11,7 @@ import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.presentation.base.BaseFragment
 import com.carmabs.ema.presentation.ui.backdata.EmaBackNavigator
 import kotlinx.android.synthetic.main.fragment_back.*
-import org.kodein.di.generic.instance
+import org.kodein.di.instance
 
 /**
  *<p>

@@ -3,7 +3,7 @@ package com.carmabs.ema.presentation
 import com.carmabs.ema.android.base.EmaApplication
 import com.carmabs.ema.presentation.injection.appInjection
 import com.carmabs.injection.appDataInjection
-import org.kodein.di.Kodein
+import org.kodein.di.DI
 
 /**
  *  *<p>
@@ -15,7 +15,7 @@ import org.kodein.di.Kodein
  * Created by: Carlos Mateo Benito on 21/1/19.
  */
 class EmaSampleApplication : EmaApplication() {
-    override fun injectAppModule(kodein: Kodein.MainBuilder): Kodein.Module? {
+    override fun injectAppModule(kodein: DI.MainBuilder): DI.Module? {
         kodein.import(appDataInjection())
         return appInjection(this)
     }

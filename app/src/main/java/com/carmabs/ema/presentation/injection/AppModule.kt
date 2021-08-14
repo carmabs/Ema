@@ -1,9 +1,9 @@
 package com.carmabs.ema.presentation.injection
 
 import android.app.Application
-import org.kodein.di.Kodein
-import org.kodein.di.generic.bind
-import org.kodein.di.generic.singleton
+import org.kodein.di.DI
+import org.kodein.di.bind
+import org.kodein.di.singleton
 
 /**
  *  *<p>
@@ -15,7 +15,7 @@ import org.kodein.di.generic.singleton
  * Created by: Carlos Mateo Benito on 20/1/19.
  */
 
-fun appInjection(application: Application) = Kodein.Module(name = "AppModule") {
+fun appInjection(application: Application) = DI.Module(name = "AppModule") {
 
     bind<Application>() with singleton { application }
 

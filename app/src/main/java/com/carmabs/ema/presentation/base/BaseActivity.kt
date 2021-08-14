@@ -5,7 +5,7 @@ import com.carmabs.ema.core.navigator.EmaNavigationState
 import com.carmabs.ema.core.state.EmaBaseState
 import com.carmabs.ema.core.viewmodel.EmaViewModel
 import com.carmabs.ema.presentation.injection.activityInjection
-import org.kodein.di.Kodein
+import org.kodein.di.DI
 
 /**
  * Base Activity. OverrideTheme -> True, the theme is overriden by AppTheme
@@ -17,7 +17,7 @@ import org.kodein.di.Kodein
 
 abstract class BaseActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigationState> : EmaActivity<S,VM,NS>() {
 
-    override fun injectActivityModule(kodein: Kodein.MainBuilder): Kodein.Module? = activityInjection(this)
+    override fun injectActivityModule(kodein: DI.MainBuilder): DI.Module? = activityInjection(this)
 
     //True if you want to set the Application theme to activity, otherwise it will take EmaTheme.
     //False by default -> EmaTheme

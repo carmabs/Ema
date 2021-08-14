@@ -8,8 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import com.carmabs.ema.android.di.Injector
-import org.kodein.di.Kodein
-import org.kodein.di.android.closestKodein
+import org.kodein.di.DI
+import org.kodein.di.android.closestDI
 
 
 /**
@@ -20,9 +20,9 @@ import org.kodein.di.android.closestKodein
  */
 abstract class EmaBaseLayout<T:Any> : FrameLayout, Injector {
 
-    final override val parentKodein: Kodein by closestKodein()
+    final override val parentKodein: DI by closestDI()
 
-    final override val kodein: Kodein by lazy {
+    final override val di: DI by lazy {
         injectKodein()
     }
 
