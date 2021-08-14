@@ -12,8 +12,8 @@ import com.carmabs.ema.android.ui.EmaActivity
 import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
 import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.presentation.injection.activityInjection
-import org.kodein.di.Kodein
-import org.kodein.di.generic.instance
+import org.kodein.di.DI
+import org.kodein.di.instance
 import kotlin.math.roundToInt
 
 
@@ -35,7 +35,7 @@ class EmaErrorToolbarViewActivity : EmaActivity<EmaErrorToolbarState, EmaErrorTo
 
     override val navigator: EmaErrorNavigator by instance()
 
-    override fun injectActivityModule(kodein: Kodein.MainBuilder): Kodein.Module? = activityInjection(this)
+    override fun injectActivityModule(kodein: DI.MainBuilder): DI.Module? = activityInjection(this)
 
     override fun onCreateActivity(savedInstanceState: Bundle?) {
         super.onCreateActivity(savedInstanceState)

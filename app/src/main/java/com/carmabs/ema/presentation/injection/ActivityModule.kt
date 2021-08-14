@@ -10,10 +10,10 @@ import com.carmabs.ema.presentation.ui.error.*
 import com.carmabs.ema.presentation.ui.home.EmaAndroidHomeToolbarViewModel
 import com.carmabs.ema.presentation.ui.home.EmaHomeNavigator
 import com.carmabs.ema.presentation.ui.home.EmaHomeToolbarViewModel
-import org.kodein.di.Kodein
-import org.kodein.di.generic.bind
-import org.kodein.di.generic.instance
-import org.kodein.di.generic.singleton
+import org.kodein.di.DI
+import org.kodein.di.bind
+import org.kodein.di.instance
+import org.kodein.di.singleton
 
 /**
  *  *<p>
@@ -25,7 +25,7 @@ import org.kodein.di.generic.singleton
  * Created by: Carlos Mateo Benito on 20/1/19.
  */
 
-fun activityInjection(activity: Activity) = Kodein.Module(name = "ActivityModule") {
+fun activityInjection(activity: Activity) = DI.Module(name = "ActivityModule") {
 
     bind<Activity>() with singleton { activity }
 

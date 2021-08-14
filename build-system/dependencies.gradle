@@ -2,11 +2,11 @@ rootProject.ext {
 
     //Libraries
 
-    navigationVersion = "2.3.4"
+    navigationVersion = "2.3.5"
 
     lifecycleVersion = "2.1.0"
 
-    kodeinVersion = "6.5.1"
+    kodeinVersion = "7.5.1"
 
     constraintVersion = "1.1.3"
 
@@ -56,7 +56,7 @@ rootProject.ext {
     ]
 
     injectionDependencies = [
-            kodein       : "org.kodein.di:kodein-di-generic-jvm:" + project.kodeinVersion,
+            kodein       : "org.kodein.di:kodein-di-jvm:" + project.kodeinVersion,
             kodeinAndroid: "org.kodein.di:kodein-di-framework-android-x:" + project.kodeinVersion,
     ]
 
@@ -83,7 +83,6 @@ rootProject.ext {
             design              : "com.android.support:design:" + project.designVersion,
             material            : "com.google.android.material:material:" + project.materialVersion,
             lifecycle           : "androidx.lifecycle:lifecycle-extensions:" + project.lifecycleVersion,
-            kodein              : "org.kodein.di:kodein-di-generic-jvm:" + project.kodeinVersion,
             kodeinAndroid       : "org.kodein.di:kodein-di-framework-android-x:" + project.kodeinVersion,
             lifecycleKtExtension: "androidx.lifecycle:lifecycle-runtime-ktx:" + project.lifecycleKtExtensionVersion
     ]

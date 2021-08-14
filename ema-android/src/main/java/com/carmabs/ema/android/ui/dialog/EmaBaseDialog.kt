@@ -11,23 +11,27 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 import com.carmabs.ema.core.dialog.EmaDialogData
 import com.carmabs.ema.core.dialog.EmaDialogListener
-import org.kodein.di.Kodein
-import org.kodein.di.KodeinAware
-import org.kodein.di.android.x.closestKodein
+import org.kodein.di.DI
+import org.kodein.di.DIAware
+import org.kodein.di.android.closestDI
+
 
 /**
  * Base dialog class to implement dialogs
  *
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
-abstract class EmaBaseDialog<T : EmaDialogData> : DialogFragment(), KodeinAware,
+abstract class EmaBaseDialog<T : EmaDialogData> : DialogFragment(), DIAware,
     DialogInterface.OnShowListener {
 
     companion object {
         private const val KEY_DIALOG_DATA = "KEY_DIALOG_DATA"
     }
 
-    override val kodein: Kodein by closestKodein()
+    override val di: DI by closestDI {
+        requireActivity()
+    }
+
 
     var dialogListener: EmaDialogListener? = null
 

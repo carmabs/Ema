@@ -6,7 +6,7 @@ import com.carmabs.ema.R
 import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
 import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.presentation.base.BaseActivity
-import org.kodein.di.generic.instance
+import org.kodein.di.instance
 
 /**
  *<p>
