@@ -47,8 +47,17 @@ fun Bitmap.toByteArray(): ByteArray {
     return stream.toByteArray()
 }
 
-fun ByteArray.toBitmap(): Bitmap {
-    return BitmapFactory.decodeByteArray(this, 0, size);
+fun ByteArray.toBitmap(width: Int?=null,height: Int?=null): Bitmap {
+    var options:BitmapFactory.Options?=null
+    if(width!=null && height!=null){
+        options = BitmapFactory.Options().apply {
+            outHeight = height
+            outWidth = width
+        }
+    }
+    return options?.let {
+        BitmapFactory.decodeByteArray(this, 0, size,it)
+    }?:let {  BitmapFactory.decodeByteArray(this, 0, size) }
 }
 
 fun Bitmap.resize(width:Int,height:Int): Bitmap {
