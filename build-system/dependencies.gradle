@@ -4,17 +4,19 @@ rootProject.ext {
 
     navigationVersion = "2.3.5"
 
-    lifecycleVersion = "2.1.0"
+    liveDataVersion = "2.3.1"
+
+    lifecycleExtensionsVersion = "2.2.0"
 
     kodeinVersion = "7.5.1"
 
-    constraintVersion = "1.1.3"
+    constraintVersion = "2.1.0"
 
     designVersion = "28.0.0"
 
     materialVersion = "1.0.0"
 
-    coroutinesVersion = "1.4.0"
+    coroutinesVersion = "1.5.0"
 
     coreVersion = "1.2.0"
 
@@ -28,9 +30,9 @@ rootProject.ext {
 
     espressoVersion = "3.2.0"
 
-    kotlinVersion = '1.4.31'
+    kotlinVersion = '1.5.21'
 
-    lifecycleKtExtensionVersion='2.3.0'
+    lifecycleKtExtensionVersion = '2.3.0'
 
     ema = [
             buildTools : "30.0.2",
@@ -82,7 +84,8 @@ rootProject.ext {
             constraint          : "androidx.constraintlayout:constraintlayout:" + project.constraintVersion,
             design              : "com.android.support:design:" + project.designVersion,
             material            : "com.google.android.material:material:" + project.materialVersion,
-            lifecycle           : "androidx.lifecycle:lifecycle-extensions:" + project.lifecycleVersion,
+            liveData            : "androidx.lifecycle:lifecycle-livedata-ktx:" + project.liveDataVersion,
+            lifecycle           : "androidx.lifecycle:lifecycle-extensions:" + project.lifecycleExtensionsVersion,
             kodeinAndroid       : "org.kodein.di:kodein-di-framework-android-x:" + project.kodeinVersion,
             lifecycleKtExtension: "androidx.lifecycle:lifecycle-runtime-ktx:" + project.lifecycleKtExtensionVersion
     ]
