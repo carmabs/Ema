@@ -1,7 +1,11 @@
 package com.carmabs.ema.android.extension
 
+import android.R.attr
 import android.graphics.*
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import java.io.ByteArrayOutputStream
+
 
 /**
  * Created by Carlos Mateo Benito on 2020-07-13.
@@ -47,20 +51,20 @@ fun Bitmap.toByteArray(): ByteArray {
     return stream.toByteArray()
 }
 
-fun ByteArray.toBitmap(width: Int?=null,height: Int?=null): Bitmap {
-    var options:BitmapFactory.Options?=null
-    if(width!=null && height!=null){
+fun ByteArray.toBitmap(width: Int? = null, height: Int? = null): Bitmap {
+    var options: BitmapFactory.Options? = null
+    if (width != null && height != null) {
         options = BitmapFactory.Options().apply {
             outHeight = height
             outWidth = width
         }
     }
     return options?.let {
-        BitmapFactory.decodeByteArray(this, 0, size,it)
-    }?:let {  BitmapFactory.decodeByteArray(this, 0, size) }
+        BitmapFactory.decodeByteArray(this, 0, size, it)
+    } ?: let { BitmapFactory.decodeByteArray(this, 0, size) }
 }
 
-fun Bitmap.resize(width:Int,height:Int): Bitmap {
+fun Bitmap.resize(width: Int, height: Int): Bitmap {
 
     val sourceWidth: Int = this.width
     val sourceHeight: Int = this.height
@@ -107,4 +111,32 @@ fun Bitmap.resize(width:Int,height:Int): Bitmap {
     canvas.drawBitmap(this, null, targetRect, null)
 
     return dest
+}
+
+fun Drawable.toBitmap(): Bitmap {
+    if (this is BitmapDrawable) {
+        val bitmapDrawable = this
+        if (bitmapDrawable.bitmap != null) {
+            return bitmapDrawable.bitmap
+        }
+    }
+
+    val bitmap = if (intrinsicWidth <= 0 || intrinsicHeight <= 0) {
+        Bitmap.createBitmap(
+            1,
+            1,
+            Bitmap.Config.ARGB_8888
+        ) // Single color bitmap will be created of 1x1 pixel
+    } else {
+        Bitmap.createBitmap(
+            intrinsicWidth,
+            intrinsicHeight,
+            Bitmap.Config.ARGB_8888
+        )
+    }
+
+    val canvas = Canvas(bitmap)
+    setBounds(0, 0, canvas.width, canvas.height)
+    draw(canvas)
+    return bitmap
 }
