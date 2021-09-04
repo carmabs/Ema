@@ -86,14 +86,13 @@ fun @receiver:androidx.annotation.DrawableRes Int.getByteArray(context: Context)
     return stream.toByteArray()
 }
 
-fun getBitmapFromResource(
+fun @receiver:androidx.annotation.DrawableRes Int.getBitmapFromResource(
     context: Context,
-    drawableId: Int,
     width: Int? = null,
     height: Int? = null,
     colorHex: String? = null
 ): Bitmap {
-    return ContextCompat.getDrawable(context, drawableId)?.let {
+    return ContextCompat.getDrawable(context, this)?.let {
         val drawable: Drawable = it
         val bitmap: Bitmap = Bitmap.createBitmap(
             width ?: drawable.intrinsicWidth,
@@ -123,14 +122,13 @@ fun getBitmapFromResource(
     } ?: throw Exception("Drawable not found")
 }
 
-fun getBitmapCropFromResource(
+fun @receiver:androidx.annotation.DrawableRes Int.getBitmapCropFromResource(
     context: Context,
-    drawableId: Int,
     width: Int? = null,
     height: Int? = null
 ): Bitmap {
 
-    val bitmap: Bitmap = BitmapFactory.decodeResource(context.resources, drawableId)
+    val bitmap: Bitmap = BitmapFactory.decodeResource(context.resources, this)
 
     val w = width ?: bitmap.width
     val h = height ?: bitmap.height
