@@ -2,6 +2,7 @@ apply plugin: 'kotlin'
 group = 'com.github.carmabs'
 
 sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
 
 compileKotlin {
     kotlinOptions.jvmTarget = JavaVersion.VERSION_1_8.toString()

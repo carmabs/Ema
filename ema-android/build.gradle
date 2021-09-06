@@ -58,5 +58,5 @@ dependencies {
     api emaAndroid.design
     api emaAndroid.material
 
-    api project(path: ':ema-core')
+    implementation project(path: ':ema-core')
 }
