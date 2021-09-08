@@ -5,6 +5,10 @@ import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.util.TypedValue
+import androidx.annotation.ColorRes
+import androidx.annotation.DimenRes
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import com.carmabs.ema.core.constants.FLOAT_ONE
@@ -29,7 +33,7 @@ import java.io.ByteArrayOutputStream
  *
  * Example: Hello world %d -> data = 1 -> Hello wworld 1
  */
-fun Int.getFormattedString(context: Context, vararg data: Any?): String {
+fun @receiver:StringRes Int.getFormattedString(context: Context, vararg data: Any?): String {
     return String.format(context.getString(this), *data)
 }
 
@@ -38,11 +42,11 @@ fun Int.getFormattedString(context: Context, vararg data: Any?): String {
  * @param context Application context
  */
 
-fun Int.getColor(context: Context): Int {
+fun @receiver:ColorRes Int.getColor(context: Context): Int {
     return ContextCompat.getColor(context, this)
 }
 
-fun Int.getAttributeDimenValue(context: Context): Int {
+fun @receiver:DimenRes Int.getAttributeDimenValue(context: Context): Int {
     val tv = TypedValue()
     return if (context.theme.resolveAttribute(this, tv, true)) {
         TypedValue.complexToDimensionPixelSize(tv.data, context.resources.displayMetrics)
@@ -52,11 +56,11 @@ fun Int.getAttributeDimenValue(context: Context): Int {
 
 }
 
-fun @receiver:androidx.annotation.DrawableRes Int.getDrawable(context: Context): Drawable {
+fun @receiver:DrawableRes Int.getDrawable(context: Context): Drawable {
     return ContextCompat.getDrawable(context, this)!!
 }
 
-fun @receiver:androidx.annotation.DrawableRes Int.getBitmap(
+fun @receiver:DrawableRes Int.getBitmap(
     context: Context,
     width: Int? = null,
     height: Int? = null
@@ -78,7 +82,7 @@ fun @receiver:androidx.annotation.DrawableRes Int.getBitmap(
     }
 }
 
-fun @receiver:androidx.annotation.DrawableRes Int.getByteArray(context: Context): ByteArray {
+fun @receiver:DrawableRes Int.getByteArray(context: Context): ByteArray {
     val drawable = getDrawable(context)
     val bitmap = (drawable as BitmapDrawable).bitmap
     val stream = ByteArrayOutputStream()
@@ -86,7 +90,7 @@ fun @receiver:androidx.annotation.DrawableRes Int.getByteArray(context: Context)
     return stream.toByteArray()
 }
 
-fun @receiver:androidx.annotation.DrawableRes Int.getBitmapFromResource(
+fun @receiver:DrawableRes Int.getBitmapFromResource(
     context: Context,
     width: Int? = null,
     height: Int? = null,
@@ -122,7 +126,7 @@ fun @receiver:androidx.annotation.DrawableRes Int.getBitmapFromResource(
     } ?: throw Exception("Drawable not found")
 }
 
-fun @receiver:androidx.annotation.DrawableRes Int.getBitmapCropFromResource(
+fun @receiver:DrawableRes Int.getBitmapCropFromResource(
     context: Context,
     width: Int? = null,
     height: Int? = null
