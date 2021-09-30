@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import com.carmabs.ema.android.delegates.emaStateDelegate
 import com.carmabs.ema.android.di.Injector
 import org.kodein.di.DI
 import org.kodein.di.android.closestDI
@@ -18,7 +19,7 @@ import org.kodein.di.android.closestDI
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
-abstract class EmaBaseLayout<T:Any> : FrameLayout, Injector {
+abstract class EmaBaseLayout<T : Any> : FrameLayout, Injector {
 
     final override val parentKodein: DI by closestDI()
 
@@ -32,12 +33,13 @@ abstract class EmaBaseLayout<T:Any> : FrameLayout, Injector {
     var viewsSetup = false
         private set
 
-    private lateinit var data: T
+    var data: T by emaStateDelegate {
+        createInitialState()
+    }
 
     protected abstract fun createInitialState(): T
 
-    fun updateData(updateAction: T.() -> T):T {
-        checkDataInitialization()
+    fun updateData(updateAction: T.() -> T): T {
         data = data.let(updateAction)
         mainLayout?.also {
             setup(data)
@@ -45,16 +47,6 @@ abstract class EmaBaseLayout<T:Any> : FrameLayout, Injector {
         return data
     }
 
-    fun getData():T{
-        checkDataInitialization()
-        return data
-    }
-
-    private fun checkDataInitialization(){
-        if(!this::data.isInitialized){
-            data = createInitialState()
-        }
-    }
     constructor(context: Context) : super(context) {
         onCreateView(context)
     }
@@ -84,7 +76,6 @@ abstract class EmaBaseLayout<T:Any> : FrameLayout, Injector {
      */
     final override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        checkDataInitialization()
         onViewCreated()
         mainLayout?.let {
             it.setup(data)
@@ -95,7 +86,7 @@ abstract class EmaBaseLayout<T:Any> : FrameLayout, Injector {
     /**
      * Called once the view has been created
      */
-    protected open fun onViewCreated(){
+    protected open fun onViewCreated() {
         //IMPLEMENT BY CHILD CLASSES IF IT IS NECESSARY
     }
 
@@ -114,7 +105,7 @@ abstract class EmaBaseLayout<T:Any> : FrameLayout, Injector {
      * Method called once the layout has been inflated implementing the methods [EmaBaseLayout.getLayout]
      * @param mainLayout is the layout inflated instance
      */
-     abstract fun View.setup(data: T)
+    abstract fun View.setup(data: T)
 
 
     /**
