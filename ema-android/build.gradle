@@ -55,8 +55,7 @@ dependencies {
     implementation emaAndroid.lifecycleKtExtension
     //UI
     api emaAndroid.constraint
-    api emaAndroid.design
     api emaAndroid.material
 
-    implementation project(path: ':ema-core')
+    api project(path: ':ema-core')
 }

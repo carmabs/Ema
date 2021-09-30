@@ -14,7 +14,7 @@ rootProject.ext {
 
     designVersion = "28.0.0"
 
-    materialVersion = "1.0.0"
+    materialVersion = "1.4.0"
 
     coroutinesVersion = "1.5.0"
 
@@ -35,10 +35,10 @@ rootProject.ext {
     lifecycleKtExtensionVersion = '2.3.0'
 
     ema = [
-            buildTools : "30.0.2",
+            buildTools : "31.0.0",
             minSdk     : 21,
-            compileSdk : 30,
-            targetSdk  : 30,
+            compileSdk : 31,
+            targetSdk  : 31,
             versionCode: 7,
             versionName: "3.0.0"
     ]
@@ -82,7 +82,6 @@ rootProject.ext {
             navigationFragment  : "androidx.navigation:navigation-fragment-ktx:" + project.navigationVersion,
             navigationUI        : "androidx.navigation:navigation-ui-ktx:" + project.navigationVersion,
             constraint          : "androidx.constraintlayout:constraintlayout:" + project.constraintVersion,
-            design              : "com.android.support:design:" + project.designVersion,
             material            : "com.google.android.material:material:" + project.materialVersion,
             liveData            : "androidx.lifecycle:lifecycle-livedata-ktx:" + project.liveDataVersion,
             lifecycle           : "androidx.lifecycle:lifecycle-extensions:" + project.lifecycleExtensionsVersion,
