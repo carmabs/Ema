@@ -4,7 +4,6 @@ package com.carmabs.ema.android.ui
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.LayoutRes
 import androidx.recyclerview.widget.RecyclerView
 import java.lang.RuntimeException
 import java.util.*
@@ -116,9 +115,14 @@ abstract class EmaRecyclerAdapter<I> : RecyclerView.Adapter<EmaViewHolder<I>>() 
     protected open inner class EmaAdapterViewHolder(view: View, private val viewType: Int) : EmaViewHolder<I>(view) {
         override fun bind(item: I,position: Int,size:Int) {
             itemView.bind(item, viewType,position,size)
-            itemClickListener?.also { listener ->
-                itemView.setOnClickListener { listener.invoke(item) }
-            } ?: itemView.setOnClickListener(null)
+            itemView.setOnClickListener {
+                onItemClicked(item,position,size)
+                itemClickListener?.invoke(item)
+            }
         }
+    }
+
+    protected open fun onItemClicked(item: I,position:Int,size:Int) {
+        //Override to add internal logic when item is clicked
     }
 }
