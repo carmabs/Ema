@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
+import com.carmabs.ema.android.delegates.emaStateDelegate
 import com.carmabs.ema.core.dialog.EmaDialogData
 import com.carmabs.ema.core.dialog.EmaDialogListener
 import org.kodein.di.DI
@@ -35,7 +36,9 @@ abstract class EmaBaseDialog<T : EmaDialogData> : DialogFragment(), DIAware,
 
     var dialogListener: EmaDialogListener? = null
 
-    private lateinit var data: T
+    private var data: T by emaStateDelegate {
+        createInitialState()
+    }
 
     private var isDismissed: Boolean = false
 
@@ -74,14 +77,7 @@ abstract class EmaBaseDialog<T : EmaDialogData> : DialogFragment(), DIAware,
         return dialog
     }
 
-    private fun checkDataInitialization() {
-        if (!this::data.isInitialized) {
-            data = createInitialState()
-        }
-    }
-
     fun updateData(updateAction: T.() -> T): T {
-        checkDataInitialization()
         data = data.let(updateAction)
         contentView?.setup(data)
         return data
@@ -99,7 +95,6 @@ abstract class EmaBaseDialog<T : EmaDialogData> : DialogFragment(), DIAware,
         }
 
         contentView = view.apply {
-            checkDataInitialization()
             setup(data)
         }
 

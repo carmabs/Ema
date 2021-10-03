@@ -3,6 +3,8 @@ package com.carmabs.ema.core.extension
 import com.carmabs.ema.core.constants.LONG_ZERO
 import com.carmabs.ema.core.constants.STRING_EMPTY
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 import java.util.*
 
 /**
@@ -35,13 +37,18 @@ fun String.toTimeStamp(dateFormat: String): Long = try {
 }
 
 /**
+ * Convert a long timestamp to date format
+ */
+fun Long.toDate() = Date(this)
+
+/**
  * Convert a long timestamp to a string with provided format
  * @param dateFormat Format of the string
  * @param timeZone TimeZone to format the hour difference
  */
-fun Long.toDateFormat(dateFormat: String,timeZone: TimeZone?=null): String = try {
+fun Long.toDateFormat(dateFormat: String,timeZone: TimeZone = TimeZone.getDefault()): String = try {
     val formatter = SimpleDateFormat(dateFormat, Locale.getDefault())
-    timeZone?.also { formatter.timeZone = it }
+     formatter.timeZone = timeZone
     val date = Date(this)
     formatter.format(date) ?: STRING_EMPTY
 } catch (e: java.lang.Exception) {
