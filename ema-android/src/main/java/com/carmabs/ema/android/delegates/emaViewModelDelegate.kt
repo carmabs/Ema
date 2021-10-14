@@ -7,7 +7,6 @@ import com.carmabs.ema.android.ui.EmaAndroidView
 import com.carmabs.ema.android.ui.EmaFragment
 import com.carmabs.ema.core.navigator.EmaNavigationState
 import com.carmabs.ema.core.state.EmaBaseState
-import com.carmabs.ema.core.viewmodel.EmaResultHandler
 import com.carmabs.ema.core.viewmodel.EmaViewModel
 import kotlin.reflect.KProperty
 
@@ -26,21 +25,29 @@ class emaViewModelDelegate<S : EmaBaseState, NS : EmaNavigationState, VM : EmaVi
     private var vm: VM? = null
 
     operator fun getValue(thisRef: Any?, property: KProperty<*>): VM {
-        val emaView = (thisRef as? EmaAndroidView<S, VM, NS>) ?: throw IllegalAccessException(
-            "You must use this delegate " +
-                    "in an object that inherits from EmaView"
-        )
-        val activity: FragmentActivity = when (thisRef) {
-            is Fragment -> thisRef.requireActivity()
-            is FragmentActivity -> thisRef
-            is View -> thisRef.context as FragmentActivity
-            else -> throw IllegalAccessException("The view must be contained inside a FragmentActivity lifecycle")
-        }
 
-        val fragmentScope = (emaView as? EmaFragment)?.fragmentViewModelScope?:false
-        val fragment: Fragment? = if (fragmentScope) emaView as? Fragment else null
+        return vm ?: let {
+            val emaView = (thisRef as? EmaAndroidView<S, VM, NS>) ?: throw IllegalAccessException(
+                "You must use this delegate " +
+                        "in an object that inherits from EmaView"
+            )
 
-        return vm ?: let { emaView.initializeViewModel(activity,fragment).apply {
+            val fragmentScope = (emaView as? EmaFragment)?.fragmentViewModelScope ?: false
+
+            val newVm = if (fragmentScope) {
+                val fragment = emaView as Fragment
+                emaView.initializeViewModel(fragment)
+            } else {
+                val activity: FragmentActivity = when (emaView) {
+                    is Fragment -> emaView.requireActivity()
+                    is FragmentActivity -> emaView
+                    is View -> emaView.context as FragmentActivity
+                    else -> throw IllegalAccessException("The view must be contained inside a FragmentActivity lifecycle")
+                }
+                emaView.initializeViewModel(activity)
+            }
+
+            return newVm.apply {
                 vm = this
             }
         }
