@@ -77,7 +77,7 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
      * launches a fragment with arguments provided by Bundle
      */
     protected open val inputStateKey: String by lazy {
-        vm.initialViewState.javaClass.name
+        this::class.java.name
     }
 
     override val startTrigger: EmaViewModelTrigger? = null

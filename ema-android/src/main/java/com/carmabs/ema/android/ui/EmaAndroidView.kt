@@ -3,6 +3,7 @@ package com.carmabs.ema.android.ui
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.lifecycleScope
 import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
@@ -11,7 +12,6 @@ import com.carmabs.ema.core.navigator.EmaNavigationState
 import com.carmabs.ema.core.state.EmaBaseState
 import com.carmabs.ema.core.state.EmaState
 import com.carmabs.ema.core.view.EmaView
-import com.carmabs.ema.core.viewmodel.EmaResultHandler
 import com.carmabs.ema.core.viewmodel.EmaViewModel
 import kotlinx.coroutines.Job
 
@@ -31,17 +31,22 @@ interface EmaAndroidView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNav
 
     fun initializeViewModel(
         fragmentActivity: FragmentActivity,
-        fragment: Fragment? = null,
-        resultHandler: EmaResultHandler? = null
     ): VM {
         val emaFactory = EmaFactory(androidViewModelSeed)
-        val vm = (fragment?.let {
-            ViewModelProviders.of(it, emaFactory)[androidViewModelSeed::class.java]
-        } ?: ViewModelProviders.of(
+        val vm = ViewModelProvider(
             fragmentActivity,
             emaFactory
-        )[androidViewModelSeed::class.java])
+        )[androidViewModelSeed::class.java]
 
+
+        return vm.emaViewModel
+    }
+
+    fun initializeViewModel(
+        fragment: Fragment
+    ): VM {
+        val emaFactory = EmaFactory(androidViewModelSeed)
+        val vm = ViewModelProvider(fragment, emaFactory)[androidViewModelSeed::class.java]
         return vm.emaViewModel
     }
 
@@ -50,8 +55,7 @@ interface EmaAndroidView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNav
      */
     fun onStartAndBindData(
         lifeCycleOwner: LifecycleOwner,
-        viewModel: VM,
-        resultHandler: EmaResultHandler? = null
+        viewModel: VM
     ): MutableList<Job> {
         return onStartView(lifeCycleOwner.lifecycleScope, viewModel)
     }
