@@ -1,6 +1,7 @@
 package com.carmabs.ema.android.ui
 
 import android.content.Intent
+import androidx.annotation.CallSuper
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.lifecycleScope
@@ -106,9 +107,19 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
     /**
      * Notifies the view model that view has been gone to foreground.
      */
+    @CallSuper
     override fun onResume() {
         super.onResume()
         onResumeView(vm)
+    }
+
+    /**
+     * Notifies the view model that view has been gone to background.
+     */
+    @CallSuper
+    override fun onPause() {
+        onPauseView(vm)
+        super.onPause()
     }
 
     /**
@@ -177,7 +188,7 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
         super.onStop()
         removeExtraViewModels()
         runBlocking {
-            onStopBinding(viewJob)
+            onStopBinding(vm,viewJob)
         }
     }
 

@@ -5,8 +5,6 @@ import com.carmabs.ema.core.navigator.EmaNavigationState
 import com.carmabs.ema.core.state.EmaBaseState
 import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.core.state.EmaState
-import com.carmabs.ema.core.viewmodel.EmaReceiverModel
-import com.carmabs.ema.core.viewmodel.EmaResultModel
 import com.carmabs.ema.core.viewmodel.EmaViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -266,7 +264,12 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
         }
     }
 
-    suspend fun onStopView(viewJob: MutableList<Job>?) {
+
+    fun onPauseView(viewModel: VM){
+        viewModel.onPauseView()
+    }
+
+    suspend fun onStopView(viewJob: MutableList<Job>?, viewModel: VM) {
         viewJob?.forEach {
             try {
                 it.cancelAndJoin()
