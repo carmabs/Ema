@@ -127,9 +127,21 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> {
     }
 
     /**
+     * Called when view is hidden in background
+     */
+    internal fun onPauseView(){
+       onPause()
+    }
+
+    /**
      * Called always the view goes to the foreground
      */
     abstract fun onResume(firstTime: Boolean)
+
+    /**
+     * Called always the view goes to the background
+     */
+    protected open fun onPause(){}
 
     /**
      * Get observable state as LiveDaya to avoid state setting from the view

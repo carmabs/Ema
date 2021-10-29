@@ -116,6 +116,8 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
         }
     }
 
+
+
     /**
      * Notifies the view model that view has been gone to foreground.
      */
@@ -123,6 +125,15 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
     override fun onResume() {
         super.onResume()
         onResumeView(vm)
+    }
+
+    /**
+     * Notifies the view model that view has been gone to background.
+     */
+    @CallSuper
+    override fun onPause() {
+        onPauseView(vm)
+        super.onPause()
     }
 
     protected open fun provideToolbarTitle(): String? = null
@@ -184,7 +195,7 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
     override fun onStop() {
         removeExtraViewModels()
         runBlocking {
-            onStopBinding(viewJob)
+            onStopBinding(vm,viewJob)
         }
         super.onStop()
     }
