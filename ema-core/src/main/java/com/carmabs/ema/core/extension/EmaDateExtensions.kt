@@ -3,8 +3,10 @@ package com.carmabs.ema.core.extension
 import com.carmabs.ema.core.constants.LONG_ZERO
 import com.carmabs.ema.core.constants.STRING_EMPTY
 import java.text.SimpleDateFormat
-import java.time.LocalDateTime
-import java.time.ZoneOffset
+import java.time.Instant
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 /**
@@ -42,15 +44,25 @@ fun String.toTimeStamp(dateFormat: String): Long = try {
 fun Long.toDate() = Date(this)
 
 /**
+ * Converts a long timestamp to instant
+ */
+fun Long.toInstant(zoneId:ZoneId = ZoneId.systemDefault()): ZonedDateTime =
+    Instant.ofEpochMilli(this).atZone(zoneId)
+
+/**
+ * Get timestamp from ZonedDateTime
+ */
+fun ZonedDateTime.getEpochMilli(): Long = toInstant().toEpochMilli()
+
+
+/**
  * Convert a long timestamp to a string with provided format
  * @param dateFormat Format of the string
- * @param timeZone TimeZone to format the hour difference
+ * @param zoneId Zone to format the hour difference
  */
-fun Long.toDateFormat(dateFormat: String,timeZone: TimeZone = TimeZone.getDefault()): String = try {
-    val formatter = SimpleDateFormat(dateFormat, Locale.getDefault())
-     formatter.timeZone = timeZone
-    val date = Date(this)
-    formatter.format(date) ?: STRING_EMPTY
-} catch (e: java.lang.Exception) {
-    STRING_EMPTY
-}
+fun Long.toDateFormat(dateFormat: String, zoneId: ZoneId = ZoneId.systemDefault()): String = try {
+        val formatter = DateTimeFormatter.ofPattern(dateFormat, Locale.getDefault())
+        toInstant(zoneId).format(formatter)
+    } catch (e: java.lang.Exception) {
+        STRING_EMPTY
+    }
