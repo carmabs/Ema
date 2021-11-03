@@ -3,9 +3,7 @@ package com.carmabs.ema.core.extension
 import com.carmabs.ema.core.constants.LONG_ZERO
 import com.carmabs.ema.core.constants.STRING_EMPTY
 import java.text.SimpleDateFormat
-import java.time.Instant
-import java.time.ZoneId
-import java.time.ZonedDateTime
+import java.time.*
 import java.time.format.DateTimeFormatter
 import java.util.*
 
@@ -24,7 +22,7 @@ const val DATE_FORMAT_DDMMYYYY = "dd/MM/yyyy"
 const val DATE_FORMAT_YYYYMMDD = "yyyy/MM/dd"
 const val DATE_FORMAT_MMDDYYYY = "MM/dd/yyyy"
 const val DATE_FORMAT_ISO8601 = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"
-const val DATE_FORMAT_HHMM = "HH:mm"
+const val HOUR_FORMAT_HHMM = "HH:mm"
 
 /**
  * Convert a string with provided format to timestamp
@@ -37,11 +35,6 @@ fun String.toTimeStamp(dateFormat: String): Long = try {
 } catch (e: Exception) {
     LONG_ZERO
 }
-
-/**
- * Convert a long timestamp to date format
- */
-fun Long.toDate() = Date(this)
 
 /**
  * Converts a long timestamp to instant
@@ -66,3 +59,25 @@ fun Long.toDateFormat(dateFormat: String, zoneId: ZoneId = ZoneId.systemDefault(
     } catch (e: java.lang.Exception) {
         STRING_EMPTY
     }
+
+/**
+ * Convert a local date to a string with provided format
+ * @param dateFormat Format of the string
+ */
+fun LocalDate.toDateFormat(dateFormat: String): String = try {
+    val formatter = DateTimeFormatter.ofPattern(dateFormat, Locale.getDefault())
+    format(formatter)
+} catch (e: java.lang.Exception) {
+    STRING_EMPTY
+}
+
+/**
+ * Convert a local time to a string with provided format
+ * @param dateFormat Format of the string
+ */
+fun LocalTime.toHourFormat(hourFormat: String): String = try {
+    val formatter = DateTimeFormatter.ofPattern(hourFormat, Locale.getDefault())
+    format(formatter)
+} catch (e: java.lang.Exception) {
+    STRING_EMPTY
+}
