@@ -26,7 +26,7 @@ abstract class EmaRecyclerAdapter<I> : RecyclerView.Adapter<EmaViewHolder<I>>() 
     /**
      * Listener when item is clicked
      */
-    private var itemClickListener: ((item: I) -> Unit)? = null
+    private var itemClickListener: ((index:Int,item: I) -> Unit)? = null
 
     /**
      * Get the list size
@@ -100,7 +100,7 @@ abstract class EmaRecyclerAdapter<I> : RecyclerView.Adapter<EmaViewHolder<I>>() 
      * Add listener when item is clicked
      * @param listener for click on view item
      */
-    open fun setOnItemClickListener(itemClickListener: ((item: I) -> Unit)?) {
+    open fun setOnItemClickListener(itemClickListener: ((index:Int,item: I) -> Unit)?) {
         this.itemClickListener = itemClickListener
     }
 
@@ -117,7 +117,7 @@ abstract class EmaRecyclerAdapter<I> : RecyclerView.Adapter<EmaViewHolder<I>>() 
             itemView.bind(item, viewType,position,size)
             itemView.setOnClickListener {
                 onItemClicked(item,position,size)
-                itemClickListener?.invoke(item)
+                itemClickListener?.invoke(position,item)
             }
         }
     }
