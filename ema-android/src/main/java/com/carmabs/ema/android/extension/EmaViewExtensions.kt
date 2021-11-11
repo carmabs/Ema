@@ -1,6 +1,8 @@
 package com.carmabs.ema.android.extension
 
 import android.animation.Animator
+import android.app.Activity
+import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.Drawable
@@ -10,10 +12,12 @@ import android.os.Build
 import android.view.View
 import android.view.ViewTreeObserver
 import android.view.animation.OvershootInterpolator
+import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import android.widget.ProgressBar
 import androidx.annotation.ColorInt
 import androidx.core.graphics.drawable.DrawableCompat
+import androidx.fragment.app.Fragment
 import com.carmabs.ema.android.ANIMATION_DURATION
 import com.carmabs.ema.android.ANIMATION_OVERSHOOT
 import com.carmabs.ema.core.constants.FLOAT_ONE
@@ -38,6 +42,20 @@ inline fun <T : View> T.afterMeasured(crossinline f: T.() -> Unit) {
             }
         }
     })
+}
+
+fun Activity.hideKeyboard() {
+    (findViewById<View>(android.R.id.content)).rootView.hideKeyboard()
+}
+
+fun Fragment.hideKeyboard() {
+    requireView().rootView.hideKeyboard()
+}
+
+fun View.hideKeyboard() {
+    val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+    imm.hideSoftInputFromWindow(windowToken, 0)
+    clearFocus()
 }
 
 
