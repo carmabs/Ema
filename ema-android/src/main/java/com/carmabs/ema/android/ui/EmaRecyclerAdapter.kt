@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.carmabs.ema.core.constants.INT_ONE
+import com.carmabs.ema.core.constants.INT_ZERO
 import java.lang.RuntimeException
 import java.util.*
 
@@ -110,14 +112,31 @@ abstract class EmaRecyclerAdapter<I> : RecyclerView.Adapter<EmaViewHolder<I>>() 
      */
     open fun addItem(item: I, position: Int = listItems.size) {
         listItems.add(position, item)
+        notifyItemInserted(position)
+        if (position > INT_ZERO) {
+            notifyItemChanged(position - INT_ONE,false)
+        }
+    }
+
+    /**
+     * Remove item from the list
+     * @param position to remove
+     */
+    open fun removeItem(position: Int) {
+        listItems.removeAt(position)
+        notifyItemRemoved(position)
+        if (position > INT_ZERO) {
+            notifyItemChanged(position - INT_ZERO,false)
+        }
+
     }
 
     protected open inner class EmaAdapterViewHolder(view: View, private val viewType: Int) : EmaViewHolder<I>(view) {
         override fun bind(item: I,position: Int,size:Int) {
             itemView.bind(item, viewType,position,size)
             itemView.setOnClickListener {
-                onItemClicked(item,position,size)
-                itemClickListener?.invoke(position,item)
+                onItemClicked(item,adapterPosition,size)
+                itemClickListener?.invoke(adapterPosition,item)
             }
         }
     }
