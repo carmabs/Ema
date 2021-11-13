@@ -18,7 +18,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 /**
  *
@@ -70,7 +69,7 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
     /**
      * Trigger to start viewmodel only when startViewModel is launched
      */
-    override val startTrigger: EmaViewModelTrigger?=null
+    override val startTrigger: EmaViewModelTrigger? = null
 
     /**
      * The key id for incoming data through Bundle in activity instantiation.This is set up when other fragment/activity
@@ -95,12 +94,10 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
      * Initialize ViewModel on activity creation
      */
     override fun onStart() {
-        runBlocking {
-            viewJob = onStartAndBindData(
-                this@EmaActivity,
-                vm
-            )
-        }
+        viewJob = onStartAndBindData(
+            this@EmaActivity,
+            vm
+        )
         super.onStart()
     }
 
@@ -136,7 +133,7 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
      * @param observerFunction the observer of the view model attached
      * @return The view model attached
      */
-    fun <S, VM : EmaAndroidViewModel<EmaViewModel<S,*>>> addExtraViewModel(
+    fun <S, VM : EmaAndroidViewModel<EmaViewModel<S, *>>> addExtraViewModel(
         viewModelAttachedSeed: VM,
         fragment: Fragment? = null,
         observerFunction: ((attachedState: EmaState<S>) -> Unit)? = null
@@ -185,11 +182,9 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
      * Destroy the activity and unbind the observers from view model
      */
     override fun onStop() {
-        super.onStop()
         removeExtraViewModels()
-        runBlocking {
-            onStopBinding(vm,viewJob)
-        }
+        onStopBinding(vm, viewJob)
+        super.onStop()
     }
 
     /**

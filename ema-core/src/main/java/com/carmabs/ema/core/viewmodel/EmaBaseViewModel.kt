@@ -4,13 +4,14 @@ import com.carmabs.ema.core.concurrency.ConcurrencyManager
 import com.carmabs.ema.core.concurrency.DefaultConcurrencyManager
 import com.carmabs.ema.core.concurrency.tryCatch
 import com.carmabs.ema.core.constants.INT_ONE
+import com.carmabs.ema.core.constants.INT_ZERO
 import com.carmabs.ema.core.navigator.EmaNavigationState
 import com.carmabs.ema.core.state.EmaBaseState
 import com.carmabs.ema.core.state.EmaExtraData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.runBlocking
 
 
 /**
@@ -48,7 +49,10 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> {
      * object that can contain any type of object. It will be used for
      * events that only has to be notified once to its observers, e.g: A toast message.
      */
-    private val singleObservableState: MutableSharedFlow<EmaExtraData> = MutableSharedFlow()
+    private val singleObservableState: MutableSharedFlow<EmaExtraData> = MutableSharedFlow(
+        extraBufferCapacity = INT_ONE,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
 
     /**
      * Observable state that launch event every time a value is set. [NS] value be will a [EmaNavigationState]
@@ -56,7 +60,10 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> {
      * events that only has to be notified once to its observers and is used to notify the navigation
      * events
      */
-    private val navigationState: MutableSharedFlow<NS?> = MutableSharedFlow()
+    private val navigationState: MutableSharedFlow<NS?> = MutableSharedFlow(
+        extraBufferCapacity = INT_ONE,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
 
     /**
      * Manager to handle the threads where the background tasks are going to be launched
@@ -72,7 +79,7 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> {
      * Determine if viewmodel is first time resumed
      *
      */
-    private var firstTimeResumed:Boolean = true
+    private var firstTimeResumed: Boolean = true
 
     /**
      * To determine if the view must be updated when view model is created automatically
@@ -82,8 +89,8 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> {
     /**
      * Determine if the viewmodel has initialized its state
      */
-    var hasBeenInitialized:Boolean = false
-    private set
+    var hasBeenInitialized: Boolean = false
+        private set
 
     /**
      * Methos called the first time ViewModel is created
@@ -94,17 +101,19 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> {
         val firstTime = if (!this::state.isInitialized) {
             val initialStatus = inputState ?: createInitialState()
             state = initialStatus
-            runBlocking {
-                if (updateOnInitialization)
-                    observableState.emit(state)
-            }
+            if (updateOnInitialization)
+                observableState.tryEmit(state)
             onStartFirstTime(inputState != null)
             true
-        } else{
+        } else {
             //We call this to update the data if it has been not be emmitted
-                // if last time was updated by updateDataState
-            runBlocking {
-                observableState.emit(state)
+            // if last time was updated by updateDataState
+            observableState.tryEmit(state)
+
+            //We call this to check if a navigation was launched when view is not in foreground
+            pendingNavigation?.also {
+                navigate(it)
+                pendingNavigation = null
             }
             false
         }
@@ -114,6 +123,11 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> {
     }
 
     /**
+     * Determine if a navigation was launched when no views are attached
+     */
+    private var pendingNavigation: NS? = null
+
+    /**
      * Called when view is created by first time, it means, it is added to the stack
      */
     abstract fun onStartFirstTime(statePreloaded: Boolean)
@@ -121,7 +135,7 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> {
     /**
      * Called when view is shown in foreground
      */
-    internal fun onResumeView(){
+    internal fun onResumeView() {
         onResume(firstTimeResumed)
         firstTimeResumed = false
     }
@@ -129,8 +143,8 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> {
     /**
      * Called when view is hidden in background
      */
-    internal fun onPauseView(){
-       onPause()
+    internal fun onPauseView() {
+        onPause()
     }
 
     /**
@@ -141,7 +155,7 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> {
     /**
      * Called always the view goes to the background
      */
-    protected open fun onPause(){}
+    protected open fun onPause() {}
 
     /**
      * Get observable state as LiveDaya to avoid state setting from the view
@@ -170,9 +184,7 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> {
      */
     protected open fun updateView(state: S) {
         this.state = state
-        executeUseCase {
-            observableState.emit(state)
-        }
+        observableState.tryEmit(state)
     }
 
     /**
@@ -180,9 +192,7 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> {
      * It a new observer is attached, it will not be notified
      */
     protected open fun notifySingleEvent(extraData: EmaExtraData) {
-        executeUseCase {
-            singleObservableState.emit(extraData)
-        }
+        singleObservableState.tryEmit(extraData)
     }
 
     /**
@@ -190,19 +200,19 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> {
      * @param navigation The object that represent the destination of the navigation
      */
     protected open fun navigate(navigation: NS) {
-        executeUseCase {
-            navigationState.emit(navigation)
+        pendingNavigation = if (navigationState.subscriptionCount.value == INT_ZERO)
+            navigation
+        else {
+            navigationState.tryEmit(navigation)
+            null
         }
-
     }
 
     /**
      * Method use to notify a navigation back event
      */
     protected open fun navigateBack() {
-        executeUseCase {
-            navigationState.emit(null)
-        }
+        navigationState.tryEmit(null)
     }
 
     /**

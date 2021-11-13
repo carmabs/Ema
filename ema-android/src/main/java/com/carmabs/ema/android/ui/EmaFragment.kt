@@ -1,6 +1,7 @@
 package com.carmabs.ema.android.ui
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,14 +18,11 @@ import com.carmabs.ema.core.navigator.EmaNavigationState
 import com.carmabs.ema.core.state.EmaBaseState
 import com.carmabs.ema.core.state.EmaState
 import com.carmabs.ema.core.view.EmaViewModelTrigger
-import com.carmabs.ema.core.viewmodel.EmaReceiverModel
-import com.carmabs.ema.core.viewmodel.EmaResultModel
 import com.carmabs.ema.core.viewmodel.EmaViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 
 /**
@@ -105,17 +103,14 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
      */
     override fun onStart() {
         super.onStart()
-        runBlocking {
-            viewJob = onStartAndBindData(
-                if (fragmentViewModelScope)
-                    this@EmaFragment
-                else
-                    requireActivity(),
-                vm
-            )
-        }
+        viewJob = onStartAndBindData(
+            if (fragmentViewModelScope)
+                this@EmaFragment
+            else
+                requireActivity(),
+            vm
+        )
     }
-
 
 
     /**
@@ -194,10 +189,9 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
      */
     override fun onStop() {
         removeExtraViewModels()
-        runBlocking {
-            onStopBinding(vm,viewJob)
-        }
+        onStopBinding(vm, viewJob)
         super.onStop()
+        Log.d("NAV","ONSTOP")
     }
 
     /**
