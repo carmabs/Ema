@@ -1,16 +1,17 @@
 package com.carmabs.ema.core.view
 
-import com.carmabs.ema.core.navigator.EmaNavigator
 import com.carmabs.ema.core.navigator.EmaNavigationState
+import com.carmabs.ema.core.navigator.EmaNavigator
 import com.carmabs.ema.core.state.EmaBaseState
 import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.core.state.EmaState
 import com.carmabs.ema.core.viewmodel.EmaViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.util.logging.Logger
 import kotlin.jvm.internal.PropertyReference0
 import kotlin.reflect.KProperty
 
@@ -63,11 +64,11 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
      */
     val startTrigger: EmaViewModelTrigger?
 
-    var isFirstNormalExecution:Boolean
+    var isFirstNormalExecution: Boolean
 
-    var isFirstAlternativeExecution :Boolean
+    var isFirstAlternativeExecution: Boolean
 
-    var isFirstErrorExecution :Boolean
+    var isFirstErrorExecution: Boolean
 
     /**
      * Called when view model trigger an update view event
@@ -224,15 +225,6 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
 
     fun onStartView(coroutineScope: CoroutineScope, viewModel: VM): MutableList<Job> {
         val jobList = mutableListOf<Job>()
-        startTrigger?.also {
-            it.triggerAction = {
-                viewModel.onStart(inputState?.let { input -> EmaState.Normal(input) })
-                viewModel.onResumeView()
-            }
-        } ?: also {
-            viewModel.onStart(inputState?.let { input -> EmaState.Normal(input) })
-        }
-
         jobList.add(coroutineScope.launch {
             viewModel.getObservableState().collect {
                 onDataUpdated(it)
@@ -244,11 +236,18 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
             }
         })
         jobList.add(coroutineScope.launch {
-            viewModel.getNavigationState().collect {
+            viewModel.getNavigationState().collectLatest {
                 onNavigation(it)
             }
         })
-
+        startTrigger?.also {
+            it.triggerAction = {
+                viewModel.onStart(inputState?.let { input -> EmaState.Normal(input) })
+                viewModel.onResumeView()
+            }
+        } ?: also {
+            viewModel.onStart(inputState?.let { input -> EmaState.Normal(input) })
+        }
         return jobList
     }
 
@@ -257,22 +256,23 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
      */
     fun onResumeView(viewModel: VM) {
         startTrigger?.also {
-            if(it.hasBeenStarted)
+            if (it.hasBeenStarted)
                 viewModel.onResumeView()
-        }?:also {
+        } ?: also {
             viewModel.onResumeView()
         }
     }
 
 
-    fun onPauseView(viewModel: VM){
+    fun onPauseView(viewModel: VM) {
         viewModel.onPauseView()
     }
 
-    suspend fun onStopView(viewJob: MutableList<Job>?, viewModel: VM) {
+    fun onStopView(viewJob: MutableList<Job>?, viewModel: VM) {
         viewJob?.forEach {
             try {
-                it.cancelAndJoin()
+                if (!it.isCancelled && !it.isCompleted)
+                    it.cancel()
             } catch (e: java.lang.Exception) {
                 e.printStackTrace()
             }
