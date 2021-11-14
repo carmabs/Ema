@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import androidx.annotation.CallSuper
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.carmabs.ema.android.delegates.emaViewModelDelegate
 import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
@@ -39,7 +39,7 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
     private var viewJob: MutableList<Job>? = null
 
     private val extraViewJobs: MutableList<Job> by lazy {
-        mutableListOf<Job>()
+        mutableListOf()
     }
 
     override val coroutineScope: CoroutineScope
@@ -59,6 +59,7 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        previousState = null
         isFirstNormalExecution = true
         isFirstAlternativeExecution = true
         isFirstErrorExecution = true
@@ -95,7 +96,7 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
      * The list which handles the extra view models attached, to unbind the observers
      * when the view fragment is destroyed
      */
-    private val extraViewModelList: MutableList<EmaAndroidViewModel<*>> by lazy { mutableListOf<EmaAndroidViewModel<*>>() }
+    private val extraViewModelList: MutableList<EmaAndroidViewModel<VM>> by lazy { mutableListOf() }
 
 
     /**
@@ -147,20 +148,20 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
      * @param observerFunction the observer of the view model attached
      * @return The view model attached
      */
-    fun <S, VM : EmaAndroidViewModel<out EmaViewModel<S, *>>> addExtraViewModel(
-        viewModelAttachedSeed: EmaAndroidViewModel<*>,
+    fun <AVM : EmaAndroidViewModel<out EmaViewModel<*,*>>> addExtraViewModel(
+        viewModelAttachedSeed: AVM,
         fragment: Fragment,
         fragmentActivity: FragmentActivity? = null,
-        observerFunction: ((attachedState: EmaState<S>) -> Unit)? = null
-    ): VM {
+        observerFunction: ((attachedState: EmaState<*>) -> Unit)? = null
+    ): AVM {
         val viewModel =
             fragmentActivity?.let {
-                ViewModelProviders.of(
+                ViewModelProvider(
                     it,
                     EmaFactory(viewModelAttachedSeed)
                 )[viewModelAttachedSeed::class.java]
             }
-                ?: ViewModelProviders.of(
+                ?: ViewModelProvider(
                     fragment,
                     EmaFactory(viewModelAttachedSeed)
                 )[viewModelAttachedSeed::class.java]
@@ -168,14 +169,14 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
         observerFunction?.also {
             val job = coroutineScope.launch {
                 viewModel.emaViewModel.getObservableState().collect {
-                    observerFunction.invoke(it as EmaState<S>)
+                    observerFunction.invoke(it)
                 }
             }
             extraViewJobs.add(job)
         }
-        extraViewModelList.add(viewModel)
+        extraViewModelList.add(viewModel as EmaAndroidViewModel<VM>)
 
-        return viewModel as VM
+        return viewModel
     }
 
     /**

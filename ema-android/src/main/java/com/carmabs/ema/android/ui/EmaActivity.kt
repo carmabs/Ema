@@ -3,7 +3,7 @@ package com.carmabs.ema.android.ui
 import android.content.Intent
 import androidx.annotation.CallSuper
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.carmabs.ema.android.delegates.emaViewModelDelegate
 import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
@@ -46,7 +46,7 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
      * The map which handles the view model attached with their respective scopes, to unbind the observers
      * when the view activity is destroyed
      */
-    private val extraViewModelList: MutableList<EmaAndroidViewModel<*>> by lazy { mutableListOf<EmaAndroidViewModel<*>>() }
+    private val extraViewModelList: MutableList<EmaAndroidViewModel<VM>> by lazy { mutableListOf() }
 
     private val extraViewJobs: MutableList<Job> by lazy {
         mutableListOf<Job>()
@@ -129,24 +129,23 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
      * @param viewModelAttachedSeed is the view model seed will used as factory instance if there is no previous
      * view model retained by the OS
      * @param fragment the fragment scope
-     * @param fragmentActivity the activity scope, if it is provided this will be the scope of the view model attached
      * @param observerFunction the observer of the view model attached
      * @return The view model attached
      */
-    fun <S, VM : EmaAndroidViewModel<EmaViewModel<S, *>>> addExtraViewModel(
-        viewModelAttachedSeed: VM,
+    fun <AVM : EmaAndroidViewModel<out EmaViewModel<*,*>>> addExtraViewModel(
+        viewModelAttachedSeed: AVM,
         fragment: Fragment? = null,
-        observerFunction: ((attachedState: EmaState<S>) -> Unit)? = null
-    ): VM {
+        observerFunction: ((attachedState: EmaState<*>) -> Unit)? = null
+    ): AVM {
 
         val viewModel =
             fragment?.let {
-                ViewModelProviders.of(
+                ViewModelProvider(
                     it,
                     EmaFactory(viewModelAttachedSeed)
                 )[viewModelAttachedSeed::class.java]
             }
-                ?: ViewModelProviders.of(
+                ?: ViewModelProvider(
                     this,
                     EmaFactory(viewModelAttachedSeed)
                 )[viewModelAttachedSeed::class.java]
@@ -159,7 +158,7 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
             }
             )
         }
-        extraViewModelList.add(viewModel)
+        extraViewModelList.add(viewModel as EmaAndroidViewModel<VM>)
 
         return viewModel
     }

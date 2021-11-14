@@ -38,7 +38,7 @@ interface EmaAndroidView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNav
         )[androidViewModelSeed::class.java]
 
 
-        return vm.emaViewModel
+        return vm.emaViewModel as VM
     }
 
     fun initializeViewModel(
@@ -46,7 +46,7 @@ interface EmaAndroidView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNav
     ): VM {
         val emaFactory = EmaFactory(androidViewModelSeed)
         val vm = ViewModelProvider(fragment, emaFactory)[androidViewModelSeed::class.java]
-        return vm.emaViewModel
+        return vm.emaViewModel as VM
     }
 
     /**

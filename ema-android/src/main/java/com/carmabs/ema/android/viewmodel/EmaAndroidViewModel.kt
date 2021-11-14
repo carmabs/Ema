@@ -12,10 +12,8 @@ import com.carmabs.ema.core.viewmodel.EmaViewModel
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-abstract class EmaAndroidViewModel<VM : EmaViewModel<*,*>>(val emaViewModel:VM) :
+abstract class EmaAndroidViewModel<VM:EmaViewModel<*,*>>(val emaViewModel:VM) :
     ViewModel() {
-
-    val observableState = emaViewModel.getObservableState()
 
     override fun onCleared() {
         emaViewModel.onDestroy()

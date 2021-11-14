@@ -21,14 +21,13 @@ import kotlin.reflect.KProperty
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
 @Suppress("ClassName")
-class emaViewModelSharedDelegate<S : EmaBaseState, VM : EmaAndroidViewModel<out EmaViewModel<S, *>>>(
-    private val observerFunction: ((attachedState: EmaState<S>) -> Unit)? = null,
+class emaViewModelSharedDelegate<VM : EmaAndroidViewModel<out EmaViewModel<*,*>>>(
+    private val observerFunction: ((attachedState: EmaState<*>) -> Unit)? = null,
     private val viewModelSeed: () -> VM
 
 ) {
 
     private var vm: VM? = null
-
 
     operator fun getValue(thisRef: Any?, property: KProperty<*>): VM {
         val emaView = (thisRef as? EmaAndroidView<*, *, *>)
@@ -50,7 +49,7 @@ class emaViewModelSharedDelegate<S : EmaBaseState, VM : EmaAndroidViewModel<out 
                     emaView,
                     activity,
                     observerFunction
-                ) as VM
+                )
             }
             else -> throw IllegalAccessException("The view must be a EmaFragment")
         }).apply {
