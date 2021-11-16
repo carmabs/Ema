@@ -1,15 +1,14 @@
 package com.carmabs.ema.android.extension
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.util.TypedValue
-import androidx.annotation.ColorRes
-import androidx.annotation.DimenRes
-import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
+import androidx.annotation.*
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
 import com.carmabs.ema.core.constants.FLOAT_ONE
 import com.carmabs.ema.core.constants.INT_ZERO
@@ -36,6 +35,13 @@ import java.io.ByteArrayOutputStream
 fun @receiver:StringRes Int.getFormattedString(context: Context, vararg data: Any?): String {
     return String.format(context.getString(this), *data)
 }
+
+
+fun @receiver:FontRes Int.getTypeface(context: Context): Typeface {
+    return ResourcesCompat.getFont(context, this)!!
+}
+
+
 
 /**
  * Get color from a @ColorRes

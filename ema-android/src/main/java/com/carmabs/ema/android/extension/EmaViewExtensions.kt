@@ -34,14 +34,19 @@ import com.carmabs.ema.core.constants.FLOAT_ZERO
  * Listener to make view tasks after it has been measured
  */
 inline fun <T : View> T.afterMeasured(crossinline f: T.() -> Unit) {
-    viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
-        override fun onGlobalLayout() {
-            if (measuredWidth > 0 && measuredHeight > 0) {
-                viewTreeObserver.removeOnGlobalLayoutListener(this)
-                f()
+    if (measuredHeight > 0 && measuredWidth > 0) {
+        f()
+    } else {
+        viewTreeObserver.addOnGlobalLayoutListener(object :
+            ViewTreeObserver.OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                if (measuredWidth > 0 && measuredHeight > 0) {
+                    viewTreeObserver.removeOnGlobalLayoutListener(this)
+                    f()
+                }
             }
-        }
-    })
+        })
+    }
 }
 
 fun Activity.hideKeyboard() {
