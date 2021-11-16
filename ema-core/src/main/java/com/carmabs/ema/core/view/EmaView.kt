@@ -26,6 +26,10 @@ import kotlin.reflect.KProperty
  */
 interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigationState> {
 
+    companion object{
+        const val KEY_INPUT_STATE_DEFAULT = "EMA_KEY_INPUT_STATE_DEFAULT"
+    }
+
     /**
      * Scope for flow updates
      */

@@ -12,6 +12,7 @@ import com.carmabs.ema.core.delegate.emaBooleanDelegate
 import com.carmabs.ema.core.navigator.EmaNavigationState
 import com.carmabs.ema.core.state.EmaBaseState
 import com.carmabs.ema.core.state.EmaState
+import com.carmabs.ema.core.view.EmaView
 import com.carmabs.ema.core.view.EmaViewModelTrigger
 import com.carmabs.ema.core.viewmodel.EmaViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -75,9 +76,7 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
      * The key id for incoming data through Bundle in activity instantiation.This is set up when other fragment/activity
      * launches a fragment with arguments provided by Bundle
      */
-    protected open val inputStateKey: String by lazy {
-        vm.initialViewState.javaClass.name
-    }
+    protected open val inputStateKey: String = EmaView.KEY_INPUT_STATE_DEFAULT
 
     /**
      * Automatically updates previousState
