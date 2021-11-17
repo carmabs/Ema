@@ -228,6 +228,13 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
     }
 
     fun onStartView(coroutineScope: CoroutineScope, viewModel: VM): MutableList<Job> {
+        startTrigger?.also {
+            it.triggerAction = {
+                viewModel.onStart(inputState?.let { input -> EmaState.Normal(input) })
+            }
+        } ?: also {
+            viewModel.onStart(inputState?.let { input -> EmaState.Normal(input) })
+        }
         val jobList = mutableListOf<Job>()
         jobList.add(coroutineScope.launch {
             viewModel.getObservableState().collect {
@@ -244,14 +251,6 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
                 onNavigation(it)
             }
         })
-        startTrigger?.also {
-            it.triggerAction = {
-                viewModel.onStart(inputState?.let { input -> EmaState.Normal(input) })
-                viewModel.onResumeView()
-            }
-        } ?: also {
-            viewModel.onStart(inputState?.let { input -> EmaState.Normal(input) })
-        }
         return jobList
     }
 

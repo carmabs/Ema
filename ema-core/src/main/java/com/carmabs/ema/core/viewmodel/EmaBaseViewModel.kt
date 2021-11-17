@@ -109,12 +109,6 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> {
             //We call this to update the data if it has been not be emmitted
             // if last time was updated by updateDataState
             observableState.tryEmit(state)
-
-            //We call this to check if a navigation was launched when view is not in foreground
-            pendingNavigation?.also {
-                navigate(it)
-                pendingNavigation = null
-            }
             false
         }
 
@@ -136,6 +130,13 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> {
      * Called when view is shown in foreground
      */
     internal fun onResumeView() {
+        //We call this to check if a navigation was launched when view is not in foreground
+        pendingNavigation?.also {
+            if(navigationState.subscriptionCount.value > INT_ZERO) {
+                navigate(it)
+                pendingNavigation = null
+            }
+        }
         onResume(firstTimeResumed)
         firstTimeResumed = false
     }
