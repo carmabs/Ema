@@ -1,13 +1,12 @@
 package com.carmabs.ema.android.ui
 
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.RecyclerView
-import com.carmabs.ema.core.constants.INT_ONE
-import com.carmabs.ema.core.constants.INT_ZERO
-import java.lang.RuntimeException
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import java.util.*
 
 /**
@@ -18,24 +17,13 @@ import java.util.*
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
 
-abstract class EmaRecyclerAdapter<I> : RecyclerView.Adapter<EmaViewHolder<I>>() {
-
-    /**
-     * Items to show in list
-     */
-    protected val listItems: MutableList<I> = mutableListOf()
+abstract class EmaRecyclerAdapter<I>(diffCallback: DiffUtil.ItemCallback<I> = getDefaultDiffCallback()) :
+    ListAdapter<I, EmaViewHolder<I>>(diffCallback) {
 
     /**
      * Listener when item is clicked
      */
-    private var itemClickListener: ((index:Int,item: I) -> Unit)? = null
-
-    /**
-     * Get the list size
-     */
-    override fun getItemCount(): Int {
-        return listItems.size
-    }
+    private var itemClickListener: ((index: Int, item: I) -> Unit)? = null
 
     /**
      * Method called to implement the view data set up
@@ -43,7 +31,7 @@ abstract class EmaRecyclerAdapter<I> : RecyclerView.Adapter<EmaViewHolder<I>>() 
      * @param position current item position in recycler view
      */
     override fun onBindViewHolder(holder: EmaViewHolder<I>, position: Int) {
-        holder.bind(listItems[position],position,listItems.size)
+        holder.bind(getItem(position), holder)
     }
 
 
@@ -53,9 +41,15 @@ abstract class EmaRecyclerAdapter<I> : RecyclerView.Adapter<EmaViewHolder<I>>() 
      * @param viewType of the item
      */
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EmaViewHolder<I> {
-        return enableMultiViewHolder?.invoke(parent,viewType)
-                ?: EmaAdapterViewHolder(LayoutInflater.from(parent.context).inflate(layoutItemId
-                        ?: throw RuntimeException("Please provide the id for layoutItemId"), parent, false), viewType)
+        return enableMultiViewHolder?.invoke(parent, viewType)
+            ?: EmaAdapterViewHolder(
+                LayoutInflater.from(parent.context).inflate(
+                    layoutItemId
+                        ?: throw RuntimeException("Please provide the id for layoutItemId"),
+                    parent,
+                    false
+                ), viewType
+            )
     }
 
     /**
@@ -66,24 +60,21 @@ abstract class EmaRecyclerAdapter<I> : RecyclerView.Adapter<EmaViewHolder<I>>() 
     /**
      * Method to set the view parameters from each item
      */
-    protected abstract fun View.bind(item: I, viewType: Int,position: Int,size: Int)
+    protected abstract fun View.bind(item: I, viewType: Int, holder: EmaViewHolder<I>)
 
     /**
      * Function to implement different viewHolders depending the viewType provided. Use only if you want to use different
      * views depending the item provided
      */
-    protected open val enableMultiViewHolder: ((view:ViewGroup,viewType:Int) -> EmaAdapterViewHolder)? = null
+    protected open val enableMultiViewHolder: ((view: ViewGroup, viewType: Int) -> EmaAdapterViewHolder)? =
+        null
 
     /**
      * Update the adapter with a new list
      * @param listUpdate to set in the adapter
      */
     open fun updateList(listUpdate: List<I>) {
-        listItems.apply {
-            clear()
-            addAll(listUpdate)
-            notifyDataSetChanged()
-        }
+        submitList(listUpdate)
     }
 
     /**
@@ -91,10 +82,10 @@ abstract class EmaRecyclerAdapter<I> : RecyclerView.Adapter<EmaViewHolder<I>>() 
      * @param item to update
      */
     open fun updateItem(item: I) {
-        val index = listItems.indexOf(item)
+        val index = this.currentList.indexOf(item)
         if (index > -1) {
-            listItems[index] = item
-            notifyItemChanged(index)
+            currentList[index] = item
+            submitList(currentList)
         }
     }
 
@@ -102,7 +93,7 @@ abstract class EmaRecyclerAdapter<I> : RecyclerView.Adapter<EmaViewHolder<I>>() 
      * Add listener when item is clicked
      * @param listener for click on view item
      */
-    open fun setOnItemClickListener(itemClickListener: ((index:Int,item: I) -> Unit)?) {
+    open fun setOnItemClickListener(itemClickListener: ((index: Int, item: I) -> Unit)?) {
         this.itemClickListener = itemClickListener
     }
 
@@ -110,12 +101,9 @@ abstract class EmaRecyclerAdapter<I> : RecyclerView.Adapter<EmaViewHolder<I>>() 
      * Add item to the list
      * @param item to add
      */
-    open fun addItem(item: I, position: Int = listItems.size) {
-        listItems.add(position, item)
-        notifyItemInserted(position)
-        if (position > INT_ZERO) {
-            notifyItemChanged(position - INT_ONE,false)
-        }
+    open fun addItem(item: I, position: Int = itemCount) {
+        currentList.add(position, item)
+        submitList(currentList)
     }
 
     /**
@@ -123,25 +111,37 @@ abstract class EmaRecyclerAdapter<I> : RecyclerView.Adapter<EmaViewHolder<I>>() 
      * @param position to remove
      */
     open fun removeItem(position: Int) {
-        listItems.removeAt(position)
-        notifyItemRemoved(position)
-        if (position > INT_ZERO) {
-            notifyItemChanged(position - INT_ZERO,false)
-        }
+        currentList.removeAt(position)
+        submitList(currentList)
 
     }
 
-    protected open inner class EmaAdapterViewHolder(view: View, private val viewType: Int) : EmaViewHolder<I>(view) {
-        override fun bind(item: I,position: Int,size:Int) {
-            itemView.bind(item, viewType,position,size)
+    protected open inner class EmaAdapterViewHolder(view: View, private val viewType: Int) :
+        EmaViewHolder<I>(view) {
+        override fun bind(item: I, holder: EmaViewHolder<I>) {
+            itemView.bind(item, viewType, holder)
             itemView.setOnClickListener {
-                onItemClicked(item,adapterPosition,size)
-                itemClickListener?.invoke(adapterPosition,item)
+                onItemClicked(item, adapterPosition, itemCount)
+                itemClickListener?.invoke(adapterPosition, item)
             }
         }
     }
 
-    protected open fun onItemClicked(item: I,position:Int,size:Int) {
+    protected open fun onItemClicked(item: I, position: Int, size: Int) {
         //Override to add internal logic when item is clicked
     }
+
+    companion object {
+        fun <I> getDefaultDiffCallback() = object : DiffUtil.ItemCallback<I>() {
+            override fun areItemsTheSame(oldItem: I, newItem: I): Boolean {
+                return oldItem == newItem
+            }
+
+            @SuppressLint("DiffUtilEquals")
+            override fun areContentsTheSame(oldItem: I, newItem: I): Boolean {
+                return oldItem?.equals(newItem) ?: false
+            }
+        }
+    }
+
 }
