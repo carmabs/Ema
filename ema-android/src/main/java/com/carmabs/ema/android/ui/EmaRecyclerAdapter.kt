@@ -30,8 +30,14 @@ abstract class EmaRecyclerAdapter<I>(diffCallback: DiffUtil.ItemCallback<I> = ge
      * @param holder holder where view components are implemented
      * @param position current item position in recycler view
      */
-    override fun onBindViewHolder(holder: EmaViewHolder<I>, position: Int) {
-        holder.bind(getItem(position), holder)
+    override fun onBindViewHolder(holder: EmaViewHolder<I>, position: Int) {}
+    override fun onBindViewHolder(
+        holder: EmaViewHolder<I>,
+        position: Int,
+        payloads: MutableList<Any>
+    ) {
+        super.onBindViewHolder(holder, position, payloads)
+        holder.bind(getItem(position), holder,payloads)
     }
 
 
@@ -60,7 +66,12 @@ abstract class EmaRecyclerAdapter<I>(diffCallback: DiffUtil.ItemCallback<I> = ge
     /**
      * Method to set the view parameters from each item
      */
-    protected abstract fun View.bind(item: I, viewType: Int, holder: EmaViewHolder<I>)
+    protected abstract fun View.bind(
+        item: I,
+        viewType: Int,
+        holder: EmaViewHolder<I>,
+        payloads: MutableList<Any>
+    )
 
     /**
      * Function to implement different viewHolders depending the viewType provided. Use only if you want to use different
@@ -118,8 +129,8 @@ abstract class EmaRecyclerAdapter<I>(diffCallback: DiffUtil.ItemCallback<I> = ge
 
     protected open inner class EmaAdapterViewHolder(view: View, private val viewType: Int) :
         EmaViewHolder<I>(view) {
-        override fun bind(item: I, holder: EmaViewHolder<I>) {
-            itemView.bind(item, viewType, holder)
+        override fun bind(item: I, holder: EmaViewHolder<I>, payloads: MutableList<Any>) {
+            itemView.bind(item, viewType, holder,payloads)
             itemView.setOnClickListener {
                 onItemClicked(item, adapterPosition, itemCount)
                 itemClickListener?.invoke(adapterPosition, item)
