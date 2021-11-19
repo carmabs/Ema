@@ -6,7 +6,6 @@ import androidx.fragment.app.FragmentActivity
 import com.carmabs.ema.android.ui.EmaAndroidView
 import com.carmabs.ema.android.ui.EmaFragment
 import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
-import com.carmabs.ema.core.state.EmaBaseState
 import com.carmabs.ema.core.state.EmaState
 import com.carmabs.ema.core.viewmodel.EmaViewModel
 import kotlin.reflect.KProperty
@@ -26,9 +25,6 @@ class emaViewModelSharedDelegate<VM : EmaAndroidViewModel<out EmaViewModel<*,*>>
     private val viewModelSeed: () -> VM
 
 ) {
-
-    private var vm: VM? = null
-
     operator fun getValue(thisRef: Any?, property: KProperty<*>): VM {
         val emaView = (thisRef as? EmaAndroidView<*, *, *>)
             ?: throw IllegalAccessException(
@@ -42,7 +38,7 @@ class emaViewModelSharedDelegate<VM : EmaAndroidViewModel<out EmaViewModel<*,*>>
             else -> throw IllegalAccessException("The view must be contained inside a FragmentActivity lifecycle")
         }
 
-        return vm ?: (when (emaView) {
+        return when (emaView) {
             is EmaFragment -> {
                 emaView.addExtraViewModel(
                     viewModelSeed.invoke(),
@@ -52,8 +48,6 @@ class emaViewModelSharedDelegate<VM : EmaAndroidViewModel<out EmaViewModel<*,*>>
                 )
             }
             else -> throw IllegalAccessException("The view must be a EmaFragment")
-        }).apply {
-            vm = this
         }
     }
 }
