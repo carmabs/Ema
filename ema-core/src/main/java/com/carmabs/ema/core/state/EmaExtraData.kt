@@ -9,6 +9,6 @@ package com.carmabs.ema.core.state
 data class EmaExtraData(val type: Int = DEFAULT_ID, val extraData: Any? = null) : EmaBaseState
 {
     companion object{
-       const val DEFAULT_ID = 0
+       const val DEFAULT_ID = -1
     }
 }
