@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import androidx.compose.runtime.Composable
 import com.carmabs.domain.exception.LoginException
 import com.carmabs.domain.exception.PasswordEmptyException
 import com.carmabs.domain.exception.UserEmptyException
@@ -49,7 +50,7 @@ class EmaHomeFragment : BaseFragment<FragmentHomeBinding,EmaHomeState, EmaHomeVi
     override val navigator: EmaHomeNavigator  by instance()
 
     //As we can see we can use an instance by kodein or generate it by class instance
-    private val errorDialog: EmaDialogProvider by lazy { SimpleDialogProvider(requireFragmentManager()) }
+    private val errorDialog: EmaDialogProvider by lazy { SimpleDialogProvider(childFragmentManager) }
 
     private val loadingDialog: EmaDialogProvider by instance(tag = DIALOG_TAG_LOADING)
     /////////////////////////////////////////////////////////////////////////////////

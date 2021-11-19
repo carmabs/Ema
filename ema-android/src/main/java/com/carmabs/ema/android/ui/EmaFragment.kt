@@ -1,7 +1,6 @@
 package com.carmabs.ema.android.ui
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,7 +22,6 @@ import com.carmabs.ema.core.state.EmaState
 import com.carmabs.ema.core.view.EmaView
 import com.carmabs.ema.core.view.EmaViewModelTrigger
 import com.carmabs.ema.core.viewmodel.EmaViewModel
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
@@ -35,6 +33,8 @@ import kotlinx.coroutines.launch
  */
 abstract class EmaFragment<B : ViewBinding, S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigationState> :
     EmaBaseFragment<B>(), EmaAndroidView<S, VM, NS> {
+abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigationState> :
+    EmaBaseFragment<S, VM, NS>() {
 
     override val viewModelSeed: VM
         get() = androidViewModelSeed.emaViewModel
@@ -67,6 +67,17 @@ abstract class EmaFragment<B : ViewBinding, S : EmaBaseState, VM : EmaViewModel<
         isFirstOverlayedExecution = true
         isFirstErrorExecution = true
         return super.onCreateView(inflater, container, savedInstanceState)
+        super.onCreateView(inflater, container, savedInstanceState)
+        val layoutRes = layoutId
+        if (layoutRes == 0) {
+            throw IllegalArgumentException(
+                "getLayoutRes() returned 0, which is not allowed. "
+                        + "If you don't want to use getLayoutRes() but implement your own view for this "
+                        + "fragment manually, then you have to override onCreateView();"
+            )
+        } else {
+            return inflater.inflate(layoutRes, container, false)
+        }
     }
 
     @CallSuper
@@ -81,47 +92,12 @@ abstract class EmaFragment<B : ViewBinding, S : EmaBaseState, VM : EmaViewModel<
      * The view model of the fragment
      */
     protected val vm: VM by emaViewModelDelegate()
+    private var viewJob: MutableList<Job>? = null
 
-    /**
-     * The key id for incoming data through Bundle in fragment instantiation.This is set up when other fragment/activity
-     * launches a fragment with arguments provided by Bundle
-     */
-    protected open val inputStateKey: String = EmaView.KEY_INPUT_STATE_DEFAULT
-
-
-    /**
-     * Trigger to start viewmodel only when startViewModel is launched
-     */
-    override val startTrigger: EmaViewModelTrigger? = null
-
-    /**
-     * Automatically updates previousState
-     */
-    override val updatePreviousStateAutomatically: Boolean = true
-
-    /**
-     * The incoming state in fragment instantiation. This is set up when other fragment/activity
-     * launches a fragment with arguments provided by Bundle
-     */
-    override val inputState: S? by lazy { getInState() }
-
-    /**
-     * The list which handles the extra view models attached, to unbind the observers
-     * when the view fragment is destroyed
-     */
-    private val extraViewModelList: MutableList<EmaAndroidViewModel<VM>> by lazy { mutableListOf() }
-
-
-    /**
-     * The view model is instantiated on fragment resume.
-     */
     override fun onStart() {
         super.onStart()
-        viewJob = onStartAndBindData(
-            if (fragmentViewModelScope)
-                this@EmaFragment
-            else
-                requireActivity(),
+        viewJob = onBindView(
+            getScope(),
             vm
         )
     }
@@ -201,14 +177,13 @@ abstract class EmaFragment<B : ViewBinding, S : EmaBaseState, VM : EmaViewModel<
      * Destroy the view and unbind the observers from view model
      */
     override fun onStop() {
-        removeExtraViewModels()
-        onStopBinding(vm, viewJob)
+        onStopView(viewJob, vm)
         super.onStop()
         Log.d("NAV", "ONSTOP")
     }
 
     /**
-     * Remove extra view models attached
+     * Specify the layout of the fragment to be inflated in the [EmaBaseFragment.onCreateView]
      */
     private fun removeExtraViewModels() {
         extraViewJobs.forEach {
@@ -255,4 +230,5 @@ abstract class EmaFragment<B : ViewBinding, S : EmaBaseState, VM : EmaViewModel<
     protected open fun B.onStateOverlayed(data: EmaExtraData){}
     protected open fun B.onStateError(throwable: Throwable){}
     protected open fun B.onSingleEvent(data: EmaExtraData){}
+    protected abstract val layoutId: Int
 }

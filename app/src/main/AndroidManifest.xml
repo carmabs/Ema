@@ -25,7 +25,8 @@
             android:name="com.carmabs.ema.presentation.ui.error.EmaErrorToolbarViewActivity"
             android:launchMode="singleInstance"
             android:exported="false"/>
-        <activity android:name=".presentation.ui.backdata.EmaBackToolbarActivity" />
+        <activity android:name=".presentation.ui.backdata.EmaBackToolbarActivity"
+            android:exported="false"/>
     </application>
 
 </manifest>
