@@ -29,18 +29,17 @@ class EmaErrorToolbarViewActivity : EmaActivity<EmaErrorToolbarState, EmaErrorTo
 
     override val navGraph: Int = R.navigation.navigation_ema_error
 
-    override fun provideFixedToolbarTitle(): String? = getString(R.string.error_toolbar_title)
+    override fun provideFixedToolbarTitle(): String = getString(R.string.error_toolbar_title)
 
     override val androidViewModelSeed: EmaAndroidViewModel<EmaErrorToolbarViewModel> by instance<EmaAndroidErrorToolbarViewModel>()
 
     override val navigator: EmaErrorNavigator by instance()
 
-    override fun injectActivityModule(kodein: DI.MainBuilder): DI.Module? = activityInjection(this)
+    override fun injectActivityModule(kodein: DI.MainBuilder): DI.Module = activityInjection(this)
 
-    override fun onCreateActivity(savedInstanceState: Bundle?) {
-        super.onCreateActivity(savedInstanceState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         configureToolbar()
-
     }
 
     private fun configureToolbar() {

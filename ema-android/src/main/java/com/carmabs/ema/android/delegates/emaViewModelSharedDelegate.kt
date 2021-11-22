@@ -21,8 +21,8 @@ import kotlin.reflect.KProperty
  */
 @Suppress("ClassName")
 class emaViewModelSharedDelegate<VM : EmaAndroidViewModel<out EmaViewModel<*,*>>>(
+    private val viewModelSeed:()-> VM,
     private val observerFunction: ((attachedState: EmaState<*>) -> Unit)? = null,
-    private val viewModelSeed: () -> VM
 
 ) {
     operator fun getValue(thisRef: Any?, property: KProperty<*>): VM {

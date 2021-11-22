@@ -27,7 +27,6 @@ const val DATE_FORMAT_MMDDYYYY = "MM/dd/yyyy"
 const val DATE_FORMAT_ISO8601 = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"
 const val HOUR_FORMAT_HHMM = "HH:mm"
 const val HOUR_FORMAT_HHMMSS = "HH:mm:ss"
-const val HOUR_FORMAT_KKMMSS = "kk:mm:ss"
 
 /**
  * Convert a string with provided format to timestamp
