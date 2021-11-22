@@ -1,6 +1,5 @@
 package com.carmabs.ema.android.extension
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
@@ -12,6 +11,8 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
 import com.carmabs.ema.core.constants.FLOAT_ONE
 import com.carmabs.ema.core.constants.INT_ZERO
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 
 
@@ -36,11 +37,17 @@ fun @receiver:StringRes Int.getFormattedString(context: Context, vararg data: An
     return String.format(context.getString(this), *data)
 }
 
+fun @receiver:PluralsRes Int.getFormattedPluralsString(
+    context: Context,
+    times: Int,
+    vararg data: Any?
+): String {
+    return context.resources.getQuantityString(this, times, *data)
+}
 
 fun @receiver:FontRes Int.getTypeface(context: Context): Typeface {
     return ResourcesCompat.getFont(context, this)!!
 }
-
 
 
 /**
@@ -132,16 +139,16 @@ fun @receiver:DrawableRes Int.getBitmapFromResource(
     } ?: throw Exception("Drawable not found")
 }
 
-fun @receiver:DrawableRes Int.getBitmapCropFromResource(
+suspend fun @receiver:DrawableRes Int.getBitmapCropFromResource(
     context: Context,
     width: Int? = null,
     height: Int? = null
 ): Bitmap {
 
-    val bitmap: Bitmap = BitmapFactory.decodeResource(context.resources, this)
-
-    val w = width ?: bitmap.width
-    val h = height ?: bitmap.height
-
-    return bitmap.resize(w, h)
+    return withContext(Dispatchers.Default) {
+        val bitmap: Bitmap = BitmapFactory.decodeResource(context.resources, this@getBitmapCropFromResource)
+        val w = width ?: bitmap.width
+        val h = height ?: bitmap.height
+        bitmap.resize(w, h)
+    }
 }

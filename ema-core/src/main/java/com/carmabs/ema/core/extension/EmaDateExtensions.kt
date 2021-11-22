@@ -1,7 +1,10 @@
 package com.carmabs.ema.core.extension
 
+import com.carmabs.ema.core.constants.INT_ONE
 import com.carmabs.ema.core.constants.LONG_ZERO
 import com.carmabs.ema.core.constants.STRING_EMPTY
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.flow
 import java.text.SimpleDateFormat
 import java.time.*
 import java.time.format.DateTimeFormatter
@@ -23,6 +26,8 @@ const val DATE_FORMAT_YYYYMMDD = "yyyy/MM/dd"
 const val DATE_FORMAT_MMDDYYYY = "MM/dd/yyyy"
 const val DATE_FORMAT_ISO8601 = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"
 const val HOUR_FORMAT_HHMM = "HH:mm"
+const val HOUR_FORMAT_HHMMSS = "HH:mm:ss"
+const val HOUR_FORMAT_KKMMSS = "kk:mm:ss"
 
 /**
  * Convert a string with provided format to timestamp
@@ -39,7 +44,7 @@ fun String.toTimeStamp(dateFormat: String): Long = try {
 /**
  * Converts a long timestamp to instant
  */
-fun Long.toInstant(zoneId:ZoneId = ZoneId.systemDefault()): ZonedDateTime =
+fun Long.toInstant(zoneId: ZoneId = ZoneId.systemDefault()): ZonedDateTime =
     Instant.ofEpochMilli(this).atZone(zoneId)
 
 /**
@@ -54,11 +59,11 @@ fun ZonedDateTime.getEpochMilli(): Long = toInstant().toEpochMilli()
  * @param zoneId Zone to format the hour difference
  */
 fun Long.toDateFormat(dateFormat: String, zoneId: ZoneId = ZoneId.systemDefault()): String = try {
-        val formatter = DateTimeFormatter.ofPattern(dateFormat, Locale.getDefault())
-        toInstant(zoneId).format(formatter)
-    } catch (e: java.lang.Exception) {
-        STRING_EMPTY
-    }
+    val formatter = DateTimeFormatter.ofPattern(dateFormat, Locale.getDefault())
+    toInstant(zoneId).format(formatter)
+} catch (e: java.lang.Exception) {
+    STRING_EMPTY
+}
 
 /**
  * Convert a local date to a string with provided format
