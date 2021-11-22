@@ -25,6 +25,7 @@ abstract class EmaFragmentActivity<B:ViewBinding> : EmaBaseActivity<B>() {
         setupNavigation()
     }
 
+
     /**
      * Get the nav controller to handle the navigation through navigation architecture components.
      * The nav controller must be provided by an id called "navHostFragment"
