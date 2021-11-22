@@ -1,7 +1,9 @@
 package com.carmabs.ema.android.ui
 
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.view.View
+import androidx.annotation.CallSuper
 import androidx.appcompat.widget.Toolbar
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.carmabs.ema.android.R
@@ -12,12 +14,16 @@ import com.google.android.material.appbar.AppBarLayout
  */
 abstract class EmaToolbarFragmentActivity : EmaFragmentActivity() {
 
-
+    /**
+     * Setup the toolbar
+     * @param savedInstanceState for activity recreation
+     */
+    @CallSuper
     override fun onCreate(savedInstanceState: Bundle?) {
-
         //To enable support action bar
         if (!overrideTheme) setTheme(R.style.EmaTheme_NoActionBar)
         super.onCreate(savedInstanceState)
+        setupToolbar()
     }
 
     /**
@@ -38,14 +44,6 @@ abstract class EmaToolbarFragmentActivity : EmaFragmentActivity() {
      */
     abstract fun provideFixedToolbarTitle(): String?
 
-    /**
-     * Setup the toolbar
-     * @param savedInstanceState for activity recreation
-     */
-    override fun onCreateActivity(savedInstanceState: Bundle?) {
-        super.onCreateActivity(savedInstanceState)
-        setupToolbar()
-    }
 
     /**
      * Find the toolbar and its container for the activity. The toolbar must have the

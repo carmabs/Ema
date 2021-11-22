@@ -2,6 +2,7 @@ package com.carmabs.ema.android.ui
 
 import android.os.Bundle
 import android.view.View
+import androidx.annotation.CallSuper
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import com.carmabs.ema.android.R
@@ -14,9 +15,12 @@ import com.carmabs.ema.android.R
  */
 abstract class EmaFragmentActivity : EmaBaseActivity() {
 
-    override fun onCreateActivity(savedInstanceState: Bundle?) {
+    @CallSuper
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         setupNavigation()
     }
+
 
     /**
      * Get the nav controller to handle the navigation through navigation architecture components.

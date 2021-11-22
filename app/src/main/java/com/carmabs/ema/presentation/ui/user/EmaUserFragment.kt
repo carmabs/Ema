@@ -16,6 +16,7 @@ import com.carmabs.ema.presentation.base.BaseFragment
 import com.carmabs.ema.presentation.ui.home.EmaAndroidHomeToolbarViewModel
 import kotlinx.android.synthetic.main.fragment_user.*
 import kotlinx.android.synthetic.main.layout_ema_header.*
+import org.kodein.di.direct
 import org.kodein.di.instance
 
 
@@ -39,11 +40,11 @@ class EmaUserFragment : BaseFragment<EmaUserState, EmaUserViewModel, EmaNavigati
 
     override val androidViewModelSeed: EmaAndroidViewModel<EmaUserViewModel> by instance<EmaAndroidUserViewModel>()
 
-    private val toolbarSeed  by instance<EmaAndroidHomeToolbarViewModel>()
-
-    private val toolbarViewModel: EmaAndroidHomeToolbarViewModel by emaViewModelSharedDelegate{
-        toolbarSeed
-    }
+    private val toolbarViewModel: EmaAndroidHomeToolbarViewModel by emaViewModelSharedDelegate(
+        {
+            di.direct.instance()
+        }
+    )
 
     private lateinit var adapter: EmaUserAdapter
 
@@ -84,10 +85,14 @@ class EmaUserFragment : BaseFragment<EmaUserState, EmaUserViewModel, EmaNavigati
                 val itemLeft = data.extraData as? EmaUserLeftModel
                 itemLeft?.also {
                     Toast.makeText(
+                        requireContext(),
+                        R.string.user_hello_user.getFormattedString(
                             requireContext(),
-                            R.string.user_hello_user.getFormattedString(requireContext(), itemLeft.name),
-                            Toast.LENGTH_SHORT)
-                            .show()
+                            itemLeft.name
+                        ),
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
                 }
             }
 
@@ -95,10 +100,14 @@ class EmaUserFragment : BaseFragment<EmaUserState, EmaUserViewModel, EmaNavigati
                 val itemRight = data.extraData as? EmaUserRightModel
                 itemRight?.also {
                     Toast.makeText(
+                        requireContext(),
+                        R.string.user_hello_group.getFormattedString(
                             requireContext(),
-                            R.string.user_hello_group.getFormattedString(requireContext(), itemRight.number),
-                            Toast.LENGTH_SHORT)
-                            .show()
+                            itemRight.number
+                        ),
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
 
                 }
             }
