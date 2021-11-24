@@ -83,6 +83,12 @@ abstract class EmaBaseDialog<T : EmaDialogData> : DialogFragment(), DIAware,
         return data
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        contentView = view
+        view.setup(data)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -93,11 +99,6 @@ abstract class EmaBaseDialog<T : EmaDialogData> : DialogFragment(), DIAware,
             setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
             requestFeature(Window.FEATURE_NO_TITLE)
         }
-
-        contentView = view.apply {
-            setup(data)
-        }
-
         return view
     }
 
