@@ -5,6 +5,7 @@ apply plugin: 'kotlin-kapt'
 
 
 android {
+
     buildToolsVersion ema.buildTools
     defaultConfig {
         applicationId "com.carmabs.ema"
@@ -28,13 +29,23 @@ android {
         }
     }
 
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+    buildFeatures {
+        compose true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion "1.0.5"
+        kotlinCompilerVersion '1.5.31'
     }
 
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_1_8.toString()
+        useIR = true
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 
     packagingOptions {

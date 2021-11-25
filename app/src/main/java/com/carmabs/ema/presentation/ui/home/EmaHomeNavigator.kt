@@ -7,7 +7,7 @@ import com.carmabs.ema.R
 import com.carmabs.ema.android.navigation.EmaAndroidNavigator
 import com.carmabs.ema.core.navigator.EmaNavigationState
 import com.carmabs.ema.core.navigator.EmaNavigator
-import com.carmabs.ema.presentation.ui.error.EmaErrorToolbarViewActivity
+import com.carmabs.ema.presentation.ui.unlogged.activity.EmaUnloggedToolbarViewActivity
 import com.carmabs.ema.presentation.ui.user.EmaUserState
 
 /**
@@ -56,6 +56,6 @@ class EmaHomeNavigator(override val navController: NavController, override val a
 
     private fun toError() {
         //Use this method to enable back data to activity
-        navigateToEmaActivityWithResult(activity, Intent(activity,EmaErrorToolbarViewActivity::class.java))
+        navigateToEmaActivityWithResult(activity, Intent(activity, EmaUnloggedToolbarViewActivity::class.java))
     }
 }

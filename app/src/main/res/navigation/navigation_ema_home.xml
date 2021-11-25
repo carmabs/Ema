@@ -34,7 +34,7 @@
     </fragment>
     <activity
         android:id="@+id/emaErrorViewActivity"
-        android:name="com.carmabs.ema.presentation.ui.error.EmaErrorToolbarViewActivity"
+        android:name="com.carmabs.ema.presentation.ui.unlogged.activity.EmaUnloggedToolbarViewActivity"
         android:label="EmaErrorViewActivity" />
 
 

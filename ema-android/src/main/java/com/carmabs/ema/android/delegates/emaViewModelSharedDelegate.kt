@@ -4,6 +4,7 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.carmabs.ema.android.ui.EmaAndroidView
+import com.carmabs.ema.android.ui.EmaBaseFragment
 import com.carmabs.ema.android.ui.EmaFragment
 import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
 import com.carmabs.ema.core.state.EmaState
@@ -39,7 +40,7 @@ class emaViewModelSharedDelegate<VM : EmaAndroidViewModel<out EmaViewModel<*,*>>
         }
 
         return when (emaView) {
-            is EmaFragment<*, *, *, *> -> {
+            is EmaBaseFragment -> {
                 emaView.addExtraViewModel(
                     viewModelSeed.invoke(),
                     emaView,

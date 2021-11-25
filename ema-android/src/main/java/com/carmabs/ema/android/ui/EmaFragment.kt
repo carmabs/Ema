@@ -36,27 +36,9 @@ abstract class EmaFragment<B : ViewBinding, S : EmaBaseState, VM : EmaViewModel<
 abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigationState> :
     EmaBaseFragment<S, VM, NS>() {
 
-    override val viewModelSeed: VM
-        get() = androidViewModelSeed.emaViewModel
-
     private var viewJob: MutableList<Job>? = null
 
-    private val extraViewJobs: MutableList<Job> by lazy {
-        mutableListOf()
-    }
-
-    override val coroutineScope: CoroutineScope
-        get() = lifecycleScope
-
-    /**
-     * Determines first execution for each one of the state methods. EmaView determines when to set it to false.
-     */
-    final override var isFirstNormalExecution: Boolean by emaBooleanDelegate(true)
-
-    final override var isFirstOverlayedExecution: Boolean by emaBooleanDelegate(true)
-
-    final override var isFirstErrorExecution: Boolean by emaBooleanDelegate(true)
-
+    @CallSuper
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -94,6 +76,7 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
     protected val vm: VM by emaViewModelDelegate()
     private var viewJob: MutableList<Job>? = null
 
+    @CallSuper
     override fun onStart() {
         super.onStart()
         viewJob = onBindView(
@@ -102,82 +85,9 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
         )
     }
 
-
-    /**
-     * Notifies the view model that view has been gone to foreground.
-     */
     @CallSuper
-    override fun onResume() {
-        super.onResume()
-        onResumeView(vm)
-    }
-
-    /**
-     * Notifies the view model that view has been gone to background.
-     */
-    @CallSuper
-    override fun onPause() {
-        onPauseView(vm)
-        super.onPause()
-    }
-
-    protected open fun provideToolbarTitle(): String? = null
-
-    /**
-     * Previous state for comparing state properties update
-     */
-    override var previousState: S? = null
-
-    /**
-     * Add a view model observer to current fragment
-     * @param viewModelAttachedSeed is the view model seed will used as factory instance if there is no previous
-     * view model retained by the OS
-     * @param fragment the fragment scope
-     * @param fragmentActivity the activity scope, if it is provided this will be the scope of the view model attached
-     * @param observerFunction the observer of the view model attached
-     * @return The view model attached
-     */
-    fun <AVM : EmaAndroidViewModel<out EmaViewModel<*, *>>> addExtraViewModel(
-        viewModelAttachedSeed: AVM,
-        fragment: Fragment,
-        fragmentActivity: FragmentActivity? = null,
-        observerFunction: ((attachedState: EmaState<*>) -> Unit)? = null
-    ): AVM {
-        val viewModel =
-            fragmentActivity?.let {
-                ViewModelProvider(
-                    it,
-                    EmaFactory(viewModelAttachedSeed)
-                )[viewModelAttachedSeed::class.java]
-            }
-                ?: ViewModelProvider(
-                    fragment,
-                    EmaFactory(viewModelAttachedSeed)
-                )[viewModelAttachedSeed::class.java]
-
-        observerFunction?.also {
-            val job = coroutineScope.launch {
-                viewModel.emaViewModel.getObservableState().collect {
-                    observerFunction.invoke(it)
-                }
-            }
-            extraViewJobs.add(job)
-        }
-        extraViewModelList.add(viewModel as EmaAndroidViewModel<VM>)
-
-        return viewModel
-    }
-
-    /**
-     * Determine if the view model lifecycle is attached to the Activity or to the Fragment
-     */
-    open val fragmentViewModelScope: Boolean = true
-
-    /**
-     * Destroy the view and unbind the observers from view model
-     */
     override fun onStop() {
-        onStopView(viewJob, vm)
+        onUnbindView(viewJob)
         super.onStop()
         Log.d("NAV", "ONSTOP")
     }

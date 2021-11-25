@@ -1,4 +1,4 @@
-package com.carmabs.ema.presentation.ui.error
+package com.carmabs.ema.presentation.ui.unlogged
 
 import android.app.Activity
 import android.content.Intent
@@ -17,16 +17,16 @@ import com.carmabs.ema.presentation.ui.backdata.EmaBackToolbarActivity
  *
  * Created by: Carlos Mateo Benito on 20/1/19.
  */
-class EmaErrorNavigator(
+class EmaUnloggedNavigator(
         override val navController: NavController,
         override val activity: Activity
-) : EmaAndroidNavigator<EmaErrorNavigator.Navigation> {
+) : EmaAndroidNavigator<EmaUnloggedNavigator.Navigation> {
 
     sealed class Navigation : EmaNavigationState {
 
         object BackUser : Navigation() {
             override fun navigateWith(navigator: EmaNavigator<out EmaNavigationState>) {
-                (navigator as? EmaErrorNavigator)?.toBackUser()
+                (navigator as? EmaUnloggedNavigator)?.toBackUser()
             }
         }
     }
