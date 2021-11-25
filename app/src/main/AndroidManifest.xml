@@ -22,7 +22,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.carmabs.ema.presentation.ui.error.EmaErrorToolbarViewActivity"
+            android:name="com.carmabs.ema.presentation.ui.unlogged.activity.EmaUnloggedToolbarViewActivity"
             android:launchMode="singleInstance"
             android:exported="false"/>
         <activity android:name=".presentation.ui.backdata.EmaBackToolbarActivity"

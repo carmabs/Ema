@@ -286,7 +286,7 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
         viewModel.onPauseView()
     }
 
-    fun onStopView(viewJob: MutableList<Job>?, viewModel: VM) {
+    fun onUnbindView(viewJob: MutableList<Job>?) {
         viewJob?.forEach {
             try {
                 if (!it.isCancelled && !it.isCompleted)

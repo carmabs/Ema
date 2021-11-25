@@ -1,5 +1,13 @@
 package com.carmabs.ema.android.ui
 
+import android.content.Intent
+import androidx.annotation.CallSuper
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import com.carmabs.ema.android.delegates.emaViewModelDelegate
+import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
+import com.carmabs.ema.android.viewmodel.EmaFactory
 import android.view.LayoutInflater
 import com.carmabs.ema.android.databinding.EmaToolbarActivityBinding
 import com.carmabs.ema.core.navigator.EmaNavigationState
@@ -172,7 +180,7 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
      */
     override fun onStop() {
         removeExtraViewModels()
-        onStopView(viewJob, vm)
+        onUnbindView(viewJob)
         super.onStop()
     }
 

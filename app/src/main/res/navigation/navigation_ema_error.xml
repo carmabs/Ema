@@ -6,6 +6,6 @@
     app:startDestination="@id/emaErrorViewFragment">
     <fragment
         android:id="@+id/emaErrorViewFragment"
-        android:name="com.carmabs.ema.presentation.ui.error.EmaErrorViewFragment"
+        android:name="com.carmabs.ema.presentation.ui.unlogged.compose.EmaComposableUnloggedViewFragment"
         tools:layout="@layout/fragment_error"/>
 </navigation>

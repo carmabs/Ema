@@ -2,6 +2,9 @@ package com.carmabs.ema.android.di
 
 import org.kodein.di.DI
 import org.kodein.di.DIAware
+import org.kodein.di.direct
+import org.kodein.di.instance
+import kotlin.reflect.KProperty
 
 /**
  * Created by Carlos Mateo Benito on 2020-03-09.
@@ -28,3 +31,12 @@ interface Injector  : DIAware {
     }
 
 }
+/*
+@JvmInline
+value class InstanceDirectDelegate(val di:DI) {
+    inline operator fun <reified T>getValue(thisRef: Any?, property: KProperty<*>): T {
+        return di.direct.instance() as T
+    }
+}
+  */
+inline fun<reified T> Injector.instanceDirect() = di.direct.instance() as T

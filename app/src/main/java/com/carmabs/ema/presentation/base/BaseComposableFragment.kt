@@ -36,14 +36,14 @@ abstract class BaseComposableFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>
     }
 
     @Composable
-    override fun onSingleEventComposable(data: EmaExtraData) {
-        onSingle(data)
-    }
-
-    @Composable
     override fun onStateErrorComposable(error: Throwable) {
         onError(error)
     }
+
+    override fun onSingleEvent(data: EmaExtraData) {
+        onSingle(data)
+    }
+
 
     @Composable
     abstract fun onNormal(data: S)
@@ -51,7 +51,6 @@ abstract class BaseComposableFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>
     @Composable
     abstract fun onAlternative(data: EmaExtraData)
 
-    @Composable
     abstract fun onSingle(data: EmaExtraData)
 
     @Composable

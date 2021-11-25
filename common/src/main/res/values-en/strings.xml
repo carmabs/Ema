@@ -57,5 +57,6 @@
     <string name="ema_header_subtitle">MVVM Architecture, powered by Carmabs</string>
     <string name="ema_back_data_sample">EMA Back Data Sample</string>
     <string name="ema_recycler_adapter_sample">EMA Recycler Adapter Sample</string>
+    <string name="error_show_single_event">Enviar Single Event</string>
 
 </resources>

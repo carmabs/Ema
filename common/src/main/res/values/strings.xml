@@ -60,6 +60,10 @@
     <string name="ema_header_subtitle">MVVM Architecture, powered by Carmabs</string>
     <string name="ema_back_data_sample">Ejemplo datos de retorno</string>
     <string name="ema_recycler_adapter_sample">Ejemplo EMA Recycler Adapter</string>
+    <string name="error_dialog_title">OnAlternative Dialog</string>
+    <string name="error_show_dialog">Mostrar diálogo</string>
+    <string name="error_show_single_event">Enviar Single Event</string>
+    <string name="error_toast_sample">Single Event Sample</string>
 
 
 </resources>
