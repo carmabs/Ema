@@ -42,6 +42,10 @@ android {
 
 dependencies {
 
+    // Java language implementation
+    // Kotlin
+    api emaAndroid.fragment
+
     //Java Time API for SDK version < 26
     coreLibraryDesugaring emaAndroid.desugaring
 
