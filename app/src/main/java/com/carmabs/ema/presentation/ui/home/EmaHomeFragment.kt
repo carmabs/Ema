@@ -14,6 +14,7 @@ import com.carmabs.domain.exception.LoginException
 import com.carmabs.domain.exception.PasswordEmptyException
 import com.carmabs.domain.exception.UserEmptyException
 import com.carmabs.ema.R
+import com.carmabs.ema.android.di.instanceDirect
 import com.carmabs.ema.android.extension.checkUpdate
 import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
 import com.carmabs.ema.core.constants.STRING_EMPTY
@@ -45,9 +46,12 @@ import org.kodein.di.instance
  */
 class EmaHomeFragment : BaseFragment<FragmentHomeBinding,EmaHomeState, EmaHomeViewModel, EmaHomeNavigator.Navigation>() {
 
-    override val androidViewModelSeed: EmaAndroidViewModel<EmaHomeViewModel> by instance<EmaAndroidHomeViewModel>()
 
-    override val navigator: EmaHomeNavigator  by instance()
+    override fun provideAndroidViewModel(): EmaAndroidViewModel<EmaHomeViewModel> {
+        return instanceDirect()
+    }
+
+    override val navigator: EmaHomeNavigator by instance()
 
     //As we can see we can use an instance by kodein or generate it by class instance
     private val errorDialog: EmaDialogProvider by lazy { SimpleDialogProvider(childFragmentManager) }
@@ -87,7 +91,11 @@ class EmaHomeFragment : BaseFragment<FragmentHomeBinding,EmaHomeState, EmaHomeVi
     }
 
     private fun setupButtons(viewModel: EmaHomeViewModel) {
-        swLightLoginRememberPassword.setOnCheckedChangeListener { _, isChecked -> viewModel.onActionRemember(isChecked) }
+        swLightLoginRememberPassword.setOnCheckedChangeListener { _, isChecked ->
+            viewModel.onActionRemember(
+                isChecked
+            )
+        }
         ivHomeTouchEmptyUser.setOnClickListener { viewModel.onActionDeleteUser() }
         ivHomePassEmptyPassword.setOnClickListener { viewModel.onActionDeletePassword() }
         ivHomePassSeePassword.setOnClickListener { viewModel.onActionShowPassword() }
@@ -143,18 +151,18 @@ class EmaHomeFragment : BaseFragment<FragmentHomeBinding,EmaHomeState, EmaHomeVi
 
     private fun showErrorDialog() {
         errorDialog.show(SimpleDialogData(
-                getString(R.string.home_invalid_credentials_title),
-                getString(R.string.home_invalid_credentials_message),
-                accept = getString(R.string.dialog_accept)
+            getString(R.string.home_invalid_credentials_title),
+            getString(R.string.home_invalid_credentials_message)
         ))
     }
 
     private fun showLoadingDialog() {
         loadingDialog.show(
-                LoadingDialogData(
-                        getString(R.string.home_loading_title),
-                        getString(R.string.home_loading_title_message)
-                ))
+            LoadingDialogData(
+                getString(R.string.home_loading_title),
+                getString(R.string.home_loading_title_message)
+            )
+        )
     }
 
 
@@ -176,7 +184,7 @@ class EmaHomeFragment : BaseFragment<FragmentHomeBinding,EmaHomeState, EmaHomeVi
         // -> TextWatcher calls viewmodel
         // -> ¡INFINITE LOOP!
         //
-        checkUpdate(etUser.text.toString(),data.userName) {
+        checkUpdate(etUser.text.toString(), data.userName) {
             etUser.setText(data.userName)
         }
 
@@ -211,7 +219,11 @@ class EmaHomeFragment : BaseFragment<FragmentHomeBinding,EmaHomeState, EmaHomeVi
 
     override fun FragmentHomeBinding.onSingle(data: EmaExtraData) {
         when (data.type) {
-            EmaHomeViewModel.EVENT_MESSAGE -> Toast.makeText(requireContext(), data.extraData as String, Toast.LENGTH_LONG).show()
+            EmaHomeViewModel.EVENT_MESSAGE -> Toast.makeText(
+                requireContext(),
+                data.extraData as String,
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
 

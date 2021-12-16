@@ -3,6 +3,8 @@ package com.carmabs.ema.presentation.ui.unlogged
 import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.core.state.EmaState
 import com.carmabs.ema.presentation.base.BaseViewModel
+import com.carmabs.ema.presentation.dialog.simple.SimpleDialogData
+import com.carmabs.ema.presentation.dialog.simple.SimpleDialogListener
 import kotlin.random.Random
 
 
@@ -10,7 +12,7 @@ class EmaUnloggedViewModel : BaseViewModel<EmaUnloggedState, EmaUnloggedNavigato
 
     lateinit var toolbarViewModel: EmaUnloggedToolbarViewModel
 
-    companion object{
+    companion object {
         const val EXTRA_DATA_SHOW_DIALOG = 0
     }
 
@@ -49,10 +51,29 @@ class EmaUnloggedViewModel : BaseViewModel<EmaUnloggedState, EmaUnloggedNavigato
     }
 
     fun onActionShowDialog() {
-        updateToAlternativeState(EmaExtraData(EXTRA_DATA_SHOW_DIALOG,"Test Dialog String"))
-    }
+        updateToOverlayedState(
+            EmaExtraData(
+                EXTRA_DATA_SHOW_DIALOG, Pair(
+                    SimpleDialogData(
+                        title = "Test Dialog Title",
+                        message = "Test Dialog Message",
+                        showCancel = true
+                    ),
+                    object : SimpleDialogListener {
+                        override fun onCancelClicked() {
+                            updateToNormalState()
+                        }
 
-    fun onActionHideDialog() {
-        updateToNormalState()
+                        override fun onConfirmClicked() {
+                            updateToNormalState()
+                        }
+
+                        override fun onBackPressed() {
+                            updateToNormalState()
+                        }
+                    }
+                )
+            )
+        )
     }
 }

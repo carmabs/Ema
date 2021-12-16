@@ -3,6 +3,7 @@ package com.carmabs.ema.android.ui
 import android.content.Intent
 import android.os.Bundle
 import android.os.PersistableBundle
+import android.view.LayoutInflater
 import android.view.View
 import androidx.annotation.CallSuper
 import androidx.appcompat.widget.Toolbar
@@ -12,6 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.viewbinding.ViewBinding
 import com.carmabs.ema.android.R
+import com.carmabs.ema.android.databinding.EmaToolbarActivityBinding
 import com.carmabs.ema.android.delegates.emaViewModelDelegate
 import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
 import com.carmabs.ema.android.viewmodel.EmaFactory
@@ -33,79 +35,11 @@ import kotlinx.coroutines.launch
  */
 abstract class EmaToolbarFragmentActivity<B:ViewBinding,S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigationState> : EmaFragmentActivity<B>(), EmaAndroidView<S, VM, NS>  {
 
-    /**
-     * Setup the toolbar
-     * @param savedInstanceState for activity recreation
-     */
-    @CallSuper
-    override fun onCreate(savedInstanceState: Bundle?) {
-        //To enable support action bar
-        if (!overrideTheme) setTheme(R.style.EmaTheme_NoActionBar)
-        super.onCreate(savedInstanceState)
-        setupToolbar()
+    final override val androidViewModelSeed: EmaAndroidViewModel<VM> by lazy {
+        provideAndroidViewModel()
     }
 
-    /**
-     * The toobar for the activity
-     */
-    protected lateinit var toolbar: Toolbar
-        private set
-
-    /**
-     * The toolbar container for the activity
-     */
-    protected lateinit var toolbarLayout: AppBarLayout
-
-
-    /**
-     * Title for toolbar. If it is null the label xml tag in navigation layout is set for the toolbar
-     * title, otherwise this title will be set for all fragments inside this activity.
-     */
-    abstract fun provideFixedToolbarTitle(): String?
-
-
-    /**
-     * Find the toolbar and its container for the activity. The toolbar must have the
-     * id=@+id/emaToolbar. The toolbar contaienr [AppBarLayout] must have the id=@+ìd/emaAppBarLayout
-     */
-    private fun setupToolbar() {
-
-        val tbToolbar = findViewById<Toolbar>(R.id.emaToolbar)
-                ?: throw IllegalArgumentException("You must provide in your activity xml a Toolbar with android:id=@+id/emaToolbar")
-        val lToolbar = findViewById<AppBarLayout>(R.id.emaAppBarLayout)
-                ?: throw IllegalArgumentException("You must provide in your activity xml an AppBarLayout with android:id=@+ìd/emaAppBarLayout")
-
-        setSupportActionBar(tbToolbar)
-        toolbarLayout = lToolbar
-        toolbar = tbToolbar
-        setupActionBarWithNavController(navController)
-        navController.addOnDestinationChangedListener { _, destination, _ ->
-            setToolbarTitle(provideFixedToolbarTitle())
-        }
-    }
-
-    protected fun setToolbarTitle(title: String?) {
-        supportActionBar?.title = title ?: provideFixedToolbarTitle() ?: navController.currentDestination?.label
-    }
-
-    /**
-     * Hides the toolbar
-     */
-    protected open fun hideToolbar(gone: Boolean = true) {
-        toolbarLayout.visibility = if (gone) View.GONE else View.INVISIBLE
-    }
-
-    /**
-     * Show the toolbar
-     */
-    protected open fun showToolbar() {
-        toolbarLayout.visibility = View.VISIBLE
-    }
-
-    /**
-     * Set true if activity use a custom theme to avoid the EmaTheme_NoActionBar theme set up
-     */
-    protected open val overrideTheme = false
+    abstract fun provideAndroidViewModel(): EmaAndroidViewModel<VM>
 
     companion object {
         const val RESULT_DEFAULT_CODE: Int = 57535
@@ -118,6 +52,18 @@ abstract class EmaToolbarFragmentActivity<B:ViewBinding,S : EmaBaseState, VM : E
     override val viewModelSeed: VM
         get() = androidViewModelSeed.emaViewModel
 
+    /**
+     * Determines first execution for each one of the state methods. EmaView determines when to set it to false.
+     */
+    protected var isFirstNormalExecution: Boolean = true
+        private set
+
+    protected var isFirstOverlayedExecution: Boolean = true
+        private set
+
+    protected var isFirstErrorExecution: Boolean = true
+        private set
+
     private var viewJob: MutableList<Job>? = null
 
     /**
@@ -129,15 +75,6 @@ abstract class EmaToolbarFragmentActivity<B:ViewBinding,S : EmaBaseState, VM : E
     private val extraViewJobs: MutableList<Job> by lazy {
         mutableListOf<Job>()
     }
-
-    /**
-     * Determines first execution for each one of the state methods. EmaView determines when to set it to false.
-     */
-    final override var isFirstNormalExecution: Boolean by emaBooleanDelegate(true)
-
-    final override var isFirstOverlayedExecution: Boolean by emaBooleanDelegate(true)
-
-    final override var isFirstErrorExecution: Boolean by emaBooleanDelegate(true)
 
     /**
      * The view model of the fragment
@@ -167,13 +104,46 @@ abstract class EmaToolbarFragmentActivity<B:ViewBinding,S : EmaBaseState, VM : E
     override val inputState: S? by lazy { getInState() }
 
     /**
+     * The toobar for the activity
+     */
+    protected lateinit var toolbar: Toolbar
+        private set
+
+    /**
+     * The toolbar container for the activity
+     */
+    protected lateinit var toolbarLayout: AppBarLayout
+
+
+    /**
+     * Title for toolbar. If it is null the label xml tag in navigation layout is set for the toolbar
+     * title, otherwise this title will be set for all fragments inside this activity.
+     */
+    abstract fun provideFixedToolbarTitle(): String?
+
+    /**
+     * Set true if activity use a custom theme to avoid the EmaTheme_NoActionBar theme set up
+     */
+    protected open val overrideTheme = false
+
+    /**
+     * Setup the toolbar
+     * @param savedInstanceState for activity recreation
+     */
+    @CallSuper
+    override fun onCreate(savedInstanceState: Bundle?) {
+        //To enable support action bar
+        if (!overrideTheme) setTheme(R.style.EmaTheme_NoActionBar)
+        super.onCreate(savedInstanceState)
+        setupToolbar()
+    }
+    /**
      * Initialize ViewModel on activity creation
      */
+    @CallSuper
     override fun onStart() {
-        viewJob = onStartAndBindData(
-            this,
-            vm
-        )
+        onStartView(vm)
+        viewJob = onBindView(this.lifecycleScope, vm)
         super.onStart()
     }
 
@@ -199,6 +169,45 @@ abstract class EmaToolbarFragmentActivity<B:ViewBinding,S : EmaBaseState, VM : E
      * Previous state for comparing state properties update
      */
     override var previousState: S? = null
+
+
+    /**
+     * Find the toolbar and its container for the activity. The toolbar must have the
+     * id=@+id/emaToolbar. The toolbar contaienr [AppBarLayout] must have the id=@+ìd/emaAppBarLayout
+     */
+    private fun setupToolbar() {
+
+        val tbToolbar = findViewById<Toolbar>(R.id.emaToolbar)
+            ?: throw IllegalArgumentException("You must provide in your activity xml a Toolbar with android:id=@+id/emaToolbar")
+        val lToolbar = findViewById<AppBarLayout>(R.id.emaAppBarLayout)
+            ?: throw IllegalArgumentException("You must provide in your activity xml an AppBarLayout with android:id=@+ìd/emaAppBarLayout")
+
+        setSupportActionBar(tbToolbar)
+        toolbarLayout = lToolbar
+        toolbar = tbToolbar
+        setupActionBarWithNavController(navController)
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            setToolbarTitle(provideFixedToolbarTitle())
+        }
+    }
+
+    protected fun setToolbarTitle(title: String?) {
+        supportActionBar?.title = title ?: provideFixedToolbarTitle() ?: navController.currentDestination?.label
+    }
+
+    /**
+     * Hides the toolbar
+     */
+    protected open fun hideToolbar(gone: Boolean = true) {
+        toolbarLayout.visibility = if (gone) View.GONE else View.INVISIBLE
+    }
+
+    /**
+     * Show the toolbar
+     */
+    protected open fun showToolbar() {
+        toolbarLayout.visibility = View.VISIBLE
+    }
 
     /**
      * Add a view model observer to current fragment
@@ -258,13 +267,8 @@ abstract class EmaToolbarFragmentActivity<B:ViewBinding,S : EmaBaseState, VM : E
      */
     override fun onStop() {
         removeExtraViewModels()
-        onStopBinding(vm, viewJob)
+        onUnbindView(viewJob)
         super.onStop()
-    }
-
-    override fun onBackPressed() {
-        if (!vm.onActionHardwareBackPressed())
-            super.onBackPressed()
     }
 
     /**
@@ -278,20 +282,23 @@ abstract class EmaToolbarFragmentActivity<B:ViewBinding,S : EmaBaseState, VM : E
         extraViewModelList.clear()
     }
 
-    final override fun onStateNormal(data: S) {
+    final override fun onEmaStateNormal(data: S) {
         binding.onStateNormal(data)
+        isFirstNormalExecution = false
     }
 
-    final override fun onStateOverlayed(data: EmaExtraData) {
+    final override fun onEmaStateOverlayed(data: EmaExtraData) {
         binding.onStateOverlayed(data)
+        isFirstOverlayedExecution = false
     }
 
     final override fun onSingleEvent(data: EmaExtraData) {
         binding.onSingleEvent(data)
     }
 
-    final override fun onStateError(error: Throwable) {
+    final override fun onEmaStateError(error: Throwable) {
         binding.onStateError(error)
+        isFirstErrorExecution = false
     }
 
     abstract fun B.onStateNormal(data: S)

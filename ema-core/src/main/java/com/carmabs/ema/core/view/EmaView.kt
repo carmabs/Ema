@@ -74,10 +74,13 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
         onEmaStateNormal(state.data)
         when (state) {
             is EmaState.Overlayed -> {
-                onStateOverlayed(state.dataOverlayed)
+                onEmaStateOverlayed(state.dataOverlayed)
             }
             is EmaState.Error -> {
                 onEmaStateError(state.error)
+            }
+            else->{
+                //DO NOTHING
             }
         }
 
@@ -185,7 +188,7 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
      * Called when view model trigger a updateOverlayedState event
      * @param data with information about updateOverlayedState
      */
-    fun onStateOverlayed(data: EmaExtraData)
+    fun onEmaStateOverlayed(data: EmaExtraData)
 
     /**
      * Called when view model trigger an only once notified event.Not called when the view is first time attached to the view model

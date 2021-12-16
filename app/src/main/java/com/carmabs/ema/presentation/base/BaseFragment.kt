@@ -2,6 +2,7 @@ package com.carmabs.ema.presentation.base
 
 import androidx.viewbinding.ViewBinding
 import com.carmabs.ema.android.ui.EmaFragment
+import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
 import com.carmabs.ema.core.navigator.EmaNavigationState
 import com.carmabs.ema.core.state.EmaBaseState
 import com.carmabs.ema.core.state.EmaExtraData

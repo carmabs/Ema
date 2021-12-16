@@ -1,7 +1,6 @@
 package com.carmabs.ema.presentation.base
 
 import androidx.compose.runtime.Composable
-import com.carmabs.ema.android.ui.EmaFragment
 import com.carmabs.ema.android.uicompose.EmaComposableFragment
 import com.carmabs.ema.core.navigator.EmaNavigationState
 import com.carmabs.ema.core.state.EmaBaseState
@@ -21,26 +20,24 @@ import org.kodein.di.DI
 abstract class BaseComposableFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigationState> :
     EmaComposableFragment<S, VM, NS>() {
 
-    override val fragmentViewModelScope: Boolean = true
-
     override fun injectFragmentModule(kodein: DI.MainBuilder): DI.Module? = fragmentInjection(this)
 
     @Composable
-    override fun onStateNormalComposable(data: S) {
+    final override fun onStateNormalComposable(data: S) {
         onNormal(data)
     }
 
     @Composable
-    override fun onStateAlternativeComposable(data: EmaExtraData) {
-        onAlternative(data)
+    final override fun onStateOverlayedComposable(data: EmaExtraData) {
+        onOverlayed(data)
     }
 
     @Composable
-    override fun onStateErrorComposable(error: Throwable) {
+    final override fun onStateErrorComposable(error: Throwable) {
         onError(error)
     }
 
-    override fun onSingleEvent(data: EmaExtraData) {
+    final override fun onSingleEvent(data: EmaExtraData) {
         onSingle(data)
     }
 
@@ -49,11 +46,11 @@ abstract class BaseComposableFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>
     abstract fun onNormal(data: S)
 
     @Composable
-    abstract fun onAlternative(data: EmaExtraData)
+    protected open fun onOverlayed(data: EmaExtraData){}
 
-    abstract fun onSingle(data: EmaExtraData)
+    protected open fun onSingle(data: EmaExtraData){}
 
     @Composable
-    abstract fun onError(error: Throwable)
+    protected open fun onError(error: Throwable){}
 
 }

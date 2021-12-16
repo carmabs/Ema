@@ -5,6 +5,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import com.carmabs.ema.R
+import com.carmabs.ema.android.databinding.EmaToolbarActivityBinding
 import com.carmabs.ema.android.di.instanceDirect
 import com.carmabs.ema.android.extension.dpToPx
 import com.carmabs.ema.android.extension.getColor
@@ -18,7 +19,6 @@ import com.carmabs.ema.presentation.ui.unlogged.EmaUnloggedNavigator
 import com.carmabs.ema.presentation.ui.unlogged.EmaUnloggedToolbarState
 import com.carmabs.ema.presentation.ui.unlogged.EmaUnloggedToolbarViewModel
 import org.kodein.di.DI
-import org.kodein.di.direct
 import org.kodein.di.instance
 import kotlin.math.roundToInt
 
@@ -33,12 +33,12 @@ import kotlin.math.roundToInt
  **/
 class EmaUnloggedToolbarViewActivity : EmaActivity<EmaUnloggedToolbarState, EmaUnloggedToolbarViewModel, EmaUnloggedNavigator.Navigation>() {
 
-    override val navGraph: Int = R.navigation.navigation_ema_error
+    override val navGraph: Int = R.navigation.navigation_ema_unlogged
 
-    override fun provideFixedToolbarTitle(): String = getString(R.string.error_toolbar_title)
+    override fun provideFixedToolbarTitle(): String = getString(R.string.unlogged_toolbar_title)
 
-    override val androidViewModelSeed: EmaAndroidViewModel<EmaUnloggedToolbarViewModel> by lazy {
-        EmaAndroidUnloggedToolbarViewModel(instanceDirect())
+    override fun provideAndroidViewModel(): EmaAndroidViewModel<EmaUnloggedToolbarViewModel> {
+        return EmaAndroidUnloggedToolbarViewModel(instanceDirect())
     }
 
     override val navigator: EmaUnloggedNavigator by instance()
@@ -63,7 +63,7 @@ class EmaUnloggedToolbarViewActivity : EmaActivity<EmaUnloggedToolbarState, EmaU
         }
     }
 
-    override fun onStateNormal(data: EmaUnloggedToolbarState) {
+    override fun EmaToolbarActivityBinding.onStateNormal(data: EmaUnloggedToolbarState) {
         checkToolbarVisibility(data)
     }
 
@@ -74,16 +74,8 @@ class EmaUnloggedToolbarViewActivity : EmaActivity<EmaUnloggedToolbarState, EmaU
             hideToolbar()
     }
 
-    override fun onStateAlternative(data: EmaExtraData) {
-
-    }
-
-    override fun onSingleEvent(data: EmaExtraData) {
-        Toast.makeText(this, R.string.error_user_created.getFormattedString(this, data.extraData as Int), Toast.LENGTH_SHORT).show()
-
-    }
-
-    override fun onStateError(error: Throwable) {
+    override fun EmaToolbarActivityBinding.onSingleEvent(data: EmaExtraData) {
+        Toast.makeText(this@EmaUnloggedToolbarViewActivity, R.string.unlogged_user_created.getFormattedString(this@EmaUnloggedToolbarViewActivity, data.extraData as Int), Toast.LENGTH_SHORT).show()
 
     }
 
