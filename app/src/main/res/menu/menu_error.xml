@@ -4,6 +4,6 @@
     <item
         android:id="@+id/menu_action_error_hide_toolbar"
         android:icon="@drawable/ic_eye_menu"
-        android:title="@string/error_hide_toolbar"
+        android:title="@string/unlogged_hide_toolbar"
         app:showAsAction="ifRoom" />
 </menu>

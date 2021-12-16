@@ -6,22 +6,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.CallSuper
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.ComposeView
 import androidx.lifecycle.lifecycleScope
 import com.carmabs.ema.android.ui.EmaBaseFragment
-import com.carmabs.ema.core.constants.INT_ZERO
 import com.carmabs.ema.core.navigator.EmaNavigationState
 import com.carmabs.ema.core.state.EmaBaseState
 import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.core.state.EmaState
 import com.carmabs.ema.core.viewmodel.EmaViewModel
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.collect
 
 
 /**
@@ -45,8 +39,8 @@ abstract class EmaComposableFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>,
                 val emaState = state.value
                 onStateNormalComposable(data = emaState.data)
                 when(emaState){
-                    is EmaState.Alternative -> {
-                        onStateAlternativeComposable(data = emaState.dataAlternative)
+                    is EmaState.Overlayed -> {
+                        onStateOverlayedComposable(data = emaState.dataOverlayed)
                     }
                     is EmaState.Error -> {
                         onStateErrorComposable(error = emaState.error)
@@ -63,6 +57,7 @@ abstract class EmaComposableFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>,
         viewJobs.add(onBindSingle(lifecycleScope,vm))
     }
 
+    @CallSuper
     override fun onStop() {
         onUnbindView(viewJobs)
         super.onStop()
@@ -73,15 +68,17 @@ abstract class EmaComposableFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>,
     abstract fun onStateNormalComposable(data:S)
 
     @Composable
-    abstract fun onStateAlternativeComposable(data:EmaExtraData)
+    protected open fun onStateOverlayedComposable(data:EmaExtraData){}
 
     @Composable
-    abstract fun onStateErrorComposable(error: Throwable)
+    protected open fun onStateErrorComposable(error: Throwable){}
 
     // Discard these methods because they are called now by compose
     final override fun onStateNormal(data: S) {}
 
-    final override fun onStateAlternative(data: EmaExtraData) {}
+    final override fun onStateOverlayed(data: EmaExtraData) {}
 
     final override fun onStateError(error: Throwable) {}
+
+    override fun onSingleEvent(data: EmaExtraData) {}
 }

@@ -5,19 +5,15 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.DialogFragment
 import androidx.annotation.CallSuper
 import androidx.fragment.app.Fragment
-import androidx.viewbinding.ViewBinding
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.carmabs.ema.android.delegates.emaViewModelDelegate
 import com.carmabs.ema.android.di.Injector
 import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
 import com.carmabs.ema.android.viewmodel.EmaFactory
-import com.carmabs.ema.core.delegate.emaBooleanDelegate
 import com.carmabs.ema.core.navigator.EmaNavigationState
 import com.carmabs.ema.core.state.EmaBaseState
 import com.carmabs.ema.core.state.EmaExtraData
@@ -27,12 +23,9 @@ import com.carmabs.ema.core.view.EmaViewModelTrigger
 import com.carmabs.ema.core.viewmodel.EmaViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.kodein.di.DI
 import org.kodein.di.android.x.closestDI
-import org.kodein.di.direct
-import org.kodein.di.instance
 
 
 /**
@@ -42,25 +35,24 @@ import org.kodein.di.instance
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
-abstract class EmaBaseFragment<B : ViewBinding> : Fragment(), Injector {
 abstract class EmaBaseFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigationState> :
 Fragment(), EmaAndroidView<S, VM, NS>, Injector {
-
-    private var _binding: B? = null
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
-    protected val binding get() = _binding!!
 
     protected var isFirstNormalExecution: Boolean = true
         private set
 
-    protected var isFirstAlternativeExecution: Boolean = true
+    protected var isFirstOverlayedExecution: Boolean = true
         private set
 
     protected var isFirstErrorExecution: Boolean = true
     private set
 
+
+    final override val androidViewModelSeed: EmaAndroidViewModel<VM> by lazy {
+        provideAndroidViewModel()
+    }
+
+    abstract fun provideAndroidViewModel(): EmaAndroidViewModel<VM>
 
     final override val parentKodein: DI by closestDI()
 
@@ -72,23 +64,11 @@ Fragment(), EmaAndroidView<S, VM, NS>, Injector {
     final override fun injectModule(kodeinBuilder: DI.MainBuilder): DI.Module? =
         injectFragmentModule(kodeinBuilder)
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        _binding = createViewBinding(inflater, container)
-        return binding.root
-    /**
-     * The child classes implement this methods to return the module that provides the fragment scope objects
-     * @param kodein The kodein object which provide the injection
-     * @return The Kodein module which makes the injection
-     */
+
     abstract fun injectFragmentModule(kodein: DI.MainBuilder): DI.Module?
 
 
     override val viewModelSeed: VM
-
     get() = androidViewModelSeed.emaViewModel
 
     private val extraViewJobs: MutableList<Job> by lazy {
@@ -106,7 +86,7 @@ Fragment(), EmaAndroidView<S, VM, NS>, Injector {
     ): View? {
         previousState = null
         isFirstNormalExecution = true
-        isFirstAlternativeExecution = true
+        isFirstOverlayedExecution = true
         isFirstErrorExecution = true
         return super.onCreateView(inflater, container, savedInstanceState)
     }
@@ -223,14 +203,9 @@ Fragment(), EmaAndroidView<S, VM, NS>, Injector {
     /**
      * Determine if the view model lifecycle is attached to the Activity or to the Fragment
      */
-    abstract val fragmentViewModelScope: Boolean
+    open val fragmentViewModelScope: Boolean = true
 
 
-    /**
-     * Method to provide the fragment ViewBinding class to represent the layout.
-     * Destroy the view and unbind the observers from view model
-     */
-    abstract fun createViewBinding(inflater: LayoutInflater,container: ViewGroup?): B
     override fun onStop() {
         removeExtraViewModels()
         super.onStop()
@@ -240,8 +215,7 @@ Fragment(), EmaAndroidView<S, VM, NS>, Injector {
     /**
      * Remove extra view models attached
      */
-    abstract fun injectFragmentModule(kodein: DI.MainBuilder): DI.Module?
-    private fun removeExtraViewModels() {
+   private fun removeExtraViewModels() {
         extraViewJobs.forEach {
             it.cancel()
         }
@@ -249,10 +223,6 @@ Fragment(), EmaAndroidView<S, VM, NS>, Injector {
         extraViewModelList.clear()
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
     /**
      * Get the incoming state from another fragment/activity by the key [inputStateKey] provided
      */
@@ -279,24 +249,25 @@ Fragment(), EmaAndroidView<S, VM, NS>, Injector {
     fun setInputState(inState: S) {
         arguments = Bundle().apply { putSerializable(inputStateKey, inState) }
     }
+
     override fun onEmaStateNormal(data: S) {
-        isFirstNormalExecution = false
         onStateNormal(data)
+        isFirstNormalExecution = false
     }
 
-    override fun onEmaStateAlternative(data: EmaExtraData) {
-        isFirstAlternativeExecution = false
-        onStateAlternative(data)
+    override fun onEmaStateOverlayed(data: EmaExtraData) {
+        onStateOverlayed(data)
+        isFirstOverlayedExecution = false
     }
 
     override fun onEmaStateError(error: Throwable) {
-        isFirstErrorExecution = false
         onStateError(error)
+        isFirstErrorExecution = false
     }
 
     abstract fun onStateNormal(data: S)
 
-    abstract fun onStateAlternative(data: EmaExtraData)
+    abstract fun onStateOverlayed(data: EmaExtraData)
 
     abstract fun onStateError(error: Throwable)
 }

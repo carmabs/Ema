@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.carmabs.ema.R
 import com.carmabs.ema.android.delegates.emaViewModelSharedDelegate
+import com.carmabs.ema.android.di.instanceDirect
 import com.carmabs.ema.android.extension.getFormattedString
 import com.carmabs.ema.android.navigation.EmaAndroidNavigator
 import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
@@ -41,7 +42,9 @@ class EmaUserFragment : BaseFragment<FragmentUserBinding,EmaUserState, EmaUserVi
 
     override val navigator: EmaAndroidNavigator<EmaNavigationState>? = null
 
-    override val androidViewModelSeed: EmaAndroidViewModel<EmaUserViewModel> by instance<EmaAndroidUserViewModel>()
+    override fun provideAndroidViewModel(): EmaAndroidViewModel<EmaUserViewModel> {
+        return instanceDirect()
+    }
 
     private val toolbarViewModel: EmaAndroidHomeToolbarViewModel by emaViewModelSharedDelegate(
         {

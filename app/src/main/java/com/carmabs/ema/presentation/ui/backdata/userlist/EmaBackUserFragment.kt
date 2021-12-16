@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.carmabs.ema.R
+import com.carmabs.ema.android.di.instanceDirect
 import com.carmabs.ema.android.extension.checkVisibility
 import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
 import com.carmabs.ema.core.state.EmaExtraData
@@ -30,7 +31,9 @@ class EmaBackUserFragment : BaseFragment<FragmentBackBinding,EmaBackUserState, E
 
     private val adapter : EmaBackUserAdapter by lazy { EmaBackUserAdapter() }
 
-    override val androidViewModelSeed: EmaAndroidViewModel<EmaBackUserViewModel> by instance<EmaAndroidBackUserViewModel>()
+    override fun provideAndroidViewModel(): EmaAndroidViewModel<EmaBackUserViewModel> {
+        return instanceDirect()
+    }
 
     override fun createViewBinding(
         inflater: LayoutInflater,
@@ -56,9 +59,6 @@ class EmaBackUserFragment : BaseFragment<FragmentBackBinding,EmaBackUserState, E
         rvBack.adapter = adapter
     }
 
-    override val fragmentViewModelScope: Boolean = true
-
-    override val viewModelSeed: EmaBackUserViewModel by instance()
 
     override val navigator: EmaBackNavigator by instance()
 

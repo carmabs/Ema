@@ -7,11 +7,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavHost
 import androidx.viewbinding.ViewBinding
 import com.carmabs.ema.android.di.Injector
-import com.carmabs.ema.core.delegate.emaBooleanDelegate
 import org.kodein.di.DI
 import org.kodein.di.android.closestDI
-import org.kodein.di.direct
-import org.kodein.di.instance
 
 /**
  *
