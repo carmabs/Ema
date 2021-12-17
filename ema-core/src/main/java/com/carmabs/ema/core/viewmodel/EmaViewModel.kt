@@ -175,4 +175,12 @@ abstract class EmaViewModel<S : Any, NS : EmaNavigationState> :
     fun getId(): Int {
         return this.javaClass.name.hashCode()
     }
+
+    /**
+     * Method called when physic back button is called
+     * @return True if you wante the back pressed default behaviour is disabled. False you want the back pressed default behaviour is enabled
+     */
+    open fun onActionHardwareBackPressed():Boolean{
+        return false
+    }
 }
