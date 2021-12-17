@@ -11,6 +11,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.carmabs.ema.android.delegates.emaViewModelDelegate
+import com.carmabs.ema.android.extension.addOnBackPressedListener
 import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
 import com.carmabs.ema.android.viewmodel.EmaFactory
 import com.carmabs.ema.core.delegate.emaBooleanDelegate
@@ -65,6 +66,14 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
         isFirstAlternativeExecution = true
         isFirstErrorExecution = true
         return super.onCreateView(inflater, container, savedInstanceState)
+    }
+
+    @CallSuper
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        addOnBackPressedListener {
+            vm.onActionHardwareBackPressed()
+        }
     }
 
     /**

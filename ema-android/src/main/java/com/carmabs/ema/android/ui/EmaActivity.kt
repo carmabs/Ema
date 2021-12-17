@@ -131,7 +131,7 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
      * @param observerFunction the observer of the view model attached
      * @return The view model attached
      */
-    fun <AVM : EmaAndroidViewModel<out EmaViewModel<*,*>>> addExtraViewModel(
+    fun <AVM : EmaAndroidViewModel<out EmaViewModel<*, *>>> addExtraViewModel(
         viewModelAttachedSeed: AVM,
         fragment: Fragment? = null,
         observerFunction: ((attachedState: EmaState<*>) -> Unit)? = null
@@ -183,6 +183,11 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
         removeExtraViewModels()
         onStopBinding(vm, viewJob)
         super.onStop()
+    }
+
+    override fun onBackPressed() {
+        if (!vm.onActionHardwareBackPressed())
+            super.onBackPressed()
     }
 
     /**
