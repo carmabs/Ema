@@ -17,6 +17,10 @@ fun String?.checkNull(defaultValue: String = STRING_EMPTY): String {
     return this ?: defaultValue
 }
 
+fun String?.checkNullOrEmpty(defaultValue: String = STRING_EMPTY): String {
+    return if(isNullOrEmpty())defaultValue else this
+}
+
 fun String.getFormattedString(vararg data: Any?): String {
     return String.format(this, *data)
 }
