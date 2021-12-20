@@ -51,6 +51,11 @@ fun Long.toInstant(zoneId: ZoneId = ZoneId.systemDefault()): ZonedDateTime =
  */
 fun ZonedDateTime.getEpochMilli(): Long = toInstant().toEpochMilli()
 
+/**
+ * Get timestamp from ZonedDateTime
+ */
+fun ZonedDateTime.toISO8601(): String = this.toOffsetDateTime().toString()
+
 
 /**
  * Convert a long timestamp to a string with provided format
