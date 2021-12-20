@@ -5,6 +5,8 @@ import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import java.io.ByteArrayOutputStream
+import android.graphics.Bitmap
+import com.carmabs.ema.core.constants.FLOAT_ZERO
 
 
 /**
@@ -64,7 +66,7 @@ fun ByteArray.toBitmap(width: Int? = null, height: Int? = null): Bitmap {
     } ?: let { BitmapFactory.decodeByteArray(this, 0, size) }
 }
 
-fun Bitmap.resize(width: Int, height: Int): Bitmap {
+fun Bitmap.resizeCrop(width: Int, height: Int): Bitmap {
 
     val sourceWidth: Int = this.width
     val sourceHeight: Int = this.height
@@ -113,6 +115,32 @@ fun Bitmap.resize(width: Int, height: Int): Bitmap {
     return dest
 }
 
+fun Bitmap.resizeFitInside(destWidth: Int, destHeight: Int): Bitmap {
+    val background = Bitmap.createBitmap(destWidth, destHeight, Bitmap.Config.ARGB_8888)
+    val originalWidth = this.width.toFloat()
+    val originalHeight = this.height.toFloat()
+    val canvas = Canvas(background)
+    val scaleX = destWidth.toFloat() / originalWidth
+    val scaleY = destHeight.toFloat() / originalHeight
+    var xTranslation = FLOAT_ZERO
+    var yTranslation = FLOAT_ZERO
+    var scale = 1f
+    if (scaleX < scaleY) { // Scale on X, translate on Y
+        scale = scaleX
+        yTranslation = (destHeight - originalHeight * scale) / 2.0f
+    } else { // Scale on Y, translate on X
+        scale = scaleY
+        xTranslation = (destWidth - originalWidth * scale) / 2.0f
+    }
+    val transformation = Matrix()
+    transformation.postTranslate(xTranslation, yTranslation)
+    transformation.preScale(scale, scale)
+    val paint = Paint()
+    paint.isFilterBitmap = true
+    canvas.drawBitmap(this, transformation, paint)
+    return background
+}
+
 fun Drawable.toBitmap(): Bitmap {
     if (this is BitmapDrawable) {
         val bitmapDrawable = this
@@ -140,3 +168,4 @@ fun Drawable.toBitmap(): Bitmap {
     draw(canvas)
     return bitmap
 }
+
