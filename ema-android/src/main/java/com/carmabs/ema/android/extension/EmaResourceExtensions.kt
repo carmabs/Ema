@@ -149,6 +149,6 @@ suspend fun @receiver:DrawableRes Int.getBitmapCropFromResource(
         val bitmap: Bitmap = BitmapFactory.decodeResource(context.resources, this@getBitmapCropFromResource)
         val w = width ?: bitmap.width
         val h = height ?: bitmap.height
-        bitmap.resize(w, h)
+        bitmap.resizeCrop(w, h)
     }
 }
