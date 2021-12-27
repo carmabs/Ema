@@ -41,7 +41,8 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> {
      *                  -> saved in view model ------> INFINITE LOOP)
      */
     private val observableState: MutableSharedFlow<S> = MutableSharedFlow(
-        replay = INT_ONE
+        replay = INT_ONE,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
 
     /**
