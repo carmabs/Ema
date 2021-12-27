@@ -115,6 +115,7 @@ abstract class EmaBaseDialog<T : EmaDialogData> : DialogFragment(), DIAware,
                 val height = proportionHeight?.let { (it * size.y).toInt() }
                     ?: ViewGroup.LayoutParams.WRAP_CONTENT
                 win.setLayout(width, height)
+                isCancelable = !isModal
             }
         }
 
