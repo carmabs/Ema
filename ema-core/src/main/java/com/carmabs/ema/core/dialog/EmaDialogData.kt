@@ -11,4 +11,5 @@ import java.io.Serializable
 interface EmaDialogData : Serializable {
     val proportionWidth: Float?
     val proportionHeight: Float?
+    val isModal:Boolean
 }
