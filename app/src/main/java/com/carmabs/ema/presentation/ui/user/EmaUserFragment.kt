@@ -65,7 +65,11 @@ class EmaUserFragment : BaseFragment<FragmentUserBinding,EmaUserState, EmaUserVi
     }
 
     private fun setupRecycler(viewModel: EmaUserViewModel) {
-        adapter = EmaUserAdapter(viewModel)
+        adapter = EmaUserAdapter().apply {
+            setOnItemClickListener{ index,item->
+                viewModel.onActionUserClicked(item)
+            }
+        }
         rvUser.layoutManager = LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
         rvUser.adapter = adapter
     }
@@ -75,10 +79,6 @@ class EmaUserFragment : BaseFragment<FragmentUserBinding,EmaUserState, EmaUserVi
     override fun FragmentUserBinding.onNormal(data: EmaUserState) {
         tvUserName.text = data.name
         tvUserSurname.text = data.surname
-        setupRecyclerList(data)
-    }
-
-    private fun setupRecyclerList(data: EmaUserState) {
         adapter.updateList(data.itemList)
     }
 
