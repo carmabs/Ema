@@ -1,8 +1,11 @@
 package com.carmabs.ema.presentation.dialog.loading
 
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import com.carmabs.ema.R
 import com.carmabs.ema.android.ui.dialog.EmaBaseDialog
+import com.carmabs.ema.databinding.DialogLoadingBinding
 import kotlinx.android.synthetic.main.dialog_loading.view.*
 
 /**
@@ -11,15 +14,20 @@ import kotlinx.android.synthetic.main.dialog_loading.view.*
  *
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
-class LoadingDialog : EmaBaseDialog<LoadingDialogData>() {
+class LoadingDialog : EmaBaseDialog<DialogLoadingBinding,LoadingDialogData>() {
 
-    override val layoutId: Int = R.layout.dialog_loading
+    override fun createViewBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): DialogLoadingBinding {
+        return DialogLoadingBinding.inflate(inflater,container,false)
+    }
 
-    override fun View.setup(data: LoadingDialogData) {
+    override fun DialogLoadingBinding.setup(data: LoadingDialogData) {
         tvDialogLoadingTitle.text = data.title
         tvDialogLoadingMessage.text = data.message
 
-        isCancelable = false
+        isCancelable = !data.isModal
     }
 
     override fun createInitialState(): LoadingDialogData {

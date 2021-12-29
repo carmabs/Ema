@@ -8,10 +8,8 @@ import com.carmabs.ema.core.state.EmaState
 import com.carmabs.ema.core.viewmodel.EmaViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import java.util.logging.Logger
 import kotlin.jvm.internal.PropertyReference0
 import kotlin.reflect.KProperty
 
@@ -70,7 +68,7 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
 
     var isFirstNormalExecution: Boolean
 
-    var isFirstAlternativeExecution: Boolean
+    var isFirstOverlayedExecution: Boolean
 
     var isFirstErrorExecution: Boolean
 
@@ -82,9 +80,9 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
         onStateNormal(state.data)
         isFirstNormalExecution = false
         when (state) {
-            is EmaState.Alternative -> {
-                isFirstAlternativeExecution = false
-                onStateAlternative(state.dataAlternative)
+            is EmaState.Overlayed -> {
+                isFirstOverlayedExecution = false
+                onStateOverlayed(state.dataOverlayed)
             }
             is EmaState.Error -> {
                 isFirstErrorExecution = false
@@ -193,10 +191,10 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
     fun onStateNormal(data: S)
 
     /**
-     * Called when view model trigger a updateAlternativeState event
-     * @param data with information about updateAlternativeState
+     * Called when view model trigger a updateOverlayedState event
+     * @param data with information about updateOverlayedState
      */
-    fun onStateAlternative(data: EmaExtraData)
+    fun onStateOverlayed(data: EmaExtraData)
 
     /**
      * Called when view model trigger an only once notified event.Not called when the view is first time attached to the view model

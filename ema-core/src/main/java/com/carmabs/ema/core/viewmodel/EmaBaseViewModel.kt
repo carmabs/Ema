@@ -152,7 +152,7 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> {
     /**
      * Called always the view goes to the foreground
      */
-    abstract fun onResume(firstTime: Boolean)
+    protected open fun onResume(firstTime: Boolean){}
 
     /**
      * Called always the view goes to the background

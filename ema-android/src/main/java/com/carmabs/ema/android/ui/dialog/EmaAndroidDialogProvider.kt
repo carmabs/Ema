@@ -15,19 +15,19 @@ import com.carmabs.ema.core.dialog.EmaDialogProvider
 abstract class EmaAndroidDialogProvider constructor(private val fragmentManager: FragmentManager) :
     EmaDialogProvider {
 
-    private var dialog: EmaBaseDialog<EmaDialogData>? = null
+    private var dialog: EmaBaseDialog<*, EmaDialogData>? = null
 
-    abstract fun generateDialog(dialogData: EmaDialogData?): EmaBaseDialog<*>
+    abstract fun generateDialog(dialogData: EmaDialogData?): EmaBaseDialog<*, *>
 
     override fun show(dialogData: EmaDialogData?) {
 
         fragmentManager.findFragmentByTag(getTag())?.also {
-            dialog = (it as EmaBaseDialog<EmaDialogData>).apply {
+            dialog = (it as EmaBaseDialog<*,EmaDialogData>).apply {
                 updateDialogData(this, dialogData)
             }
         } ?: also {
             if (dialog == null) {
-                dialog = generateDialog(dialogData) as EmaBaseDialog<EmaDialogData>
+                dialog = generateDialog(dialogData) as EmaBaseDialog<*,EmaDialogData>
             }
             dialog?.let { dialog ->
                 updateDialogData(dialog, dialogData)
@@ -43,7 +43,7 @@ abstract class EmaAndroidDialogProvider constructor(private val fragmentManager:
     }
 
     private fun updateDialogData(
-        dialog: EmaBaseDialog<EmaDialogData>,
+        dialog: EmaBaseDialog<*,EmaDialogData>,
         dialogData: EmaDialogData?
     ) {
         dialog.dialogListener = dialogListener
@@ -74,9 +74,9 @@ abstract class EmaAndroidDialogProvider constructor(private val fragmentManager:
         }
 
     /**
-      * We use dialog class if it is available to handle rotation changes if different dialogs
-      * are showing through the same provider
-      */
+     * We use dialog class if it is available to handle rotation changes if different dialogs
+     * are showing through the same provider
+     */
     private fun getTag(): String {
 
         return dialog?.let { it.javaClass.name.toString() } ?: javaClass.name.toString()

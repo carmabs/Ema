@@ -21,4 +21,5 @@ data class SimpleDialogData(
         val showCross: Boolean = true,
         val image: Drawable? = null,
         override val proportionWidth: Float? = 7/10f,
-        override val proportionHeight: Float? = null) : EmaDialogData
+        override val proportionHeight: Float? = null,
+        override val isModal: Boolean = true) : EmaDialogData

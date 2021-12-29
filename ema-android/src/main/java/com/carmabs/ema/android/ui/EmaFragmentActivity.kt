@@ -1,11 +1,15 @@
 package com.carmabs.ema.android.ui
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.annotation.CallSuper
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
+import androidx.viewbinding.ViewBinding
 import com.carmabs.ema.android.R
+import com.carmabs.ema.android.databinding.EmaActivityFragmentBinding
 
 /**
  * Abstract class to handle navigation in activity
@@ -13,14 +17,13 @@ import com.carmabs.ema.android.R
  *
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
-abstract class EmaFragmentActivity : EmaBaseActivity() {
+abstract class EmaFragmentActivity<B:ViewBinding> : EmaBaseActivity<B>() {
 
     @CallSuper
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setupNavigation()
     }
-
 
     /**
      * Get the nav controller to handle the navigation through navigation architecture components.
@@ -64,9 +67,4 @@ abstract class EmaFragmentActivity : EmaBaseActivity() {
     protected fun getContentLayout(): View {
         return findViewById(R.id.navHostFragment)
     }
-
-    /**
-     * The layout id for the activity
-     */
-    override val layoutId: Int = R.layout.ema_activity_fragment
 }

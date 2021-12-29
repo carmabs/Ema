@@ -4,9 +4,9 @@ import android.content.Context
 import android.content.res.TypedArray
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.viewbinding.ViewBinding
 import com.carmabs.ema.android.delegates.emaStateDelegate
 import com.carmabs.ema.android.di.Injector
 import org.kodein.di.DI
@@ -19,7 +19,7 @@ import org.kodein.di.android.closestDI
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
-abstract class EmaBaseLayout<T : Any> : FrameLayout, Injector {
+abstract class EmaBaseLayout<B : ViewBinding, T : Any> : FrameLayout, Injector {
 
     final override val parentKodein: DI by closestDI()
 
@@ -27,7 +27,7 @@ abstract class EmaBaseLayout<T : Any> : FrameLayout, Injector {
         injectKodein()
     }
 
-    var mainLayout: View? = null
+    var binding: B? = null
         private set
 
     var viewsSetup = false
@@ -41,8 +41,8 @@ abstract class EmaBaseLayout<T : Any> : FrameLayout, Injector {
 
     fun updateData(updateAction: T.() -> T): T {
         data = data.let(updateAction)
-        mainLayout?.also {
-            setup(data)
+        binding?.also {
+            it.setup(data)
         }
         return data
     }
@@ -66,8 +66,10 @@ abstract class EmaBaseLayout<T : Any> : FrameLayout, Injector {
     private fun onCreateView(context: Context, attrs: AttributeSet? = null) {
         viewsSetup = false
         val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        val v = inflater.inflate(getLayoutId(), this) as ViewGroup
-        mainLayout = v.getChildAt(0)
+        createViewBinding(inflater, this).also {
+            binding = it
+            addView(it.root)
+        }
         handleAttributes(attrs)
     }
 
@@ -77,7 +79,7 @@ abstract class EmaBaseLayout<T : Any> : FrameLayout, Injector {
     final override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         onViewCreated()
-        mainLayout?.let {
+        binding?.let {
             it.setup(data)
             viewsSetup = true
         }
@@ -105,13 +107,16 @@ abstract class EmaBaseLayout<T : Any> : FrameLayout, Injector {
      * Method called once the layout has been inflated implementing the methods [EmaBaseLayout.getLayout]
      * @param mainLayout is the layout inflated instance
      */
-    abstract fun View.setup(data: T)
+    abstract fun B.setup(data: T)
 
 
     /**
      * @return the layout of the fragment to be inflated in the [EmaBaseLayout.onCreateView]
      */
-    protected abstract fun getLayoutId(): Int
+    abstract fun createViewBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): B
 
     /**
      * Handle the custom attributes of the view

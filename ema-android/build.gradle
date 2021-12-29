@@ -25,12 +25,12 @@ android {
 
     compileOptions {
         coreLibraryDesugaringEnabled = true
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.toString()
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
 
     packagingOptions {
@@ -38,6 +38,9 @@ android {
         pickFirst 'META-INF/ema-android_debug.kotlin_module'
     }
 
+    buildFeatures {
+        viewBinding true
+    }
 }
 
 dependencies {

@@ -26,7 +26,7 @@ class EmaErrorViewModel : BaseViewModel<EmaErrorState, EmaErrorNavigator.Navigat
                     copy(showToolbarViewVisibility = !toolbarState.data.visibility)
                 }
             }
-            is EmaState.Alternative -> { /* HANDLE LOADING STATE*/
+            is EmaState.Overlayed -> { /* HANDLE LOADING STATE*/
             }
             is EmaState.Error -> { /*HANDLE ERROR STATE*/
             }

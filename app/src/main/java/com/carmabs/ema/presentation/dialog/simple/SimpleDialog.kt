@@ -1,8 +1,11 @@
 package com.carmabs.ema.presentation.dialog.simple
 
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import com.carmabs.ema.R
 import com.carmabs.ema.android.ui.dialog.EmaBaseDialog
+import com.carmabs.ema.databinding.DialogSimpleBinding
 import kotlinx.android.synthetic.main.dialog_simple.view.*
 
 
@@ -12,11 +15,16 @@ import kotlinx.android.synthetic.main.dialog_simple.view.*
  *
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
-class SimpleDialog : EmaBaseDialog<SimpleDialogData>() {
+class SimpleDialog : EmaBaseDialog<DialogSimpleBinding,SimpleDialogData>() {
 
-    override val layoutId: Int = R.layout.dialog_simple
+    override fun createViewBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): DialogSimpleBinding {
+        return DialogSimpleBinding.inflate(inflater,container,false)
+    }
 
-    override fun View.setup(data: SimpleDialogData) {
+    override fun DialogSimpleBinding.setup(data: SimpleDialogData) {
         with(data) {
             (dialogListener as? SimpleDialogListener)?.let { listener ->
                 bDialogSimpleNo.setOnClickListener { listener.onCancelClicked() }
@@ -45,7 +53,7 @@ class SimpleDialog : EmaBaseDialog<SimpleDialogData>() {
 
             bDialogSimpleNo.text = cancel
 
-            isCancelable = false
+            isCancelable = !isModal
         }
     }
 
