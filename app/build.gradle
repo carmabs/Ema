@@ -41,6 +41,9 @@ android {
         exclude 'META-INF/LICENSE'
         exclude 'META-INF/DEPENDENCIES'
     }
+    buildFeatures {
+        viewBinding true
+    }
 }
 
 dependencies {

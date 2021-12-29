@@ -20,7 +20,7 @@ import kotlin.reflect.KProperty
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
 @Suppress("ClassName")
-class emaViewModelDelegate<S : EmaBaseState, NS : EmaNavigationState, VM : EmaViewModel<S, NS>>() {
+class emaViewModelDelegate<S : EmaBaseState, NS : EmaNavigationState, VM : EmaViewModel<S, NS>> {
 
     private var vm: VM? = null
 
@@ -32,7 +32,7 @@ class emaViewModelDelegate<S : EmaBaseState, NS : EmaNavigationState, VM : EmaVi
                         "in an object that inherits from EmaView"
             )
 
-            val fragmentScope = (emaView as? EmaFragment)?.fragmentViewModelScope ?: false
+            val fragmentScope = (emaView as? EmaFragment<*,*,*,*>)?.fragmentViewModelScope ?: false
 
             val newVm = if (fragmentScope) {
                 val fragment = emaView as Fragment

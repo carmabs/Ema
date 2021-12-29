@@ -10,6 +10,7 @@ import androidx.navigation.NavOptions
 import androidx.navigation.Navigator
 import androidx.navigation.fragment.FragmentNavigator
 import com.carmabs.ema.android.ui.EmaActivity
+import com.carmabs.ema.android.ui.EmaToolbarFragmentActivity
 import com.carmabs.ema.core.navigator.EmaNavigationState
 import com.carmabs.ema.core.navigator.EmaNavigator
 import com.carmabs.ema.core.state.EmaBaseState
@@ -63,7 +64,7 @@ interface EmaAndroidNavigator<NS : EmaNavigationState> : EmaNavigator<NS> {
      */
     fun navigateToEmaActivityWithResult(mainEmaActivity: Activity, destinationEmaActivity: Intent, finishMain: Boolean = false) {
         (mainEmaActivity as? EmaActivity<*,*,*>)?.also {
-            it.startActivityForResult(destinationEmaActivity, EmaActivity.RESULT_DEFAULT_CODE)
+            it.startActivityForResult(destinationEmaActivity, EmaToolbarFragmentActivity.RESULT_DEFAULT_CODE)
             if (finishMain) {
                 it.finish()
             }

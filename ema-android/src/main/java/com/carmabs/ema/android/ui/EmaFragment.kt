@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.viewbinding.ViewBinding
 import com.carmabs.ema.android.delegates.emaViewModelDelegate
 import com.carmabs.ema.android.extension.addOnBackPressedListener
 import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
@@ -17,13 +18,13 @@ import com.carmabs.ema.android.viewmodel.EmaFactory
 import com.carmabs.ema.core.delegate.emaBooleanDelegate
 import com.carmabs.ema.core.navigator.EmaNavigationState
 import com.carmabs.ema.core.state.EmaBaseState
+import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.core.state.EmaState
 import com.carmabs.ema.core.view.EmaView
 import com.carmabs.ema.core.view.EmaViewModelTrigger
 import com.carmabs.ema.core.viewmodel.EmaViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 
@@ -32,8 +33,8 @@ import kotlinx.coroutines.launch
  *
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
-abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigationState> :
-    EmaBaseFragment(), EmaAndroidView<S, VM, NS> {
+abstract class EmaFragment<B : ViewBinding, S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigationState> :
+    EmaBaseFragment<B>(), EmaAndroidView<S, VM, NS> {
 
     override val viewModelSeed: VM
         get() = androidViewModelSeed.emaViewModel
@@ -52,7 +53,7 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
      */
     final override var isFirstNormalExecution: Boolean by emaBooleanDelegate(true)
 
-    final override var isFirstAlternativeExecution: Boolean by emaBooleanDelegate(true)
+    final override var isFirstOverlayedExecution: Boolean by emaBooleanDelegate(true)
 
     final override var isFirstErrorExecution: Boolean by emaBooleanDelegate(true)
 
@@ -63,7 +64,7 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
     ): View? {
         previousState = null
         isFirstNormalExecution = true
-        isFirstAlternativeExecution = true
+        isFirstOverlayedExecution = true
         isFirstErrorExecution = true
         return super.onCreateView(inflater, container, savedInstanceState)
     }
@@ -160,7 +161,7 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
      * @param observerFunction the observer of the view model attached
      * @return The view model attached
      */
-    fun <AVM : EmaAndroidViewModel<out EmaViewModel<*,*>>> addExtraViewModel(
+    fun <AVM : EmaAndroidViewModel<out EmaViewModel<*, *>>> addExtraViewModel(
         viewModelAttachedSeed: AVM,
         fragment: Fragment,
         fragmentActivity: FragmentActivity? = null,
@@ -194,8 +195,7 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
     /**
      * Determine if the view model lifecycle is attached to the Activity or to the Fragment
      */
-    abstract val fragmentViewModelScope: Boolean
-
+    open val fragmentViewModelScope: Boolean = true
 
     /**
      * Destroy the view and unbind the observers from view model
@@ -204,7 +204,7 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
         removeExtraViewModels()
         onStopBinding(vm, viewJob)
         super.onStop()
-        Log.d("NAV","ONSTOP")
+        Log.d("NAV", "ONSTOP")
     }
 
     /**
@@ -234,4 +234,25 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
     fun setInputState(inState: S) {
         arguments = Bundle().apply { putSerializable(inputStateKey, inState) }
     }
+
+    final override fun onStateNormal(data: S) {
+        binding.onStateNormal(data)
+    }
+
+    final override fun onStateOverlayed(data: EmaExtraData) {
+        binding.onStateOverlayed(data)
+    }
+
+    final override fun onSingleEvent(data: EmaExtraData) {
+       binding.onSingleEvent(data)
+    }
+
+    final override fun onStateError(error: Throwable) {
+       binding.onStateError(error)
+    }
+
+    abstract fun B.onStateNormal(data: S)
+    protected open fun B.onStateOverlayed(data: EmaExtraData){}
+    protected open fun B.onStateError(throwable: Throwable){}
+    protected open fun B.onSingleEvent(data: EmaExtraData){}
 }

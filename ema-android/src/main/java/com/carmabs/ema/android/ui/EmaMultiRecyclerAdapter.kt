@@ -1,14 +1,9 @@
 package com.carmabs.ema.android.ui
 
 
-import android.annotation.SuppressLint
-import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.viewbinding.ViewBinding
-import java.util.*
 
 /**
  * Adapter to implement the list view interface in recycler views
@@ -18,37 +13,37 @@ import java.util.*
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
 
-abstract class EmaRecyclerAdapter<B : ViewBinding, I>(diffCallback: DiffUtil.ItemCallback<I> = getDefaultDiffCallback()) :
+abstract class EmaMultiRecyclerAdapter<I>(diffCallback: DiffUtil.ItemCallback<I> = getDefaultDiffCallback()) :
     EmaBaseRecyclerAdapter<I>(diffCallback) {
 
     /**
-     * Method to provide the recycler item  ViewBinding class to represent the layout.
+     * Method called to set the ViewHolder. If different view holders are provided depending [viewType], use enableMultiViewHolder function
+     * @param parent holder where view components are implemented
+     * @param viewType of the item
      */
-    abstract fun createViewBinding(inflater: LayoutInflater,container: ViewGroup?): B
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EmaViewHolder<I> {
-        return EmaAdapterViewHolder(
-                createViewBinding(LayoutInflater.from(parent.context),parent),
-                viewType
-            )
+        return createMultiViewHolder(parent, viewType)
     }
 
     /**
      * Method to set the view parameters from each item
      */
-    protected abstract fun B.bind(
+    protected abstract fun ViewBinding.bind(
         item: I,
         viewType: Int,
         holder: EmaViewHolder<I>,
         payloads: MutableList<Any>
     )
 
+    /**
+     * Function to implement different viewHolders depending the viewType provided.
+     */
+    protected abstract fun createMultiViewHolder(view: ViewGroup, viewType: Int) :EmaAdapterMultiViewHolder
 
-    protected open inner class EmaAdapterViewHolder(private val viewBinding: B, private val viewType: Int) :
+    protected open inner class EmaAdapterMultiViewHolder(private val viewBinding: ViewBinding, private val viewType: Int) :
         EmaViewHolder<I>(viewBinding.root) {
-
         override fun bind(item: I, holder: EmaViewHolder<I>, payloads: MutableList<Any>) {
-            viewBinding.bind(item, viewType, holder, payloads)
+            viewBinding.bind(item, viewType, holder,payloads)
             itemView.setOnClickListener {
                 onItemClicked(item, adapterPosition, itemCount)
                 itemClickListener?.invoke(adapterPosition, item)

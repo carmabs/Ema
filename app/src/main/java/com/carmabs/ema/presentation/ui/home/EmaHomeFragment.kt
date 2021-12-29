@@ -4,7 +4,9 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.text.method.PasswordTransformationMethod
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import com.carmabs.domain.exception.LoginException
@@ -16,6 +18,7 @@ import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
 import com.carmabs.ema.core.constants.STRING_EMPTY
 import com.carmabs.ema.core.dialog.EmaDialogProvider
 import com.carmabs.ema.core.state.EmaExtraData
+import com.carmabs.ema.databinding.FragmentHomeBinding
 import com.carmabs.ema.presentation.DIALOG_TAG_LOADING
 import com.carmabs.ema.presentation.base.BaseFragment
 import com.carmabs.ema.presentation.dialog.loading.LoadingDialogData
@@ -39,9 +42,7 @@ import org.kodein.di.instance
  * Use of bindForUpdate and checkUpdate
  * Use of ReceiverListener
  */
-class EmaHomeFragment : BaseFragment<EmaHomeState, EmaHomeViewModel, EmaHomeNavigator.Navigation>() {
-
-    override val layoutId: Int = R.layout.fragment_home
+class EmaHomeFragment : BaseFragment<FragmentHomeBinding,EmaHomeState, EmaHomeViewModel, EmaHomeNavigator.Navigation>() {
 
     override val androidViewModelSeed: EmaAndroidViewModel<EmaHomeViewModel> by instance<EmaAndroidHomeViewModel>()
 
@@ -52,6 +53,14 @@ class EmaHomeFragment : BaseFragment<EmaHomeState, EmaHomeViewModel, EmaHomeNavi
 
     private val loadingDialog: EmaDialogProvider by instance(tag = DIALOG_TAG_LOADING)
     /////////////////////////////////////////////////////////////////////////////////
+
+
+    override fun createViewBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentHomeBinding {
+        return FragmentHomeBinding.inflate(inflater,container,false)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -148,7 +157,7 @@ class EmaHomeFragment : BaseFragment<EmaHomeState, EmaHomeViewModel, EmaHomeNavi
     }
 
 
-    override fun onNormal(data: EmaHomeState) {
+    override fun FragmentHomeBinding.onNormal(data: EmaHomeState) {
 
         //We hide the dialogs in normal state
         hideErrors()
@@ -195,17 +204,17 @@ class EmaHomeFragment : BaseFragment<EmaHomeState, EmaHomeViewModel, EmaHomeNavi
         }
     }
 
-    override fun onAlternative(data: EmaExtraData) {
+    override fun FragmentHomeBinding.onOverlayed(data: EmaExtraData) {
         showLoadingDialog()
     }
 
-    override fun onSingle(data: EmaExtraData) {
+    override fun FragmentHomeBinding.onSingle(data: EmaExtraData) {
         when (data.type) {
             EmaHomeViewModel.EVENT_MESSAGE -> Toast.makeText(requireContext(), data.extraData as String, Toast.LENGTH_LONG).show()
         }
     }
 
-    override fun onError(error: Throwable) {
+    override fun FragmentHomeBinding.onError(error: Throwable) {
         when (error) {
             is UserEmptyException -> checkError(tvLightLoginErrorUser)
             is PasswordEmptyException -> checkError(tvLightLoginErrorPassword)

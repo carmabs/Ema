@@ -26,7 +26,7 @@ class EmaBackUserCreationViewModel(private val resourceManager: ResourceManager)
 
 
     override fun onStartFirstTime(statePreloaded: Boolean) {
-        updateToAlternativeState()
+        updateToOverlayedState()
     }
 
     fun onActionAddUser(name: String, surname: String) {

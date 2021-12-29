@@ -215,7 +215,7 @@ These are the main features of ***EmaViewModel***:
 		
 	-  **Set ALTERNATIVE state for the view:**
 		
-		With ***updateToAlternativeState()*** you can set an alternative state for the view passing ***EmaExtraData*** if it is needed for the alternative data.
+		With ***updateToOverlayedState()*** you can set an alternative state for the view passing ***EmaExtraData*** if it is needed for the alternative data.
 		> 
 		***EmaExtraData*** is provided by dafault with the following parameters:
 		
@@ -225,7 +225,7 @@ These are the main features of ***EmaViewModel***:
 		> 
 	
 		~~~ kotlin
- 		updateToAlternativeState(
+ 		updateToOverlayedState(
  			EmaExtraData(
  				type:Int,
  				extraData:Any?

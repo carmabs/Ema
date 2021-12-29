@@ -1,9 +1,11 @@
 package com.carmabs.ema.android.ui
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import androidx.annotation.CallSuper
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavHost
+import androidx.viewbinding.ViewBinding
 import com.carmabs.ema.android.di.Injector
 import org.kodein.di.DI
 import org.kodein.di.android.closestDI
@@ -15,13 +17,20 @@ import org.kodein.di.android.closestDI
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
-abstract class EmaBaseActivity : AppCompatActivity(), NavHost, Injector {
+abstract class EmaBaseActivity<B:ViewBinding> : AppCompatActivity(), NavHost, Injector {
 
     final override val parentKodein by closestDI()
+
+    protected lateinit var binding:B
 
     override val di: DI by lazy {
         injectKodein()
     }
+
+    /**
+     * Method to provide the activity ViewBinding class to represent the layout.
+     */
+    abstract fun createViewBinding(inflater: LayoutInflater): B
 
     final override fun injectModule(kodeinBuilder: DI.MainBuilder): DI.Module? =
         injectActivityModule(kodeinBuilder)
@@ -34,13 +43,9 @@ abstract class EmaBaseActivity : AppCompatActivity(), NavHost, Injector {
     @CallSuper
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(layoutId)
+        binding = createViewBinding(layoutInflater)
+        setContentView(binding.root)
     }
-
-    /**
-     * @return The layout ID that's gonna be the activity view.
-     */
-    protected abstract val layoutId: Int
 
     /**
      * The child classes implement this methods to return the module that provides the activity scope objects

@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
+import androidx.viewbinding.ViewBinding
 import com.carmabs.ema.android.delegates.emaStateDelegate
 import com.carmabs.ema.core.dialog.EmaDialogData
 import com.carmabs.ema.core.dialog.EmaDialogListener
@@ -22,8 +23,12 @@ import org.kodein.di.android.closestDI
  *
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
-abstract class EmaBaseDialog<T : EmaDialogData> : DialogFragment(), DIAware,
+abstract class EmaBaseDialog<B : ViewBinding, T : EmaDialogData> : DialogFragment(), DIAware,
     DialogInterface.OnShowListener {
+
+    private var _binding:B? = null
+    protected val binding
+    get() = _binding!!
 
     companion object {
         private const val KEY_DIALOG_DATA = "KEY_DIALOG_DATA"
@@ -42,21 +47,19 @@ abstract class EmaBaseDialog<T : EmaDialogData> : DialogFragment(), DIAware,
 
     private var isDismissed: Boolean = false
 
-    private var contentView: View? = null
-
     protected open val disableBackButton
         get() = !isCancelable
 
 
     /**
-     * Specify the layout to be inflated in the [EmaBaseDialog.onCreateView].
+     * Specify the ViewBinding to be inflated in the [EmaBaseDialog.onCreateView].
      */
-    protected abstract val layoutId: Int
+    abstract fun  createViewBinding(inflater: LayoutInflater, container: ViewGroup?): B
 
     /**
      * Setup data for UI
      */
-    protected abstract fun View.setup(data: T)
+    protected abstract fun B.setup(data: T)
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)
@@ -79,14 +82,13 @@ abstract class EmaBaseDialog<T : EmaDialogData> : DialogFragment(), DIAware,
 
     fun updateData(updateAction: T.() -> T): T {
         data = data.let(updateAction)
-        contentView?.setup(data)
+        _binding?.setup(data)
         return data
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        contentView = view
-        view.setup(data)
+        binding.setup(data)
     }
 
     override fun onCreateView(
@@ -94,12 +96,12 @@ abstract class EmaBaseDialog<T : EmaDialogData> : DialogFragment(), DIAware,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val view = inflater.inflate(layoutId, container, false)
+        _binding = createViewBinding(inflater, container)
         dialog?.window?.apply {
             setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
             requestFeature(Window.FEATURE_NO_TITLE)
         }
-        return view
+        return binding.root
     }
 
     override fun onResume() {
@@ -144,8 +146,8 @@ abstract class EmaBaseDialog<T : EmaDialogData> : DialogFragment(), DIAware,
     protected abstract fun createInitialState(): T
 
     override fun onDestroyView() {
-        contentView = null
-        dialogListener = null
         super.onDestroyView()
+        _binding = null
+        dialogListener = null
     }
 }

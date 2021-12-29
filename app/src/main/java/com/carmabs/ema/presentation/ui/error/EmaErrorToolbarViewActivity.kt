@@ -5,6 +5,8 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import com.carmabs.ema.R
+import com.carmabs.ema.android.databinding.EmaActivityFragmentBinding
+import com.carmabs.ema.android.databinding.EmaToolbarActivityBinding
 import com.carmabs.ema.android.extension.dpToPx
 import com.carmabs.ema.android.extension.getColor
 import com.carmabs.ema.android.extension.getFormattedString
@@ -55,7 +57,7 @@ class EmaErrorToolbarViewActivity : EmaActivity<EmaErrorToolbarState, EmaErrorTo
         }
     }
 
-    override fun onStateNormal(data: EmaErrorToolbarState) {
+    override fun EmaToolbarActivityBinding.onStateNormal(data: EmaErrorToolbarState) {
         checkToolbarVisibility(data)
     }
 
@@ -66,16 +68,8 @@ class EmaErrorToolbarViewActivity : EmaActivity<EmaErrorToolbarState, EmaErrorTo
             hideToolbar()
     }
 
-    override fun onStateAlternative(data: EmaExtraData) {
-
-    }
-
-    override fun onSingleEvent(data: EmaExtraData) {
-        Toast.makeText(this, R.string.error_user_created.getFormattedString(this, data.extraData as Int), Toast.LENGTH_SHORT).show()
-
-    }
-
-    override fun onStateError(error: Throwable) {
+    override fun EmaToolbarActivityBinding.onSingleEvent(data: EmaExtraData) {
+        Toast.makeText(this@EmaErrorToolbarViewActivity, R.string.error_user_created.getFormattedString(this@EmaErrorToolbarViewActivity, data.extraData as Int), Toast.LENGTH_SHORT).show()
 
     }
 
