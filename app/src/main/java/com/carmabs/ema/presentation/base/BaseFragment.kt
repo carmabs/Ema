@@ -1,5 +1,6 @@
 package com.carmabs.ema.presentation.base
 
+import androidx.viewbinding.ViewBinding
 import com.carmabs.ema.android.ui.EmaFragment
 import com.carmabs.ema.core.navigator.EmaNavigationState
 import com.carmabs.ema.core.state.EmaBaseState
@@ -16,34 +17,33 @@ import org.kodein.di.DI
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
 
-abstract class BaseFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigationState> : EmaFragment<S,VM,NS>() {
+abstract class BaseFragment<B : ViewBinding, S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigationState> :
+    EmaFragment<B, S, VM, NS>() {
 
-    override val fragmentViewModelScope: Boolean = true
+    override fun injectFragmentModule(kodein: DI.MainBuilder): DI.Module? = fragmentInjection(this)
 
-    override fun injectFragmentModule(kodein: DI.MainBuilder): DI.Module?  = fragmentInjection(this)
-
-    override fun onStateNormal(data: S) {
+    override fun B.onStateNormal(data: S) {
         onNormal(data)
     }
 
-    override fun onStateAlternative(data: EmaExtraData) {
-        onAlternative(data)
+    override fun B.onStateOverlayed(data: EmaExtraData) {
+        onOverlayed(data)
     }
 
-    override fun onSingleEvent(data: EmaExtraData) {
+    override fun B.onSingleEvent(data: EmaExtraData) {
         onSingle(data)
     }
 
-    override fun onStateError(error: Throwable) {
+    override fun B.onStateError(error: Throwable) {
         onError(error)
     }
 
-    abstract fun onNormal(data: S)
+    abstract fun B.onNormal(data: S)
 
-    abstract fun onAlternative(data: EmaExtraData)
+    protected open fun B.onOverlayed(data: EmaExtraData) {}
 
-    abstract fun onSingle(data: EmaExtraData)
+    protected open fun B.onSingle(data: EmaExtraData) {}
 
-    abstract fun onError(error: Throwable)
+    protected open fun B.onError(error: Throwable) {}
 
 }

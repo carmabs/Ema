@@ -1,7 +1,9 @@
 package com.carmabs.ema.presentation.ui.user
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -12,6 +14,7 @@ import com.carmabs.ema.android.navigation.EmaAndroidNavigator
 import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
 import com.carmabs.ema.core.navigator.EmaNavigationState
 import com.carmabs.ema.core.state.EmaExtraData
+import com.carmabs.ema.databinding.FragmentUserBinding
 import com.carmabs.ema.presentation.base.BaseFragment
 import com.carmabs.ema.presentation.ui.home.EmaAndroidHomeToolbarViewModel
 import kotlinx.android.synthetic.main.fragment_user.*
@@ -34,7 +37,7 @@ import org.kodein.di.instance
  * Add extra view model to get access to EmaHomeToolbarViewModel (View model can be shared if it
  * is attached to activity scope)
  */
-class EmaUserFragment : BaseFragment<EmaUserState, EmaUserViewModel, EmaNavigationState>() {
+class EmaUserFragment : BaseFragment<FragmentUserBinding,EmaUserState, EmaUserViewModel, EmaNavigationState>() {
 
     override val navigator: EmaAndroidNavigator<EmaNavigationState>? = null
 
@@ -48,6 +51,13 @@ class EmaUserFragment : BaseFragment<EmaUserState, EmaUserViewModel, EmaNavigati
 
     private lateinit var adapter: EmaUserAdapter
 
+    override fun createViewBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentUserBinding {
+        return FragmentUserBinding.inflate(inflater,container,false)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         vm.toolbarViewModel = toolbarViewModel.emaViewModel
@@ -60,11 +70,9 @@ class EmaUserFragment : BaseFragment<EmaUserState, EmaUserViewModel, EmaNavigati
         rvUser.adapter = adapter
     }
 
-    override val layoutId: Int = R.layout.fragment_user
-
     override val viewModelSeed: EmaUserViewModel by instance()
 
-    override fun onNormal(data: EmaUserState) {
+    override fun FragmentUserBinding.onNormal(data: EmaUserState) {
         tvUserName.text = data.name
         tvUserSurname.text = data.surname
         setupRecyclerList(data)
@@ -74,11 +82,7 @@ class EmaUserFragment : BaseFragment<EmaUserState, EmaUserViewModel, EmaNavigati
         adapter.updateList(data.itemList)
     }
 
-    override fun onAlternative(data: EmaExtraData) {
-
-    }
-
-    override fun onSingle(data: EmaExtraData) {
+    override fun FragmentUserBinding.onSingle(data: EmaExtraData) {
 
         when (data.type) {
             EmaUserViewModel.SINGLE_EVENT_USER -> {
@@ -112,8 +116,5 @@ class EmaUserFragment : BaseFragment<EmaUserState, EmaUserViewModel, EmaNavigati
                 }
             }
         }
-    }
-
-    override fun onError(error: Throwable) {
     }
 }

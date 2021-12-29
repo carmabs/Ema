@@ -13,5 +13,5 @@ import com.carmabs.ema.core.dialog.EmaDialogData
  */
 
 class SimpleDialogProvider constructor(fragmentManager: FragmentManager) : EmaAndroidDialogProvider(fragmentManager) {
-    override fun generateDialog(dialogData: EmaDialogData?): EmaBaseDialog<*> = SimpleDialog()
+    override fun generateDialog(dialogData: EmaDialogData?): EmaBaseDialog<*,*> = SimpleDialog()
 }

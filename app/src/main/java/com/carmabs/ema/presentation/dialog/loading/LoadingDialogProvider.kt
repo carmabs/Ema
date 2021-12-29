@@ -14,5 +14,5 @@ import com.carmabs.ema.core.dialog.EmaDialogData
 
 class LoadingDialogProvider constructor(fragmentManager: FragmentManager) : EmaAndroidDialogProvider(fragmentManager)
 {
-    override fun generateDialog(dialogData: EmaDialogData?): EmaBaseDialog<*> =  LoadingDialog()
+    override fun generateDialog(dialogData: EmaDialogData?): EmaBaseDialog<*,*> =  LoadingDialog()
 }

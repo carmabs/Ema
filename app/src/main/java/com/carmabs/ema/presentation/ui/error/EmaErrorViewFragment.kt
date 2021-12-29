@@ -1,11 +1,15 @@
 package com.carmabs.ema.presentation.ui.error
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import com.carmabs.ema.R
 import com.carmabs.ema.android.delegates.emaViewModelSharedDelegate
 import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
 import com.carmabs.ema.core.state.EmaExtraData
+import com.carmabs.ema.core.state.EmaState
+import com.carmabs.ema.databinding.FragmentErrorBinding
 import com.carmabs.ema.presentation.base.BaseFragment
 import kotlinx.android.synthetic.main.fragment_error.*
 import org.kodein.di.Instance
@@ -17,7 +21,7 @@ import org.kodein.type.TypeToken
 import org.kodein.type.erasedOf
 
 class EmaErrorViewFragment :
-    BaseFragment<EmaErrorState, EmaErrorViewModel, EmaErrorNavigator.Navigation>() {
+    BaseFragment<FragmentErrorBinding,EmaErrorState, EmaErrorViewModel, EmaErrorNavigator.Navigation>() {
 
     /**
      * If you wouldn't want to use dependency injection you can provide it instantiating the class.
@@ -37,10 +41,19 @@ class EmaErrorViewFragment :
     override
     val androidViewModelSeed: EmaAndroidViewModel<EmaErrorViewModel> by instance<EmaAndroidErrorViewModel>()
 
+
+    override fun createViewBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentErrorBinding {
+        return FragmentErrorBinding.inflate(inflater,container,false)
+    }
+
     override fun onViewCreated(
         view: View,
         savedInstanceState: Bundle?
     ) {
+        super.onViewCreated(view, savedInstanceState)
         setupButtons(vm)
     }
 
@@ -54,7 +67,7 @@ class EmaErrorViewFragment :
         bErrorAddUser.setOnClickListener { viewModel.onActionAddUser() }
     }
 
-    override fun onNormal(data: EmaErrorState) {
+    override fun FragmentErrorBinding.onNormal(data: EmaErrorState) {
         checkShowToolbarTriggerVisibility(data)
     }
 
@@ -62,16 +75,4 @@ class EmaErrorViewFragment :
         bErrorToolbar.visibility =
             if (data.showToolbarViewVisibility) View.VISIBLE else View.GONE
     }
-
-    override fun onAlternative(data: EmaExtraData) {
-    }
-
-    override fun onSingle(data: EmaExtraData) {
-    }
-
-    override fun onError(error: Throwable) {
-    }
-
-    override
-    val layoutId: Int = R.layout.fragment_error
 }

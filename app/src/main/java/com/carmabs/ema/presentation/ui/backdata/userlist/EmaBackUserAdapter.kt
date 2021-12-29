@@ -3,6 +3,7 @@ package com.carmabs.ema.presentation.ui.backdata.userlist
 import android.view.View
 import com.carmabs.ema.R
 import com.carmabs.ema.android.ui.EmaRecyclerAdapter
+import com.carmabs.ema.android.ui.EmaViewHolder
 import kotlinx.android.synthetic.main.item_back_user.view.*
 
 /**
@@ -19,9 +20,13 @@ class EmaBackUserAdapter : EmaRecyclerAdapter<EmaBackUserModel>() {
 
     override val layoutItemId: Int = R.layout.item_back_user
 
-    override fun View.bind(item: EmaBackUserModel, viewType: Int) {
+    override fun View.bind(
+        item: EmaBackUserModel,
+        viewType: Int,
+        holder: EmaViewHolder<EmaBackUserModel>,
+        payloads: MutableList<Any>
+    ) {
         tvItemUserName.text = item.name
         tvItemUserSurname.text = item.surname
-
     }
 }
