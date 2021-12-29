@@ -13,7 +13,8 @@
         android:theme="@style/AppTheme.NoActionBar"
         tools:ignore="GoogleAppIndexingWarning">
 
-        <activity android:name="com.carmabs.ema.presentation.ui.home.EmaHomeActivity">
+        <activity android:name="com.carmabs.ema.presentation.ui.home.EmaHomeActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -22,7 +23,8 @@
         </activity>
         <activity
             android:name="com.carmabs.ema.presentation.ui.error.EmaErrorToolbarViewActivity"
-            android:launchMode="singleInstance" />
+            android:launchMode="singleInstance"
+            android:exported="false"/>
         <activity android:name=".presentation.ui.backdata.EmaBackToolbarActivity" />
     </application>
 
