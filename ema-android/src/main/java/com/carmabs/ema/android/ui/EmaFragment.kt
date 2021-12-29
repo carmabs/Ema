@@ -195,8 +195,7 @@ abstract class EmaFragment<B : ViewBinding, S : EmaBaseState, VM : EmaViewModel<
     /**
      * Determine if the view model lifecycle is attached to the Activity or to the Fragment
      */
-    abstract val fragmentViewModelScope: Boolean
-
+    open val fragmentViewModelScope: Boolean = true
 
     /**
      * Destroy the view and unbind the observers from view model

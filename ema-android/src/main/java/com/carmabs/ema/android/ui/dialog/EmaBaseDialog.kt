@@ -27,7 +27,8 @@ abstract class EmaBaseDialog<B : ViewBinding, T : EmaDialogData> : DialogFragmen
     DialogInterface.OnShowListener {
 
     private var _binding:B? = null
-    protected val binding = _binding!!
+    protected val binding
+    get() = _binding!!
 
     companion object {
         private const val KEY_DIALOG_DATA = "KEY_DIALOG_DATA"
