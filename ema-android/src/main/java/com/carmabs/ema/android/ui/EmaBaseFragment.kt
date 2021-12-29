@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
 import com.carmabs.ema.android.di.Injector
 import org.kodein.di.DI
@@ -18,7 +19,7 @@ import org.kodein.di.android.x.closestDI
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
-abstract class EmaBaseFragment<B : ViewBinding> : DialogFragment(), Injector {
+abstract class EmaBaseFragment<B : ViewBinding> : Fragment(), Injector {
 
     private var _binding: B? = null
 
