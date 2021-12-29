@@ -3,12 +3,13 @@ package com.carmabs.ema.presentation.ui.user
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
+import androidx.viewbinding.ViewBinding
 import com.carmabs.ema.R
 import com.carmabs.ema.android.extension.getFormattedString
-import com.carmabs.ema.android.ui.EmaRecyclerAdapter
+import com.carmabs.ema.android.ui.EmaMultiRecyclerAdapter
 import com.carmabs.ema.android.ui.EmaViewHolder
-import com.carmabs.ema.core.extension.getFormattedString
+import com.carmabs.ema.databinding.ItemLeftBinding
+import com.carmabs.ema.databinding.ItemRightBinding
 import kotlinx.android.synthetic.main.item_left.view.*
 import kotlinx.android.synthetic.main.item_right.view.*
 
@@ -20,7 +21,8 @@ import kotlinx.android.synthetic.main.item_right.view.*
  * Date: 2019-09-25
  */
 
-class EmaUserAdapter(private val viewModel: EmaUserViewModel) : EmaRecyclerAdapter<EmaUserItemModel>() {
+class EmaUserAdapter :
+    EmaMultiRecyclerAdapter<EmaUserItemModel>() {
 
 
     override fun getItemViewType(position: Int): Int {
@@ -31,65 +33,40 @@ class EmaUserAdapter(private val viewModel: EmaUserViewModel) : EmaRecyclerAdapt
     // SAMPLE CODE IF YOU WANT TO USE A MULTIVIEW IN ADAPTER OR CUSTOM VIEW//
     /////////////////////////////////////////////////////////////////////////
 
-    override val layoutItemId: Int? = null
-
-    override val enableMultiViewHolder: ((view: ViewGroup, viewType: Int) -> EmaAdapterViewHolder)? = { view, viewType ->
-
-        when (EmaUserItemModel.getFromId(viewType)) {
-            EmaUserItemModel.Type.LEFT -> EmaAdapterViewHolder(LayoutInflater.from(view.context).inflate(R.layout.item_left, view, false), viewType)
-            EmaUserItemModel.Type.RIGHT -> EmaAdapterViewHolder(LayoutInflater.from(view.context).inflate(R.layout.item_right, view, false), viewType)
+    override fun createMultiViewHolder(view: ViewGroup, viewType: Int): EmaAdapterMultiViewHolder {
+        return when (EmaUserItemModel.getFromId(viewType)) {
+            EmaUserItemModel.Type.LEFT -> EmaAdapterMultiViewHolder(
+                ItemLeftBinding.inflate(
+                    LayoutInflater.from(view.context), view, false
+                ), viewType
+            )
+            EmaUserItemModel.Type.RIGHT -> EmaAdapterMultiViewHolder(
+                ItemRightBinding.inflate(
+                    LayoutInflater.from(view.context), view, false
+                ), viewType
+            )
         }
     }
 
-    override fun View.bind(
+    override fun ViewBinding.bind(
         item: EmaUserItemModel,
         viewType: Int,
         holder: EmaViewHolder<EmaUserItemModel>,
         payloads: MutableList<Any>
     ) {
         when (EmaUserItemModel.getFromId(viewType)) {
-
             EmaUserItemModel.Type.LEFT -> {
+                this as ItemLeftBinding
                 val leftItem = item as EmaUserLeftModel
-                tvItemLeft.text = R.string.user_name.getFormattedString(context,leftItem.name)
+                tvItemLeft.text = R.string.user_name.getFormattedString(root.context, leftItem.name)
             }
 
             EmaUserItemModel.Type.RIGHT -> {
+                this as ItemRightBinding
                 val rightItem = item as EmaUserRightModel
-                tvItemRight.text = R.string.user_number_people.getFormattedString(context,rightItem.number)
+                tvItemRight.text =
+                    R.string.user_number_people.getFormattedString(root.context, rightItem.number)
             }
         }
-
-        setOnClickListener { viewModel.onActionUserClicked(item) }
-
     }
-
-    /////////////////////////////////////////////////////////////
-    // SAMPLE CODE IF YOU WANT TO USE A SINGLE VIEW IN ADAPTER //
-    /////////////////////////////////////////////////////////////
-
-    /*
-    override val layoutItemId: Int? = R.layout.item_left
-
-    override fun View.bind(item: EmaUserItemModel, viewType: Int) {
-
-       var name = String()
-       var color = ContextCompat.getColor(context,R.color.colorAccent)
-
-       when(EmaUserItemModel.getFromId(viewType)){
-
-           EmaUserItemModel.Type.LEFT -> {
-               val leftItem = item as EmaUserLeftModel
-               name =  String.format(context.resources.getString(R.string.user_name),leftItem.name)
-           }
-           EmaUserItemModel.Type.RIGHT -> {
-               val rightItem = item as EmaUserRightModel
-               name = String.format(context.resources.getString(R.string.user_number_people),rightItem.number)
-           }
-       }
-
-       tvItemLeft.text = name
-       ivItemLeft.setBackgroundColor(color)
-   }
-   */
 }
