@@ -29,7 +29,7 @@ fun activityInjection(activity: Activity) = DI.Module(name = "ActivityModule") {
 
     bind<Activity>() with singleton { activity }
 
-    bind<NavController>() with singleton { (activity as EmaFragmentActivity).let { it.navController } }
+    bind<NavController>() with singleton { (activity as EmaFragmentActivity<*>).let { it.navController } }
 
     bind<EmaErrorNavigator>() with singleton { EmaErrorNavigator(instance(),instance()) }
 

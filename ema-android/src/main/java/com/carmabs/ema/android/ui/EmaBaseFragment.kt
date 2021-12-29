@@ -45,6 +45,9 @@ abstract class EmaBaseFragment<B : ViewBinding> : Fragment(), Injector {
         return binding.root
     }
 
+    /**
+     * Method to provide the fragment ViewBinding class to represent the layout.
+     */
     abstract fun createViewBinding(inflater: LayoutInflater,container: ViewGroup?): B
 
     /**
