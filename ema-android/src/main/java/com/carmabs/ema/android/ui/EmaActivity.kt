@@ -58,7 +58,7 @@ abstract class EmaActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
      */
     final override var isFirstNormalExecution: Boolean by emaBooleanDelegate(true)
 
-    final override var isFirstAlternativeExecution: Boolean by emaBooleanDelegate(true)
+    final override var isFirstOverlayedExecution: Boolean by emaBooleanDelegate(true)
 
     final override var isFirstErrorExecution: Boolean by emaBooleanDelegate(true)
 
