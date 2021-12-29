@@ -2,6 +2,7 @@ package com.carmabs.ema.presentation.ui.home
 
 import android.widget.Toast
 import com.carmabs.ema.R
+import com.carmabs.ema.android.databinding.EmaToolbarActivityBinding
 import com.carmabs.ema.android.extension.getFormattedString
 import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
 import com.carmabs.ema.core.extension.HOUR_FORMAT_HHMM
@@ -35,20 +36,20 @@ class EmaHomeActivity : BaseActivity<EmaHomeToolbarState,EmaHomeToolbarViewModel
 
     override val navigator: EmaHomeNavigator by instance()
 
-    override fun onStateNormal(data: EmaHomeToolbarState) {
+    override fun EmaToolbarActivityBinding.onStateNormal(data: EmaHomeToolbarState) {
         setToolbarTitle(data.toolbarTitle)
 
     }
 
-    override fun onSingleEvent(data: EmaExtraData) {
+    override fun EmaToolbarActivityBinding.onSingleEvent(data: EmaExtraData) {
         when(data.type){
              EmaExtraData.DEFAULT_ID -> {
                  (data.extraData as? Pair<*, *>)?.also {
                      (it.second as? Long)?.also { timestamp ->
                          try {
                              val date = timestamp.toDateFormat(HOUR_FORMAT_HHMM)
-                             Toast.makeText(this,
-                                     R.string.home_last_user.getFormattedString(this,it.first,date),
+                             Toast.makeText(this@EmaHomeActivity,
+                                     R.string.home_last_user.getFormattedString(this@EmaHomeActivity,it.first,date),
                                      Toast.LENGTH_SHORT).show()
                              return
                          } catch (e: Exception) { }
@@ -57,13 +58,5 @@ class EmaHomeActivity : BaseActivity<EmaHomeToolbarState,EmaHomeToolbarViewModel
                  }
              }
         }
-    }
-
-    override fun onStateError(error: Throwable) {
-
-    }
-
-    override fun onStateOverlayed(data: EmaExtraData) {
-
     }
 }

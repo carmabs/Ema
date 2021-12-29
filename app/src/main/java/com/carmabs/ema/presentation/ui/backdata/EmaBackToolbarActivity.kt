@@ -3,6 +3,8 @@ package com.carmabs.ema.presentation.ui.backdata;
 import android.os.Bundle
 import androidx.core.content.ContextCompat
 import com.carmabs.ema.R
+import com.carmabs.ema.android.databinding.EmaToolbarActivityBinding
+import com.carmabs.ema.android.ui.EmaToolbarFragmentActivity
 import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
 import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.presentation.base.BaseActivity
@@ -37,19 +39,7 @@ class EmaBackToolbarActivity : BaseActivity<EmaBackToolbarState, EmaBackToolbarV
         }
     }
 
-    override fun onStateNormal(data: EmaBackToolbarState) {
-
-    }
-
-    override fun onStateOverlayed(data: EmaExtraData) {
-
-    }
-
-    override fun onSingleEvent(data: EmaExtraData) {
-
-    }
-
-    override fun onStateError(error: Throwable) {
+    override fun EmaToolbarActivityBinding.onStateNormal(data: EmaBackToolbarState) {
 
     }
 }
