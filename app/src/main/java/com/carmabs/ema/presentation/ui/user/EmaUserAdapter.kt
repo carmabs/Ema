@@ -7,6 +7,7 @@ import androidx.core.content.ContextCompat
 import com.carmabs.ema.R
 import com.carmabs.ema.android.extension.getFormattedString
 import com.carmabs.ema.android.ui.EmaRecyclerAdapter
+import com.carmabs.ema.android.ui.EmaViewHolder
 import com.carmabs.ema.core.extension.getFormattedString
 import kotlinx.android.synthetic.main.item_left.view.*
 import kotlinx.android.synthetic.main.item_right.view.*
@@ -23,7 +24,7 @@ class EmaUserAdapter(private val viewModel: EmaUserViewModel) : EmaRecyclerAdapt
 
 
     override fun getItemViewType(position: Int): Int {
-        return listItems[position].type.id
+        return currentList[position].type.id
     }
 
     /////////////////////////////////////////////////////////////////////////
@@ -32,8 +33,20 @@ class EmaUserAdapter(private val viewModel: EmaUserViewModel) : EmaRecyclerAdapt
 
     override val layoutItemId: Int? = null
 
-    override fun View.bind(item: EmaUserItemModel, viewType: Int) {
+    override val enableMultiViewHolder: ((view: ViewGroup, viewType: Int) -> EmaAdapterViewHolder)? = { view, viewType ->
 
+        when (EmaUserItemModel.getFromId(viewType)) {
+            EmaUserItemModel.Type.LEFT -> EmaAdapterViewHolder(LayoutInflater.from(view.context).inflate(R.layout.item_left, view, false), viewType)
+            EmaUserItemModel.Type.RIGHT -> EmaAdapterViewHolder(LayoutInflater.from(view.context).inflate(R.layout.item_right, view, false), viewType)
+        }
+    }
+
+    override fun View.bind(
+        item: EmaUserItemModel,
+        viewType: Int,
+        holder: EmaViewHolder<EmaUserItemModel>,
+        payloads: MutableList<Any>
+    ) {
         when (EmaUserItemModel.getFromId(viewType)) {
 
             EmaUserItemModel.Type.LEFT -> {
@@ -48,15 +61,7 @@ class EmaUserAdapter(private val viewModel: EmaUserViewModel) : EmaRecyclerAdapt
         }
 
         setOnClickListener { viewModel.onActionUserClicked(item) }
-    }
 
-
-    override val enableMultiViewHolder: ((view: ViewGroup, viewType: Int) -> EmaAdapterViewHolder)? = { view, viewType ->
-
-        when (EmaUserItemModel.getFromId(viewType)) {
-            EmaUserItemModel.Type.LEFT -> EmaAdapterViewHolder(LayoutInflater.from(view.context).inflate(R.layout.item_left, view, false), viewType)
-            EmaUserItemModel.Type.RIGHT -> EmaAdapterViewHolder(LayoutInflater.from(view.context).inflate(R.layout.item_right, view, false), viewType)
-        }
     }
 
     /////////////////////////////////////////////////////////////

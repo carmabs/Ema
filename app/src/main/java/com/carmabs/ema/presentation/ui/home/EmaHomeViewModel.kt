@@ -56,7 +56,7 @@ class EmaHomeViewModel(
         getDataState().also {
             executeUseCaseWithException(
                     {
-                        updateToAlternativeState()
+                        updateToOverlayedState()
                         val user = loginUseCase.execute(LoginRequest(it.userName, it.userPassword))
                         updateToNormalState()
                         notifySingleEvent(EmaExtraData(EVENT_MESSAGE, resourceManager.getCongratulations()))

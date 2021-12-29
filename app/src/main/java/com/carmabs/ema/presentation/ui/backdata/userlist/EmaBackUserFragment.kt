@@ -1,13 +1,16 @@
 package com.carmabs.ema.presentation.ui.backdata.userlist;
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.carmabs.ema.R
 import com.carmabs.ema.android.extension.checkVisibility
 import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
 import com.carmabs.ema.core.state.EmaExtraData
+import com.carmabs.ema.databinding.FragmentBackBinding
 import com.carmabs.ema.presentation.base.BaseFragment
 import com.carmabs.ema.presentation.ui.backdata.EmaBackNavigator
 import kotlinx.android.synthetic.main.fragment_back.*
@@ -23,11 +26,18 @@ import org.kodein.di.instance
  * Date: 2019-11-07
  */
 
-class EmaBackUserFragment : BaseFragment<EmaBackUserState, EmaBackUserViewModel, EmaBackNavigator.Navigation>() {
+class EmaBackUserFragment : BaseFragment<FragmentBackBinding,EmaBackUserState, EmaBackUserViewModel, EmaBackNavigator.Navigation>() {
 
     private val adapter : EmaBackUserAdapter by lazy { EmaBackUserAdapter() }
 
     override val androidViewModelSeed: EmaAndroidViewModel<EmaBackUserViewModel> by instance<EmaAndroidBackUserViewModel>()
+
+    override fun createViewBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentBackBinding {
+        return FragmentBackBinding.inflate(inflater,container,false)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -48,28 +58,13 @@ class EmaBackUserFragment : BaseFragment<EmaBackUserState, EmaBackUserViewModel,
 
     override val fragmentViewModelScope: Boolean = true
 
-    override val layoutId: Int  = R.layout.fragment_back
-
     override val viewModelSeed: EmaBackUserViewModel by instance()
 
     override val navigator: EmaBackNavigator by instance()
 
-    override fun onNormal(data: EmaBackUserState) {
+    override fun FragmentBackBinding.onNormal(data: EmaBackUserState) {
         adapter.updateList(data.listUsers)
         tvBackNoUsers.visibility = checkVisibility(data.noUserVisibility)
         rvBack.visibility = checkVisibility(!data.noUserVisibility, gone = false)
     }
-
-    override fun onAlternative(data: EmaExtraData) {
-
-    }
-
-    override fun onSingle(data: EmaExtraData) {
-
-    }
-
-    override fun onError(error: Throwable) {
-
-    }
-
 }

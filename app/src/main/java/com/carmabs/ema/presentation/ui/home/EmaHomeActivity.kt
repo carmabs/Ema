@@ -4,7 +4,7 @@ import android.widget.Toast
 import com.carmabs.ema.R
 import com.carmabs.ema.android.extension.getFormattedString
 import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
-import com.carmabs.ema.core.extension.DATE_FORMAT_HHMM
+import com.carmabs.ema.core.extension.HOUR_FORMAT_HHMM
 import com.carmabs.ema.core.extension.toDateFormat
 import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.presentation.base.BaseActivity
@@ -25,7 +25,7 @@ class EmaHomeActivity : BaseActivity<EmaHomeToolbarState,EmaHomeToolbarViewModel
 
     override val androidViewModelSeed: EmaAndroidViewModel<EmaHomeToolbarViewModel> by instance<EmaAndroidHomeToolbarViewModel>()
 
-    override fun provideFixedToolbarTitle(): String? = getString(R.string.home_toolbar_title)
+    override fun provideFixedToolbarTitle(): String = getString(R.string.home_toolbar_title)
 
     /**
      * Variable used to enable the theme used in manifest. Otherwise it will use the EmaTheme,
@@ -40,19 +40,13 @@ class EmaHomeActivity : BaseActivity<EmaHomeToolbarState,EmaHomeToolbarViewModel
 
     }
 
-    override fun onStateAlternative(data: EmaExtraData) {
-
-    }
-
-
-
     override fun onSingleEvent(data: EmaExtraData) {
         when(data.type){
              EmaExtraData.DEFAULT_ID -> {
                  (data.extraData as? Pair<*, *>)?.also {
                      (it.second as? Long)?.also { timestamp ->
                          try {
-                             val date = timestamp.toDateFormat(DATE_FORMAT_HHMM)
+                             val date = timestamp.toDateFormat(HOUR_FORMAT_HHMM)
                              Toast.makeText(this,
                                      R.string.home_last_user.getFormattedString(this,it.first,date),
                                      Toast.LENGTH_SHORT).show()
@@ -66,6 +60,10 @@ class EmaHomeActivity : BaseActivity<EmaHomeToolbarState,EmaHomeToolbarViewModel
     }
 
     override fun onStateError(error: Throwable) {
+
+    }
+
+    override fun onStateOverlayed(data: EmaExtraData) {
 
     }
 }

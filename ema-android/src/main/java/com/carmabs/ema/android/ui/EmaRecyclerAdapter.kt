@@ -30,7 +30,8 @@ abstract class EmaRecyclerAdapter<I>(diffCallback: DiffUtil.ItemCallback<I> = ge
      * @param holder holder where view components are implemented
      * @param position current item position in recycler view
      */
-    override fun onBindViewHolder(holder: EmaViewHolder<I>, position: Int) {}
+    final override fun onBindViewHolder(holder: EmaViewHolder<I>, position: Int) {}
+
     override fun onBindViewHolder(
         holder: EmaViewHolder<I>,
         position: Int,
