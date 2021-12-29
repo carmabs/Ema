@@ -47,9 +47,9 @@ abstract class EmaViewModel<S : Any, NS : EmaNavigationState> :
                 EmaState.Normal(newState)
             }
 
-            is EmaState.Alternative -> {
-                val alternativeState = state as EmaState.Alternative
-                EmaState.Alternative(newState, alternativeState.dataAlternative)
+            is EmaState.Overlayed -> {
+                val alternativeState = state as EmaState.Overlayed
+                EmaState.Overlayed(newState, alternativeState.dataOverlayed)
             }
         }
     }
@@ -94,15 +94,15 @@ abstract class EmaViewModel<S : Any, NS : EmaNavigationState> :
 
 
     /**
-     * Used for trigger an updateAlternativeState event on the view
+     * Used for trigger an updateOverlayedState event on the view
      * Use the EmaState -> Alternative
-     * @param data with updateAlternativeState information
+     * @param data with updateOverlayedState information
      */
-    protected open fun updateToAlternativeState(data: EmaExtraData? = null) {
-        val alternativeData: EmaState.Alternative<S> = data?.let {
-            EmaState.Alternative(viewState, dataAlternative = it)
-        } ?: EmaState.Alternative(viewState)
-        super.updateView(alternativeData)
+    protected open fun updateToOverlayedState(data: EmaExtraData? = null) {
+        val overlayedData: EmaState.Overlayed<S> = data?.let {
+            EmaState.Overlayed(viewState, dataOverlayed = it)
+        } ?: EmaState.Overlayed(viewState)
+        super.updateView(overlayedData)
     }
 
     /**

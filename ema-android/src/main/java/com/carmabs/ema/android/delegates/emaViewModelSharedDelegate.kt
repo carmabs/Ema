@@ -39,7 +39,7 @@ class emaViewModelSharedDelegate<VM : EmaAndroidViewModel<out EmaViewModel<*,*>>
         }
 
         return when (emaView) {
-            is EmaFragment -> {
+            is EmaFragment<*, *, *, *> -> {
                 emaView.addExtraViewModel(
                     viewModelSeed.invoke(),
                     emaView,

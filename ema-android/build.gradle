@@ -38,6 +38,10 @@ android {
         pickFirst 'META-INF/ema-android_debug.kotlin_module'
     }
 
+    viewBinding {
+        enabled = true
+    }
+
 }
 
 dependencies {
