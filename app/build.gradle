@@ -61,5 +61,5 @@ dependencies {
     implementation project(path: ':domain')
     implementation project(path: ':common')
     implementation project(path: ':injection')
-    implementation project(path: ':ema-android')
+    implementation project(path: ':ema-android-compose')
 }

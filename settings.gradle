@@ -4,6 +4,7 @@ include ':app',
         ':domain',
         ':common',
         ':ema-android',
+        ':ema-android-compose',
         ':ema-core',
         ':ema-testing-core',
         ':ema-testing-android'
