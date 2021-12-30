@@ -7,7 +7,6 @@ import com.carmabs.ema.R
 import com.carmabs.ema.android.ui.dialog.EmaBaseDialog
 import com.carmabs.ema.databinding.DialogSimpleBinding
 import com.carmabs.ema.core.constants.STRING_EMPTY
-import kotlinx.android.synthetic.main.dialog_simple.view.*
 
 
 /**

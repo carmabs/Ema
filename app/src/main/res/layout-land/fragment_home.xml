@@ -37,7 +37,7 @@
         app:layout_constraintTop_toBottomOf="@+id/tvLoginWelcome" />
 
     <include
-        android:id="@+id/layoutLightLoginCarPlate"
+        android:id="@+id/layoutLightLoginUser"
         style="@style/EditTextUser"
         layout="@layout/layout_user"
         android:layout_width="0dp"
@@ -55,19 +55,19 @@
         android:text="@string/home_check_credentials"
         android:textColor="@color/colorAccent"
         android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="@+id/layoutLightLoginCarPlate"
+        app:layout_constraintEnd_toEndOf="@+id/layoutLightLoginUser"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/layoutLightLoginCarPlate"
-        app:layout_constraintTop_toBottomOf="@+id/layoutLightLoginCarPlate" />
+        app:layout_constraintStart_toStartOf="@+id/layoutLightLoginUser"
+        app:layout_constraintTop_toBottomOf="@+id/layoutLightLoginUser" />
 
     <include
-        android:id="@+id/layoutLightLoginTitular"
+        android:id="@+id/layoutLightLoginPassword"
         style="@style/EditTextPasswordHome"
         layout="@layout/layout_password"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="@+id/layoutLightLoginCarPlate"
-        app:layout_constraintStart_toStartOf="@+id/layoutLightLoginCarPlate"
+        app:layout_constraintEnd_toEndOf="@+id/layoutLightLoginUser"
+        app:layout_constraintStart_toStartOf="@+id/layoutLightLoginUser"
         app:layout_constraintTop_toBottomOf="@+id/tvLightLoginErrorUser"/>
 
     <TextView
@@ -77,10 +77,10 @@
         android:text="@string/home_check_credentials"
         android:textColor="@color/colorAccent"
         android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="@+id/layoutLightLoginTitular"
+        app:layout_constraintEnd_toEndOf="@+id/layoutLightLoginPassword"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/layoutLightLoginTitular"
-        app:layout_constraintTop_toBottomOf="@+id/layoutLightLoginTitular" />
+        app:layout_constraintStart_toStartOf="@+id/layoutLightLoginPassword"
+        app:layout_constraintTop_toBottomOf="@+id/layoutLightLoginPassword" />
 
 
     <Switch
@@ -106,7 +106,7 @@
         android:text="@string/home_remember_user"
         android:textSize="@dimen/letter_small_medium"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/layoutLightLoginCarPlate"
+        app:layout_constraintBottom_toBottomOf="@+id/layoutLightLoginUser"
         app:layout_constraintEnd_toEndOf="@+id/bLightLoginSign"
         app:layout_constraintStart_toStartOf="@+id/bLightLoginSign"/>
 
@@ -121,9 +121,9 @@
         android:ellipsize="end"
         android:maxLines="1"
         android:text="@string/home_access"
-        app:layout_constraintBottom_toBottomOf="@+id/layoutLightLoginTitular"
+        app:layout_constraintBottom_toBottomOf="@+id/layoutLightLoginPassword"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/layoutLightLoginTitular"
+        app:layout_constraintTop_toTopOf="@+id/layoutLightLoginPassword"
         app:layout_constraintVertical_bias="1.0"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

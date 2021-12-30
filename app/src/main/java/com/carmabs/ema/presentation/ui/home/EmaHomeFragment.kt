@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
-import androidx.compose.runtime.Composable
 import com.carmabs.domain.exception.LoginException
 import com.carmabs.domain.exception.PasswordEmptyException
 import com.carmabs.domain.exception.UserEmptyException
@@ -21,15 +20,14 @@ import com.carmabs.ema.core.constants.STRING_EMPTY
 import com.carmabs.ema.core.dialog.EmaDialogProvider
 import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.databinding.FragmentHomeBinding
+import com.carmabs.ema.databinding.LayoutPasswordBinding
+import com.carmabs.ema.databinding.LayoutUserBinding
 import com.carmabs.ema.presentation.DIALOG_TAG_LOADING
 import com.carmabs.ema.presentation.base.BaseFragment
 import com.carmabs.ema.presentation.dialog.loading.LoadingDialogData
 import com.carmabs.ema.presentation.dialog.simple.SimpleDialogData
 import com.carmabs.ema.presentation.dialog.simple.SimpleDialogListener
 import com.carmabs.ema.presentation.dialog.simple.SimpleDialogProvider
-import kotlinx.android.synthetic.main.fragment_home.*
-import kotlinx.android.synthetic.main.layout_password.*
-import kotlinx.android.synthetic.main.layout_user.*
 import org.kodein.di.instance
 
 /**
@@ -44,7 +42,8 @@ import org.kodein.di.instance
  * Use of bindForUpdate and checkUpdate
  * Use of ReceiverListener
  */
-class EmaHomeFragment : BaseFragment<FragmentHomeBinding,EmaHomeState, EmaHomeViewModel, EmaHomeNavigator.Navigation>() {
+class EmaHomeFragment :
+    BaseFragment<FragmentHomeBinding, EmaHomeState, EmaHomeViewModel, EmaHomeNavigator.Navigation>() {
 
 
     override fun provideAndroidViewModel(): EmaAndroidViewModel<EmaHomeViewModel> {
@@ -64,7 +63,7 @@ class EmaHomeFragment : BaseFragment<FragmentHomeBinding,EmaHomeState, EmaHomeVi
         inflater: LayoutInflater,
         container: ViewGroup?
     ): FragmentHomeBinding {
-        return FragmentHomeBinding.inflate(inflater,container,false)
+        return FragmentHomeBinding.inflate(inflater, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -90,16 +89,22 @@ class EmaHomeFragment : BaseFragment<FragmentHomeBinding,EmaHomeState, EmaHomeVi
         }
     }
 
+    private val bindingUser
+        get() = LayoutUserBinding.bind(binding.layoutLightLoginUser.root)
+    private val bindingPassword
+        get() = LayoutPasswordBinding.bind(binding.layoutLightLoginPassword.root)
+
     private fun setupButtons(viewModel: EmaHomeViewModel) {
-        swLightLoginRememberPassword.setOnCheckedChangeListener { _, isChecked ->
+        binding.swLightLoginRememberPassword.setOnCheckedChangeListener { _, isChecked ->
             viewModel.onActionRemember(
                 isChecked
             )
         }
-        ivHomeTouchEmptyUser.setOnClickListener { viewModel.onActionDeleteUser() }
-        ivHomePassEmptyPassword.setOnClickListener { viewModel.onActionDeletePassword() }
-        ivHomePassSeePassword.setOnClickListener { viewModel.onActionShowPassword() }
-        etUser.addTextChangedListener(object : TextWatcher {
+
+        bindingUser.ivHomeTouchEmptyUser.setOnClickListener { viewModel.onActionDeleteUser() }
+        bindingPassword.ivHomePassEmptyPassword.setOnClickListener { viewModel.onActionDeletePassword() }
+        bindingPassword.ivHomePassSeePassword.setOnClickListener { viewModel.onActionShowPassword() }
+        bindingUser.etUser.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
 
             }
@@ -114,7 +119,7 @@ class EmaHomeFragment : BaseFragment<FragmentHomeBinding,EmaHomeState, EmaHomeVi
                 viewModel.onActionUserWrite(s?.toString() ?: STRING_EMPTY)
             }
         })
-        etPassword.addTextChangedListener(object : TextWatcher {
+        bindingPassword.etPassword.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
 
             }
@@ -130,7 +135,7 @@ class EmaHomeFragment : BaseFragment<FragmentHomeBinding,EmaHomeState, EmaHomeVi
             }
 
         })
-        bLightLoginSign.setOnClickListener {
+        binding.bLightLoginSign.setOnClickListener {
             viewModel.onActionLogin()
         }
     }
@@ -139,7 +144,7 @@ class EmaHomeFragment : BaseFragment<FragmentHomeBinding,EmaHomeState, EmaHomeVi
         textView.visibility = View.VISIBLE
     }
 
-    private fun hideErrors() {
+    private fun FragmentHomeBinding.hideErrors() {
         tvLightLoginErrorUser.visibility = View.GONE
         tvLightLoginErrorPassword.visibility = View.GONE
         errorDialog.hide()
@@ -150,10 +155,12 @@ class EmaHomeFragment : BaseFragment<FragmentHomeBinding,EmaHomeState, EmaHomeVi
     }
 
     private fun showErrorDialog() {
-        errorDialog.show(SimpleDialogData(
-            getString(R.string.home_invalid_credentials_title),
-            getString(R.string.home_invalid_credentials_message)
-        ))
+        errorDialog.show(
+            SimpleDialogData(
+                getString(R.string.home_invalid_credentials_title),
+                getString(R.string.home_invalid_credentials_message)
+            )
+        )
     }
 
     private fun showLoadingDialog() {
@@ -184,8 +191,8 @@ class EmaHomeFragment : BaseFragment<FragmentHomeBinding,EmaHomeState, EmaHomeVi
         // -> TextWatcher calls viewmodel
         // -> ¡INFINITE LOOP!
         //
-        checkUpdate(etUser.text.toString(), data.userName) {
-            etUser.setText(data.userName)
+        checkUpdate(bindingUser.etUser.text.toString(), data.userName) {
+            bindingUser.etUser.setText(data.userName)
         }
 
         //Use this to execute the set view value operation only if the selected state property has been
@@ -195,7 +202,7 @@ class EmaHomeFragment : BaseFragment<FragmentHomeBinding,EmaHomeState, EmaHomeVi
 
 
         bindForUpdate(data::userPassword) {
-            etPassword.setText(data.userPassword)
+            bindingPassword.etPassword.setText(data.userPassword)
         }
 
         //////////////////////////////////////////////////////////////////////
@@ -204,12 +211,12 @@ class EmaHomeFragment : BaseFragment<FragmentHomeBinding,EmaHomeState, EmaHomeVi
 
         data.showPassword.let {
             if (it) {
-                etPassword.transformationMethod = PasswordTransformationMethod.getInstance()
+                bindingPassword.etPassword.transformationMethod = PasswordTransformationMethod.getInstance()
             } else {
-                etPassword.transformationMethod = null
+                bindingPassword.etPassword.transformationMethod = null
 
             }
-            etPassword.setSelection(etPassword.text.length)
+            bindingPassword.etPassword.setSelection(bindingPassword.etPassword.text.length)
         }
     }
 

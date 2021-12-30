@@ -1,12 +1,9 @@
 package com.carmabs.ema.presentation.dialog.loading
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import com.carmabs.ema.R
 import com.carmabs.ema.android.ui.dialog.EmaBaseDialog
 import com.carmabs.ema.databinding.DialogLoadingBinding
-import kotlinx.android.synthetic.main.dialog_loading.view.*
 
 /**
  * Simple dialog
