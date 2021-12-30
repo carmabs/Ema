@@ -1,7 +1,6 @@
 package com.carmabs.ema.presentation.ui.user
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.viewbinding.ViewBinding
 import com.carmabs.ema.R
@@ -10,8 +9,6 @@ import com.carmabs.ema.android.ui.EmaMultiRecyclerAdapter
 import com.carmabs.ema.android.ui.EmaViewHolder
 import com.carmabs.ema.databinding.ItemLeftBinding
 import com.carmabs.ema.databinding.ItemRightBinding
-import kotlinx.android.synthetic.main.item_left.view.*
-import kotlinx.android.synthetic.main.item_right.view.*
 
 /**
  *

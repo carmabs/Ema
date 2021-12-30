@@ -16,10 +16,9 @@ import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
 import com.carmabs.ema.core.navigator.EmaNavigationState
 import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.databinding.FragmentUserBinding
+import com.carmabs.ema.databinding.LayoutEmaHeaderBinding
 import com.carmabs.ema.presentation.base.BaseFragment
 import com.carmabs.ema.presentation.ui.home.EmaAndroidHomeToolbarViewModel
-import kotlinx.android.synthetic.main.fragment_user.*
-import kotlinx.android.synthetic.main.layout_ema_header.*
 import org.kodein.di.direct
 import org.kodein.di.instance
 
@@ -38,7 +37,8 @@ import org.kodein.di.instance
  * Add extra view model to get access to EmaHomeToolbarViewModel (View model can be shared if it
  * is attached to activity scope)
  */
-class EmaUserFragment : BaseFragment<FragmentUserBinding,EmaUserState, EmaUserViewModel, EmaNavigationState>() {
+class EmaUserFragment :
+    BaseFragment<FragmentUserBinding, EmaUserState, EmaUserViewModel, EmaNavigationState>() {
 
     override val navigator: EmaAndroidNavigator<EmaNavigationState>? = null
 
@@ -54,11 +54,14 @@ class EmaUserFragment : BaseFragment<FragmentUserBinding,EmaUserState, EmaUserVi
 
     private lateinit var adapter: EmaUserAdapter
 
+    val bindingHeader
+        get() = LayoutEmaHeaderBinding.bind(binding.lUserEmaHeader.root)
+
     override fun createViewBinding(
         inflater: LayoutInflater,
         container: ViewGroup?
     ): FragmentUserBinding {
-        return FragmentUserBinding.inflate(inflater,container,false)
+        return FragmentUserBinding.inflate(inflater, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -69,19 +72,20 @@ class EmaUserFragment : BaseFragment<FragmentUserBinding,EmaUserState, EmaUserVi
 
     private fun setupRecycler(viewModel: EmaUserViewModel) {
         adapter = EmaUserAdapter().apply {
-            setOnItemClickListener{ index,item->
+            setOnItemClickListener { index, item ->
                 viewModel.onActionUserClicked(item)
             }
         }
-        rvUser.layoutManager = LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
-        rvUser.adapter = adapter
+        binding.rvUser.layoutManager =
+            LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
+        binding.rvUser.adapter = adapter
     }
 
     override val viewModelSeed: EmaUserViewModel by instance()
 
     override fun FragmentUserBinding.onNormal(data: EmaUserState) {
-        tvUserName.text = data.name
-        tvUserSurname.text = data.surname
+        bindingHeader.tvUserName.text = data.name
+        bindingHeader.tvUserSurname.text = data.surname
         adapter.updateList(data.itemList)
     }
 
