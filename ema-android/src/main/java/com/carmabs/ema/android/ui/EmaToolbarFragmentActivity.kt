@@ -1,10 +1,10 @@
 package com.carmabs.ema.android.ui
 
+import android.animation.Animator
 import android.content.Intent
 import android.os.Bundle
-import android.os.PersistableBundle
-import android.view.LayoutInflater
 import android.view.View
+import android.view.animation.Animation
 import androidx.annotation.CallSuper
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
@@ -13,11 +13,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.viewbinding.ViewBinding
 import com.carmabs.ema.android.R
-import com.carmabs.ema.android.databinding.EmaToolbarActivityBinding
 import com.carmabs.ema.android.delegates.emaViewModelDelegate
+import com.carmabs.ema.android.extension.checkVisibility
 import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
 import com.carmabs.ema.android.viewmodel.EmaFactory
-import com.carmabs.ema.core.delegate.emaBooleanDelegate
+import com.carmabs.ema.core.constants.FLOAT_ONE
+import com.carmabs.ema.core.constants.FLOAT_ZERO
 import com.carmabs.ema.core.navigator.EmaNavigationState
 import com.carmabs.ema.core.state.EmaBaseState
 import com.carmabs.ema.core.state.EmaExtraData
@@ -33,7 +34,8 @@ import kotlinx.coroutines.launch
 /**
  * [EmaFragmentActivity]  with toolbar support
  */
-abstract class EmaToolbarFragmentActivity<B:ViewBinding,S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigationState> : EmaFragmentActivity<B>(), EmaAndroidView<S, VM, NS>  {
+abstract class EmaToolbarFragmentActivity<B : ViewBinding, S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigationState> :
+    EmaFragmentActivity<B>(), EmaAndroidView<S, VM, NS> {
 
     final override val androidViewModelSeed: EmaAndroidViewModel<VM> by lazy {
         provideAndroidViewModel()
@@ -137,6 +139,7 @@ abstract class EmaToolbarFragmentActivity<B:ViewBinding,S : EmaBaseState, VM : E
         super.onCreate(savedInstanceState)
         setupToolbar()
     }
+
     /**
      * Initialize ViewModel on activity creation
      */
@@ -192,21 +195,72 @@ abstract class EmaToolbarFragmentActivity<B:ViewBinding,S : EmaBaseState, VM : E
     }
 
     protected fun setToolbarTitle(title: String?) {
-        supportActionBar?.title = title ?: provideFixedToolbarTitle() ?: navController.currentDestination?.label
+        supportActionBar?.title =
+            title ?: provideFixedToolbarTitle() ?: navController.currentDestination?.label
     }
 
     /**
      * Hides the toolbar
      */
-    protected open fun hideToolbar(gone: Boolean = true) {
-        toolbarLayout.visibility = if (gone) View.GONE else View.INVISIBLE
+    protected open fun hideToolbar(gone: Boolean = true, animate: Boolean = true) {
+        if (animate) {
+            toolbarLayout.animate().apply {
+                alpha(FLOAT_ZERO)
+                setListener(object : Animator.AnimatorListener {
+
+                    override fun onAnimationEnd(p0: Animator?) {
+                        toolbarLayout.visibility = checkVisibility(false, gone)
+                    }
+
+                    override fun onAnimationStart(p0: Animator?) {
+
+                    }
+
+                    override fun onAnimationRepeat(p0: Animator?) {
+
+                    }
+
+                    override fun onAnimationCancel(p0: Animator?) {
+
+                    }
+
+                })
+            }
+        } else {
+            toolbarLayout.visibility = if (gone) View.GONE else View.INVISIBLE
+        }
     }
 
     /**
      * Show the toolbar
      */
-    protected open fun showToolbar() {
-        toolbarLayout.visibility = View.VISIBLE
+    protected open fun showToolbar(animate: Boolean = true) {
+        if(animate) {
+            toolbarLayout.animate().apply {
+                alpha(FLOAT_ONE)
+                setListener(object : Animator.AnimatorListener {
+
+                    override fun onAnimationStart(p0: Animator?) {
+                        toolbarLayout.visibility = View.VISIBLE
+                    }
+
+                    override fun onAnimationEnd(p0: Animator?) {
+
+                    }
+
+                    override fun onAnimationCancel(p0: Animator?) {
+
+                    }
+
+                    override fun onAnimationRepeat(p0: Animator?) {
+
+                    }
+                })
+            }
+        }
+        else{
+            toolbarLayout.visibility = View.VISIBLE
+        }
     }
 
     /**
@@ -302,7 +356,7 @@ abstract class EmaToolbarFragmentActivity<B:ViewBinding,S : EmaBaseState, VM : E
     }
 
     abstract fun B.onStateNormal(data: S)
-    protected open fun B.onStateOverlayed(data: EmaExtraData){}
-    protected open fun B.onStateError(throwable: Throwable){}
-    protected open fun B.onSingleEvent(data: EmaExtraData){}
+    protected open fun B.onStateOverlayed(data: EmaExtraData) {}
+    protected open fun B.onStateError(throwable: Throwable) {}
+    protected open fun B.onSingleEvent(data: EmaExtraData) {}
 }
