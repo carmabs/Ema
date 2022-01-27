@@ -34,6 +34,9 @@ rootProject.ext {
 
     kotlinVersion = '1.6.10'
 
+    kotlinCompilerExtensionVersion = '1.0.5'
+
+
     lifecycleKtExtensionVersion = '2.3.0'
 
     fragmentVersion = "1.4.0"

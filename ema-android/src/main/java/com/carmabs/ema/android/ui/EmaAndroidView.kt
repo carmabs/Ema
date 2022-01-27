@@ -48,22 +48,4 @@ interface EmaAndroidView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNav
         val vm = ViewModelProvider(fragment, emaFactory)[androidViewModelSeed::class.java]
         return vm.emaViewModel as VM
     }
-
-    /**
-     * Method called to start viewModel and bind data updated
-     */
-    fun onStartAndBindData(
-        lifeCycleOwner: LifecycleOwner,
-        viewModel: VM
-    ): MutableList<Job> {
-        return onStartView(lifeCycleOwner.lifecycleScope, viewModel)
-    }
-
-
-    fun onStopBinding(
-        viewModel:VM,
-        job: MutableList<Job>?
-    ) {
-        onStopView(job,viewModel)
-    }
 }

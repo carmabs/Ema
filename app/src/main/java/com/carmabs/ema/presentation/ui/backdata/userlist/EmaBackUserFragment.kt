@@ -6,14 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.carmabs.ema.R
+import com.carmabs.ema.android.di.instanceDirect
 import com.carmabs.ema.android.extension.checkVisibility
 import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
-import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.databinding.FragmentBackBinding
 import com.carmabs.ema.presentation.base.BaseFragment
 import com.carmabs.ema.presentation.ui.backdata.EmaBackNavigator
-import kotlinx.android.synthetic.main.fragment_back.*
 import org.kodein.di.instance
 
 /**
@@ -30,7 +28,9 @@ class EmaBackUserFragment : BaseFragment<FragmentBackBinding,EmaBackUserState, E
 
     private val adapter : EmaBackUserAdapter by lazy { EmaBackUserAdapter() }
 
-    override val androidViewModelSeed: EmaAndroidViewModel<EmaBackUserViewModel> by instance<EmaAndroidBackUserViewModel>()
+    override fun provideAndroidViewModel(): EmaAndroidViewModel<EmaBackUserViewModel> {
+        return instanceDirect()
+    }
 
     override fun createViewBinding(
         inflater: LayoutInflater,
@@ -46,19 +46,16 @@ class EmaBackUserFragment : BaseFragment<FragmentBackBinding,EmaBackUserState, E
     }
 
     private fun setupButton(viewModel: EmaBackUserViewModel) {
-        bBack.setOnClickListener {
+        binding.bBack.setOnClickListener {
             viewModel.onActionAddUser()
         }
     }
 
     private fun setupRecycler() {
-        rvBack.layoutManager = LinearLayoutManager(requireContext(),RecyclerView.VERTICAL,false)
-        rvBack.adapter = adapter
+        binding.rvBack.layoutManager = LinearLayoutManager(requireContext(),RecyclerView.VERTICAL,false)
+        binding.rvBack.adapter = adapter
     }
 
-    override val fragmentViewModelScope: Boolean = true
-
-    override val viewModelSeed: EmaBackUserViewModel by instance()
 
     override val navigator: EmaBackNavigator by instance()
 

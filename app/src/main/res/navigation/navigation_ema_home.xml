@@ -19,8 +19,8 @@
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
             app:popExitAnim="@anim/nav_default_pop_exit_anim" />
         <action
-            android:id="@+id/action_homeViewFragment_to_emaErrorViewActivity"
-            app:destination="@id/emaErrorViewActivity" />
+            android:id="@+id/action_homeViewFragment_to_emaUnloggedViewActivity"
+            app:destination="@id/emaUnloggedViewActivity" />
         <action
             android:id="@+id/action_homeViewFragment_self"
             app:destination="@id/homeViewFragment" />
@@ -33,9 +33,9 @@
         tools:layout="@layout/fragment_user">
     </fragment>
     <activity
-        android:id="@+id/emaErrorViewActivity"
-        android:name="com.carmabs.ema.presentation.ui.error.EmaErrorToolbarViewActivity"
-        android:label="EmaErrorViewActivity" />
+        android:id="@+id/emaUnloggedViewActivity"
+        android:name="com.carmabs.ema.presentation.ui.unlogged.activity.EmaUnloggedToolbarViewActivity"
+        android:label="EmaUnloggedViewActivity" />
 
 
 </navigation>

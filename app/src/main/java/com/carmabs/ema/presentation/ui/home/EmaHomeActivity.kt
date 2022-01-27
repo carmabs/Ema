@@ -2,6 +2,7 @@ package com.carmabs.ema.presentation.ui.home
 
 import android.widget.Toast
 import com.carmabs.ema.R
+import com.carmabs.ema.android.di.instanceDirect
 import com.carmabs.ema.android.databinding.EmaToolbarActivityBinding
 import com.carmabs.ema.android.extension.getFormattedString
 import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
@@ -23,8 +24,6 @@ import org.kodein.di.instance
 class EmaHomeActivity : BaseActivity<EmaHomeToolbarState,EmaHomeToolbarViewModel,EmaHomeNavigator.Navigation>() {
 
     override val navGraph: Int = R.navigation.navigation_ema_home
-
-    override val androidViewModelSeed: EmaAndroidViewModel<EmaHomeToolbarViewModel> by instance<EmaAndroidHomeToolbarViewModel>()
 
     override fun provideFixedToolbarTitle(): String = getString(R.string.home_toolbar_title)
 
@@ -58,5 +57,11 @@ class EmaHomeActivity : BaseActivity<EmaHomeToolbarState,EmaHomeToolbarViewModel
                  }
              }
         }
+    }
+
+   
+
+    override fun provideAndroidViewModel(): EmaAndroidViewModel<EmaHomeToolbarViewModel> {
+        return instanceDirect()
     }
 }

@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import com.carmabs.ema.R
 import com.carmabs.ema.android.ui.dialog.EmaBaseDialog
 import com.carmabs.ema.databinding.DialogSimpleBinding
-import kotlinx.android.synthetic.main.dialog_simple.view.*
+import com.carmabs.ema.core.constants.STRING_EMPTY
 
 
 /**
@@ -39,23 +39,26 @@ class SimpleDialog : EmaBaseDialog<DialogSimpleBinding,SimpleDialogData>() {
 
             tvDialogSimpleMessage!!.text = message
 
-            bDialogSimpleYes.text = accept
+            bDialogSimpleYes.text = resources.getString(R.string.dialog_accept)
 
             ivDialogSimple.visibility =
-                    image?.let {
-                        ivDialogSimple.setImageDrawable(it)
-                        View.VISIBLE
-                    } ?: View.GONE
+                imageId?.let {
+                    ivDialogSimple.setImageResource(it)
+                    View.VISIBLE
+                } ?: View.GONE
 
-            if (cancel.isEmpty()) {
+            if (!showCancel) {
                 bDialogSimpleNo.visibility = View.GONE
             }
 
-            bDialogSimpleNo.text = cancel
+            bDialogSimpleNo.text = resources.getString(R.string.dialog_cancel)
 
             isCancelable = !isModal
         }
     }
 
-    override fun createInitialState(): SimpleDialogData = SimpleDialogData()
+    override fun createInitialState(): SimpleDialogData = SimpleDialogData(
+        STRING_EMPTY,
+        STRING_EMPTY
+    )
 }

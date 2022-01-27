@@ -3,6 +3,7 @@ package com.carmabs.ema.presentation.ui.backdata;
 import android.os.Bundle
 import androidx.core.content.ContextCompat
 import com.carmabs.ema.R
+import com.carmabs.ema.android.di.instanceDirect
 import com.carmabs.ema.android.databinding.EmaToolbarActivityBinding
 import com.carmabs.ema.android.ui.EmaToolbarFragmentActivity
 import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
@@ -30,7 +31,9 @@ class EmaBackToolbarActivity : BaseActivity<EmaBackToolbarState, EmaBackToolbarV
 
     override val navigator: EmaBackNavigator by instance()
 
-    override val androidViewModelSeed: EmaAndroidViewModel<EmaBackToolbarViewModel> by instance<EmaAndroidBackToolbarViewModel>()
+    override fun provideAndroidViewModel(): EmaAndroidViewModel<EmaBackToolbarViewModel> {
+        return instanceDirect()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

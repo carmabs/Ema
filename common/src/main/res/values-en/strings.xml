@@ -20,15 +20,23 @@
     <!--DIALOG-->
     <string name="dialog_yes">Yes</string>
     <string name="dialog_accept">Accept</string>
+    <string name="dialog_cancel">Cancelar</string>
     <string name="dialog_no">No</string>
 
-    <!--ERROR-->
-    <string name="error_invalid_credentials">Invalid credentials</string>
-    <string name="error_toolbar_title">EMA ERROR</string>
-    <string name="error_show_toolbar">Show toolbar</string>
-    <string name="error_add_user">Add user</string>
-    <string name="error_hide_toolbar">Hide toolbar</string>
-    <string name="error_user_created">Users created: %d</string>
+    <!--UNLOGGED-->
+
+
+    <string name="unlogged_invalid_credentials">Invalid credentials</string>
+    <string name="unlogged_toolbar_title">EMA UNLOGGED</string>
+    <string name="unlogged_show_toolbar">Show toolbar</string>
+    <string name="unlogged_add_user">Add user</string>
+    <string name="unlogged_hide_toolbar">Hide toolbar</string>
+    <string name="unlogged_user_created">Users created: %d</string>
+    <string name="unlogged_show_dialog">Show dialog</string>
+    <string name="unlogged_dialog_title">OnOverlayed Dialog</string>
+    <string name="unlogged_show_single_event">Send Single Event</string>
+    <string name="unlogged_toast_sample">Single Event Sample</string>
+
 
     <!--USER-->
     <string name="user_name">Admin: %s</string>
