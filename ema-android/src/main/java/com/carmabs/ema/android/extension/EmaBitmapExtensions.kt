@@ -7,6 +7,8 @@ import android.graphics.drawable.Drawable
 import java.io.ByteArrayOutputStream
 import android.graphics.Bitmap
 import com.carmabs.ema.core.constants.FLOAT_ZERO
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 
 /**
@@ -53,17 +55,19 @@ fun Bitmap.toByteArray(): ByteArray {
     return stream.toByteArray()
 }
 
-fun ByteArray.toBitmap(width: Int? = null, height: Int? = null): Bitmap {
-    var options: BitmapFactory.Options? = null
-    if (width != null && height != null) {
-        options = BitmapFactory.Options().apply {
-            outHeight = height
-            outWidth = width
+suspend fun ByteArray.toBitmap(width: Int? = null, height: Int? = null): Bitmap {
+    return  withContext(Dispatchers.Default) {
+        var options: BitmapFactory.Options? = null
+        if (width != null && height != null) {
+            options = BitmapFactory.Options().apply {
+                outHeight = height
+                outWidth = width
+            }
         }
+        options?.let {
+            BitmapFactory.decodeByteArray(this@toBitmap, 0, size, it)
+        } ?: let { BitmapFactory.decodeByteArray(this@toBitmap, 0, size) }
     }
-    return options?.let {
-        BitmapFactory.decodeByteArray(this, 0, size, it)
-    } ?: let { BitmapFactory.decodeByteArray(this, 0, size) }
 }
 
 fun Bitmap.resizeCrop(width: Int, height: Int): Bitmap {
