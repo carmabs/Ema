@@ -73,6 +73,10 @@ fun @receiver:DrawableRes Int.getDrawable(context: Context): Drawable {
     return ContextCompat.getDrawable(context, this)!!
 }
 
+fun @receiver:DimenRes Int.getDimension(context: Context): Float {
+    return context.resources.getDimension(this)
+}
+
 fun @receiver:DrawableRes Int.getBitmap(
     context: Context,
     width: Int? = null,
