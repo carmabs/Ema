@@ -109,6 +109,17 @@ abstract class EmaBaseRecyclerAdapter<I>(diffCallback: DiffUtil.ItemCallback<I> 
                 return oldItem?.equals(newItem) ?: false
             }
         }
+
+        fun <I> getAlwaysUpdateCallback() = object : DiffUtil.ItemCallback<I>() {
+            override fun areItemsTheSame(oldItem: I, newItem: I): Boolean {
+                return false
+            }
+
+            @SuppressLint("DiffUtilEquals")
+            override fun areContentsTheSame(oldItem: I, newItem: I): Boolean {
+                return false
+            }
+        }
     }
 
 }

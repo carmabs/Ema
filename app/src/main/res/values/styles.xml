@@ -60,13 +60,11 @@
     <style name="DialogTitle" parent="Text">
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">@dimen/letter_big_huge</item>
-        <item name="android:layout_marginTop">@dimen/space_big</item>
     </style>
 
     <style name="DialogMessage" parent="Text">
         <item name="android:textColor">@color/grayDark</item>
         <item name="android:textSize">@dimen/letter_big</item>
-        <item name="android:layout_marginTop">@dimen/space_big</item>
     </style>
 
     <style name="Text">

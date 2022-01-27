@@ -5,15 +5,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import com.carmabs.ema.R
+import com.carmabs.ema.android.di.instanceDirect
 import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
 import com.carmabs.ema.core.extension.checkNull
 import com.carmabs.ema.core.state.EmaExtraData
-import com.carmabs.ema.databinding.FragmentBackBinding
 import com.carmabs.ema.databinding.FragmentBackResultBinding
 import com.carmabs.ema.presentation.base.BaseFragment
 import com.carmabs.ema.presentation.ui.backdata.EmaBackNavigator
-import kotlinx.android.synthetic.main.fragment_back_result.*
 import org.kodein.di.instance
 
 /**
@@ -30,7 +28,9 @@ import org.kodein.di.instance
 
 class EmaBackUserCreationFragment : BaseFragment<FragmentBackResultBinding,EmaBackUserCreationState, EmaBackUserCreationViewModel, EmaBackNavigator.Navigation>() {
 
-    override val androidViewModelSeed: EmaAndroidViewModel<EmaBackUserCreationViewModel> by instance<EmaAndroidBackUserCreationViewModel>()
+    override fun provideAndroidViewModel(): EmaAndroidViewModel<EmaBackUserCreationViewModel> {
+        return instanceDirect()
+    }
 
     override fun createViewBinding(
         inflater: LayoutInflater,
@@ -65,10 +65,10 @@ class EmaBackUserCreationFragment : BaseFragment<FragmentBackResultBinding,EmaBa
 
         ///Use the next code ///
 
-        etBackResultName.setEmaTextWatcherListener {
+        binding.etBackResultName.setEmaTextWatcherListener {
             viewModel.onActionNameWrite(it.checkNull())
         }
-        etBackResultSurname.setEmaTextWatcherListener {
+        binding.etBackResultSurname.setEmaTextWatcherListener {
             viewModel.onActionSurnameWrite(it.checkNull())
         }
     }
@@ -76,17 +76,15 @@ class EmaBackUserCreationFragment : BaseFragment<FragmentBackResultBinding,EmaBa
 
     private fun setupButtons(viewModel: EmaBackUserCreationViewModel) {
 
-        bBackResultAccept.setOnClickListener {
-            val name = etBackResultName.text.toString()
-            val surname = etBackResultSurname.text.toString()
+        binding.bBackResultAccept.setOnClickListener {
+            val name = binding.etBackResultName.text.toString()
+            val surname = binding.etBackResultSurname.text.toString()
             viewModel.onActionAddUser(
                     name = name,
                     surname = surname
             )
         }
     }
-
-    override val viewModelSeed: EmaBackUserCreationViewModel by instance()
 
     override val navigator: EmaBackNavigator by instance()
 

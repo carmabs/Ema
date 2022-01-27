@@ -1,0 +1,55 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply from: '../build-system/compose.gradle'
+group = 'com.github.carmabs'
+
+android {
+
+    defaultConfig {
+        compileSdkVersion ema.compileSdk
+        minSdkVersion ema.minSdk
+        targetSdkVersion ema.targetSdk
+        versionCode ema.versionCode
+        versionName ema.versionName
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        coreLibraryDesugaringEnabled = true
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
+        useIR = true
+    }
+
+    packagingOptions {
+        pickFirst 'META-INF/kotlinx-io.kotlin_module'
+        pickFirst 'META-INF/ema-android_debug.kotlin_module'
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion "1.0.5"
+        kotlinCompilerVersion '1.5.31'
+    }
+
+    buildFeatures {
+        compose true
+        viewBinding true
+    }
+}
+
+dependencies {
+    api project(path: ':ema-android')
+}

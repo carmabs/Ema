@@ -1,4 +1,4 @@
-package com.carmabs.ema.presentation.ui.error
+package com.carmabs.ema.presentation.ui.unlogged
 
 import com.carmabs.ema.core.state.EmaBaseState
 
@@ -10,6 +10,6 @@ import com.carmabs.ema.core.state.EmaBaseState
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
 
-data class EmaErrorToolbarState(
+data class EmaUnloggedToolbarState(
         val visibility:Boolean = true
 ) : EmaBaseState
