@@ -1,14 +1,12 @@
 package com.carmabs.ema.android.extension
 
-import android.R.attr
 import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
-import java.io.ByteArrayOutputStream
-import android.graphics.Bitmap
 import com.carmabs.ema.core.constants.FLOAT_ZERO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.ByteArrayOutputStream
 
 
 /**
@@ -21,12 +19,13 @@ import kotlinx.coroutines.withContext
  * @author <a href=“mailto:cmateo.benito@atsistemas.com”>Carlos Mateo Benito</a>
  */
 fun Bitmap.getRoundedCornerBitmap(
-    pixels: Int,
+    pixels: Int = width / 2,
     paint: Paint = Paint(),
     rect: Rect = Rect(),
-    rectF: RectF = RectF()
+    rectF: RectF = RectF(),
+    outputBitmap:Bitmap?=null
 ): Bitmap {
-    val output: Bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+    val output: Bitmap = outputBitmap?:Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(output)
     val color = -0xbdbdbe
     val pColor = paint.color
@@ -56,67 +55,43 @@ fun Bitmap.toByteArray(): ByteArray {
 }
 
 suspend fun ByteArray.toBitmap(width: Int? = null, height: Int? = null): Bitmap {
-    return  withContext(Dispatchers.Default) {
-        var options: BitmapFactory.Options? = null
+    return withContext(Dispatchers.Default) {
         if (width != null && height != null) {
-            options = BitmapFactory.Options().apply {
-                outHeight = height
-                outWidth = width
-            }
+            Bitmap.createScaledBitmap(
+                BitmapFactory.decodeByteArray(
+                    this@toBitmap,
+                    0,
+                    size,
+                    BitmapFactory.Options().apply {
+                        outHeight = height
+                        outWidth = width
+                    }), width, height,true)
+        } else {
+            BitmapFactory.decodeByteArray(this@toBitmap, 0, size)
         }
-        options?.let {
-            BitmapFactory.decodeByteArray(this@toBitmap, 0, size, it)
-        } ?: let { BitmapFactory.decodeByteArray(this@toBitmap, 0, size) }
     }
 }
 
-fun Bitmap.resizeCrop(width: Int, height: Int): Bitmap {
+fun Bitmap.resizeCrop(): Bitmap {
+    val dstBmp = if (width >= height) {
+        Bitmap.createBitmap(
+            this,
+            this.width / 2 - this.height / 2,
+            0,
+            this.height,
+            this.height
+        );
 
-    val sourceWidth: Int = this.width
-    val sourceHeight: Int = this.height
-
-    // Compute the scaling factors to fit the new height and width, respectively.
-    // To cover the final image, the final scaling will be the bigger
-    // of these two.
-
-    // Compute the scaling factors to fit the new height and width, respectively.
-    // To cover the final image, the final scaling will be the bigger
-    // of these two.
-    val xScale = width / sourceWidth.toFloat()
-    val yScale = width / sourceHeight.toFloat()
-    val scale = xScale.coerceAtLeast(yScale)
-
-    // Now get the size of the source bitmap when scaled
-
-    // Now get the size of the source bitmap when scaled
-    val scaledWidth = scale * sourceWidth
-    val scaledHeight = scale * sourceHeight
-
-    // Let's find out the upper left coordinates if the scaled bitmap
-    // should be centered in the new size give by the parameters
-
-    // Let's find out the upper left coordinates if the scaled bitmap
-    // should be centered in the new size give by the parameters
-    val left: Float = (width - scaledWidth) / 2
-    val top: Float = (height - scaledHeight) / 2
-
-    // The target rectangle for the new, scaled version of the source bitmap will now
-    // be
-
-    // The target rectangle for the new, scaled version of the source bitmap will now
-    // be
-    val targetRect = RectF(left, top, left + scaledWidth, top + scaledHeight)
-
-    // Finally, we create a new bitmap of the specified size and draw our new,
-    // scaled bitmap onto it.
-
-    // Finally, we create a new bitmap of the specified size and draw our new,
-    // scaled bitmap onto it.
-    val dest = Bitmap.createBitmap(width, height, this.config)
-    val canvas = Canvas(dest)
-    canvas.drawBitmap(this, null, targetRect, null)
-
-    return dest
+    } else {
+        Bitmap.createBitmap(
+            this,
+            0,
+            this.height / 2 - this.width / 2,
+            this.width,
+            this.width
+        );
+    }
+    return dstBmp
 }
 
 fun Bitmap.resizeFitInside(destWidth: Int, destHeight: Int): Bitmap {
@@ -145,10 +120,10 @@ fun Bitmap.resizeFitInside(destWidth: Int, destHeight: Int): Bitmap {
     return background
 }
 
-fun Drawable.toBitmap(): Bitmap {
+fun Drawable.toBitmap(width: Int?=null,height: Int?=null): Bitmap {
     if (this is BitmapDrawable) {
         val bitmapDrawable = this
-        if (bitmapDrawable.bitmap != null) {
+        if (bitmapDrawable.bitmap != null && (width==null && height==null)) {
             return bitmapDrawable.bitmap
         }
     }
@@ -161,8 +136,8 @@ fun Drawable.toBitmap(): Bitmap {
         ) // Single color bitmap will be created of 1x1 pixel
     } else {
         Bitmap.createBitmap(
-            intrinsicWidth,
-            intrinsicHeight,
+            width?:intrinsicWidth,
+            height?:intrinsicHeight,
             Bitmap.Config.ARGB_8888
         )
     }
