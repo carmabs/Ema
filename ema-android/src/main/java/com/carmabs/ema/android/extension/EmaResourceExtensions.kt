@@ -107,40 +107,42 @@ fun @receiver:DrawableRes Int.getByteArray(context: Context): ByteArray {
     return stream.toByteArray()
 }
 
-fun @receiver:DrawableRes Int.getBitmapFromResource(
+suspend fun @receiver:DrawableRes Int.getBitmapFromResource(
     context: Context,
     width: Int? = null,
     height: Int? = null,
     colorHex: String? = null
 ): Bitmap {
-    return ContextCompat.getDrawable(context, this)?.let {
-        val drawable: Drawable = it
-        val bitmap: Bitmap = Bitmap.createBitmap(
-            width ?: drawable.intrinsicWidth,
-            height ?: drawable.intrinsicHeight, Bitmap.Config.ARGB_8888
-        )
-        val canvas = Canvas(bitmap)
-        // TO ANTIALIAS //
-        val ratio = drawable.intrinsicWidth / drawable.intrinsicHeight.toFloat()
-        val boundWidth = when {
-            ratio < FLOAT_ONE -> bitmap.height * ratio
-            else -> bitmap.width.toFloat()
-        }
-        val boundHeight = when {
-            ratio < FLOAT_ONE -> bitmap.height.toFloat()
-            else -> bitmap.width / ratio
-        }
-        canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
-        drawable.setBounds(
-            (bitmap.width / 2f - boundWidth / 2f).toInt(),
-            (bitmap.height / 2f - boundHeight / 2f).toInt(),
-            (bitmap.width / 2f + boundWidth / 2f).toInt(),
-            (bitmap.height / 2f + boundHeight / 2f).toInt()
-        )
-        colorHex?.also { color -> drawable.setTint(Color.parseColor(color)) }
-        drawable.draw(canvas)
-        bitmap
-    } ?: throw Exception("Drawable not found")
+    return withContext(Dispatchers.Default){
+        ContextCompat.getDrawable(context, this@getBitmapFromResource)?.let {
+            val drawable: Drawable = it
+            val bitmap: Bitmap = Bitmap.createBitmap(
+                width ?: drawable.intrinsicWidth,
+                height ?: drawable.intrinsicHeight, Bitmap.Config.ARGB_8888
+            )
+            val canvas = Canvas(bitmap)
+            // TO ANTIALIAS //
+            val ratio = drawable.intrinsicWidth / drawable.intrinsicHeight.toFloat()
+            val boundWidth = when {
+                ratio < FLOAT_ONE -> bitmap.height * ratio
+                else -> bitmap.width.toFloat()
+            }
+            val boundHeight = when {
+                ratio < FLOAT_ONE -> bitmap.height.toFloat()
+                else -> bitmap.width / ratio
+            }
+            canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
+            drawable.setBounds(
+                (bitmap.width / 2f - boundWidth / 2f).toInt(),
+                (bitmap.height / 2f - boundHeight / 2f).toInt(),
+                (bitmap.width / 2f + boundWidth / 2f).toInt(),
+                (bitmap.height / 2f + boundHeight / 2f).toInt()
+            )
+            colorHex?.also { color -> drawable.setTint(Color.parseColor(color)) }
+            drawable.draw(canvas)
+            bitmap
+        } ?: throw Exception("Drawable not found")
+    }
 }
 
 suspend fun @receiver:DrawableRes Int.getBitmapCropFromResource(
@@ -151,8 +153,6 @@ suspend fun @receiver:DrawableRes Int.getBitmapCropFromResource(
 
     return withContext(Dispatchers.Default) {
         val bitmap: Bitmap = BitmapFactory.decodeResource(context.resources, this@getBitmapCropFromResource)
-        val w = width ?: bitmap.width
-        val h = height ?: bitmap.height
-        bitmap.resizeCrop(w, h)
+        bitmap.resizeCrop()
     }
 }
