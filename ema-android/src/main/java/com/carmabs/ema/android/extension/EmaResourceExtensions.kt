@@ -111,7 +111,7 @@ suspend fun @receiver:DrawableRes Int.getBitmapFromResource(
     context: Context,
     width: Int? = null,
     height: Int? = null,
-    colorHex: String? = null
+    @ColorInt color: Int? = null
 ): Bitmap {
     return withContext(Dispatchers.Default){
         ContextCompat.getDrawable(context, this@getBitmapFromResource)?.let {
@@ -138,7 +138,7 @@ suspend fun @receiver:DrawableRes Int.getBitmapFromResource(
                 (bitmap.width / 2f + boundWidth / 2f).toInt(),
                 (bitmap.height / 2f + boundHeight / 2f).toInt()
             )
-            colorHex?.also { color -> drawable.setTint(Color.parseColor(color)) }
+            color?.also { col -> drawable.setTint(col) }
             drawable.draw(canvas)
             bitmap
         } ?: throw Exception("Drawable not found")
