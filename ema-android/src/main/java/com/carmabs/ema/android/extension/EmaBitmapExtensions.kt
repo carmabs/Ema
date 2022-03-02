@@ -3,10 +3,13 @@ package com.carmabs.ema.android.extension
 import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.util.Size
 import com.carmabs.ema.core.constants.FLOAT_ZERO
+import com.carmabs.ema.core.constants.INT_ONE
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
+import kotlin.math.roundToInt
 
 
 /**
@@ -23,9 +26,9 @@ fun Bitmap.getRoundedCornerBitmap(
     paint: Paint = Paint(),
     rect: Rect = Rect(),
     rectF: RectF = RectF(),
-    outputBitmap:Bitmap?=null
+    outputBitmap: Bitmap? = null
 ): Bitmap {
-    val output: Bitmap = outputBitmap?:Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+    val output: Bitmap = outputBitmap ?: Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(output)
     val color = -0xbdbdbe
     val pColor = paint.color
@@ -65,7 +68,8 @@ suspend fun ByteArray.toBitmap(width: Int? = null, height: Int? = null): Bitmap 
                     BitmapFactory.Options().apply {
                         outHeight = height
                         outWidth = width
-                    }), width, height,true)
+                    }), width, height, true
+            )
         } else {
             BitmapFactory.decodeByteArray(this@toBitmap, 0, size)
         }
@@ -120,31 +124,67 @@ fun Bitmap.resizeFitInside(destWidth: Int, destHeight: Int): Bitmap {
     return background
 }
 
-fun Drawable.toBitmap(width: Int?=null,height: Int?=null): Bitmap {
-    if (this is BitmapDrawable) {
+fun Drawable.toBitmap(maxSize: Size? = null): Bitmap {
+    return if (this is BitmapDrawable && this.bitmap != null) {
         val bitmapDrawable = this
-        if (bitmapDrawable.bitmap != null && (width==null && height==null)) {
+        if (maxSize == null) {
             return bitmapDrawable.bitmap
         }
-    }
 
-    val bitmap = if (intrinsicWidth <= 0 || intrinsicHeight <= 0) {
+        val maxHeight = if (maxSize.height > intrinsicHeight)
+            intrinsicHeight
+        else
+            maxSize.height
+
+        val maxWidth = if (maxSize.width > intrinsicWidth)
+            intrinsicWidth
+        else
+            maxSize.width
+
+        val originBitmap = bitmap
+        val originRatio = intrinsicWidth / intrinsicHeight.toFloat()
+        val maxRatio = maxWidth / maxHeight.toFloat()
+
+        val centerX = maxWidth / 2f
+        val centerY = maxHeight / 2f
+
+        val targetWidth = maxWidth
+        val targetHeight = maxHeight
+        val scaledBitmap = Bitmap.createBitmap(maxWidth, maxHeight, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(scaledBitmap)
+        val centerOriginX = originBitmap.width/2f
+        val centerOriginY = originBitmap.height/2f
+        var targetOriginWidth = originBitmap.width
+        var targetOriginHeight = originBitmap.height
+
+        if (originRatio > INT_ONE) {
+            targetOriginWidth = (targetOriginHeight * maxRatio).roundToInt()
+        } else {
+            targetOriginHeight = (targetOriginWidth / maxRatio).roundToInt()
+        }
+
+        canvas.drawBitmap(
+            originBitmap,
+            Rect(
+                (centerOriginX - targetOriginWidth / 2).roundToInt(),
+                (centerOriginY - targetOriginHeight / 2).roundToInt(),
+                (centerOriginX + targetOriginWidth / 2).roundToInt(),
+                (centerOriginY + targetOriginHeight / 2).roundToInt()
+            ),
+            Rect(
+                (centerX - targetWidth / 2).roundToInt(),
+                (centerY - targetHeight / 2).roundToInt(),
+                (centerX + targetWidth / 2).roundToInt(),
+                (centerY + targetHeight / 2).roundToInt()
+            ),
+            Paint().apply { isAntiAlias = true }
+        )
+        scaledBitmap
+    } else {
         Bitmap.createBitmap(
             1,
             1,
             Bitmap.Config.ARGB_8888
         ) // Single color bitmap will be created of 1x1 pixel
-    } else {
-        Bitmap.createBitmap(
-            width?:intrinsicWidth,
-            height?:intrinsicHeight,
-            Bitmap.Config.ARGB_8888
-        )
     }
-
-    val canvas = Canvas(bitmap)
-    setBounds(0, 0, canvas.width, canvas.height)
-    draw(canvas)
-    return bitmap
 }
-
