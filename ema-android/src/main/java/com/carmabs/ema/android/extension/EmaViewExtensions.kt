@@ -66,7 +66,7 @@ fun View.hideKeyboard() {
 
 fun ImageView.setImageDrawableWithTransition(
     drawable: Drawable,
-    durationMillis: Int = ANIMATION_DURATION,
+    durationMillis: Int = ANIMATION_DURATION.toInt(),
     animateFirstTransition: Boolean = true,
     endAnimationListener: (() -> Unit)? = null
 ) {
@@ -108,7 +108,7 @@ fun ImageView.setImageDrawableWithTransition(
 fun ImageView.setImageWithOvershot(
     drawable: Drawable,
     overshoot: Float = ANIMATION_OVERSHOOT,
-    durationMillis: Int = ANIMATION_DURATION,
+    durationMillis: Int = ANIMATION_DURATION.toInt(),
     rightDirection: Boolean = true,
     endAnimationListener: (() -> Unit)? = null
 ) {

@@ -9,5 +9,5 @@ package com.carmabs.ema.android
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-const val ANIMATION_DURATION = 250
+const val ANIMATION_DURATION = 250L
 const val ANIMATION_OVERSHOOT = 10f
