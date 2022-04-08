@@ -145,8 +145,8 @@ abstract class EmaToolbarFragmentActivity<B : ViewBinding, S : EmaBaseState, VM 
      */
     @CallSuper
     override fun onStart() {
-        onStartView(vm)
         viewJob = onBindView(this.lifecycleScope, vm)
+        onStartView(vm)
         super.onStart()
     }
 
