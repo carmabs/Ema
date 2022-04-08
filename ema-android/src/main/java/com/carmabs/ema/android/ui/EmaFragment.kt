@@ -59,11 +59,11 @@ abstract class EmaFragment<B : ViewBinding, S : EmaBaseState, VM : EmaViewModel<
 
     @CallSuper
     override fun onStart() {
-        super.onStart()
         viewJob = onBindView(
             getScope(),
             vm
         )
+        super.onStart()
     }
 
     @CallSuper
