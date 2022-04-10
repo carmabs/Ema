@@ -107,6 +107,8 @@ fun @receiver:DrawableRes Int.getByteArray(context: Context): ByteArray {
     return stream.toByteArray()
 }
 
+fun @receiver:ColorInt Int.toHex(): String = String.format("#%06X", (0xFFFFFF and  this))
+
 suspend fun @receiver:DrawableRes Int.getBitmapFromResource(
     context: Context,
     width: Int? = null,

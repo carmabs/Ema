@@ -1,6 +1,7 @@
 package com.carmabs.ema.android.extension
 
 import android.content.Context
+import com.carmabs.ema.core.constants.INT_ZERO
 import com.carmabs.ema.core.model.EmaText
 
 /**
@@ -13,10 +14,25 @@ import com.carmabs.ema.core.model.EmaText
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
 
-fun EmaText.string(context: Context):String{
+/**
+ * Transform ema text to string value.
+ * @param overrideParams can use these params to override the extra params set in the EmaText object originally
+ */
+fun EmaText.string(context: Context,vararg overrideParams:Any):String{
+    val areEmptyParams = overrideParams.isNullOrEmpty()
+    val params = if(areEmptyParams)
+        data
+    else
+        overrideParams
     return when(this){
-        is EmaText.Id -> context.getString(id,data)
-        is EmaText.Plural -> context.resources.getQuantityString(id,quantity,data)
-        is EmaText.Text -> String.format(text,data)
+        is EmaText.Id -> { context.getString(id, params) }
+        is EmaText.Plural -> {
+            val (updatedQuantity,updatedData) = if(areEmptyParams)
+                Pair(quantity,data)
+            else
+                Pair(overrideParams.first() as Int,overrideParams.drop(INT_ZERO).toTypedArray())
+            context.resources.getQuantityString(id,updatedQuantity,*updatedData)
+        }
+        is EmaText.Text -> String.format(text,params)
     }
 }
