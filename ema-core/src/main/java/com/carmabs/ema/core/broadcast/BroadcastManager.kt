@@ -10,6 +10,6 @@ package com.carmabs.ema.core.broadcast
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
 interface BroadcastManager {
-   suspend fun sendBroadcastEvent(event:EmaBroadcastEvent)
+   fun sendBroadcastEvent(event:EmaBroadcastEvent)
    suspend fun registerBroadcast(id: String, listener: suspend (Any) -> Unit)
 }
