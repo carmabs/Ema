@@ -9,7 +9,9 @@ import android.os.Looper
 import android.os.ResultReceiver
 import androidx.core.app.JobIntentService
 import com.carmabs.ema.android.di.Injector
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.kodein.di.DI
 import org.kodein.di.android.closestDI
 
@@ -31,6 +33,7 @@ import org.kodein.di.android.closestDI
  **/
 abstract class EmaJobService : JobIntentService(), Injector {
 
+    private val coroutineScope = CoroutineScope(Dispatchers.Default)
     override val parentKodein: DI by closestDI()
 
     override val di: DI
@@ -64,7 +67,7 @@ abstract class EmaJobService : JobIntentService(), Injector {
         val resultReceiver: ResultReceiver? = intent.extras?.get(
             EMA_SERVICE_LISTENER
         ) as? ResultReceiver
-        runBlocking {
+        coroutineScope.launch {
             executeWork(intent, resultReceiver)
         }
     }
