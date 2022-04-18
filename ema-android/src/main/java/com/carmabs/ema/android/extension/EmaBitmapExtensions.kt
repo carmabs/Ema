@@ -4,6 +4,7 @@ import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.util.Size
+import androidx.annotation.ColorInt
 import com.carmabs.ema.core.constants.FLOAT_ZERO
 import com.carmabs.ema.core.constants.INT_ONE
 import kotlinx.coroutines.Dispatchers
@@ -57,9 +58,9 @@ fun Bitmap.toByteArray(): ByteArray {
     return stream.toByteArray()
 }
 
-suspend fun ByteArray.toBitmap(width: Int? = null, height: Int? = null): Bitmap {
+suspend fun ByteArray.toBitmap(width: Int? = null, height: Int? = null,@ColorInt colorTint:Int?=null): Bitmap {
     return withContext(Dispatchers.Default) {
-        if (width != null && height != null) {
+        val resultBitmap = if (width != null && height != null) {
             Bitmap.createScaledBitmap(
                 BitmapFactory.decodeByteArray(
                     this@toBitmap,
@@ -73,6 +74,14 @@ suspend fun ByteArray.toBitmap(width: Int? = null, height: Int? = null): Bitmap 
         } else {
             BitmapFactory.decodeByteArray(this@toBitmap, 0, size)
         }
+        colorTint?.let {
+            val tintBitmap = resultBitmap.copy(resultBitmap.config,true)
+            val paint = Paint().apply {
+                colorFilter = PorterDuffColorFilter(it,PorterDuff.Mode.SRC_IN)
+            }
+            Canvas(tintBitmap).drawBitmap(resultBitmap,0f,0f,paint)
+            tintBitmap
+        }?:resultBitmap
     }
 }
 
