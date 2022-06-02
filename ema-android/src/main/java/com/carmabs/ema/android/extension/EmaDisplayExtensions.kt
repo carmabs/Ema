@@ -1,6 +1,7 @@
 package com.carmabs.ema.android.extension
 
 import android.content.Context
+import android.os.Build
 import android.util.DisplayMetrics
 import android.util.TypedValue
 import android.view.WindowManager
@@ -25,9 +26,20 @@ fun Int.dpToPx(context: Context):Int {
  * Get display metrics
  */
 fun getScreenMetrics(context: Context): DisplayMetrics {
-    val displayMetrics = DisplayMetrics()
+    val displayMetrics = context.resources.displayMetrics
     val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-    windowManager.defaultDisplay.getMetrics(displayMetrics)
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        val boundsActivity = windowManager.currentWindowMetrics.bounds
+        displayMetrics.apply {
+            heightPixels = boundsActivity.height()
+            widthPixels = boundsActivity.width()
+        }
+
+    }
+    else {
+        windowManager.defaultDisplay.getMetrics(displayMetrics)
+    }
     return displayMetrics
 }
 

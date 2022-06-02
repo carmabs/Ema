@@ -11,6 +11,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 import androidx.viewbinding.ViewBinding
 import com.carmabs.ema.android.delegates.emaStateDelegate
+import com.carmabs.ema.android.extension.getScreenMetrics
 import com.carmabs.ema.core.dialog.EmaDialogData
 import com.carmabs.ema.core.dialog.EmaDialogListener
 import org.kodein.di.DI
@@ -26,9 +27,9 @@ import org.kodein.di.android.closestDI
 abstract class EmaBaseDialog<B : ViewBinding, T : EmaDialogData> : DialogFragment(), DIAware,
     DialogInterface.OnShowListener {
 
-    private var _binding:B? = null
+    private var _binding: B? = null
     protected val binding
-    get() = _binding!!
+        get() = _binding!!
 
     companion object {
         private const val KEY_DIALOG_DATA = "KEY_DIALOG_DATA"
@@ -37,7 +38,6 @@ abstract class EmaBaseDialog<B : ViewBinding, T : EmaDialogData> : DialogFragmen
     override val di: DI by closestDI {
         requireActivity()
     }
-
 
     var dialogListener: EmaDialogListener? = null
 
@@ -54,7 +54,7 @@ abstract class EmaBaseDialog<B : ViewBinding, T : EmaDialogData> : DialogFragmen
     /**
      * Specify the ViewBinding to be inflated in the [EmaBaseDialog.onCreateView].
      */
-    abstract fun  createViewBinding(inflater: LayoutInflater, container: ViewGroup?): B
+    abstract fun createViewBinding(inflater: LayoutInflater, container: ViewGroup?): B
 
     /**
      * Setup data for UI
@@ -62,7 +62,7 @@ abstract class EmaBaseDialog<B : ViewBinding, T : EmaDialogData> : DialogFragmen
     protected abstract fun B.setup(data: T)
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val dialog = super.onCreateDialog(savedInstanceState)
+        val dialog =  super.onCreateDialog(savedInstanceState)
         (savedInstanceState?.getSerializable(KEY_DIALOG_DATA) as? T)?.also {
             data = it
         }
@@ -107,10 +107,11 @@ abstract class EmaBaseDialog<B : ViewBinding, T : EmaDialogData> : DialogFragmen
     override fun onResume() {
         super.onResume()
         dialog?.window?.also { win ->
-            val display = win.windowManager.defaultDisplay
-            val size = Point()
-            display.getSize(size)
-
+            val display = getScreenMetrics(requireContext())
+            val size = Point().apply {
+                x = display.widthPixels
+                y = display.heightPixels
+            }
             data.run {
                 val width = proportionWidth?.let { (it * size.x).toInt() }
                     ?: ViewGroup.LayoutParams.WRAP_CONTENT
