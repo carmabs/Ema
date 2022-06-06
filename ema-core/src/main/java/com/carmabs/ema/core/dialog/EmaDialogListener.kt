@@ -7,5 +7,10 @@ package com.carmabs.ema.core.dialog
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
 interface EmaDialogListener {
+
+    fun onOutsidePressed(){
+        onBackPressed()
+    }
+    
     fun onBackPressed()
 }

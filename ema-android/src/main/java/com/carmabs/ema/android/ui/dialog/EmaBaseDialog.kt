@@ -41,9 +41,10 @@ abstract class EmaBaseDialog<B : ViewBinding, T : EmaDialogData> : DialogFragmen
 
     var dialogListener: EmaDialogListener? = null
 
-    private var data: T by emaStateDelegate {
+    var data: T by emaStateDelegate {
         createInitialState()
     }
+    private set
 
     private var isDismissed: Boolean = false
 
@@ -119,6 +120,10 @@ abstract class EmaBaseDialog<B : ViewBinding, T : EmaDialogData> : DialogFragmen
                     ?: ViewGroup.LayoutParams.WRAP_CONTENT
                 win.setLayout(width, height)
                 isCancelable = !isModal
+                dialog?.setCanceledOnTouchOutside(isCancelable)
+                dialog?.setOnCancelListener {
+                    dialogListener?.onOutsidePressed()
+                }
             }
         }
 
