@@ -44,7 +44,7 @@ class DefaultConcurrencyManager : ConcurrencyManager {
         synchronized(jobList) {
             val jobPending = mutableListOf<Job>()
             jobPending.addAll(jobList)
-            jobPending.forEach { if (it.isActive) it.cancel() }
+            jobPending.forEach { if (it.isActive) it.cancel(CancellationException("Ema concurrency manager cancelled pending tasks")) }
 
             jobList.clear()
         }
