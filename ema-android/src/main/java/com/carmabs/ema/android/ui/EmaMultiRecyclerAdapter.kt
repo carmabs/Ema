@@ -13,7 +13,7 @@ import androidx.viewbinding.ViewBinding
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
 
-abstract class EmaMultiRecyclerAdapter<I>(diffCallback: DiffUtil.ItemCallback<I> = getDefaultDiffCallback()) :
+abstract class EmaMultiRecyclerAdapter<I:Any>(diffCallback: DiffUtil.ItemCallback<I> = getDefaultDiffCallback()) :
     EmaBaseRecyclerAdapter<I>(diffCallback) {
 
     /**
