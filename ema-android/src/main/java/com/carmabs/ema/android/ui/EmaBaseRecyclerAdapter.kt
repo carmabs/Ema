@@ -18,7 +18,7 @@ import java.util.*
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
 
-abstract class EmaBaseRecyclerAdapter<I>(diffCallback: DiffUtil.ItemCallback<I> = getDefaultDiffCallback()) :
+abstract class EmaBaseRecyclerAdapter<I:Any>(diffCallback: DiffUtil.ItemCallback<I> = getDefaultDiffCallback()) :
     ListAdapter<I, EmaViewHolder<I>>(diffCallback) {
 
     /**
@@ -99,18 +99,18 @@ abstract class EmaBaseRecyclerAdapter<I>(diffCallback: DiffUtil.ItemCallback<I> 
     }
 
     companion object {
-        fun <I> getDefaultDiffCallback() = object : DiffUtil.ItemCallback<I>() {
+        fun <I : Any> getDefaultDiffCallback() = object : DiffUtil.ItemCallback<I>() {
             override fun areItemsTheSame(oldItem: I, newItem: I): Boolean {
                 return oldItem == newItem
             }
 
             @SuppressLint("DiffUtilEquals")
             override fun areContentsTheSame(oldItem: I, newItem: I): Boolean {
-                return oldItem?.equals(newItem) ?: false
+                return (oldItem == newItem)
             }
         }
 
-        fun <I> getAlwaysUpdateCallback() = object : DiffUtil.ItemCallback<I>() {
+        fun <I : Any> getAlwaysUpdateCallback() = object : DiffUtil.ItemCallback<I>() {
             override fun areItemsTheSame(oldItem: I, newItem: I): Boolean {
                 return false
             }
