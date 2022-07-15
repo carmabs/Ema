@@ -77,6 +77,10 @@ fun @receiver:DimenRes Int.getDimension(context: Context): Float {
     return context.resources.getDimension(this)
 }
 
+fun @receiver:FontRes Int.getFont(context:Context): Typeface {
+   return ResourcesCompat.getFont(context,this)!!
+}
+
 fun @receiver:DrawableRes Int.getBitmap(
     context: Context,
     width: Int? = null,
