@@ -1,14 +1,11 @@
 package com.carmabs.ema.android.ui
 
 
-import android.annotation.SuppressLint
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
+import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
-import java.util.*
 
 /**
  * Adapter to implement the list view interface in recycler views
@@ -55,4 +52,5 @@ abstract class EmaRecyclerAdapter<B : ViewBinding, I:Any>(diffCallback: DiffUtil
             }
         }
     }
+
 }
