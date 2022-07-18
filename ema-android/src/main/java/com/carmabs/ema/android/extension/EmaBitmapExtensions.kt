@@ -58,6 +58,10 @@ fun Bitmap.toByteArray(): ByteArray {
     return stream.toByteArray()
 }
 
+fun Bitmap.copyDefault(mutable:Boolean = true): Bitmap {
+    return copy(config,mutable)
+}
+
 suspend fun ByteArray.toBitmap(width: Int? = null, height: Int? = null,@ColorInt colorTint:Int?=null): Bitmap {
     return withContext(Dispatchers.Default) {
         val resultBitmap = if (width != null && height != null) {
