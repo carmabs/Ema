@@ -88,6 +88,12 @@ abstract class EmaFragment<B : ViewBinding, S : EmaBaseState, VM : EmaViewModel<
         binding.onStateError(error)
     }
 
+    @CallSuper
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
+    }
+
     abstract fun B.onStateNormal(data: S)
     protected open fun B.onStateOverlayed(data: EmaExtraData) {}
     protected open fun B.onStateError(throwable: Throwable) {}
