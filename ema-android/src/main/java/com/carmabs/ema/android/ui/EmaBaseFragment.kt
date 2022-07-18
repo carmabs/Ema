@@ -84,7 +84,6 @@ Fragment(), EmaAndroidView<S, VM, NS>, Injector {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        previousState = null
         isFirstNormalExecution = true
         isFirstOverlayedExecution = true
         isFirstErrorExecution = true
@@ -263,6 +262,12 @@ Fragment(), EmaAndroidView<S, VM, NS>, Injector {
     override fun onEmaStateError(error: Throwable) {
         onStateError(error)
         isFirstErrorExecution = false
+    }
+
+    @CallSuper
+    override fun onDestroyView() {
+        previousState = null
+        super.onDestroyView()
     }
 
     abstract fun onStateNormal(data: S)
