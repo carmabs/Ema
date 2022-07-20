@@ -1,7 +1,11 @@
 package com.carmabs.ema.android.viewmodel
 
+import androidx.annotation.CallSuper
 import androidx.lifecycle.ViewModel
+import com.carmabs.ema.core.viewmodel.EmaBaseViewModel
 import com.carmabs.ema.core.viewmodel.EmaViewModel
+import kotlin.reflect.full.functions
+import kotlin.reflect.jvm.javaMethod
 
 /**
  * Created by Carlos Mateo Benito on 13/02/2021.
@@ -15,8 +19,9 @@ import com.carmabs.ema.core.viewmodel.EmaViewModel
 abstract class EmaAndroidViewModel<VM:EmaViewModel<*,*>>(val emaViewModel:VM) :
     ViewModel() {
 
+    @CallSuper
     override fun onCleared() {
-        emaViewModel.onDestroy()
+        Class.forName(emaViewModel.javaClass.name).kotlin.functions.find { it.name == "onCleared" }?.javaMethod?.invoke(emaViewModel)
         super.onCleared()
     }
 }

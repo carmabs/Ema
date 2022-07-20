@@ -260,9 +260,16 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> {
     }
 
     /**
-     * Method called when the ViewModel is destroyed. It cancell all background pending tasks
+     * Method called when the ViewModel is destroyed. It cancels all background pending tasks.
+     * Check call name for EmaAndroidView. It uses reflection to call this internal method
      */
-    open fun onDestroy() {
+    internal open fun onCleared() {
         concurrencyManager.cancelPendingTasks()
+        onDestroy()
     }
+
+    /**
+     * Method to override onCleared ViewModel method
+     */
+    protected open fun onDestroy(){}
 }

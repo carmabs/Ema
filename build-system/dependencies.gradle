@@ -32,14 +32,16 @@ rootProject.ext {
 
     espressoVersion = "3.2.0"
 
-    kotlinVersion = '1.6.10'
+    kotlinVersion = '1.7.10'
 
     kotlinCompilerExtensionVersion = '1.0.5'
 
 
-    lifecycleKtExtensionVersion = '2.3.0'
+    lifecycleKtExtensionVersion = '2.4.0'
 
     fragmentVersion = "1.4.0"
+
+    reflectionVersion = "1.7.0"
 
     ema = [
             buildTools : "31.0.0",
@@ -86,6 +88,7 @@ rootProject.ext {
     ]
 
     emaAndroid = [
+            reflection          : "org.jetbrains.kotlin:kotlin-reflect:$reflectionVersion",
             fragment            : "androidx.fragment:fragment-ktx:$fragmentVersion",
             navigationFragment  : "androidx.navigation:navigation-fragment-ktx:" + project.navigationVersion,
             navigationUI        : "androidx.navigation:navigation-ui-ktx:" + project.navigationVersion,
