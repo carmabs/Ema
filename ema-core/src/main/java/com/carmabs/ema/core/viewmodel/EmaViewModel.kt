@@ -167,8 +167,8 @@ abstract class EmaViewModel<S : Any, NS : EmaNavigationState> :
         emaResultHandler.addResultReceiver(emaReceiver)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onCleared() {
+        super.onCleared()
         emaResultHandler.notifyResults(getId())
     }
 

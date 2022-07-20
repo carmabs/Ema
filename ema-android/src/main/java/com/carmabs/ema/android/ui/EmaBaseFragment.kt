@@ -205,6 +205,7 @@ Fragment(), EmaAndroidView<S, VM, NS>, Injector {
     open val fragmentViewModelScope: Boolean = true
 
 
+    @CallSuper
     override fun onStop() {
         removeExtraViewModels()
         super.onStop()

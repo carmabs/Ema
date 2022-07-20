@@ -48,6 +48,8 @@ dependencies {
     // Kotlin
     api emaAndroid.fragment
 
+    implementation emaAndroid.reflection
+
     //Java Time API for SDK version < 26
     coreLibraryDesugaring emaAndroid.desugaring
 
