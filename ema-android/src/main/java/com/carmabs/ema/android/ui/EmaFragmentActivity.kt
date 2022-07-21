@@ -10,6 +10,9 @@ import androidx.navigation.findNavController
 import androidx.viewbinding.ViewBinding
 import com.carmabs.ema.android.R
 import com.carmabs.ema.android.databinding.EmaActivityFragmentBinding
+import com.carmabs.ema.core.state.EmaBaseState
+import com.carmabs.ema.core.state.EmaState
+import com.carmabs.ema.core.view.EmaView
 
 /**
  * Abstract class to handle navigation in activity
@@ -47,6 +50,10 @@ abstract class EmaFragmentActivity<B:ViewBinding> : EmaBaseActivity<B>() {
      */
     private fun setupNavigation() {
         navController.setGraph(navGraph, intent.extras)
+    }
+
+    protected fun setCurrentDestinationInputState(state:EmaBaseState){
+        intent.putExtra(EmaView.KEY_INPUT_STATE_DEFAULT,state)
     }
 
 
