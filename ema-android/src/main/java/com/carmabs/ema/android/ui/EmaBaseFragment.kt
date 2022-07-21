@@ -230,7 +230,6 @@ Fragment(), EmaAndroidView<S, VM, NS>, Injector {
         return arguments?.let {
             if (it.containsKey(inputStateKey)) {
                 it.get(inputStateKey) as? S
-
             } else
                 null
         }
