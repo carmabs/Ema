@@ -67,6 +67,9 @@ abstract class EmaAndroidDialogProvider constructor(private val fragmentManager:
         dialog = null
     }
 
+    override val isVisible: Boolean
+        get() = fragmentManager.findFragmentByTag(getTag())?.isVisible?:false
+
     override var dialogListener: EmaDialogListener? = null
         set(value) {
             field = value
