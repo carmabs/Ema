@@ -1,5 +1,6 @@
 package com.carmabs.ema.android.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -49,13 +50,14 @@ abstract class EmaFragmentActivity<B:ViewBinding> : EmaBaseActivity<B>() {
      * Setup the navigation path for navigation architecture components
      */
     private fun setupNavigation() {
-        navController.setGraph(navGraph, intent.extras)
+        navController.setGraph(navGraph, overrideDestinationInputState()?.let {
+            Bundle().apply {
+                putSerializable(EmaView.KEY_INPUT_STATE_DEFAULT,it)
+            }
+        }?:intent.extras)
     }
 
-    protected fun setCurrentDestinationInputState(state:EmaBaseState){
-        intent.putExtra(EmaView.KEY_INPUT_STATE_DEFAULT,state)
-    }
-
+    protected open fun overrideDestinationInputState():EmaBaseState? = null
 
     /**
      * Get the navigation resource for the activity [R.navigation]
