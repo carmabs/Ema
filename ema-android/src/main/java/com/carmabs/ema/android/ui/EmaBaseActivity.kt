@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import androidx.annotation.CallSuper
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.NavHost
 import androidx.viewbinding.ViewBinding
 import com.carmabs.ema.android.di.Injector
 import org.kodein.di.DI
@@ -17,7 +16,7 @@ import org.kodein.di.android.closestDI
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
-abstract class EmaBaseActivity<B:ViewBinding> : AppCompatActivity(), NavHost, Injector {
+abstract class EmaBaseActivity<B:ViewBinding> : AppCompatActivity(), Injector {
 
     final override val parentKodein by closestDI()
 

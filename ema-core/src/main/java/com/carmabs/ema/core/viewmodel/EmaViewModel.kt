@@ -1,6 +1,7 @@
 package com.carmabs.ema.core.viewmodel
 
-import com.carmabs.ema.core.navigator.EmaNavigationState
+import com.carmabs.ema.core.navigator.EmaNavigationTarget
+import com.carmabs.ema.core.state.EmaBaseState
 import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.core.state.EmaState
 
@@ -9,8 +10,8 @@ import com.carmabs.ema.core.state.EmaState
  *
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
-abstract class EmaViewModel<S : Any, NS : EmaNavigationState> :
-    EmaBaseViewModel<EmaState<S>, NS>() {
+abstract class EmaViewModel<S : EmaBaseState,NT : EmaNavigationTarget> :
+    EmaBaseViewModel<EmaState<S>, NT>() {
 
     /**
      * State of the view

@@ -1,12 +1,8 @@
 package com.carmabs.ema.core.broadcast
 
 import com.carmabs.ema.core.constants.INT_ONE
-import com.carmabs.ema.core.constants.INT_ZERO
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.map
 
 /**
  * Created by Carlos Mateo Benito on 25/02/2021.
@@ -19,16 +15,19 @@ import kotlinx.coroutines.flow.map
  */
 class FlowBroadcastManager : BroadcastManager {
 
-    private val sharedFlow = MutableSharedFlow<EmaBroadcastEvent>(extraBufferCapacity = INT_ONE, onBufferOverflow = BufferOverflow.DROP_OLDEST)
+    private val sharedFlow = MutableSharedFlow<EmaBroadcastEvent<*>>(extraBufferCapacity = INT_ONE, onBufferOverflow = BufferOverflow.DROP_OLDEST)
 
-    override fun sendBroadcastEvent(event: EmaBroadcastEvent) {
+    override fun <T> sendBroadcastEvent(event: EmaBroadcastEvent<T>) {
         sharedFlow.tryEmit(event)
     }
 
-    override suspend fun registerBroadcast(id: String, listener: suspend (Any) -> Unit) {
+    override suspend fun <T> registerBroadcast(
+        clazz: Class<out EmaBroadcastEvent<T>>,
+        listener: suspend (EmaBroadcastEvent<T>) -> Unit
+    ) {
         sharedFlow.collect {
-            if(it.id == id)
-                listener.invoke(it.data)
+            if(clazz.name == it.javaClass.name)
+                listener.invoke(it as EmaBroadcastEvent<T>)
         }
     }
 }

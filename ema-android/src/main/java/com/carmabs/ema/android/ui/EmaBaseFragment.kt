@@ -12,9 +12,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.carmabs.ema.android.delegates.emaViewModelDelegate
 import com.carmabs.ema.android.di.Injector
+import com.carmabs.ema.android.navigation.EmaFragmentNavControllerNavigator
 import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
 import com.carmabs.ema.android.viewmodel.EmaFactory
-import com.carmabs.ema.core.navigator.EmaNavigationState
+import com.carmabs.ema.core.navigator.EmaNavigationTarget
 import com.carmabs.ema.core.state.EmaBaseState
 import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.core.state.EmaState
@@ -35,7 +36,7 @@ import org.kodein.di.android.x.closestDI
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
-abstract class EmaBaseFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigationState> :
+abstract class EmaBaseFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigationTarget> :
 Fragment(), EmaAndroidView<S, VM, NS>, Injector {
 
     protected var isFirstNormalExecution: Boolean = true
@@ -47,6 +48,7 @@ Fragment(), EmaAndroidView<S, VM, NS>, Injector {
     protected var isFirstErrorExecution: Boolean = true
     private set
 
+    abstract override val navigator: EmaFragmentNavControllerNavigator<NS>?
 
     final override val androidViewModelSeed: EmaAndroidViewModel<VM> by lazy {
         provideAndroidViewModel()
@@ -68,7 +70,7 @@ Fragment(), EmaAndroidView<S, VM, NS>, Injector {
     abstract fun injectFragmentModule(kodein: DI.MainBuilder): DI.Module?
 
 
-    override val viewModelSeed: VM
+    final override val viewModelSeed: VM
     get() = androidViewModelSeed.emaViewModel
 
     private val extraViewJobs: MutableList<Job> by lazy {
@@ -243,6 +245,11 @@ Fragment(), EmaAndroidView<S, VM, NS>, Injector {
             coroutineScope
         else
             requireActivity().lifecycleScope
+    }
+
+    @CallSuper
+    override fun onNavigation(navigation: EmaNavigationTarget?) {
+        super.onNavigation(navigation)
     }
 
     fun setInputState(inState: S) {

@@ -1,5 +1,6 @@
 package com.carmabs.ema.android.viewmodel
 
+import com.carmabs.ema.core.navigator.EmaNavigationTarget
 import com.carmabs.ema.core.viewmodel.EmaEmptyViewModel
 
 /**
@@ -11,4 +12,4 @@ import com.carmabs.ema.core.viewmodel.EmaEmptyViewModel
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-class EmaAndroidEmptyViewModel : EmaAndroidViewModel<EmaEmptyViewModel>(EmaEmptyViewModel())
+class EmaAndroidEmptyViewModel<NT:EmaNavigationTarget> : EmaAndroidViewModel<EmaEmptyViewModel<NT>>(EmaEmptyViewModel())

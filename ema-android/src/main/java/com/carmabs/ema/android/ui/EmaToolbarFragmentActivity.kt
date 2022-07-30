@@ -4,7 +4,6 @@ import android.animation.Animator
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.view.animation.Animation
 import androidx.annotation.CallSuper
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
@@ -19,7 +18,7 @@ import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
 import com.carmabs.ema.android.viewmodel.EmaFactory
 import com.carmabs.ema.core.constants.FLOAT_ONE
 import com.carmabs.ema.core.constants.FLOAT_ZERO
-import com.carmabs.ema.core.navigator.EmaNavigationState
+import com.carmabs.ema.core.navigator.EmaNavigationTarget
 import com.carmabs.ema.core.state.EmaBaseState
 import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.core.state.EmaState
@@ -32,10 +31,10 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 /**
- * [EmaFragmentActivity]  with toolbar support
+ * [EmaNavigationActivity]  with toolbar support
  */
-abstract class EmaToolbarFragmentActivity<B : ViewBinding, S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigationState> :
-    EmaFragmentActivity<B>(), EmaAndroidView<S, VM, NS> {
+abstract class EmaToolbarFragmentActivity<B : ViewBinding, S : EmaBaseState, VM : EmaViewModel<S, NT>, NT : EmaNavigationTarget> :
+    EmaNavigationActivity<B,NT>(), EmaAndroidView<S, VM, NT> {
 
     final override val androidViewModelSeed: EmaAndroidViewModel<VM> by lazy {
         provideAndroidViewModel()
@@ -108,13 +107,21 @@ abstract class EmaToolbarFragmentActivity<B : ViewBinding, S : EmaBaseState, VM 
     /**
      * The toobar for the activity
      */
-    protected lateinit var toolbar: Toolbar
-        private set
+    protected val toolbar: Toolbar by lazy {
+        val tool = findViewById<Toolbar>(R.id.emaToolbar)
+            ?: throw IllegalArgumentException("You must provide in your activity xml a Toolbar with android:id=@+id/emaToolbar")
+
+        setupToolbar(tool)
+        tool
+    }
 
     /**
      * The toolbar container for the activity
      */
-    protected lateinit var toolbarLayout: AppBarLayout
+    protected val toolbarLayout: AppBarLayout by lazy{
+         findViewById<AppBarLayout>(R.id.emaAppBarLayout)
+            ?: throw IllegalArgumentException("You must provide in your activity xml an AppBarLayout with android:id=@+ìd/emaAppBarLayout")
+    }
 
 
     /**
@@ -129,6 +136,14 @@ abstract class EmaToolbarFragmentActivity<B : ViewBinding, S : EmaBaseState, VM 
     protected open val overrideTheme = false
 
     /**
+     * Request the action bar setup
+     */
+    protected fun setupActionBars(){
+        //Make this dummy request to launch lazy constructors
+        val toolbar = toolbar
+        val toolbarLayout = toolbarLayout
+    }
+    /**
      * Setup the toolbar
      * @param savedInstanceState for activity recreation
      */
@@ -137,7 +152,6 @@ abstract class EmaToolbarFragmentActivity<B : ViewBinding, S : EmaBaseState, VM 
         //To enable support action bar
         if (!overrideTheme) setTheme(R.style.EmaTheme_NoActionBar)
         super.onCreate(savedInstanceState)
-        setupToolbar()
     }
 
     /**
@@ -178,25 +192,21 @@ abstract class EmaToolbarFragmentActivity<B : ViewBinding, S : EmaBaseState, VM 
      * Find the toolbar and its container for the activity. The toolbar must have the
      * id=@+id/emaToolbar. The toolbar contaienr [AppBarLayout] must have the id=@+ìd/emaAppBarLayout
      */
-    private fun setupToolbar() {
+    private fun setupToolbar(toolbar: Toolbar) {
 
-        val tbToolbar = findViewById<Toolbar>(R.id.emaToolbar)
-            ?: throw IllegalArgumentException("You must provide in your activity xml a Toolbar with android:id=@+id/emaToolbar")
-        val lToolbar = findViewById<AppBarLayout>(R.id.emaAppBarLayout)
-            ?: throw IllegalArgumentException("You must provide in your activity xml an AppBarLayout with android:id=@+ìd/emaAppBarLayout")
-
-        setSupportActionBar(tbToolbar)
-        toolbarLayout = lToolbar
-        toolbar = tbToolbar
-        setupActionBarWithNavController(navController)
-        navController.addOnDestinationChangedListener { _, destination, _ ->
-            setToolbarTitle(provideFixedToolbarTitle())
+        setSupportActionBar(toolbar)
+        (navigator as? com.carmabs.ema.android.navigation.EmaNavControllerNavigator)?.navController?.also {
+            setupActionBarWithNavController(it)
+            it.addOnDestinationChangedListener { _, destination, _ ->
+                setToolbarTitle(provideFixedToolbarTitle())
+            }
         }
+
     }
 
     protected fun setToolbarTitle(title: String?) {
         supportActionBar?.title =
-            title ?: provideFixedToolbarTitle() ?: navController.currentDestination?.label
+            title ?: provideFixedToolbarTitle() ?: (navigator as? com.carmabs.ema.android.navigation.EmaNavControllerNavigator)?.navController?.currentDestination?.label
     }
 
     /**

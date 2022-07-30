@@ -5,7 +5,7 @@ import com.carmabs.ema.core.concurrency.DefaultConcurrencyManager
 import com.carmabs.ema.core.concurrency.tryCatch
 import com.carmabs.ema.core.constants.INT_ONE
 import com.carmabs.ema.core.constants.INT_ZERO
-import com.carmabs.ema.core.navigator.EmaNavigationState
+import com.carmabs.ema.core.navigator.EmaNavigationTarget
 import com.carmabs.ema.core.state.EmaBaseState
 import com.carmabs.ema.core.state.EmaExtraData
 import kotlinx.coroutines.CoroutineScope
@@ -26,7 +26,7 @@ import kotlinx.coroutines.flow.*
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
-abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> {
+abstract class EmaBaseViewModel<S : EmaBaseState, NT : EmaNavigationTarget> {
 
     /**
      * Observable state that launch event every time a value is set. This value will be the state
@@ -56,13 +56,13 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> {
     )
 
     /**
-     * Observable state that launch event every time a value is set. [NS] value be will a [EmaNavigationState]
+     * Observable state that launch event every time a value is set. [NS] value be will a [EmaNavigationTarget]
      * object that represent the destination. This observable will be used for
      * events that only has to be notified once to its observers and is used to notify the navigation
      * events
      */
-    private val navigationState: MutableSharedFlow<NS?> = MutableSharedFlow(
-        extraBufferCapacity = INT_ONE,
+    private val navigationState: MutableSharedFlow<NT?> = MutableSharedFlow(
+        replay = INT_ONE,
         onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
 
@@ -118,11 +118,6 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> {
     }
 
     /**
-     * Determine if a navigation was launched when no views are attached
-     */
-    private var pendingNavigation: NS? = null
-
-    /**
      * Called when view is created by first time, it means, it is added to the stack
      */
     abstract fun onStartFirstTime(statePreloaded: Boolean)
@@ -131,13 +126,6 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> {
      * Called when view is shown in foreground
      */
     internal fun onResumeView() {
-        //We call this to check if a navigation was launched when view is not in foreground
-        pendingNavigation?.also {
-            if(navigationState.subscriptionCount.value > INT_ZERO) {
-                navigate(it)
-                pendingNavigation = null
-            }
-        }
         onResume(firstTimeResumed)
         firstTimeResumed = false
     }
@@ -152,7 +140,7 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> {
     /**
      * Called always the view goes to the foreground
      */
-    protected open fun onResume(firstTime: Boolean){}
+    protected open fun onResume(firstTime: Boolean) {}
 
     /**
      * Called always the view goes to the background
@@ -172,7 +160,7 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> {
     /**
      * Get navigation state as LiveData to avoid state setting from the view
      */
-    fun getNavigationState(): SharedFlow<NS?> = navigationState
+    fun getNavigationState(): SharedFlow<NT?> = navigationState
 
     /**
      * Get single state as LiveData to avoid state setting from the view
@@ -201,13 +189,9 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> {
      * Method use to notify a navigation event
      * @param navigation The object that represent the destination of the navigation
      */
-    protected open fun navigate(navigation: NS) {
-        pendingNavigation = if (navigationState.subscriptionCount.value == INT_ZERO)
-            navigation
-        else {
-            navigationState.tryEmit(navigation)
-            null
-        }
+    protected open fun navigate(navigation: NT) {
+        navigation.resetNavigated()
+        navigationState.tryEmit(navigation)
     }
 
     /**
@@ -271,5 +255,5 @@ abstract class EmaBaseViewModel<S : EmaBaseState, NS : EmaNavigationState> {
     /**
      * Method to override onCleared ViewModel method
      */
-    protected open fun onDestroy(){}
+    protected open fun onDestroy() {}
 }
