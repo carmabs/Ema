@@ -9,7 +9,7 @@ package com.carmabs.ema.core.broadcast
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-data class EmaBroadcastEvent(
-    val id:String,
-    val data:Any
-)
+interface EmaBroadcastEvent<T> {
+    val id: String
+    val data: T
+}

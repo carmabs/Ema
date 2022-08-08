@@ -8,15 +8,13 @@ package com.carmabs.ema.core.navigator
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
 
-class EmaEmptyNavigator : EmaNavigator<EmaNavigationState> {
-
-    class EmaEmptyNavigationState : EmaNavigationState {
-        override fun navigateWith(navigator: EmaNavigator<out EmaNavigationState>) {
-            //DO NOTHING
-        }
-    }
+class EmaEmptyNavigator : EmaNavigator<EmaEmptyNavigationTarget> {
 
     override fun navigateBack(): Boolean {
         return true
+    }
+
+    override fun navigate(navigationTarget: EmaEmptyNavigationTarget) {
+        //DO NOTHING
     }
 }
