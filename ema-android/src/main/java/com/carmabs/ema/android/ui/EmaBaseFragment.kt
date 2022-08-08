@@ -15,6 +15,7 @@ import com.carmabs.ema.android.di.Injector
 import com.carmabs.ema.android.navigation.EmaFragmentNavControllerNavigator
 import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
 import com.carmabs.ema.android.viewmodel.EmaFactory
+import com.carmabs.ema.core.initializer.EmaInitializer
 import com.carmabs.ema.core.navigator.EmaNavigationTarget
 import com.carmabs.ema.core.state.EmaBaseState
 import com.carmabs.ema.core.state.EmaExtraData
@@ -98,13 +99,6 @@ Fragment(), EmaAndroidView<S, VM, NS>, Injector {
     protected val vm: VM by emaViewModelDelegate()
 
     /**
-     * The key id for incoming data through Bundle in fragment instantiation.This is set up when other fragment/activity
-     * launches a fragment with arguments provided by Bundle
-     */
-    protected open val inputStateKey: String = EmaView.KEY_INPUT_STATE_DEFAULT
-
-
-    /**
      * Trigger to start viewmodel only when startViewModel is launched
      */
     override val startTrigger: EmaViewModelTrigger? = null
@@ -115,10 +109,10 @@ Fragment(), EmaAndroidView<S, VM, NS>, Injector {
     override val updatePreviousStateAutomatically: Boolean = true
 
     /**
-     * The incoming state in fragment instantiation. This is set up when other fragment/activity
+     * The incoming initializer in fragment instantiation. This is set up when other fragment/activity
      * launches a fragment with arguments provided by Bundle
      */
-    override val inputState: S? by lazy { getInState() }
+    override val initializer: EmaInitializer? by lazy { getInitializerArgument() }
 
     /**
      * The list which handles the extra view models attached, to unbind the observers
@@ -226,12 +220,12 @@ Fragment(), EmaAndroidView<S, VM, NS>, Injector {
     }
 
     /**
-     * Get the incoming state from another fragment/activity by the key [inputStateKey] provided
+     * Get the incoming initializer from another fragment/activity by the key [inputStateKey] provided
      */
-    private fun getInState(): S? {
+    private fun getInitializerArgument(): EmaInitializer? {
         return arguments?.let {
-            if (it.containsKey(inputStateKey)) {
-                it.get(inputStateKey) as? S
+            if (it.containsKey(EmaInitializer.KEY)) {
+                it.get(EmaInitializer.KEY) as? EmaInitializer
             } else
                 null
         }
@@ -252,8 +246,8 @@ Fragment(), EmaAndroidView<S, VM, NS>, Injector {
         super.onNavigation(navigation)
     }
 
-    fun setInputState(inState: S) {
-        arguments = Bundle().apply { putSerializable(inputStateKey, inState) }
+    fun setInitializer(initializer: EmaInitializer) {
+        arguments = Bundle().apply { putSerializable(EmaInitializer.KEY, initializer) }
     }
 
     override fun onEmaStateNormal(data: S) {

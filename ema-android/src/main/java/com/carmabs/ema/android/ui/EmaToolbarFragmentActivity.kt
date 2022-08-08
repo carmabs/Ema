@@ -18,11 +18,11 @@ import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
 import com.carmabs.ema.android.viewmodel.EmaFactory
 import com.carmabs.ema.core.constants.FLOAT_ONE
 import com.carmabs.ema.core.constants.FLOAT_ZERO
+import com.carmabs.ema.core.initializer.EmaInitializer
 import com.carmabs.ema.core.navigator.EmaNavigationTarget
 import com.carmabs.ema.core.state.EmaBaseState
 import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.core.state.EmaState
-import com.carmabs.ema.core.view.EmaView
 import com.carmabs.ema.core.view.EmaViewModelTrigger
 import com.carmabs.ema.core.viewmodel.EmaViewModel
 import com.google.android.material.appbar.AppBarLayout
@@ -88,21 +88,15 @@ abstract class EmaToolbarFragmentActivity<B : ViewBinding, S : EmaBaseState, VM 
     override val startTrigger: EmaViewModelTrigger? = null
 
     /**
-     * The key id for incoming data through Bundle in activity instantiation.This is set up when other fragment/activity
-     * launches a fragment with arguments provided by Bundle
-     */
-    protected open val inputStateKey: String = EmaView.KEY_INPUT_STATE_DEFAULT
-
-    /**
      * Automatically updates previousState
      */
     override val updatePreviousStateAutomatically: Boolean = true
 
     /**
-     * The incoming state in fragment instantiation. This is set up when other fragment/activity
-     * launches a fragment with arguments provided by Bundle
+     * The incoming initializer in activity instantiation. This is set up when other fragment/activity
+     * launches an activity with arguments provided by Bundle
      */
-    override val inputState: S? by lazy { getInState() }
+    override val initializer: EmaInitializer? by lazy { getInitializerIntent() }
 
     /**
      * The toobar for the activity
@@ -315,15 +309,15 @@ abstract class EmaToolbarFragmentActivity<B : ViewBinding, S : EmaBaseState, VM 
     /**
      * Get the incoming state from another activity by the key [inputStateKey] provided
      */
-    private fun getInState(): S? {
+    private fun getInitializerIntent(): EmaInitializer? {
         return intent?.let {
-            it.extras?.getSerializable(inputStateKey) as? S
+            it.extras?.getSerializable(EmaInitializer.KEY) as? EmaInitializer
 
         }
     }
 
-    fun setInputState(inState: S) {
-        intent = Intent().apply { putExtra(inputStateKey, inState) }
+    fun setInitializer(initializer: EmaInitializer) {
+        intent = Intent().apply { putExtra(EmaInitializer.KEY, initializer) }
     }
 
     /**
