@@ -1,5 +1,6 @@
 package com.carmabs.ema.core.view
 
+import com.carmabs.ema.core.initializer.EmaInitializer
 import com.carmabs.ema.core.navigator.EmaNavigationTarget
 import com.carmabs.ema.core.navigator.EmaNavigator
 import com.carmabs.ema.core.state.EmaBaseState
@@ -44,9 +45,9 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
     val navigator: EmaNavigator<NS>?
 
     /**
-     * The state set up form previous views when it is launched.
+     * The initializer from previous views when it is launched.
      */
-    val inputState: S?
+    val initializer: EmaInitializer?
 
     /**
      * The previous state of the View
@@ -227,10 +228,10 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
     fun onStartView(viewModel: VM) {
         startTrigger?.also {
             it.triggerAction = {
-                viewModel.onStart(inputState?.let { input -> EmaState.Normal(input) })
+                viewModel.onStart(initializer)
             }
         } ?: also {
-            viewModel.onStart(inputState?.let { input -> EmaState.Normal(input) })
+            viewModel.onStart(initializer)
         }
     }
 

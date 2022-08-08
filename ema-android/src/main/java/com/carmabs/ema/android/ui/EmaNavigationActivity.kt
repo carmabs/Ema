@@ -5,6 +5,7 @@ import androidx.annotation.CallSuper
 import androidx.viewbinding.ViewBinding
 import com.carmabs.ema.android.navigation.EmaActivityNavControllerNavigator
 import com.carmabs.ema.android.navigation.EmaNavControllerNavigator
+import com.carmabs.ema.core.initializer.EmaInitializer
 import com.carmabs.ema.core.navigator.EmaNavigationTarget
 import com.carmabs.ema.core.navigator.EmaNavigator
 import com.carmabs.ema.core.state.EmaBaseState
@@ -23,7 +24,7 @@ abstract class EmaNavigationActivity<B : ViewBinding, NT : EmaNavigationTarget> 
     @CallSuper
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        (navigator as? EmaActivityNavControllerNavigator)?.setup(overrideDestinationInputState())
+        (navigator as? EmaActivityNavControllerNavigator)?.setup(overrideDestinationInitializer())
     }
 
     /**
@@ -32,5 +33,5 @@ abstract class EmaNavigationActivity<B : ViewBinding, NT : EmaNavigationTarget> 
     override fun onSupportNavigateUp() =
         (navigator as? EmaNavControllerNavigator)?.let { it.navController.navigateUp() } ?: false
 
-    protected open fun overrideDestinationInputState(): EmaBaseState? = null
+    protected open fun overrideDestinationInitializer(): EmaInitializer? = null
 }

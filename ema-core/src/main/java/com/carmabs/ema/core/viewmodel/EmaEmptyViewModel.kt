@@ -1,5 +1,6 @@
 package com.carmabs.ema.core.viewmodel
 
+import com.carmabs.ema.core.initializer.EmaInitializer
 import com.carmabs.ema.core.navigator.EmaEmptyNavigationTarget
 import com.carmabs.ema.core.navigator.EmaNavigationTarget
 import com.carmabs.ema.core.state.EmaBaseState
@@ -19,11 +20,8 @@ class EmaEmptyViewModel : EmaViewModel<EmaEmptyState, EmaEmptyNavigationTarget>(
     override val updateOnInitialization: Boolean
         get() = false
 
-    override fun onStartFirstTime(statePreloaded: Boolean) {
-        //DO NOTHING
+    override suspend fun onStartFirstTime(initializer: EmaInitializer?) : EmaEmptyState {
+       return EmaEmptyState()
     }
-
-    override val initialViewState: EmaEmptyState
-        get() = EmaEmptyState()
 
 }

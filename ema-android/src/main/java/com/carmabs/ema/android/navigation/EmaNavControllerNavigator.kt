@@ -11,6 +11,7 @@ import androidx.navigation.Navigator
 import androidx.navigation.fragment.FragmentNavigator
 import com.carmabs.ema.android.ui.EmaActivity
 import com.carmabs.ema.android.ui.EmaToolbarFragmentActivity
+import com.carmabs.ema.core.initializer.EmaInitializer
 import com.carmabs.ema.core.navigator.EmaNavigationTarget
 import com.carmabs.ema.core.navigator.EmaNavigator
 import com.carmabs.ema.core.state.EmaBaseState
@@ -33,17 +34,14 @@ interface EmaNavControllerNavigator<NS : EmaNavigationTarget> : EmaNavigator<NS>
     val activity: Activity
 
     /**
-     * Set the initial state for the incoming fragment. Only work for fragment at the same activity
-     * at the moment
-     * @param emaBaseState the state for the incoming view
-     * @param inputStateKey the key to identify the state. If it not provided, it will take EmaAndroidView.KEY_INPUT_STATE_DEFAULT
+     * Set the initializer for the incoming fragment.
+     * @param initializer for the incoming view
      */
-    fun addInputState(
-        emaBaseState: EmaBaseState,
-        inputStateKey: String = EmaView.KEY_INPUT_STATE_DEFAULT
+    fun setInitializer(
+        initializer: EmaInitializer
     ): Bundle =
         Bundle().apply {
-            putSerializable(inputStateKey, emaBaseState)
+            putSerializable(EmaInitializer.KEY, initializer)
         }
 
     /**
