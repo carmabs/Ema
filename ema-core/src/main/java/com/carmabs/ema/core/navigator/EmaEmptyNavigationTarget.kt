@@ -7,7 +7,4 @@ package com.carmabs.ema.core.navigator
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
 
-interface EmaNavigationState {
-
-    fun  navigateWith(navigator: EmaNavigator<out EmaNavigationState>)
-}
+class EmaEmptyNavigationTarget : EmaNavigationTarget()

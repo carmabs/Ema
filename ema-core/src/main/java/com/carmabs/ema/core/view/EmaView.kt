@@ -1,6 +1,6 @@
 package com.carmabs.ema.core.view
 
-import com.carmabs.ema.core.navigator.EmaNavigationState
+import com.carmabs.ema.core.navigator.EmaNavigationTarget
 import com.carmabs.ema.core.navigator.EmaNavigator
 import com.carmabs.ema.core.state.EmaBaseState
 import com.carmabs.ema.core.state.EmaExtraData
@@ -18,11 +18,11 @@ import kotlin.reflect.KProperty
  * View to handle VM view logic states through [EmaState].
  * The user must provide in the constructor by template:
  *  - The view model class [EmaViewModel] is going to use the view
- *  - The navigation state class [EmaNavigationState] will handle the navigation
+ *  - The navigation state class [EmaNavigationTarget] will handle the navigation
  *
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
-interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigationState> {
+interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigationTarget> {
 
     companion object {
         const val KEY_INPUT_STATE_DEFAULT = "EMA_KEY_INPUT_STATE_DEFAULT"
@@ -79,7 +79,7 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
             is EmaState.Error -> {
                 onEmaStateError(state.error)
             }
-            else->{
+            else -> {
                 //DO NOTHING
             }
         }
@@ -172,9 +172,11 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
      * Called when view model trigger an only once notified event for navigation
      * @param navigation state with information about the destination
      */
-    fun onNavigation(navigation: EmaNavigationState?) {
+    fun onNavigation(navigation: EmaNavigationTarget?) {
         navigation?.let {
-            navigate(navigation)
+            if (!it.isNavigated)
+                navigate(navigation)
+            it.setNavigated()
         } ?: navigateBack()
     }
 
@@ -207,7 +209,7 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
      * @param state with info about destination
      */
     @Suppress("UNCHECKED_CAST")
-    fun navigate(state: EmaNavigationState) {
+    fun navigate(state: EmaNavigationTarget) {
         navigator?.navigate(state as NS)
     }
 
