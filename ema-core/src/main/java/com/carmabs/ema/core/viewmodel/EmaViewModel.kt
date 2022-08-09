@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.SharedFlow
  */
 abstract class EmaViewModel<S : EmaBaseState, NT : EmaNavigationTarget> {
 
+    private val pendingEvents = mutableListOf<()->Unit>()
     /**
      * Observable state that launch event every time a value is set. This value will be the state
      * of the view. When the ViewModel is attached to an observer, if this value is already set up,
@@ -84,30 +85,36 @@ abstract class EmaViewModel<S : EmaBaseState, NT : EmaNavigationTarget> {
     /**
      * Determine if the viewmodel has initialized its state
      */
+
     var hasBeenInitialized: Boolean = false
         private set
 
     /**
-     * Methos called the first time ViewModel is created
+     * Methods called the first time ViewModel is created
      * @param initializer
      * @return true if it's the first time is started
      */
-    fun onStart(initializer: EmaInitializer? = null) {
+    internal fun onStart(initializer: EmaInitializer? = null) {
         if (!this::state.isInitialized) {
             concurrencyManager.launch {
                 normalContentData = onStartFirstTime(initializer)
                 state = EmaState.Normal(normalContentData)
+                hasBeenInitialized = true
+                pendingEvents.forEach {
+                    it.invoke()
+                }
                 onResultListenerSetup()
                 if (updateOnInitialization)
                     observableState.tryEmit(state)
-                hasBeenInitialized = true
                 onStateCreated()
+                pendingEvents.clear()
             }
         } else {
             //We call this to update the data if it has been not be emitted
             // if last time was updated by updateDataState
             observableState.tryEmit(state)
         }
+        onStarted(firstTimeResumed)
     }
 
     /**
@@ -120,7 +127,9 @@ abstract class EmaViewModel<S : EmaBaseState, NT : EmaNavigationTarget> {
      * Called when view is shown in foreground
      */
     internal fun onResumeView() {
-        onResume(firstTimeResumed)
+        useAfterStateIsCreated {
+            onResume(firstTimeResumed)
+        }
         firstTimeResumed = false
     }
 
@@ -128,18 +137,36 @@ abstract class EmaViewModel<S : EmaBaseState, NT : EmaNavigationTarget> {
      * Called when view is hidden in background
      */
     internal fun onPauseView() {
-        onPause()
+        useAfterStateIsCreated {
+            onPause()
+        }
+    }
+
+    /**
+     * Warranty the call is called only after state is created
+     */
+    private fun useAfterStateIsCreated(action:()->Unit){
+        if(hasBeenInitialized)
+            action()
+        else
+            pendingEvents.add(action)
     }
 
     /**
      * Called always the view goes to the foreground
      */
-    protected open fun onResume(firstTime: Boolean) {}
+    protected open fun onResume(firstTime: Boolean) = Unit
 
     /**
      * Called always the view goes to the background
      */
-    protected open fun onPause() {}
+    protected open fun onPause() = Unit
+
+    /**
+     * Called when the view is visible to the user
+     */
+    protected open fun onStarted(firstTime: Boolean) = Unit
+
 
     /**
      * Get observable state as LiveDaya to avoid state setting from the view
@@ -166,7 +193,7 @@ abstract class EmaViewModel<S : EmaBaseState, NT : EmaNavigationTarget> {
      * Method used to update the state of the view. It will be notified to the observers
      * @param state Tee current state of the view
      */
-    protected fun updateView(state: EmaState<S>) {
+    private fun updateView(state: EmaState<S>) {
         this.state = state
         observableState.tryEmit(state)
     }
@@ -234,7 +261,7 @@ abstract class EmaViewModel<S : EmaBaseState, NT : EmaNavigationTarget> {
     /**
      * Method to override onCleared ViewModel method
      */
-    protected open fun onDestroy() {}
+    protected open fun onDestroy() = Unit
 
     /**
      * Normal state content of the view
@@ -247,9 +274,7 @@ abstract class EmaViewModel<S : EmaBaseState, NT : EmaNavigationTarget> {
     /**
      * Here should implement the listener for result data from other views through [addOnResultReceived] method
      */
-    protected open fun onResultListenerSetup() {
-        //Calls to [addOnResultReceived] if they are needed
-    }
+    protected open fun onResultListenerSetup() = Unit
 
 
     /**
@@ -330,25 +355,19 @@ abstract class EmaViewModel<S : EmaBaseState, NT : EmaNavigationTarget> {
         updateView(EmaState.Error(normalContentData, error))
     }
 
-
-    /**
-     * Throws exception if the state of the view has not been initialized
-     */
-    private fun throwInitialStateException(): Exception {
-        throw RuntimeException("Initial state has not been created")
-    }
-
     /**
      * Set a result for previous view when the current one is destroyed
      */
     protected fun addResult(data: Any, code: Int = EmaResultHandler.RESULT_ID_DEFAULT) {
-        emaResultHandler.addResult(
-            EmaResultModel(
-                code = code,
-                ownerId = getId(),
-                data = data
-            )
-        )
+       useAfterStateIsCreated {
+           emaResultHandler.addResult(
+               EmaResultModel(
+                   code = code,
+                   ownerId = getId(),
+                   data = data
+               )
+           )
+       }
     }
 
     /**
@@ -358,12 +377,14 @@ abstract class EmaViewModel<S : EmaBaseState, NT : EmaNavigationTarget> {
         code: Int = EmaResultHandler.RESULT_ID_DEFAULT,
         receiver: (EmaResultModel) -> Unit
     ) {
-        val emaReceiver = EmaReceiverModel(
-            ownerId = getId(),
-            resultCode = code,
-            function = receiver
-        )
-        emaResultHandler.addResultReceiver(emaReceiver)
+        useAfterStateIsCreated {
+            val emaReceiver = EmaReceiverModel(
+                ownerId = getId(),
+                resultCode = code,
+                function = receiver
+            )
+            emaResultHandler.addResultReceiver(emaReceiver)
+        }
     }
 
     /**
@@ -373,7 +394,9 @@ abstract class EmaViewModel<S : EmaBaseState, NT : EmaNavigationTarget> {
     internal fun onCleared() {
         emaResultHandler.notifyResults(getId())
         concurrencyManager.cancelPendingTasks()
-        onDestroy()
+        useAfterStateIsCreated {
+            onDestroy()
+        }
     }
 
     fun getId(): Int {

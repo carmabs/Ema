@@ -11,6 +11,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlin.jvm.Throws
 import kotlin.jvm.internal.PropertyReference0
 import kotlin.reflect.KProperty
 
@@ -24,10 +25,6 @@ import kotlin.reflect.KProperty
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
 interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigationTarget> {
-
-    companion object {
-        const val KEY_INPUT_STATE_DEFAULT = "EMA_KEY_INPUT_STATE_DEFAULT"
-    }
 
     /**
      * Scope for flow updates
@@ -211,7 +208,12 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
      */
     @Suppress("UNCHECKED_CAST")
     fun navigate(state: EmaNavigationTarget) {
-        navigator?.navigate(state as NS)
+        navigator?.navigate(state as NS)?:throwNavigationException()
+    }
+
+    @Throws
+    private fun throwNavigationException() {
+        throw RuntimeException("You must provide an EmaNavigator as navigator to handle the navigation")
     }
 
     /**
@@ -219,7 +221,10 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
      * @return True
      */
     fun navigateBack(): Boolean {
-        return navigator?.navigateBack() ?: false
+        return navigator?.navigateBack() ?: let {
+            throwNavigationException()
+            false
+        }
     }
 
     /**
