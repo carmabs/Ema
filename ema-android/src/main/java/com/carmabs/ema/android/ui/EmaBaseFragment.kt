@@ -37,8 +37,8 @@ import org.kodein.di.android.x.closestDI
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
-abstract class EmaBaseFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigationTarget> :
-Fragment(), EmaAndroidView<S, VM, NS>, Injector {
+abstract class EmaBaseFragment<S : EmaBaseState, VM : EmaViewModel<S, NT>, NT : EmaNavigationTarget> :
+Fragment(), EmaAndroidView<S, VM, NT>, Injector {
 
     protected var isFirstNormalExecution: Boolean = true
         private set
@@ -49,7 +49,7 @@ Fragment(), EmaAndroidView<S, VM, NS>, Injector {
     protected var isFirstErrorExecution: Boolean = true
     private set
 
-    abstract override val navigator: EmaFragmentNavControllerNavigator<NS>?
+    abstract override val navigator: EmaFragmentNavControllerNavigator<NT>?
 
     final override val androidViewModelSeed: EmaAndroidViewModel<VM> by lazy {
         provideAndroidViewModel()
@@ -242,7 +242,7 @@ Fragment(), EmaAndroidView<S, VM, NS>, Injector {
     }
 
     @CallSuper
-    override fun onNavigation(navigation: EmaNavigationTarget?) {
+    override fun onNavigation(navigation: NT?) {
         super.onNavigation(navigation)
     }
 
