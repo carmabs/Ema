@@ -5,8 +5,8 @@ import androidx.annotation.IdRes
 import androidx.annotation.NavigationRes
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
+import com.carmabs.ema.core.initializer.EmaInitializer
 import com.carmabs.ema.core.navigator.EmaNavigationTarget
-import com.carmabs.ema.core.state.EmaBaseState
 
 /**
  * Created by Carlos Mateo Benito on 29/7/22.
@@ -26,9 +26,9 @@ abstract class EmaActivityNavControllerNavigator<NS : EmaNavigationTarget>(
     @NavigationRes private val graphId: Int
 ) : EmaNavControllerNavigator<NS> {
 
-    fun setup(state: EmaBaseState?) {
-        navController.setGraph(graphId, state?.let {
-            addInputState(it)
+    fun setup(initializer: EmaInitializer?) {
+        navController.setGraph(graphId, initializer?.let {
+            setInitializer(it)
         } ?: activity.intent.extras)
     }
 
