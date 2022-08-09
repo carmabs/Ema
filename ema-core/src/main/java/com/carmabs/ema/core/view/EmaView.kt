@@ -24,7 +24,7 @@ import kotlin.reflect.KProperty
  *
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
-interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigationTarget> {
+interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NT>, NT : EmaNavigationTarget> {
 
     /**
      * Scope for flow updates
@@ -39,7 +39,7 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
     /**
      * The navigator [EmaNavigator]
      */
-    val navigator: EmaNavigator<NS>?
+    val navigator: EmaNavigator<NT>?
 
     /**
      * The initializer from previous views when it is launched.
@@ -170,7 +170,7 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
      * Called when view model trigger an only once notified event for navigation
      * @param navigation state with information about the destination
      */
-    fun onNavigation(navigation: EmaNavigationTarget?) {
+    fun onNavigation(navigation: NT?) {
         navigation?.let {
             if (!it.isNavigated)
                 navigate(navigation)
@@ -207,8 +207,8 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
      * @param state with info about destination
      */
     @Suppress("UNCHECKED_CAST")
-    fun navigate(state: EmaNavigationTarget) {
-        navigator?.navigate(state as NS)?:throwNavigationException()
+    fun navigate(state: NT) {
+        navigator?.navigate(state)?:throwNavigationException()
     }
 
     @Throws
