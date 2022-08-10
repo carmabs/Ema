@@ -12,7 +12,7 @@ import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.databinding.FragmentBackResultBinding
 import com.carmabs.ema.presentation.base.BaseFragment
 import com.carmabs.ema.presentation.ui.backdata.EmaBackNavigator
-import org.kodein.di.instance
+import org.koin.core.component.inject
 
 /**
  *<p>
@@ -86,7 +86,7 @@ class EmaBackUserCreationFragment : BaseFragment<FragmentBackResultBinding,EmaBa
         }
     }
 
-    override val navigator: EmaBackNavigator by instance()
+    override val navigator: EmaBackNavigator by inject()
 
     override fun FragmentBackResultBinding.onNormal(data: EmaBackUserCreationState) {
 

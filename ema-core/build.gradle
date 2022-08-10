@@ -9,6 +9,6 @@ compileKotlin {
 }
 
 dependencies {
-    api emaCore.kotlin
-    api emaCore.coroutines
+    api emaCoreDependencies.kotlin
+    api emaCoreDependencies.coroutines
 }

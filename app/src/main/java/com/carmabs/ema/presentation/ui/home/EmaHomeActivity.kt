@@ -10,7 +10,7 @@ import com.carmabs.ema.core.extension.HOUR_FORMAT_HHMM
 import com.carmabs.ema.core.extension.toDateFormat
 import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.presentation.base.BaseActivity
-import org.kodein.di.instance
+import org.koin.core.component.inject
 
 /**
  *  *<p>
@@ -33,7 +33,7 @@ class EmaHomeActivity : BaseActivity<EmaHomeToolbarState,EmaHomeToolbarViewModel
      */
     override val overrideTheme: Boolean = false
 
-    override val navigator: EmaHomeNavigator by instance()
+    override val navigator: EmaHomeNavigator by inject()
 
     override fun EmaToolbarActivityBinding.onStateNormal(data: EmaHomeToolbarState) {
         setToolbarTitle(data.toolbarTitle)

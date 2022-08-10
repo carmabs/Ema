@@ -36,6 +36,7 @@ rootProject.ext {
 
     kotlinCompilerExtensionVersion = '1.0.5'
 
+    koinVersion = "3.2.0"
 
     lifecycleKtExtensionVersion = '2.4.0'
 
@@ -43,7 +44,7 @@ rootProject.ext {
 
     reflectionVersion = "1.7.0"
 
-    ema = [
+    emaVersioning = [
             buildTools : "31.0.0",
             minSdk     : 21,
             compileSdk : 31,
@@ -52,26 +53,7 @@ rootProject.ext {
             versionName: "3.0.0"
     ]
 
-    appDependencies = [
-    ]
-
-    dataDependencies = [
-            kotlin    : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:" + project.kotlinVersion,
-            coroutines: 'org.jetbrains.kotlinx:kotlinx-coroutines-android:' + project.coroutinesVersion
-    ]
-
-    domainDependencies = [
-    ]
-
-    commonDependencies = [
-    ]
-
-    injectionDependencies = [
-            kodein       : "org.kodein.di:kodein-di-jvm:" + project.kodeinVersion,
-            kodeinAndroid: "org.kodein.di:kodein-di-framework-android-x:" + project.kodeinVersion,
-    ]
-
-    emaCore = [
+    emaCoreDependencies = [
             kotlin    : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:" + project.kotlinVersion,
             coroutines: 'org.jetbrains.kotlinx:kotlinx-coroutines-android:' + project.coroutinesVersion
     ]
@@ -87,7 +69,8 @@ rootProject.ext {
             archTesting: "android.arch.core:core-testing:" + project.archTesting
     ]
 
-    emaAndroid = [
+    emaAndroidDependencies = [
+            koin                : "io.insert-koin:koin-android:$koinVersion",
             reflection          : "org.jetbrains.kotlin:kotlin-reflect:$reflectionVersion",
             fragment            : "androidx.fragment:fragment-ktx:$fragmentVersion",
             navigationFragment  : "androidx.navigation:navigation-fragment-ktx:" + project.navigationVersion,
@@ -96,7 +79,6 @@ rootProject.ext {
             material            : "com.google.android.material:material:" + project.materialVersion,
             liveData            : "androidx.lifecycle:lifecycle-livedata-ktx:" + project.liveDataVersion,
             lifecycle           : "androidx.lifecycle:lifecycle-extensions:" + project.lifecycleExtensionsVersion,
-            kodeinAndroid       : "org.kodein.di:kodein-di-framework-android-x:" + project.kodeinVersion,
             lifecycleKtExtension: "androidx.lifecycle:lifecycle-runtime-ktx:" + project.lifecycleKtExtensionVersion,
             desugaring          : "com.android.tools:desugar_jdk_libs:$desugaringVersion"
     ]

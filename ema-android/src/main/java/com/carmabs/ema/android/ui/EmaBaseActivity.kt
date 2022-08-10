@@ -5,9 +5,9 @@ import android.view.LayoutInflater
 import androidx.annotation.CallSuper
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewbinding.ViewBinding
-import com.carmabs.ema.android.di.Injector
-import org.kodein.di.DI
-import org.kodein.di.android.closestDI
+import org.koin.core.context.loadKoinModules
+import org.koin.core.context.unloadKoinModules
+import org.koin.core.module.Module
 
 /**
  *
@@ -16,23 +16,21 @@ import org.kodein.di.android.closestDI
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
-abstract class EmaBaseActivity<B:ViewBinding> : AppCompatActivity(), Injector {
-
-    final override val parentKodein by closestDI()
+abstract class EmaBaseActivity<B:ViewBinding> : AppCompatActivity() {
 
     protected lateinit var binding:B
 
-    override val di: DI by lazy {
-        injectKodein()
-    }
-
+    private var activityKoinModule:Module? = null
     /**
      * Method to provide the activity ViewBinding class to represent the layout.
      */
     abstract fun createViewBinding(inflater: LayoutInflater): B
 
-    final override fun injectModule(kodeinBuilder: DI.MainBuilder): DI.Module? =
-        injectActivityModule(kodeinBuilder)
+    /**
+     * The child classes implement this methods to return the module that provides the activity scope objects
+     * @return The koin module which makes the injection
+     */
+    abstract fun injectActivityModule(): Module?
 
     /**
      * The onCreate base will set the view specified in [.getLayout] and will
@@ -42,14 +40,20 @@ abstract class EmaBaseActivity<B:ViewBinding> : AppCompatActivity(), Injector {
     @CallSuper
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        activityKoinModule = injectActivityModule()?.also {
+            loadKoinModules(it)
+        }
+
         binding = createViewBinding(layoutInflater)
         setContentView(binding.root)
     }
 
-    /**
-     * The child classes implement this methods to return the module that provides the activity scope objects
-     * @param kodein The kodein object which provide the injection
-     * @return The Kodein module which makes the injection
-     */
-    abstract fun injectActivityModule(kodein: DI.MainBuilder): DI.Module?
+    @CallSuper
+    override fun onDestroy() {
+        activityKoinModule?.also {
+            unloadKoinModules(it)
+        }
+        activityKoinModule = null
+        super.onDestroy()
+    }
 }

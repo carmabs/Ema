@@ -18,7 +18,7 @@ import com.carmabs.ema.presentation.ui.unlogged.EmaUnloggedNavigator
 import com.carmabs.ema.presentation.ui.unlogged.EmaUnloggedState
 import com.carmabs.ema.presentation.ui.unlogged.EmaUnloggedToolbarState
 import com.carmabs.ema.presentation.ui.unlogged.EmaUnloggedViewModel
-import org.kodein.di.instance
+import org.koin.core.component.inject
 
 /**
  * Fragment for unlogged toolbar
@@ -50,7 +50,7 @@ class EmaUnloggedViewFragment :
         vm.onToolbarUpdated(it as EmaState<EmaUnloggedToolbarState>)
     }
 
-    override val navigator: EmaUnloggedNavigator by instance()
+    override val navigator: EmaUnloggedNavigator by inject()
 
     override fun provideAndroidViewModel(): EmaAndroidViewModel<EmaUnloggedViewModel> {
         return EmaAndroidUnloggedViewModel(instanceDirect())

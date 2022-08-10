@@ -9,7 +9,7 @@ import com.carmabs.ema.android.ui.EmaToolbarFragmentActivity
 import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
 import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.presentation.base.BaseActivity
-import org.kodein.di.instance
+import org.koin.core.component.inject
 
 /**
  *<p>
@@ -27,9 +27,9 @@ class EmaBackToolbarActivity : BaseActivity<EmaBackToolbarState, EmaBackToolbarV
 
     override fun provideFixedToolbarTitle(): String? = null
 
-    override val viewModelSeed: EmaBackToolbarViewModel by instance()
+    override val viewModelSeed: EmaBackToolbarViewModel by inject()
 
-    override val navigator: EmaBackNavigator by instance()
+    override val navigator: EmaBackNavigator by inject()
 
     override fun provideAndroidViewModel(): EmaAndroidViewModel<EmaBackToolbarViewModel> {
         return instanceDirect()

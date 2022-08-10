@@ -18,8 +18,8 @@ import com.carmabs.ema.presentation.ui.unlogged.EmaAndroidUnloggedToolbarViewMod
 import com.carmabs.ema.presentation.ui.unlogged.EmaUnloggedNavigator
 import com.carmabs.ema.presentation.ui.unlogged.EmaUnloggedToolbarState
 import com.carmabs.ema.presentation.ui.unlogged.EmaUnloggedToolbarViewModel
-import org.kodein.di.DI
-import org.kodein.di.instance
+
+import org.koin.core.component.inject
 import kotlin.math.roundToInt
 
 
@@ -41,7 +41,7 @@ class EmaUnloggedToolbarViewActivity : EmaActivity<EmaUnloggedToolbarState, EmaU
         return EmaAndroidUnloggedToolbarViewModel(instanceDirect())
     }
 
-    override val navigator: EmaUnloggedNavigator by instance()
+    override val navigator: EmaUnloggedNavigator by inject()
 
     override fun injectActivityModule(kodein: DI.MainBuilder): DI.Module = activityInjection(this)
 

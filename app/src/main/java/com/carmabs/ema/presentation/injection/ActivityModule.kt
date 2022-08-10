@@ -11,9 +11,9 @@ import com.carmabs.ema.presentation.ui.home.EmaAndroidHomeToolbarViewModel
 import com.carmabs.ema.presentation.ui.home.EmaHomeNavigator
 import com.carmabs.ema.presentation.ui.home.EmaHomeToolbarViewModel
 import com.carmabs.ema.presentation.ui.unlogged.EmaUnloggedToolbarViewModel
-import org.kodein.di.DI
-import org.kodein.di.bind
-import org.kodein.di.instance
+
+
+import org.koin.core.component.inject
 import org.kodein.di.singleton
 
 /**

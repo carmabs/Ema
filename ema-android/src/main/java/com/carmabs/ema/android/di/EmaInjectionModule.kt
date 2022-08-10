@@ -2,9 +2,7 @@ package com.carmabs.ema.android.di
 
 import com.carmabs.ema.core.broadcast.BroadcastManager
 import com.carmabs.ema.core.broadcast.FlowBroadcastManager
-import org.kodein.di.DI
-import org.kodein.di.bind
-import org.kodein.di.singleton
+import org.koin.dsl.module
 
 
 /**
@@ -16,6 +14,6 @@ import org.kodein.di.singleton
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-fun emaInjectionModule() = DI.Module(name = "EmaInjectionModule") {
-    bind<BroadcastManager>() with singleton { FlowBroadcastManager() }
+fun emaInjectionModule() = module {
+    single<BroadcastManager> { FlowBroadcastManager() }
 }

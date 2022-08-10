@@ -28,7 +28,7 @@ import com.carmabs.ema.presentation.dialog.loading.LoadingDialogData
 import com.carmabs.ema.presentation.dialog.simple.SimpleDialogData
 import com.carmabs.ema.presentation.dialog.simple.SimpleDialogListener
 import com.carmabs.ema.presentation.dialog.simple.SimpleDialogProvider
-import org.kodein.di.instance
+import org.koin.core.component.inject
 
 /**
  *  *<p>
@@ -50,7 +50,7 @@ class EmaHomeFragment :
         return instanceDirect()
     }
 
-    override val navigator: EmaHomeNavigator by instance()
+    override val navigator: EmaHomeNavigator by inject()
 
     //As we can see we can use an instance by kodein or generate it by class instance
     private val errorDialog: EmaDialogProvider by lazy { SimpleDialogProvider(childFragmentManager) }

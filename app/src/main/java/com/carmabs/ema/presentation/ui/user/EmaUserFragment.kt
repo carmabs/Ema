@@ -19,8 +19,8 @@ import com.carmabs.ema.databinding.FragmentUserBinding
 import com.carmabs.ema.databinding.LayoutEmaHeaderBinding
 import com.carmabs.ema.presentation.base.BaseFragment
 import com.carmabs.ema.presentation.ui.home.EmaAndroidHomeToolbarViewModel
-import org.kodein.di.direct
-import org.kodein.di.instance
+rect
+import org.koin.core.component.inject
 
 
 /**
@@ -81,7 +81,7 @@ class EmaUserFragment :
         binding.rvUser.adapter = adapter
     }
 
-    override val viewModelSeed: EmaUserViewModel by instance()
+    override val viewModelSeed: EmaUserViewModel by inject()
 
     override fun FragmentUserBinding.onNormal(data: EmaUserState) {
         bindingHeader.tvUserName.text = data.name
