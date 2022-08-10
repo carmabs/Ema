@@ -1,5 +1,6 @@
 package com.carmabs.ema.android.ui
 
+import androidx.activity.ComponentActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
@@ -26,11 +27,11 @@ interface EmaAndroidView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNav
     val androidViewModelSeed: EmaAndroidViewModel<VM>
 
     fun initializeViewModel(
-        fragmentActivity: FragmentActivity,
+        activity: ComponentActivity,
     ): VM {
         val emaFactory = EmaFactory(androidViewModelSeed)
         val vm = ViewModelProvider(
-            fragmentActivity,
+            activity,
             emaFactory
         )[androidViewModelSeed::class.java]
 

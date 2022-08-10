@@ -7,7 +7,7 @@ import com.carmabs.ema.core.state.EmaBaseState
 import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.core.viewmodel.EmaViewModel
 import com.carmabs.ema.presentation.injection.fragmentInjection
-import org.kodein.di.DI
+
 
 /**
  *  *<p>

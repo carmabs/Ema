@@ -8,9 +8,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.viewbinding.ViewBinding
 import com.carmabs.ema.android.delegates.emaStateDelegate
-import com.carmabs.ema.android.di.Injector
-import org.kodein.di.DI
-import org.kodein.di.android.closestDI
+import org.koin.core.component.KoinComponent
 
 
 /**
@@ -19,13 +17,7 @@ import org.kodein.di.android.closestDI
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
-abstract class EmaBaseLayout<B : ViewBinding, T : Any> : FrameLayout, Injector {
-
-    final override val parentKodein: DI by closestDI()
-
-    final override val di: DI by lazy {
-        injectKodein()
-    }
+abstract class EmaBaseLayout<B : ViewBinding, T : Any> : FrameLayout,KoinComponent {
 
     var binding: B? = null
         private set

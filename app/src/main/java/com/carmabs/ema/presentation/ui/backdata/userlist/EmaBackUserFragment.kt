@@ -12,7 +12,7 @@ import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
 import com.carmabs.ema.databinding.FragmentBackBinding
 import com.carmabs.ema.presentation.base.BaseFragment
 import com.carmabs.ema.presentation.ui.backdata.EmaBackNavigator
-import org.kodein.di.instance
+import org.koin.core.component.inject
 
 /**
  *<p>
@@ -57,7 +57,7 @@ class EmaBackUserFragment : BaseFragment<FragmentBackBinding,EmaBackUserState, E
     }
 
 
-    override val navigator: EmaBackNavigator by instance()
+    override val navigator: EmaBackNavigator by inject()
 
     override fun FragmentBackBinding.onNormal(data: EmaBackUserState) {
         adapter.updateList(data.listUsers)

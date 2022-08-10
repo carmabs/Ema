@@ -4,8 +4,8 @@ import com.carmabs.ema.android.ui.EmaFragment
 import com.carmabs.ema.android.navigation.EmaNavigator
 import com.carmabs.ema.core.state.EmaExtraData
 
-import org.kodein.di.DI
-import org.kodein.di.instance
+
+import org.koin.core.component.inject
 
 class ${functionalityName}Fragment : EmaFragment<${functionalityName}State, ${functionalityName}ViewModel, <#if navigator?has_content>${navigator}<#else>${functionalityName}Navigator</#if>.Navigation>() {
 
@@ -13,7 +13,7 @@ class ${functionalityName}Fragment : EmaFragment<${functionalityName}State, ${fu
 
     override val fragmentViewModelScope: Boolean = true
 
-    override val viewModelSeed: ${functionalityName}ViewModel by instance()
+    override val viewModelSeed: ${functionalityName}ViewModel by inject()
 
     override val navigator: EmaNavigator<<#if navigator?has_content>${navigator}<#else>${functionalityName}Navigator</#if>.Navigation> by instance<<#if navigator?has_content>${navigator}<#else>${functionalityName}Navigator</#if>>()
 

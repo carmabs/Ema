@@ -1,8 +1,8 @@
 package com.carmabs.ema.presentation.injection
 
 import android.app.Application
-import org.kodein.di.DI
-import org.kodein.di.bind
+
+
 import org.kodein.di.singleton
 
 /**
