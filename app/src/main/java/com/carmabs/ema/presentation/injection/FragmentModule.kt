@@ -18,7 +18,7 @@ import com.carmabs.ema.presentation.ui.user.EmaAndroidUserViewModel
 import com.carmabs.ema.presentation.ui.user.EmaUserViewModel
 
 
-import org.koin.core.component.inject
+import org.koin.android.ext.android.inject
 import org.kodein.di.provider
 import org.kodein.di.singleton
 

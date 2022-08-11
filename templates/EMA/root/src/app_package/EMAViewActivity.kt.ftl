@@ -5,7 +5,7 @@ import com.carmabs.ema.android.ui.EmaActivity
 import com.carmabs.ema.core.state.EmaExtraData
 
 
-import org.koin.core.component.inject
+import org.koin.android.ext.android.inject
 
 class ${functionalityName}Activity : EmaActivity<${functionalityName}State, ${functionalityName}ViewModel, <#if navigator?has_content>${navigator}<#else>${functionalityName}Navigator</#if>.Navigation>() {
 

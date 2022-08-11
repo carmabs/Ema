@@ -2,7 +2,7 @@ package com.carmabs.ema.presentation.ui.home
 
 import android.widget.Toast
 import com.carmabs.ema.R
-import com.carmabs.ema.android.di.instanceDirect
+import com.carmabs.ema.android.di.injectDirect
 import com.carmabs.ema.android.databinding.EmaToolbarActivityBinding
 import com.carmabs.ema.android.extension.getFormattedString
 import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
@@ -10,7 +10,7 @@ import com.carmabs.ema.core.extension.HOUR_FORMAT_HHMM
 import com.carmabs.ema.core.extension.toDateFormat
 import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.presentation.base.BaseActivity
-import org.koin.core.component.inject
+import org.koin.android.ext.android.inject
 
 /**
  *  *<p>
@@ -62,6 +62,6 @@ class EmaHomeActivity : BaseActivity<EmaHomeToolbarState,EmaHomeToolbarViewModel
    
 
     override fun provideAndroidViewModel(): EmaAndroidViewModel<EmaHomeToolbarViewModel> {
-        return instanceDirect()
+        return injectDirect()
     }
 }

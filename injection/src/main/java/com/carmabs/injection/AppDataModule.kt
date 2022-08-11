@@ -7,7 +7,7 @@ import com.carmabs.domain.repository.Repository
 import com.carmabs.domain.usecase.LoginUseCase
 
 
-import org.koin.core.component.inject
+import org.koin.android.ext.android.inject
 import org.kodein.di.provider
 import org.kodein.di.singleton
 

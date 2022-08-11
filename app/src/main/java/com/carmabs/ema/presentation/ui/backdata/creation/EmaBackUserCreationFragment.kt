@@ -5,14 +5,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import com.carmabs.ema.android.di.instanceDirect
+import com.carmabs.ema.android.di.injectDirect
 import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
 import com.carmabs.ema.core.extension.checkNull
 import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.databinding.FragmentBackResultBinding
 import com.carmabs.ema.presentation.base.BaseFragment
 import com.carmabs.ema.presentation.ui.backdata.EmaBackNavigator
-import org.koin.core.component.inject
+import org.koin.android.ext.android.inject
 
 /**
  *<p>
@@ -29,7 +29,7 @@ import org.koin.core.component.inject
 class EmaBackUserCreationFragment : BaseFragment<FragmentBackResultBinding,EmaBackUserCreationState, EmaBackUserCreationViewModel, EmaBackNavigator.Navigation>() {
 
     override fun provideAndroidViewModel(): EmaAndroidViewModel<EmaBackUserCreationViewModel> {
-        return instanceDirect()
+        return injectDirect()
     }
 
     override fun createViewBinding(

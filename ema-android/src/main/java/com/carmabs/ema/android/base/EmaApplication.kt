@@ -24,10 +24,12 @@ abstract class EmaApplication : Application() {
 
             val modulesList = mutableListOf<Module>()
             modulesList.add(emaInjectionModule())
-            injectAppModule()?.also {
-                modulesList.add(it)
-            }
+            injectAppModules()?.also {
+                it.forEach { module->
+                    modulesList.add(module)
+                }
 
+            }
             modules(modulesList)
         }
     }
@@ -37,5 +39,5 @@ abstract class EmaApplication : Application() {
      * The child classes implement this methods to return the module that provides the app scope objects
      * @return The Koin module which makes the injection
      */
-    abstract fun injectAppModule(): Module?
+    abstract fun injectAppModules(): List<Module>?
 }
