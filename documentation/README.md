@@ -715,7 +715,7 @@ About the attributes and methods you must override, they are the following ones:
     
     or with KODEIN
     
-    override val viewModelSeed: EmaUserViewModel by instance()
+    override val viewModelSeed: EmaUserViewModel by inject()
     ~~~
     
 * **override val navigator: EmaBaseNavigator<NS>?** 
@@ -727,7 +727,7 @@ About the attributes and methods you must override, they are the following ones:
     
     or with KODEIN
     
-    override val navigator: EmaUserNavigator by instance()
+    override val navigator: EmaUserNavigator by inject()
 	~~~
 	
 
@@ -902,7 +902,7 @@ abstract class EmaViewModel<S, NS : EmaNavigationState> : EmaBaseViewModel<EmaSt
 		
 		abstract fun onStartFirstTime(statePreloaded: Boolean)
 		
-		abstract fun onResume(firstTime: Boolean)
+		abstract fun onViewResumed()
 }
 ~~~
 
@@ -946,12 +946,12 @@ Once we have defined the ***EmaViewModel***, we must override the following para
     }
    ~~~
    
-* **override fun onResume(firstTime: Boolean)**
+* **override fun onViewResumed()**
  
 	This method will be called everytime the view goes to foreground. It has a parameter to check if is the first time the view has gone to foreground.
 	
 	~~~kotlin
-	override fun onResume(firstTime: Boolean) {
+	override fun onViewResumed() {
 		///REFRESH DATA
    }
    ~~~
@@ -1063,7 +1063,7 @@ To provide dependencies, **EMA** use **KODEIN** modules. The **scopes** provided
 
     	//VIEW MODEL//
 
-    	bind<MainToolbarsViewModel>() with provider { MainToolbarsViewModel(instance(),instance(),instance()) }
+    	bind<MainToolbarsViewModel> { MainToolbarsViewModel(instance(),instance(),instance()) }
 
     	bind<BiometricManager>() with singleton {
         if (activity.isBiometricPromptEnabled())
@@ -1085,17 +1085,17 @@ To provide dependencies, **EMA** use **KODEIN** modules. The **scopes** provided
 
     	//FRAGMENT//
 
-    	bind<Fragment>() with provider { fragment }
+    	bind<Fragment> { fragment }
 
     	//FRAGMENT MANAGER//
 
-    	bind<FragmentManager>() with provider { fragment.requireFragmentManager() }
+    	bind<FragmentManager> { fragment.requireFragmentManager() }
 
     	//VIEW MODEL//
 
-    	bind<EmaHomeViewModel>() with provider { EmaHomeViewModel(instance())}
+    	bind<EmaHomeViewModel> { EmaHomeViewModel(instance())}
 
-    	bind<EmaUserViewModel>() with provider { EmaUserViewModel() }
+    	bind<EmaUserViewModel> { EmaUserViewModel() }
 	~~~
 
 >
@@ -1591,7 +1591,7 @@ Once you have instantiated it you can do the following actions:
 The same tasks can be achieved with ***[Deferred](https://kotlinlang.org/docs/reference/coroutines/composing-suspending-functions.html#concurrent-using-async)*** object using the ***AsyncManager*** .
  
  ~~~kotlin
- val asyncManager: AsyncManager by instance()
+ val asyncManager: AsyncManager by inject()
  	
  or 
  	

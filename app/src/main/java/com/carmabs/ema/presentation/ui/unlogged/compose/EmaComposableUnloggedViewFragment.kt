@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.carmabs.ema.R
 import com.carmabs.ema.android.delegates.emaViewModelSharedDelegate
-import com.carmabs.ema.android.di.instanceDirect
+import com.carmabs.ema.android.di.injectDirect
 import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
 import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.core.state.EmaState
@@ -41,7 +41,7 @@ import com.carmabs.ema.presentation.ui.unlogged.EmaUnloggedNavigator
 import com.carmabs.ema.presentation.ui.unlogged.EmaUnloggedState
 import com.carmabs.ema.presentation.ui.unlogged.EmaUnloggedToolbarState
 import com.carmabs.ema.presentation.ui.unlogged.EmaUnloggedViewModel
-import org.kodein.di.instance
+import org.koin.android.ext.android.inject
 
 class EmaComposableUnloggedViewFragment :
     BaseComposableFragment<EmaUnloggedState, EmaUnloggedViewModel, EmaUnloggedNavigator.Navigation>() {
@@ -52,16 +52,16 @@ class EmaComposableUnloggedViewFragment :
      */
     private val toolbarViewModel: EmaAndroidUnloggedToolbarViewModel by emaViewModelSharedDelegate(
         {
-            EmaAndroidUnloggedToolbarViewModel(instanceDirect())
+            EmaAndroidUnloggedToolbarViewModel(injectDirect())
         }
     ) {
         vm.onToolbarUpdated(it as EmaState<EmaUnloggedToolbarState>)
     }
 
-    override val navigator: EmaUnloggedNavigator by instance()
+    override val navigator: EmaUnloggedNavigator by inject()
 
     override fun provideAndroidViewModel(): EmaAndroidViewModel<EmaUnloggedViewModel> {
-        return EmaAndroidUnloggedViewModel(instanceDirect())
+        return EmaAndroidUnloggedViewModel(injectDirect())
     }
 
     override fun onStart() {

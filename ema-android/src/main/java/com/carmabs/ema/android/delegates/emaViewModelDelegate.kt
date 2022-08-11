@@ -32,7 +32,7 @@ class emaViewModelDelegate<S : EmaBaseState, NS : EmaNavigationTarget, VM : EmaV
                         "in an object that inherits from EmaView"
             )
 
-            val fragmentScope = (emaView as? EmaFragment<*,*,*,*>)?.fragmentViewModelScope ?: false
+            val fragmentScope = (emaView as? EmaFragment<*, *, *, *>)?.fragmentViewModelScope ?: false
 
             val newVm = if (fragmentScope) {
                 val fragment = emaView as Fragment

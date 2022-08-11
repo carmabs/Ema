@@ -297,7 +297,7 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NT>, NT : EmaNavigation
         viewModel.onPauseView()
     }
 
-    fun onUnbindView(viewJob: MutableList<Job>?) {
+    fun onUnbindView(viewJob: MutableList<Job>?,viewModel: VM) {
         viewJob?.forEach {
             try {
                 if (!it.isCancelled && !it.isCompleted)
@@ -307,5 +307,6 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NT>, NT : EmaNavigation
             }
         }
         viewJob?.clear()
+        viewModel.onStopView()
     }
 }

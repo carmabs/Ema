@@ -3,7 +3,7 @@ package com.carmabs.ema.presentation
 import com.carmabs.ema.android.base.EmaApplication
 import com.carmabs.ema.presentation.injection.appInjection
 import com.carmabs.injection.appDataInjection
-import org.kodein.di.DI
+
 
 /**
  *  *<p>

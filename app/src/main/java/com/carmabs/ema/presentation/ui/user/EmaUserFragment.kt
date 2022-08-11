@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.carmabs.ema.R
 import com.carmabs.ema.android.delegates.emaViewModelSharedDelegate
-import com.carmabs.ema.android.di.instanceDirect
+import com.carmabs.ema.android.di.injectDirect
 import com.carmabs.ema.android.extension.getFormattedString
 import com.carmabs.ema.android.navigation.EmaAndroidNavigator
 import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
@@ -19,8 +19,8 @@ import com.carmabs.ema.databinding.FragmentUserBinding
 import com.carmabs.ema.databinding.LayoutEmaHeaderBinding
 import com.carmabs.ema.presentation.base.BaseFragment
 import com.carmabs.ema.presentation.ui.home.EmaAndroidHomeToolbarViewModel
-import org.kodein.di.direct
-import org.kodein.di.instance
+rect
+import org.koin.android.ext.android.inject
 
 
 /**
@@ -43,7 +43,7 @@ class EmaUserFragment :
     override val navigator: EmaAndroidNavigator<EmaNavigationState>? = null
 
     override fun provideAndroidViewModel(): EmaAndroidViewModel<EmaUserViewModel> {
-        return instanceDirect()
+        return injectDirect()
     }
 
     private val toolbarViewModel: EmaAndroidHomeToolbarViewModel by emaViewModelSharedDelegate(
@@ -81,7 +81,7 @@ class EmaUserFragment :
         binding.rvUser.adapter = adapter
     }
 
-    override val viewModelSeed: EmaUserViewModel by instance()
+    override val viewModelSeed: EmaUserViewModel by inject()
 
     override fun FragmentUserBinding.onNormal(data: EmaUserState) {
         bindingHeader.tvUserName.text = data.name

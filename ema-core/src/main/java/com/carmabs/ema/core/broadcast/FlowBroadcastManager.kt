@@ -23,11 +23,11 @@ class FlowBroadcastManager : BroadcastManager {
 
     override suspend fun <T> registerBroadcast(
         clazz: Class<out EmaBroadcastEvent<T>>,
-        listener: suspend (EmaBroadcastEvent<T>) -> Unit
+        listener: suspend (T) -> Unit
     ) {
         sharedFlow.collect {
             if(clazz.name == it.javaClass.name)
-                listener.invoke(it as EmaBroadcastEvent<T>)
+                listener.invoke((it as EmaBroadcastEvent<T>).data)
         }
     }
 }

@@ -16,9 +16,9 @@ import com.carmabs.ema.presentation.ui.home.EmaAndroidHomeViewModel
 import com.carmabs.ema.presentation.ui.home.EmaHomeViewModel
 import com.carmabs.ema.presentation.ui.user.EmaAndroidUserViewModel
 import com.carmabs.ema.presentation.ui.user.EmaUserViewModel
-import org.kodein.di.DI
-import org.kodein.di.bind
-import org.kodein.di.instance
+
+
+import org.koin.android.ext.android.inject
 import org.kodein.di.provider
 import org.kodein.di.singleton
 

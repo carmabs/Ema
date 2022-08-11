@@ -6,7 +6,7 @@ import android.view.MenuItem
 import android.widget.Toast
 import com.carmabs.ema.R
 import com.carmabs.ema.android.databinding.EmaToolbarActivityBinding
-import com.carmabs.ema.android.di.instanceDirect
+import com.carmabs.ema.android.di.injectDirect
 import com.carmabs.ema.android.extension.dpToPx
 import com.carmabs.ema.android.extension.getColor
 import com.carmabs.ema.android.extension.getFormattedString
@@ -18,8 +18,8 @@ import com.carmabs.ema.presentation.ui.unlogged.EmaAndroidUnloggedToolbarViewMod
 import com.carmabs.ema.presentation.ui.unlogged.EmaUnloggedNavigator
 import com.carmabs.ema.presentation.ui.unlogged.EmaUnloggedToolbarState
 import com.carmabs.ema.presentation.ui.unlogged.EmaUnloggedToolbarViewModel
-import org.kodein.di.DI
-import org.kodein.di.instance
+
+import org.koin.android.ext.android.inject
 import kotlin.math.roundToInt
 
 
@@ -38,10 +38,10 @@ class EmaUnloggedToolbarViewActivity : EmaActivity<EmaUnloggedToolbarState, EmaU
     override fun provideFixedToolbarTitle(): String = getString(R.string.unlogged_toolbar_title)
 
     override fun provideAndroidViewModel(): EmaAndroidViewModel<EmaUnloggedToolbarViewModel> {
-        return EmaAndroidUnloggedToolbarViewModel(instanceDirect())
+        return EmaAndroidUnloggedToolbarViewModel(injectDirect())
     }
 
-    override val navigator: EmaUnloggedNavigator by instance()
+    override val navigator: EmaUnloggedNavigator by inject()
 
     override fun injectActivityModule(kodein: DI.MainBuilder): DI.Module = activityInjection(this)
 

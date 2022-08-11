@@ -13,7 +13,7 @@ import com.carmabs.domain.exception.LoginException
 import com.carmabs.domain.exception.PasswordEmptyException
 import com.carmabs.domain.exception.UserEmptyException
 import com.carmabs.ema.R
-import com.carmabs.ema.android.di.instanceDirect
+import com.carmabs.ema.android.di.injectDirect
 import com.carmabs.ema.android.extension.checkUpdate
 import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
 import com.carmabs.ema.core.constants.STRING_EMPTY
@@ -28,7 +28,7 @@ import com.carmabs.ema.presentation.dialog.loading.LoadingDialogData
 import com.carmabs.ema.presentation.dialog.simple.SimpleDialogData
 import com.carmabs.ema.presentation.dialog.simple.SimpleDialogListener
 import com.carmabs.ema.presentation.dialog.simple.SimpleDialogProvider
-import org.kodein.di.instance
+import org.koin.android.ext.android.inject
 
 /**
  *  *<p>
@@ -47,10 +47,10 @@ class EmaHomeFragment :
 
 
     override fun provideAndroidViewModel(): EmaAndroidViewModel<EmaHomeViewModel> {
-        return instanceDirect()
+        return injectDirect()
     }
 
-    override val navigator: EmaHomeNavigator by instance()
+    override val navigator: EmaHomeNavigator by inject()
 
     //As we can see we can use an instance by kodein or generate it by class instance
     private val errorDialog: EmaDialogProvider by lazy { SimpleDialogProvider(childFragmentManager) }

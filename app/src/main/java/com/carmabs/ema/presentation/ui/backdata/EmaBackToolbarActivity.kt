@@ -3,13 +3,13 @@ package com.carmabs.ema.presentation.ui.backdata;
 import android.os.Bundle
 import androidx.core.content.ContextCompat
 import com.carmabs.ema.R
-import com.carmabs.ema.android.di.instanceDirect
+import com.carmabs.ema.android.di.injectDirect
 import com.carmabs.ema.android.databinding.EmaToolbarActivityBinding
 import com.carmabs.ema.android.ui.EmaToolbarFragmentActivity
 import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
 import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.presentation.base.BaseActivity
-import org.kodein.di.instance
+import org.koin.android.ext.android.inject
 
 /**
  *<p>
@@ -27,12 +27,12 @@ class EmaBackToolbarActivity : BaseActivity<EmaBackToolbarState, EmaBackToolbarV
 
     override fun provideFixedToolbarTitle(): String? = null
 
-    override val viewModelSeed: EmaBackToolbarViewModel by instance()
+    override val viewModelSeed: EmaBackToolbarViewModel by inject()
 
-    override val navigator: EmaBackNavigator by instance()
+    override val navigator: EmaBackNavigator by inject()
 
     override fun provideAndroidViewModel(): EmaAndroidViewModel<EmaBackToolbarViewModel> {
-        return instanceDirect()
+        return injectDirect()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
