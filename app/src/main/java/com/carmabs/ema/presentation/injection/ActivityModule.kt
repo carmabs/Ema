@@ -13,7 +13,7 @@ import com.carmabs.ema.presentation.ui.home.EmaHomeToolbarViewModel
 import com.carmabs.ema.presentation.ui.unlogged.EmaUnloggedToolbarViewModel
 
 
-import org.koin.core.component.inject
+import org.koin.android.ext.android.inject
 import org.kodein.di.singleton
 
 /**

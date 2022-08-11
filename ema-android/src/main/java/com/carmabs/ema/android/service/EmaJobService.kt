@@ -11,6 +11,7 @@ import androidx.core.app.JobIntentService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
 
 
 /**
@@ -28,7 +29,7 @@ import kotlinx.coroutines.launch
  * - EmaJobListener implemented to handle work listener
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  **/
-abstract class EmaJobService : JobIntentService() {
+abstract class EmaJobService : JobIntentService(),KoinComponent {
 
     private val coroutineScope = CoroutineScope(Dispatchers.Default)
 

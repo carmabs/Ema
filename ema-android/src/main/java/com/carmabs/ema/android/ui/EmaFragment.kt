@@ -25,9 +25,9 @@ import com.carmabs.ema.core.viewmodel.EmaViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import org.koin.core.context.loadKoinModules
-import org.koin.core.context.unloadKoinModules
-import org.koin.core.module.Module
+import org.koin.android.scope.AndroidScopeComponent
+import org.koin.androidx.scope.fragmentScope
+import org.koin.core.scope.Scope
 
 
 /**
@@ -38,7 +38,9 @@ import org.koin.core.module.Module
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
 abstract class EmaFragment<B : ViewBinding, S : EmaBaseState, VM : EmaViewModel<S, NT>, NT : EmaNavigationTarget> :
-    Fragment(), EmaAndroidView<S, VM, NT> {
+    Fragment(), EmaAndroidView<S, VM, NT>, AndroidScopeComponent {
+
+    final override val scope: Scope by fragmentScope()
 
     private var _binding: B? = null
 
@@ -48,8 +50,6 @@ abstract class EmaFragment<B : ViewBinding, S : EmaBaseState, VM : EmaViewModel<
         get() = _binding!!
 
     private var viewJob: MutableList<Job>? = null
-
-    private var fragmentKoinModule: Module? = null
 
     private val extraViewJobs: MutableList<Job> by lazy {
         mutableListOf()
@@ -109,7 +109,6 @@ abstract class EmaFragment<B : ViewBinding, S : EmaBaseState, VM : EmaViewModel<
 
     abstract fun provideAndroidViewModel(): EmaAndroidViewModel<VM>
 
-    abstract fun injectFragmentModule(): Module?
 
     final override val androidViewModelSeed: EmaAndroidViewModel<VM> by lazy {
         provideAndroidViewModel()
@@ -157,14 +156,6 @@ abstract class EmaFragment<B : ViewBinding, S : EmaBaseState, VM : EmaViewModel<
             coroutineScope
         else
             requireActivity().lifecycleScope
-    }
-
-    @CallSuper
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        fragmentKoinModule = injectFragmentModule()?.also {
-            loadKoinModules(it)
-        }
     }
 
     @CallSuper
@@ -281,10 +272,6 @@ abstract class EmaFragment<B : ViewBinding, S : EmaBaseState, VM : EmaViewModel<
     @CallSuper
     override fun onDestroy() {
         _binding = null
-        fragmentKoinModule?.also {
-            unloadKoinModules(it)
-        }
-        fragmentKoinModule = null
         super.onDestroy()
     }
 
