@@ -14,7 +14,7 @@ import com.carmabs.ema.core.viewmodel.EmaViewModel
 
 abstract class BaseViewModel<S:Any, NS : EmaNavigationState> : EmaViewModel<S, NS>(){
 
-    override fun onResume(firstTime: Boolean) {
+    override fun onViewResumed() {
         //Override if you want to do some task everytime the view goes
         //to foreground
     }

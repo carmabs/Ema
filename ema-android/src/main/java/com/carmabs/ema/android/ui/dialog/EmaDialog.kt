@@ -22,7 +22,7 @@ import com.carmabs.ema.core.dialog.EmaDialogListener
  *
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
-abstract class EmaBaseDialog<B : ViewBinding, T : EmaDialogData> : DialogFragment(),
+abstract class EmaDialog<B : ViewBinding, T : EmaDialogData> : DialogFragment(),
     DialogInterface.OnShowListener {
 
     private var _binding: B? = null
@@ -47,7 +47,7 @@ abstract class EmaBaseDialog<B : ViewBinding, T : EmaDialogData> : DialogFragmen
 
 
     /**
-     * Specify the ViewBinding to be inflated in the [EmaBaseDialog.onCreateView].
+     * Specify the ViewBinding to be inflated in the [EmaDialog.onCreateView].
      */
     abstract fun createViewBinding(inflater: LayoutInflater, container: ViewGroup?): B
 
@@ -135,7 +135,7 @@ abstract class EmaBaseDialog<B : ViewBinding, T : EmaDialogData> : DialogFragmen
             val oldFragment = findFragmentByTag(tag)
             val ft = beginTransaction()
             oldFragment?.let { ft.remove(oldFragment) }
-            ft.add(this@EmaBaseDialog, tag)
+            ft.add(this@EmaDialog, tag)
             ft.commit()
         }
     }

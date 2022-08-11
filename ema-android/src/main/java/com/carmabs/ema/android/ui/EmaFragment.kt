@@ -14,7 +14,7 @@ import com.carmabs.ema.android.delegates.emaViewModelDelegate
 import com.carmabs.ema.android.extension.addOnBackPressedListener
 import com.carmabs.ema.android.navigation.EmaFragmentNavControllerNavigator
 import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
-import com.carmabs.ema.android.viewmodel.EmaFactory
+import com.carmabs.ema.android.viewmodel.EmaViewModelFactory
 import com.carmabs.ema.core.initializer.EmaInitializer
 import com.carmabs.ema.core.navigator.EmaNavigationTarget
 import com.carmabs.ema.core.state.EmaBaseState
@@ -112,6 +112,12 @@ abstract class EmaFragment<B : ViewBinding, S : EmaBaseState, VM : EmaViewModel<
 
     final override val androidViewModelSeed: EmaAndroidViewModel<VM> by lazy {
         provideAndroidViewModel()
+    }
+
+    @CallSuper
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        scope.declare(this, secondaryTypes = listOf(this::class,Fragment::class, EmaFragment::class))
     }
 
     final override val viewModelSeed: VM
@@ -230,12 +236,12 @@ abstract class EmaFragment<B : ViewBinding, S : EmaBaseState, VM : EmaViewModel<
             fragmentActivity?.let {
                 ViewModelProvider(
                     it,
-                    EmaFactory(viewModelAttachedSeed)
+                    EmaViewModelFactory(viewModelAttachedSeed)
                 )[viewModelAttachedSeed::class.java]
             }
                 ?: ViewModelProvider(
                     fragment,
-                    EmaFactory(viewModelAttachedSeed)
+                    EmaViewModelFactory(viewModelAttachedSeed)
                 )[viewModelAttachedSeed::class.java]
 
         observerFunction?.also {
@@ -259,7 +265,7 @@ abstract class EmaFragment<B : ViewBinding, S : EmaBaseState, VM : EmaViewModel<
     @CallSuper
     override fun onStop() {
         super.onStop()
-        onUnbindView(viewJob)
+        onUnbindView(viewJob,vm)
         removeExtraViewModels()
     }
 

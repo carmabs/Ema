@@ -17,7 +17,7 @@ import org.koin.core.component.KoinComponent
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
-abstract class EmaBaseLayout<B : ViewBinding, T : Any> : FrameLayout,KoinComponent {
+abstract class EmaLayout<B : ViewBinding, T : Any> : FrameLayout,KoinComponent {
 
     var binding: B? = null
         private set
@@ -85,7 +85,7 @@ abstract class EmaBaseLayout<B : ViewBinding, T : Any> : FrameLayout,KoinCompone
     }
 
     /**
-     * Method called once the custom attributes has been set by [EmaBaseLayout.getAttributes]
+     * Method called once the custom attributes has been set by [EmaLayout.getAttributes]
      * @param ta are the custom attributes inflated
      */
     abstract fun setupAttributes(ta: TypedArray)
@@ -96,14 +96,14 @@ abstract class EmaBaseLayout<B : ViewBinding, T : Any> : FrameLayout,KoinCompone
     abstract fun getAttributes(): IntArray?
 
     /**
-     * Method called once the layout has been inflated implementing the methods [EmaBaseLayout.getLayout]
+     * Method called once the layout has been inflated implementing the methods [EmaLayout.getLayout]
      * @param mainLayout is the layout inflated instance
      */
     abstract fun B.setup(data: T)
 
 
     /**
-     * @return the layout of the fragment to be inflated in the [EmaBaseLayout.onCreateView]
+     * @return the layout of the fragment to be inflated in the [EmaLayout.onCreateView]
      */
     abstract fun createViewBinding(
         inflater: LayoutInflater,

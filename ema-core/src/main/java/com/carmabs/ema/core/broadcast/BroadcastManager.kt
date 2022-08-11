@@ -11,5 +11,5 @@ package com.carmabs.ema.core.broadcast
  */
 interface BroadcastManager {
    fun <T>sendBroadcastEvent(event:EmaBroadcastEvent<T>)
-   suspend fun <T>registerBroadcast(clazz:Class<out EmaBroadcastEvent<T>>, listener: suspend (EmaBroadcastEvent<T>) -> Unit)
+   suspend fun <T>registerBroadcast(clazz:Class<out EmaBroadcastEvent<T>>, listener: suspend (T) -> Unit)
 }
