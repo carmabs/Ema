@@ -15,9 +15,6 @@ import com.carmabs.ema.android.delegates.emaStateDelegate
 import com.carmabs.ema.android.extension.getScreenMetrics
 import com.carmabs.ema.core.dialog.EmaDialogData
 import com.carmabs.ema.core.dialog.EmaDialogListener
-import org.kodein.di.DI
-import org.kodein.di.DIAware
-import org.kodein.di.android.closestDI
 
 
 /**
@@ -25,7 +22,7 @@ import org.kodein.di.android.closestDI
  *
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
-abstract class EmaBaseDialog<B : ViewBinding, T : EmaDialogData> : DialogFragment(), DIAware,
+abstract class EmaDialog<B : ViewBinding, T : EmaDialogData> : DialogFragment(),
     DialogInterface.OnShowListener {
 
     private var _binding: B? = null
@@ -34,10 +31,6 @@ abstract class EmaBaseDialog<B : ViewBinding, T : EmaDialogData> : DialogFragmen
 
     companion object {
         private const val KEY_DIALOG_DATA = "KEY_DIALOG_DATA"
-    }
-
-    override val di: DI by closestDI {
-        requireActivity()
     }
 
     var dialogListener: EmaDialogListener? = null
@@ -54,7 +47,7 @@ abstract class EmaBaseDialog<B : ViewBinding, T : EmaDialogData> : DialogFragmen
 
 
     /**
-     * Specify the ViewBinding to be inflated in the [EmaBaseDialog.onCreateView].
+     * Specify the ViewBinding to be inflated in the [EmaDialog.onCreateView].
      */
     abstract fun createViewBinding(inflater: LayoutInflater, container: ViewGroup?): B
 
@@ -142,7 +135,7 @@ abstract class EmaBaseDialog<B : ViewBinding, T : EmaDialogData> : DialogFragmen
             val oldFragment = findFragmentByTag(tag)
             val ft = beginTransaction()
             oldFragment?.let { ft.remove(oldFragment) }
-            ft.add(this@EmaBaseDialog, tag)
+            ft.add(this@EmaDialog, tag)
             ft.commit()
         }
     }

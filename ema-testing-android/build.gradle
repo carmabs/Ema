@@ -4,11 +4,11 @@ group = 'com.github.carmabs'
 android {
 
     defaultConfig {
-        minSdkVersion ema.minSdk
-        compileSdkVersion ema.compileSdk
-        targetSdkVersion ema.targetSdk
-        versionCode ema.versionCode
-        versionName ema.versionName
+        minSdkVersion emaVersioning.minSdk
+        compileSdkVersion emaVersioning.compileSdk
+        targetSdkVersion emaVersioning.targetSdk
+        versionCode emaVersioning.versionCode
+        versionName emaVersioning.versionName
     }
 
     buildTypes {

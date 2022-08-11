@@ -8,9 +8,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.viewbinding.ViewBinding
 import com.carmabs.ema.android.delegates.emaStateDelegate
-import com.carmabs.ema.android.di.Injector
-import org.kodein.di.DI
-import org.kodein.di.android.closestDI
+import org.koin.core.component.KoinComponent
 
 
 /**
@@ -19,13 +17,7 @@ import org.kodein.di.android.closestDI
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
-abstract class EmaBaseLayout<B : ViewBinding, T : Any> : FrameLayout, Injector {
-
-    final override val parentKodein: DI by closestDI()
-
-    final override val di: DI by lazy {
-        injectKodein()
-    }
+abstract class EmaLayout<B : ViewBinding, T : Any> : FrameLayout,KoinComponent {
 
     var binding: B? = null
         private set
@@ -93,7 +85,7 @@ abstract class EmaBaseLayout<B : ViewBinding, T : Any> : FrameLayout, Injector {
     }
 
     /**
-     * Method called once the custom attributes has been set by [EmaBaseLayout.getAttributes]
+     * Method called once the custom attributes has been set by [EmaLayout.getAttributes]
      * @param ta are the custom attributes inflated
      */
     abstract fun setupAttributes(ta: TypedArray)
@@ -104,14 +96,14 @@ abstract class EmaBaseLayout<B : ViewBinding, T : Any> : FrameLayout, Injector {
     abstract fun getAttributes(): IntArray?
 
     /**
-     * Method called once the layout has been inflated implementing the methods [EmaBaseLayout.getLayout]
+     * Method called once the layout has been inflated implementing the methods [EmaLayout.getLayout]
      * @param mainLayout is the layout inflated instance
      */
     abstract fun B.setup(data: T)
 
 
     /**
-     * @return the layout of the fragment to be inflated in the [EmaBaseLayout.onCreateView]
+     * @return the layout of the fragment to be inflated in the [EmaLayout.onCreateView]
      */
     abstract fun createViewBinding(
         inflater: LayoutInflater,

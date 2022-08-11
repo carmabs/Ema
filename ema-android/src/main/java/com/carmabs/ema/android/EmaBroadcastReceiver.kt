@@ -1,13 +1,8 @@
 package com.carmabs.ema.android
 
 import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import androidx.annotation.CallSuper
-import com.carmabs.ema.core.concurrency.ConcurrencyManager
-import com.carmabs.ema.core.concurrency.DefaultConcurrencyManager
-import org.kodein.di.DI
-import org.kodein.di.DIAware
+import org.koin.core.component.KoinComponent
+
 
 /**
  * Created by Carlos Mateo Benito on 17/12/21.
@@ -21,12 +16,4 @@ import org.kodein.di.DIAware
 /**
  * Broadcast with dependency injector included
  */
-abstract class EmaBroadcastReceiver : BroadcastReceiver(), DIAware {
-
-    override lateinit var di: DI
-
-    @CallSuper
-    override fun onReceive(context: Context, intent: Intent) {
-        di = (context.applicationContext as DIAware).di
-    }
-}
+abstract class EmaBroadcastReceiver : BroadcastReceiver(), KoinComponent

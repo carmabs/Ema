@@ -5,11 +5,11 @@ group = 'com.github.carmabs'
 android {
 
     defaultConfig {
-        compileSdkVersion ema.compileSdk
-        minSdkVersion ema.minSdk
-        targetSdkVersion ema.targetSdk
-        versionCode ema.versionCode
-        versionName ema.versionName
+        compileSdkVersion emaVersioning.compileSdk
+        minSdkVersion emaVersioning.minSdk
+        targetSdkVersion emaVersioning.targetSdk
+        versionCode emaVersioning.versionCode
+        versionName emaVersioning.versionName
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -44,32 +44,27 @@ android {
 
 dependencies {
 
+    implementation emaAndroidDependencies.reflection
     // Java language implementation
     // Kotlin
-    api emaAndroid.fragment
-
-    implementation emaAndroid.reflection
+    api emaAndroidDependencies.fragment
+    api emaAndroidDependencies.koin
 
     //Java Time API for SDK version < 26
-    coreLibraryDesugaring emaAndroid.desugaring
+    coreLibraryDesugaring emaAndroidDependencies.desugaring
 
     //Navigation
-    api emaAndroid.navigationFragment
-    api emaAndroid.navigationUI
+    api emaAndroidDependencies.navigationFragment
+    api emaAndroidDependencies.navigationUI
 
     //Architecture components
-    api emaAndroid.lifecycle
+    api emaAndroidDependencies.lifecycle
 
-    api 'androidx.appcompat:appcompat:1.4.0'
-
-    //Kodein
-    api emaAndroid.kodeinAndroid
-
-    implementation emaAndroid.liveData
-    implementation emaAndroid.lifecycleKtExtension
+    api emaAndroidDependencies.liveData
+    api emaAndroidDependencies.lifecycleKtExtension
     //UI
-    api emaAndroid.constraint
-    api emaAndroid.material
+    api emaAndroidDependencies.constraint
+    api emaAndroidDependencies.material
 
     api project(path: ':ema-core')
 }

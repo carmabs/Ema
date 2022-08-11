@@ -8,12 +8,10 @@ import android.os.Handler
 import android.os.Looper
 import android.os.ResultReceiver
 import androidx.core.app.JobIntentService
-import com.carmabs.ema.android.di.Injector
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.kodein.di.DI
-import org.kodein.di.android.closestDI
+import org.koin.core.component.KoinComponent
 
 
 /**
@@ -31,13 +29,9 @@ import org.kodein.di.android.closestDI
  * - EmaJobListener implemented to handle work listener
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  **/
-abstract class EmaJobService : JobIntentService(), Injector {
+abstract class EmaJobService : JobIntentService(),KoinComponent {
 
     private val coroutineScope = CoroutineScope(Dispatchers.Default)
-    override val parentKodein: DI by closestDI()
-
-    override val di: DI
-        get() = injectKodein()
 
     companion object {
         private const val EMA_SERVICE_LISTENER = "EMA_SERVICE_LISTENER"
