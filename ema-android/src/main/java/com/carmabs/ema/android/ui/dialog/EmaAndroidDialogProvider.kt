@@ -15,19 +15,19 @@ import com.carmabs.ema.core.dialog.EmaDialogProvider
 abstract class EmaAndroidDialogProvider constructor(private val fragmentManager: FragmentManager) :
     EmaDialogProvider {
 
-    private var dialog: EmaBaseDialog<*, EmaDialogData>? = null
+    private var dialog: EmaDialog<*, EmaDialogData>? = null
 
-    abstract fun generateDialog(dialogData: EmaDialogData?): EmaBaseDialog<*, *>
+    abstract fun generateDialog(dialogData: EmaDialogData?): EmaDialog<*, *>
 
     override fun show(dialogData: EmaDialogData?) {
 
         fragmentManager.findFragmentByTag(getTag())?.also {
-            dialog = (it as EmaBaseDialog<*,EmaDialogData>).apply {
+            dialog = (it as EmaDialog<*,EmaDialogData>).apply {
                 updateDialogData(this, dialogData)
             }
         } ?: also {
             if (dialog == null) {
-                dialog = generateDialog(dialogData) as EmaBaseDialog<*,EmaDialogData>
+                dialog = generateDialog(dialogData) as EmaDialog<*,EmaDialogData>
             }
             dialog?.let { dialog ->
                 updateDialogData(dialog, dialogData)
@@ -43,7 +43,7 @@ abstract class EmaAndroidDialogProvider constructor(private val fragmentManager:
     }
 
     private fun updateDialogData(
-        dialog: EmaBaseDialog<*,EmaDialogData>,
+        dialog: EmaDialog<*,EmaDialogData>,
         dialogData: EmaDialogData?
     ) {
         dialog.dialogListener = dialogListener

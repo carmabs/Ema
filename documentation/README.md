@@ -902,7 +902,7 @@ abstract class EmaViewModel<S, NS : EmaNavigationState> : EmaBaseViewModel<EmaSt
 		
 		abstract fun onStartFirstTime(statePreloaded: Boolean)
 		
-		abstract fun onResume(firstTime: Boolean)
+		abstract fun onViewResumed()
 }
 ~~~
 
@@ -946,12 +946,12 @@ Once we have defined the ***EmaViewModel***, we must override the following para
     }
    ~~~
    
-* **override fun onResume(firstTime: Boolean)**
+* **override fun onViewResumed()**
  
 	This method will be called everytime the view goes to foreground. It has a parameter to check if is the first time the view has gone to foreground.
 	
 	~~~kotlin
-	override fun onResume(firstTime: Boolean) {
+	override fun onViewResumed() {
 		///REFRESH DATA
    }
    ~~~

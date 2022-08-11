@@ -97,7 +97,7 @@ abstract class EmaViewModel<S : EmaBaseState, NT : EmaNavigationTarget> {
     internal fun onStart(initializer: EmaInitializer? = null) {
         if (!this::state.isInitialized) {
             concurrencyManager.launch {
-                normalContentData = onStartFirstTime(initializer)
+                normalContentData = onCreateState(initializer)
                 state = EmaState.Normal(normalContentData)
                 hasBeenInitialized = true
                 pendingEvents.forEach {
@@ -106,7 +106,7 @@ abstract class EmaViewModel<S : EmaBaseState, NT : EmaNavigationTarget> {
                 onResultListenerSetup()
                 if (updateOnInitialization)
                     observableState.tryEmit(state)
-                onStateCreated()
+                onCreated()
                 pendingEvents.clear()
             }
         } else {
@@ -114,21 +114,21 @@ abstract class EmaViewModel<S : EmaBaseState, NT : EmaNavigationTarget> {
             // if last time was updated by updateDataState
             observableState.tryEmit(state)
         }
-        onStarted(firstTimeResumed)
+        onViewStarted()
     }
 
     /**
      * Called when view is created by first time, it means, it is added to the stack
      */
-    abstract suspend fun onStartFirstTime(initializer: EmaInitializer? = null): S
+    abstract suspend fun onCreateState(initializer: EmaInitializer? = null): S
 
-    protected open suspend fun onStateCreated() = Unit
+    protected open suspend fun onCreated() = Unit
     /**
      * Called when view is shown in foreground
      */
     internal fun onResumeView() {
         useAfterStateIsCreated {
-            onResume(firstTimeResumed)
+            onViewResumed()
         }
         firstTimeResumed = false
     }
@@ -138,7 +138,13 @@ abstract class EmaViewModel<S : EmaBaseState, NT : EmaNavigationTarget> {
      */
     internal fun onPauseView() {
         useAfterStateIsCreated {
-            onPause()
+            onViewPaused()
+        }
+    }
+
+    internal fun onStopView(){
+        useAfterStateIsCreated {
+            onViewStopped()
         }
     }
 
@@ -155,17 +161,22 @@ abstract class EmaViewModel<S : EmaBaseState, NT : EmaNavigationTarget> {
     /**
      * Called always the view goes to the foreground
      */
-    protected open fun onResume(firstTime: Boolean) = Unit
+    protected open fun onViewResumed() = Unit
 
     /**
-     * Called always the view goes to the background
+     * Called always the view is not fully visible
      */
-    protected open fun onPause() = Unit
+    protected open fun onViewPaused() = Unit
 
     /**
      * Called when the view is visible to the user
      */
-    protected open fun onStarted(firstTime: Boolean) = Unit
+    protected open fun onViewStarted() = Unit
+
+    /**
+     * Called always the view goes to the background
+     */
+    protected open fun onViewStopped() = Unit
 
 
     /**
