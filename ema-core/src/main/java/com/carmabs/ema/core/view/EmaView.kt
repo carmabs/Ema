@@ -1,7 +1,7 @@
 package com.carmabs.ema.core.view
 
 import com.carmabs.ema.core.initializer.EmaInitializer
-import com.carmabs.ema.core.navigator.EmaNavigationTarget
+import com.carmabs.ema.core.navigator.EmaDestination
 import com.carmabs.ema.core.navigator.EmaNavigator
 import com.carmabs.ema.core.state.EmaBaseState
 import com.carmabs.ema.core.state.EmaExtraData
@@ -20,11 +20,11 @@ import kotlin.reflect.KProperty
  * View to handle VM view logic states through [EmaState].
  * The user must provide in the constructor by template:
  *  - The view model class [EmaViewModel] is going to use the view
- *  - The navigation state class [EmaNavigationTarget] will handle the navigation
+ *  - The navigation state class [EmaDestination] will handle the navigation
  *
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
-interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NT>, NT : EmaNavigationTarget> {
+interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, D>, D : EmaDestination> {
 
     /**
      * Scope for flow updates
@@ -39,7 +39,7 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NT>, NT : EmaNavigation
     /**
      * The navigator [EmaNavigator]
      */
-    val navigator: EmaNavigator<NT>?
+    val navigator: EmaNavigator<D>?
 
     /**
      * The initializer from previous views when it is launched.
@@ -170,7 +170,7 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NT>, NT : EmaNavigation
      * Called when view model trigger an only once notified event for navigation
      * @param navigation state with information about the destination
      */
-    fun onNavigation(navigation: NT?) {
+    fun onNavigation(navigation: D?) {
         navigation?.let {
             if (!it.isNavigated)
                 navigate(navigation)
@@ -207,7 +207,7 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NT>, NT : EmaNavigation
      * @param state with info about destination
      */
     @Suppress("UNCHECKED_CAST")
-    fun navigate(state: NT) {
+    fun navigate(state: D) {
         navigator?.navigate(state)?:throwNavigationException()
     }
 

@@ -16,7 +16,7 @@ import com.carmabs.ema.android.navigation.EmaFragmentNavControllerNavigator
 import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
 import com.carmabs.ema.android.viewmodel.EmaViewModelFactory
 import com.carmabs.ema.core.initializer.EmaInitializer
-import com.carmabs.ema.core.navigator.EmaNavigationTarget
+import com.carmabs.ema.core.navigator.EmaDestination
 import com.carmabs.ema.core.state.EmaBaseState
 import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.core.state.EmaState
@@ -37,8 +37,8 @@ import org.koin.core.scope.Scope
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
-abstract class EmaFragment<B : ViewBinding, S : EmaBaseState, VM : EmaViewModel<S, NT>, NT : EmaNavigationTarget> :
-    Fragment(), EmaAndroidView<S, VM, NT>, AndroidScopeComponent {
+abstract class EmaFragment<B : ViewBinding, S : EmaBaseState, VM : EmaViewModel<S, D>, D : EmaDestination> :
+    Fragment(), EmaAndroidView<S, VM, D>, AndroidScopeComponent {
 
     final override val scope: Scope by fragmentScope()
 
@@ -105,7 +105,7 @@ abstract class EmaFragment<B : ViewBinding, S : EmaBaseState, VM : EmaViewModel<
      */
     abstract fun createViewBinding(inflater: LayoutInflater, container: ViewGroup?): B
 
-    abstract override val navigator: EmaFragmentNavControllerNavigator<NT>?
+    abstract override val navigator: EmaFragmentNavControllerNavigator<D>?
 
     abstract fun provideAndroidViewModel(): EmaAndroidViewModel<VM>
 
@@ -284,7 +284,7 @@ abstract class EmaFragment<B : ViewBinding, S : EmaBaseState, VM : EmaViewModel<
 
 
     @CallSuper
-    override fun onNavigation(navigation: NT?) {
+    override fun onNavigation(navigation: D?) {
         super.onNavigation(navigation)
     }
 

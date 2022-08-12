@@ -5,7 +5,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.carmabs.ema.android.ui.EmaAndroidView
 import com.carmabs.ema.android.ui.EmaFragment
-import com.carmabs.ema.core.navigator.EmaNavigationTarget
+import com.carmabs.ema.core.navigator.EmaDestination
 import com.carmabs.ema.core.state.EmaBaseState
 import com.carmabs.ema.core.viewmodel.EmaViewModel
 import kotlin.reflect.KProperty
@@ -20,14 +20,14 @@ import kotlin.reflect.KProperty
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
 @Suppress("ClassName")
-class emaViewModelDelegate<S : EmaBaseState, NS : EmaNavigationTarget, VM : EmaViewModel<S, NS>> {
+class emaViewModelDelegate<S : EmaBaseState, D : EmaDestination, VM : EmaViewModel<S, D>> {
 
     private var vm: VM? = null
 
     operator fun getValue(thisRef: Any?, property: KProperty<*>): VM {
 
         return vm ?: let {
-            val emaView = (thisRef as? EmaAndroidView<S, VM, NS>) ?: throw IllegalAccessException(
+            val emaView = (thisRef as? EmaAndroidView<S, VM, D>) ?: throw IllegalAccessException(
                 "You must use this delegate " +
                         "in an object that inherits from EmaView"
             )

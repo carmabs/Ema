@@ -23,7 +23,7 @@ import kotlinx.coroutines.Job
  *
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
-abstract class EmaComposableFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigationState> : EmaBaseFragment<S,VM,NS>() {
+abstract class EmaComposableFragment<S : EmaBaseState, VM : EmaViewModel<S, D>, D : EmaNavigationState> : EmaBaseFragment<S,VM,D>() {
 
     private var viewJobs: MutableList<Job> = mutableListOf()
 

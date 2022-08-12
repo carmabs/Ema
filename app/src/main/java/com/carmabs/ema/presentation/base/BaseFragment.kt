@@ -18,8 +18,8 @@ import com.carmabs.ema.presentation.injection.fragmentInjection
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
 
-abstract class BaseFragment<B : ViewBinding, S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigationState> :
-    EmaFragment<B, S, VM, NS>() {
+abstract class BaseFragment<B : ViewBinding, S : EmaBaseState, VM : EmaViewModel<S, D>, D : EmaNavigationState> :
+    EmaFragment<B, S, VM, D>() {
 
     override fun injectFragmentModule(kodein: DI.MainBuilder): DI.Module? = fragmentInjection(this)
 

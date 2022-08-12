@@ -7,7 +7,7 @@ package com.carmabs.ema.core.navigator
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
 
-abstract class EmaNavigationTarget {
+abstract class EmaDestination {
 
     var isNavigated: Boolean = false
         private set
