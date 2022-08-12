@@ -26,12 +26,12 @@ interface UseCase<I, O> {
      * the result is delivered
      * @return the object with the return value
      */
-    fun executeSyncInDispatcher(input: I): O
+    fun executeBlocking(input: I): O
 
     /**
      * Executes a function inside the current thread by dispatcher blocking the thread until
      * the result is delivered
      * @return the object with the return value
      */
-    fun executeSyncInCurrentThread(input: I): O
+    fun executeBlockingInCurrentThread(input: I): O
 }

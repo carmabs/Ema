@@ -1,6 +1,6 @@
 package com.carmabs.ema.core.initializer
 
-import com.carmabs.ema.core.state.EmaBaseState
+import com.carmabs.ema.core.state.EmaDataState
 
 /**
  * Created by Carlos Mateo Benito on 8/8/22.
@@ -11,4 +11,4 @@ import com.carmabs.ema.core.state.EmaBaseState
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-class EmaInputStateInitializer(val state:EmaBaseState) : EmaInitializer
+class EmaInputStateInitializer(val state:EmaDataState) : EmaInitializer

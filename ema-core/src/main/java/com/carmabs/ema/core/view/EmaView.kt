@@ -3,7 +3,7 @@ package com.carmabs.ema.core.view
 import com.carmabs.ema.core.initializer.EmaInitializer
 import com.carmabs.ema.core.navigator.EmaDestination
 import com.carmabs.ema.core.navigator.EmaNavigator
-import com.carmabs.ema.core.state.EmaBaseState
+import com.carmabs.ema.core.state.EmaDataState
 import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.core.state.EmaState
 import com.carmabs.ema.core.viewmodel.EmaViewModel
@@ -24,7 +24,7 @@ import kotlin.reflect.KProperty
  *
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
-interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, D>, D : EmaDestination> {
+interface EmaView<S : EmaDataState, VM : EmaViewModel<S, D>, D : EmaDestination> {
 
     /**
      * Scope for flow updates
