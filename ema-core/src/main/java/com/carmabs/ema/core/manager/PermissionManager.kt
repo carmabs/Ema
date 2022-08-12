@@ -1,17 +1,36 @@
 package com.carmabs.ema.core.manager
 
 /**
- * Abstraction to handle system permissions
- * Created by Carlos Mateo Benito on 2020-04-17.
+ * Created by Carlos Mateo Benito on 2022-08-12.
  *
  * <p>
- * Copyright (c) 2020 by Carmabs. All rights reserved.
+ * Copyright (c) 2022 by Carmabs. All rights reserved.
  * </p>
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
-*/
+ */
 interface PermissionManager {
-    fun checkPermission(permissionId: Int):Boolean
-    fun handlePermissionResults(requestCode: Int, permissions: Array<out String>, grantResults: IntArray)
-    fun requestPermission(permissionId: Int, result: (Boolean) -> Unit)
+
+    fun requestPermission(permission: String, resultListener: (PermissionState) -> Unit)
+
+    fun requestMultiplePermission(
+        vararg permission: String,
+        resultListener: (Map<String, PermissionState>) -> Unit
+    )
+
+    fun isPermissionsGranted(permission: String): PermissionState
+
+    fun areAllPermissionsGranted(vararg permission: String): Boolean
+
+    fun shouldShowRequestPermissionRationale(permission:String): Boolean
+
+    fun requestCoarseLocationPermission(resultListener: (PermissionState) -> Unit)
+
+    fun requestFineLocationPermission(resultListener: (PermissionState) -> Unit)
+
+    fun isLocationFineGranted(): PermissionState
+
+    fun isLocationBackgroundGranted(): PermissionState
+
+    fun isLocationCoarseGranted(): PermissionState
 }
