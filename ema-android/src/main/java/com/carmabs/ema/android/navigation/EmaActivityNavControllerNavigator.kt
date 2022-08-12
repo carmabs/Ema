@@ -6,7 +6,7 @@ import androidx.annotation.NavigationRes
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import com.carmabs.ema.core.initializer.EmaInitializer
-import com.carmabs.ema.core.navigator.EmaNavigationTarget
+import com.carmabs.ema.core.navigator.EmaDestination
 
 /**
  * Created by Carlos Mateo Benito on 29/7/22.
@@ -20,18 +20,18 @@ import com.carmabs.ema.core.navigator.EmaNavigationTarget
  * Navigator to handle navigation through navController in an Activity
  * Created by: Carlos Mateo Benito on 29/07/22.
  */
-abstract class EmaActivityNavControllerNavigator<NS : EmaNavigationTarget>(
+abstract class EmaActivityNavControllerNavigator<D : EmaDestination>(
     override val activity: Activity,
     @IdRes private val navHostId: Int,
     @NavigationRes private val graphId: Int
-) : EmaNavControllerNavigator<NS> {
+) : EmaNavControllerNavigator<D> {
 
-    fun setup(initializer: EmaInitializer?) {
+    internal fun setup(initializer: EmaInitializer?) {
         navController.setGraph(graphId, initializer?.let {
             setInitializer(it)
         } ?: activity.intent.extras)
     }
 
-    override val navController: NavController
+    final override val navController: NavController
         get() = activity.findNavController(navHostId)
 }

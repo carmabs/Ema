@@ -12,7 +12,7 @@ import androidx.navigation.fragment.FragmentNavigator
 import com.carmabs.ema.android.ui.EmaActivity
 import com.carmabs.ema.android.ui.EmaToolbarActivity
 import com.carmabs.ema.core.initializer.EmaInitializer
-import com.carmabs.ema.core.navigator.EmaNavigationTarget
+import com.carmabs.ema.core.navigator.EmaDestination
 import com.carmabs.ema.core.navigator.EmaNavigator
 
 /**
@@ -22,10 +22,10 @@ import com.carmabs.ema.core.navigator.EmaNavigator
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  *
- * Navigator to handle navigation through navController
+ * Navigator to handle navigation through navController with navigation back support and no target navigation
  * Created by: Carlos Mateo Benito on 20/1/19.
  */
-interface EmaNavControllerNavigator<NS : EmaNavigationTarget> : EmaNavigator<NS> {
+interface EmaNavControllerNavigator<D : EmaDestination> : EmaNavigator<D> {
 
     val navController: NavController
 

@@ -12,4 +12,4 @@ import com.carmabs.ema.core.navigator.EmaNavigator
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
 
-abstract class BaseNavigator<NS : EmaNavigationState>  : EmaNavigator<NS>
+abstract class BaseNavigator<D : EmaNavigationState>  : EmaNavigator<D>
