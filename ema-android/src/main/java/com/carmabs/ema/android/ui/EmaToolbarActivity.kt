@@ -13,7 +13,7 @@ import com.carmabs.ema.android.extension.checkVisibility
 import com.carmabs.ema.core.constants.FLOAT_ONE
 import com.carmabs.ema.core.constants.FLOAT_ZERO
 import com.carmabs.ema.core.navigator.EmaDestination
-import com.carmabs.ema.core.state.EmaBaseState
+import com.carmabs.ema.core.state.EmaDataState
 import com.carmabs.ema.core.viewmodel.EmaViewModel
 import com.google.android.material.appbar.AppBarLayout
 
@@ -24,7 +24,7 @@ import com.google.android.material.appbar.AppBarLayout
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
 
-abstract class EmaToolbarActivity<S : EmaBaseState, VM : EmaViewModel<S, D>, D : EmaDestination> :
+abstract class EmaToolbarActivity<S : EmaDataState, VM : EmaViewModel<S, D>, D : EmaDestination> :
     EmaActivity<EmaToolbarActivityBinding, S, VM, D>(){
 
     final override fun createViewBinding(inflater: LayoutInflater): EmaToolbarActivityBinding {

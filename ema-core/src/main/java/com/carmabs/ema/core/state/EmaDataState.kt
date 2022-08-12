@@ -11,4 +11,4 @@ import java.io.Serializable
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
 
-interface EmaBaseState : Serializable
+interface EmaDataState : Serializable

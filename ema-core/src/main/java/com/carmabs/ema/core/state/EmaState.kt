@@ -7,7 +7,7 @@ package com.carmabs.ema.core.state
  * @constructor T is the state model of the view, data represents the current state of the view
  */
 
-sealed class EmaState<T>(val data: T) : EmaBaseState {
+sealed class EmaState<T>(val data: T) : EmaDataState {
 
     /**
      * State that represents the current state of a view.

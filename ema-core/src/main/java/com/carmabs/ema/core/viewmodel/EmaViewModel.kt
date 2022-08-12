@@ -6,7 +6,7 @@ import com.carmabs.ema.core.concurrency.tryCatch
 import com.carmabs.ema.core.constants.INT_ONE
 import com.carmabs.ema.core.initializer.EmaInitializer
 import com.carmabs.ema.core.navigator.EmaDestination
-import com.carmabs.ema.core.state.EmaBaseState
+import com.carmabs.ema.core.state.EmaDataState
 import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.core.state.EmaState
 import kotlinx.coroutines.CoroutineScope
@@ -20,7 +20,7 @@ import kotlinx.coroutines.flow.SharedFlow
  *
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
-abstract class EmaViewModel<S : EmaBaseState, D : EmaDestination> {
+abstract class EmaViewModel<S : EmaDataState, D : EmaDestination> {
 
     private val pendingEvents = mutableListOf<()->Unit>()
     /**

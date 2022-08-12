@@ -1,6 +1,5 @@
 package com.carmabs.ema.android.delegates
 
-import com.carmabs.ema.core.state.EmaBaseState
 import kotlin.reflect.KProperty
 
 /**
