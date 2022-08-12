@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="ema_permission_manager_accept">Aceptar</string>
+    <string name="ema_permission_manager_cancel">Cancelar</string>
+</resources>
