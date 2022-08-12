@@ -6,11 +6,11 @@ group = 'com.github.carmabs'
 android {
 
     defaultConfig {
-        compileSdkVersion ema.compileSdk
-        minSdkVersion ema.minSdk
-        targetSdkVersion ema.targetSdk
-        versionCode ema.versionCode
-        versionName ema.versionName
+        compileSdkVersion emaVersioning.compileSdk
+        minSdkVersion emaVersioning.minSdk
+        targetSdkVersion emaVersioning.targetSdk
+        versionCode emaVersioning.versionCode
+        versionName emaVersioning.versionName
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -31,7 +31,7 @@ android {
 
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_1_8.toString()
-        useIR = true
+        //useIR = true
     }
 
     packagingOptions {

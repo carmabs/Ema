@@ -59,8 +59,6 @@ dependencies {
 
     //Architecture components
     api emaAndroidDependencies.lifecycle
-
-    api emaAndroidDependencies.liveData
     api emaAndroidDependencies.lifecycleKtExtension
     //UI
     api emaAndroidDependencies.constraint
