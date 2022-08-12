@@ -11,13 +11,14 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.viewbinding.ViewBinding
 import com.carmabs.ema.android.delegates.emaViewModelDelegate
+import com.carmabs.ema.android.di.emaFragmentKoinScope
 import com.carmabs.ema.android.extension.addOnBackPressedListener
 import com.carmabs.ema.android.navigation.EmaFragmentNavControllerNavigator
 import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
 import com.carmabs.ema.android.viewmodel.EmaViewModelFactory
 import com.carmabs.ema.core.initializer.EmaInitializer
 import com.carmabs.ema.core.navigator.EmaDestination
-import com.carmabs.ema.core.state.EmaBaseState
+import com.carmabs.ema.core.state.EmaDataState
 import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.core.state.EmaState
 import com.carmabs.ema.core.view.EmaViewModelTrigger
@@ -26,7 +27,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.koin.android.scope.AndroidScopeComponent
-import org.koin.androidx.scope.fragmentScope
 import org.koin.core.scope.Scope
 
 
@@ -37,10 +37,10 @@ import org.koin.core.scope.Scope
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
-abstract class EmaFragment<B : ViewBinding, S : EmaBaseState, VM : EmaViewModel<S, D>, D : EmaDestination> :
+abstract class EmaFragment<B : ViewBinding, S : EmaDataState, VM : EmaViewModel<S, D>, D : EmaDestination> :
     Fragment(), EmaAndroidView<S, VM, D>, AndroidScopeComponent {
 
-    final override val scope: Scope by fragmentScope()
+    final override val scope: Scope by emaFragmentKoinScope()
 
     private var _binding: B? = null
 
@@ -112,12 +112,6 @@ abstract class EmaFragment<B : ViewBinding, S : EmaBaseState, VM : EmaViewModel<
 
     final override val androidViewModelSeed: EmaAndroidViewModel<VM> by lazy {
         provideAndroidViewModel()
-    }
-
-    @CallSuper
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        scope.declare(this, secondaryTypes = listOf(this::class,Fragment::class, EmaFragment::class))
     }
 
     final override val viewModelSeed: VM
