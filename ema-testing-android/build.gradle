@@ -39,7 +39,6 @@ dependencies {
     implementation emaTesting.core
     implementation emaTesting.coreKotlin
     implementation emaTesting.espresso
-    implementation emaTesting.archTesting
 }
 
 repositories {

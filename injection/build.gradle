@@ -2,14 +2,14 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 android {
 
-    compileSdkVersion ema.compileSdk
-    buildToolsVersion ema.buildTools
+    compileSdkVersion emaVersioning.compileSdk
+    buildToolsVersion emaVersioning.buildTools
 
     defaultConfig {
-        minSdkVersion ema.minSdk
-        targetSdkVersion ema.targetSdk
-        versionCode ema.versionCode
-        versionName ema.versionName
+        minSdkVersion emaVersioning.minSdk
+        targetSdkVersion emaVersioning.targetSdk
+        versionCode emaVersioning.versionCode
+        versionName emaVersioning.versionName
 
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -39,6 +39,5 @@ dependencies {
     implementation project(path: ':common')
     implementation project(path: ':domain')
 
-    implementation injectionDependencies.kodein
-    implementation injectionDependencies.kodeinAndroid
+    implementation emaAndroidDependencies.koin
 }
