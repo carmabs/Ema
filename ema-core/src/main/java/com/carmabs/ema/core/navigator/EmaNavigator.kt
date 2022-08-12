@@ -8,9 +8,9 @@ package com.carmabs.ema.core.navigator
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
 
-interface EmaNavigator<T : EmaNavigationTarget> {
+interface EmaNavigator<D : EmaDestination> {
 
-    fun navigate(navigationTarget: T)
+    fun navigate(navigationTarget: D)
 
     fun navigateBack():Boolean
 }

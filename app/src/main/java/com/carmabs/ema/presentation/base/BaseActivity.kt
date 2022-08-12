@@ -15,7 +15,7 @@ import com.carmabs.ema.presentation.injection.activityInjection
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
 
-abstract class BaseActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigationState> : EmaActivity<S,VM,NS>() {
+abstract class BaseActivity<S : EmaBaseState, VM : EmaViewModel<S, D>, D : EmaNavigationState> : EmaActivity<S,VM,D>() {
 
     override fun injectActivityModule(kodein: DI.MainBuilder): DI.Module? = activityInjection(this)
 

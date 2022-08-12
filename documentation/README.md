@@ -654,11 +654,11 @@ This is the class <mark>responsible for binding between view and **ViewModel**</
 You must implement the following interface:
 
 ~~~kotlin
-interface EmaView<S: EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigationState> {
+interface EmaView<S: EmaBaseState, VM : EmaViewModel<S, D>, D : EmaNavigationState> {
 
     val viewModelSeed: VM
     
-    val navigator: EmaBaseNavigator<NS>?
+    val navigator: EmaBaseNavigator<D>?
     
     fun onViewModelInitalized(viewModel: VM)
   

@@ -12,7 +12,7 @@ import com.carmabs.ema.android.databinding.EmaToolbarActivityBinding
 import com.carmabs.ema.android.extension.checkVisibility
 import com.carmabs.ema.core.constants.FLOAT_ONE
 import com.carmabs.ema.core.constants.FLOAT_ZERO
-import com.carmabs.ema.core.navigator.EmaNavigationTarget
+import com.carmabs.ema.core.navigator.EmaDestination
 import com.carmabs.ema.core.state.EmaBaseState
 import com.carmabs.ema.core.viewmodel.EmaViewModel
 import com.google.android.material.appbar.AppBarLayout
@@ -24,12 +24,23 @@ import com.google.android.material.appbar.AppBarLayout
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
 
-abstract class EmaToolbarActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigationTarget> :
-    EmaActivity<EmaToolbarActivityBinding, S, VM, NS>(){
+abstract class EmaToolbarActivity<S : EmaBaseState, VM : EmaViewModel<S, D>, D : EmaDestination> :
+    EmaActivity<EmaToolbarActivityBinding, S, VM, D>(){
 
-    override fun createViewBinding(inflater: LayoutInflater): EmaToolbarActivityBinding {
+    final override fun createViewBinding(inflater: LayoutInflater): EmaToolbarActivityBinding {
         return EmaToolbarActivityBinding.inflate(inflater)
     }
+
+    /**
+     * Title for toolbar. If it is null the label xml tag in navigation layout is set for the toolbar
+     * title, otherwise this title will be set for all fragments inside this activity.
+     */
+    abstract fun provideFixedToolbarTitle(): String?
+
+    /**
+     * Set true if activity use a custom theme to avoid the EmaTheme_NoActionBar theme set up
+     */
+    protected open val overrideTheme = false
 
     /**
      * Setup the toolbar
@@ -94,7 +105,7 @@ abstract class EmaToolbarActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS
     /**
      * Hides the toolbar
      */
-    protected open fun hideToolbar(gone: Boolean = true, animate: Boolean = true) {
+    protected fun hideToolbar(gone: Boolean = true, animate: Boolean = true) {
         if (animate) {
             toolbarLayout.animate().apply {
                 alpha(FLOAT_ZERO)
@@ -126,7 +137,7 @@ abstract class EmaToolbarActivity<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS
     /**
      * Show the toolbar
      */
-    protected open fun showToolbar(animate: Boolean = true) {
+    protected fun showToolbar(animate: Boolean = true) {
         if(animate) {
             toolbarLayout.animate().apply {
                 alpha(FLOAT_ONE)

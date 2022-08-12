@@ -5,7 +5,7 @@ import com.carmabs.ema.core.concurrency.DefaultConcurrencyManager
 import com.carmabs.ema.core.concurrency.tryCatch
 import com.carmabs.ema.core.constants.INT_ONE
 import com.carmabs.ema.core.initializer.EmaInitializer
-import com.carmabs.ema.core.navigator.EmaNavigationTarget
+import com.carmabs.ema.core.navigator.EmaDestination
 import com.carmabs.ema.core.state.EmaBaseState
 import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.core.state.EmaState
@@ -20,7 +20,7 @@ import kotlinx.coroutines.flow.SharedFlow
  *
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
-abstract class EmaViewModel<S : EmaBaseState, NT : EmaNavigationTarget> {
+abstract class EmaViewModel<S : EmaBaseState, D : EmaDestination> {
 
     private val pendingEvents = mutableListOf<()->Unit>()
     /**
@@ -51,12 +51,12 @@ abstract class EmaViewModel<S : EmaBaseState, NT : EmaNavigationTarget> {
     )
 
     /**
-     * Observable state that launch event every time a value is set. [NT] value be will a [EmaNavigationTarget]
+     * Observable state that launch event every time a value is set. [NT] value be will a [EmaDestination]
      * object that represent the destination. This observable will be used for
      * events that only has to be notified once to its observers and is used to notify the navigation
      * events
      */
-    private val navigationState: MutableSharedFlow<NT?> = MutableSharedFlow(
+    private val navigationState: MutableSharedFlow<D?> = MutableSharedFlow(
         replay = INT_ONE,
         onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
@@ -192,7 +192,7 @@ abstract class EmaViewModel<S : EmaBaseState, NT : EmaNavigationTarget> {
     /**
      * Get navigation state as LiveData to avoid state setting from the view
      */
-    fun getNavigationState(): SharedFlow<NT?> = navigationState
+    fun getNavigationState(): SharedFlow<D?> = navigationState
 
     /**
      * Get single state as LiveData to avoid state setting from the view
@@ -221,7 +221,7 @@ abstract class EmaViewModel<S : EmaBaseState, NT : EmaNavigationTarget> {
      * Method use to notify a navigation event
      * @param navigation The object that represent the destination of the navigation
      */
-    protected open fun navigate(navigation: NT) {
+    protected open fun navigate(navigation: D) {
         navigation.resetNavigated()
         navigationState.tryEmit(navigation)
     }
