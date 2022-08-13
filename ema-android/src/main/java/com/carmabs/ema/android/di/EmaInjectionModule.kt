@@ -1,7 +1,7 @@
 package com.carmabs.ema.android.di
 
-import com.carmabs.ema.core.broadcast.BroadcastManager
-import com.carmabs.ema.core.broadcast.FlowBroadcastManager
+import com.carmabs.ema.core.broadcast.EmaBroadcastManager
+import com.carmabs.ema.core.broadcast.EmaFlowBroadcastManager
 import org.koin.dsl.module
 
 
@@ -14,6 +14,6 @@ import org.koin.dsl.module
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-fun emaInjectionModule() = module {
-    single<BroadcastManager> { FlowBroadcastManager() }
+internal fun emaInjectionModule() = module {
+    single<EmaBroadcastManager> { EmaFlowBroadcastManager() }
 }
