@@ -3,14 +3,13 @@ package com.carmabs.ema.android.navigation
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.ComponentActivity
 import androidx.annotation.IdRes
 import androidx.navigation.NavController
 import androidx.navigation.NavDirections
 import androidx.navigation.NavOptions
 import androidx.navigation.Navigator
 import androidx.navigation.fragment.FragmentNavigator
-import com.carmabs.ema.android.ui.EmaActivity
-import com.carmabs.ema.android.ui.EmaToolbarActivity
 import com.carmabs.ema.core.initializer.EmaInitializer
 import com.carmabs.ema.core.navigator.EmaDestination
 import com.carmabs.ema.core.navigator.EmaNavigator
@@ -30,6 +29,7 @@ interface EmaNavControllerNavigator<D : EmaDestination> : EmaNavigator<D> {
     val navController: NavController
 
     val activity: Activity
+
 
     /**
      * Set the initializer for the incoming fragment.
@@ -59,30 +59,26 @@ interface EmaNavControllerNavigator<D : EmaDestination> : EmaNavigator<D> {
 
 
     /**
-     * Navigate to new activity with result handling
-     * @param mainActivity activity will launch the next one
-     * @param destinationActivity new destination activity class
-     * @param data the data set up for next view, use addInputState
-     * @param requestCode code for result
-     * @param finishMain if [mainActivity] must be finished when [destinationActivity] is launched
+     * Navigate to new activity
+     * @param destinationActivity is the activity class where you are going to navigate
+     * @param initializer is the data you want to pass to next activity. It will be handled in viewmodel
+     * @param finishMain if [activity] must be finished when [destinationActivity] is launched
      */
-    fun navigateToEmaActivityWithResult(
-        mainEmaActivity: Activity,
-        destinationEmaActivity: Intent,
+    fun navigateToActivity(
+        destinationActivity: Class<out ComponentActivity>,
+        initializer: EmaInitializer? = null,
         finishMain: Boolean = false
     ) {
-        (mainEmaActivity as? EmaToolbarActivity<*, *, *>)?.also {
-            it.startActivityForResult(
-                destinationEmaActivity,
-                EmaActivity.RESULT_DEFAULT_CODE
-            )
-            if (finishMain) {
-                it.finish()
-            }
-        } ?: throw ClassCastException(
-            "The launcher activity and the destination activity must" +
-                    "extend from EmaActivity"
+        activity.startActivity(
+            Intent(activity.applicationContext, destinationActivity).apply {
+                initializer?.also {
+                    putExtra(EmaInitializer.KEY,it)
+                }
+            },
         )
+        if (finishMain) {
+            activity.finish()
+        }
     }
 
 
@@ -98,7 +94,7 @@ interface EmaNavControllerNavigator<D : EmaDestination> : EmaNavigator<D> {
     /**
      * Navigate with android architecture components within navDirections safeargs
      * @param navDirections
-     * @param navExtras
+     * @param extras
      */
     fun navigateWithDirections(navDirections: NavDirections, extras: Navigator.Extras) {
         navController.navigate(navDirections, extras)
