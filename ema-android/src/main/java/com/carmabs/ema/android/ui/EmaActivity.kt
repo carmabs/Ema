@@ -38,10 +38,6 @@ import org.koin.core.scope.Scope
 abstract class EmaActivity<B : ViewBinding, S : EmaDataState, VM : EmaViewModel<S, D>, D : EmaDestination> :
     AppCompatActivity(), EmaAndroidView<S, VM, D>, AndroidScopeComponent {
 
-    companion object {
-        const val RESULT_DEFAULT_CODE = 34341
-    }
-
     protected lateinit var binding: B
 
     final override val scope: Scope by activityScope()
