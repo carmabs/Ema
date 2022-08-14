@@ -9,6 +9,7 @@ import com.carmabs.ema.core.navigator.EmaDestination
 import com.carmabs.ema.core.state.EmaDataState
 import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.core.state.EmaState
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BufferOverflow
@@ -22,7 +23,8 @@ import kotlinx.coroutines.flow.SharedFlow
  */
 abstract class EmaViewModel<S : EmaDataState, D : EmaDestination> {
 
-    private val pendingEvents = mutableListOf<()->Unit>()
+    private val pendingEvents = mutableListOf<() -> Unit>()
+
     /**
      * Observable state that launch event every time a value is set. This value will be the state
      * of the view. When the ViewModel is attached to an observer, if this value is already set up,
@@ -123,6 +125,7 @@ abstract class EmaViewModel<S : EmaDataState, D : EmaDestination> {
     abstract suspend fun onCreateState(initializer: EmaInitializer? = null): S
 
     protected open suspend fun onCreated() = Unit
+
     /**
      * Called when view is shown in foreground
      */
@@ -142,7 +145,7 @@ abstract class EmaViewModel<S : EmaDataState, D : EmaDestination> {
         }
     }
 
-    internal fun onStopView(){
+    internal fun onStopView() {
         useAfterStateIsCreated {
             onViewStopped()
         }
@@ -151,8 +154,8 @@ abstract class EmaViewModel<S : EmaDataState, D : EmaDestination> {
     /**
      * Warranty the call is called only after state is created
      */
-    private fun useAfterStateIsCreated(action:()->Unit){
-        if(hasBeenInitialized)
+    private fun useAfterStateIsCreated(action: () -> Unit) {
+        if (hasBeenInitialized)
             action()
         else
             pendingEvents.add(action)
@@ -261,11 +264,16 @@ abstract class EmaViewModel<S : EmaDataState, D : EmaDestination> {
     protected fun executeUseCaseWithException(
         block: suspend CoroutineScope.() -> Unit,
         exceptionBlock: suspend CoroutineScope.(Throwable) -> Unit,
+        dispatcherOverride: CoroutineDispatcher? = null,
         handleCancellationManually: Boolean = false,
         fullException: Boolean = false
     ): Job {
-        return concurrencyManager.launch(fullException = fullException) {
-            tryCatch(block, exceptionBlock, handleCancellationManually)
+        return dispatcherOverride?.let {
+            concurrencyManager.launch(dispatcher = it, fullException = fullException) {
+                tryCatch(block, exceptionBlock, handleCancellationManually)
+            }
+        } ?: concurrencyManager.launch(fullException = fullException) {
+                tryCatch(block, exceptionBlock, handleCancellationManually)
         }
     }
 
@@ -370,15 +378,15 @@ abstract class EmaViewModel<S : EmaDataState, D : EmaDestination> {
      * Set a result for previous view when the current one is destroyed
      */
     protected fun addResult(data: Any, code: Int = EmaResultHandler.RESULT_ID_DEFAULT) {
-       useAfterStateIsCreated {
-           emaResultHandler.addResult(
-               EmaResultModel(
-                   code = code,
-                   ownerId = getId(),
-                   data = data
-               )
-           )
-       }
+        useAfterStateIsCreated {
+            emaResultHandler.addResult(
+                EmaResultModel(
+                    code = code,
+                    ownerId = getId(),
+                    data = data
+                )
+            )
+        }
     }
 
     /**

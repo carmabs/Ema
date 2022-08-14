@@ -2,7 +2,6 @@ package com.carmabs.ema.android.viewmodel
 
 import androidx.annotation.CallSuper
 import androidx.lifecycle.ViewModel
-import com.carmabs.ema.core.viewmodel.EmaBaseViewModel
 import com.carmabs.ema.core.viewmodel.EmaViewModel
 import kotlin.reflect.full.functions
 import kotlin.reflect.jvm.javaMethod

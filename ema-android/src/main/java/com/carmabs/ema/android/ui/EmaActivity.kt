@@ -3,6 +3,7 @@ package com.carmabs.ema.android.ui
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
+import androidx.annotation.AnimRes
 import androidx.annotation.CallSuper
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -257,8 +258,23 @@ abstract class EmaActivity<B : ViewBinding, S : EmaDataState, VM : EmaViewModel<
         isFirstErrorExecution = false
     }
 
+    @CallSuper
+    override fun finish() {
+        super.finish()
+        overridePopTransitionAnimations()?.also {
+            overridePendingTransition(it.enterTransition,it.exitTransition)
+        }
+    }
+
+    protected open fun overridePopTransitionAnimations():EmaPopActivityTransitionAnimations? = null
+
     abstract fun B.onStateNormal(data: S)
     protected open fun B.onStateOverlayed(data: EmaExtraData) {}
     protected open fun B.onStateError(throwable: Throwable) {}
     protected open fun B.onSingleEvent(data: EmaExtraData) {}
+
+    protected data class EmaPopActivityTransitionAnimations(
+        @AnimRes val enterTransition: Int,
+        @AnimRes val exitTransition: Int
+    )
 }

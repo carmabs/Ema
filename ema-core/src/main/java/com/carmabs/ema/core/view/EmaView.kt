@@ -96,13 +96,13 @@ interface EmaView<S : EmaDataState, VM : EmaViewModel<S, D>, D : EmaDestination>
     @Suppress("UNCHECKED_CAST")
     fun <T> bindForUpdate(
         field: KProperty<T>,
-        areEqualComparator: ((old: T?, new: T?) -> Boolean)? = null,
-        action: (new: T?) -> Unit
+        areEqualComparator: ((old: T, new: T) -> Boolean)? = null,
+        action: (new: T) -> Unit
     ): Boolean {
         var updated = false
         val currentClass = (field as PropertyReference0).boundReceiver as? S
         currentClass?.also { _ ->
-            val currentValue = field.get() as T
+            val currentValue = (field.get() as T)
             previousState?.also {
                 try {
                     val previousField = it.javaClass.getDeclaredField(field.name)
@@ -132,13 +132,13 @@ interface EmaView<S : EmaDataState, VM : EmaViewModel<S, D>, D : EmaDestination>
     @Suppress("UNCHECKED_CAST")
     fun <T> bindForUpdateWithPrevious(
         field: KProperty<T>,
-        areEqualComparator: ((old: T?, new: T?) -> Boolean)? = null,
-        action: (old: T?, new: T?) -> Unit
+        areEqualComparator: ((old: T, new: T) -> Boolean)? = null,
+        action: (old: T?, new: T) -> Unit
     ): Boolean {
         var updated = false
         val currentClass = (field as PropertyReference0).boundReceiver as? S
         currentClass?.also { _ ->
-            val currentValue = field.get() as T
+            val currentValue = (field.get() as T)
             previousState?.also {
                 try {
                     val previousField = it.javaClass.getDeclaredField(field.name)
