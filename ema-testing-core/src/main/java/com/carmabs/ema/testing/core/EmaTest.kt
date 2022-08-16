@@ -1,8 +1,10 @@
 package com.carmabs.ema.testing.core
 
-import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
+import org.junit.After
 import org.junit.Before
 import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
@@ -16,19 +18,22 @@ import org.mockito.MockitoAnnotations
 abstract class EmaTest {
 
     @Before
-    open fun setup() {
-        MockitoAnnotations.initMocks(this)
-        onSetup()
+    fun setup() {
+        MockitoAnnotations.openMocks(this)
         runBlocking {
-            onSetupSuspend()
+            onSetup()
         }
 
     }
 
-    abstract suspend fun onSetupSuspend()
+    @After
+    fun finish() {
+        onFinish()
+    }
 
-    abstract fun onSetup()
+    protected open suspend fun onSetup() = Unit
 
+    protected open fun onFinish() = Unit
 
     protected inline fun <reified C, reified R> mockAllMethods(returnObject: R): C {
         return Mockito.mock(C::class.java) {
