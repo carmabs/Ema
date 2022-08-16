@@ -2,15 +2,16 @@ package com.carmabs.ema.core.viewmodel
 
 import com.carmabs.ema.core.concurrency.ConcurrencyManager
 import com.carmabs.ema.core.concurrency.DefaultConcurrencyManager
-import com.carmabs.ema.core.concurrency.tryCatch
 import com.carmabs.ema.core.constants.INT_ONE
 import com.carmabs.ema.core.initializer.EmaInitializer
+import com.carmabs.ema.core.model.EmaUseCaseResult
 import com.carmabs.ema.core.navigator.EmaDestination
 import com.carmabs.ema.core.state.EmaDataState
 import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.core.state.EmaState
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -238,43 +239,41 @@ abstract class EmaViewModel<S : EmaDataState, D : EmaDestination> {
 
     /**
      * When a background task must be executed for data retrieving or other background job, it must
-     * be called through this method with [block] function
-     * @param block is the function that will be executed in background
+     * be called through this method with [action] function
+     * @param action is the function that will be executed in background
      * @param fullException If its is true, an exception launched on some child task affects to the
      * rest of task, including the parent one, if it is false, only affect to the child class
-     * @return the job that can handle the lifecycle of the background task
+     * @return The EmaUseCaseResult where you can handle the result with the methods
+     * - onSuccess when the result of action function is successful
+     * - onError when the action function has thrown an error
+     * - onFinish when the action function has ended, independently if an error has been thrown
+     * - job returns the job where the action function has been executed
      */
-    protected fun executeUseCase(
+    protected fun <T> executeUseCase(
         fullException: Boolean = false,
-        block: suspend CoroutineScope.() -> Unit
-    ): Job {
-        return concurrencyManager.launch(fullException = fullException, block = block)
+        action: suspend CoroutineScope.() -> T
+    ): EmaUseCaseResult<T> {
+        return EmaUseCaseResult(concurrencyManager,fullException,action)
     }
 
     /**
      * When a background task must be executed for data retrieving or other background job, it must
      * be called through this method with [block] function
      * @param block is the function that will be executed in background
-     * @param exceptionBlock Function to handle errors
-     * @param handleCancellationManually Function to handle Cancellation Exception in coroutine
      * @param fullException If its is true, an exception launched on some child task affects to the
      * rest of task, including the parent one, if it is false, only affect to the child class
      * @return the job that can handle the lifecycle of the background task
      */
-    protected fun executeUseCaseWithException(
-        block: suspend CoroutineScope.() -> Unit,
-        exceptionBlock: suspend CoroutineScope.(Throwable) -> Unit,
-        dispatcherOverride: CoroutineDispatcher? = null,
-        handleCancellationManually: Boolean = false,
-        fullException: Boolean = false
+    protected fun runSuspend(
+        dispatcher: CoroutineDispatcher = Dispatchers.Main,
+        fullException: Boolean = false,
+        block: suspend CoroutineScope.() -> Unit
     ): Job {
-        return dispatcherOverride?.let {
-            concurrencyManager.launch(dispatcher = it, fullException = fullException) {
-                tryCatch(block, exceptionBlock, handleCancellationManually)
-            }
-        } ?: concurrencyManager.launch(fullException = fullException) {
-                tryCatch(block, exceptionBlock, handleCancellationManually)
-        }
+        return concurrencyManager.launch(
+            dispatcher = dispatcher,
+            fullException = fullException,
+            block = block
+        )
     }
 
     /**
@@ -370,7 +369,7 @@ abstract class EmaViewModel<S : EmaDataState, D : EmaDestination> {
      * Use the EmaState -> Error
      * @param error with the exception object
      */
-    protected open fun updateToErrorState(error: Throwable) {
+    protected open fun updateToErrorOverlayedState(error: Throwable) {
         updateView(EmaState.Error(normalContentData, error))
     }
 
