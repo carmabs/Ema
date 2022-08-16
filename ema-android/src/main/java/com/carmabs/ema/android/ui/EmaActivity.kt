@@ -25,8 +25,10 @@ import com.carmabs.ema.core.viewmodel.EmaViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.getKoin
 import org.koin.android.scope.AndroidScopeComponent
-import org.koin.androidx.scope.activityScope
+import org.koin.core.component.getScopeId
+import org.koin.core.component.getScopeName
 import org.koin.core.scope.Scope
 
 /**
@@ -41,7 +43,14 @@ abstract class EmaActivity<B : ViewBinding, S : EmaDataState, VM : EmaViewModel<
 
     protected lateinit var binding: B
 
-    final override val scope: Scope by activityScope()
+    final override val scope: Scope by lazy {
+        getKoin().createScope(
+            getScopeId(),
+            getScopeName(),
+            this
+        )
+    }
+
 
     /**
      * Method to provide the activity ViewBinding class to represent the layout.
@@ -57,6 +66,7 @@ abstract class EmaActivity<B : ViewBinding, S : EmaDataState, VM : EmaViewModel<
     @CallSuper
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        scope
         binding = createViewBinding(layoutInflater)
         setContentView(binding.root)
         (navigator as? EmaActivityNavControllerNavigator)?.setup(overrideDestinationInitializer())
@@ -253,8 +263,14 @@ abstract class EmaActivity<B : ViewBinding, S : EmaDataState, VM : EmaViewModel<
         binding.onSingleEvent(data)
     }
 
-    final override fun onEmaStateError(error: Throwable) {
-        binding.onStateError(error)
+    @CallSuper
+    override fun onDestroy() {
+        super.onDestroy()
+        scope.close()
+    }
+
+    final override fun onEmaStateErrorOverlayed(error: Throwable) {
+        binding.onStateErrorOverlayed(error)
         isFirstErrorExecution = false
     }
 
@@ -270,7 +286,7 @@ abstract class EmaActivity<B : ViewBinding, S : EmaDataState, VM : EmaViewModel<
 
     abstract fun B.onStateNormal(data: S)
     protected open fun B.onStateOverlayed(data: EmaExtraData) {}
-    protected open fun B.onStateError(throwable: Throwable) {}
+    protected open fun B.onStateErrorOverlayed(throwable: Throwable) {}
     protected open fun B.onSingleEvent(data: EmaExtraData) {}
 
     protected data class EmaPopActivityTransitionAnimations(
