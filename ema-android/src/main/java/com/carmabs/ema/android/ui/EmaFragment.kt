@@ -13,11 +13,11 @@ import androidx.viewbinding.ViewBinding
 import com.carmabs.ema.android.delegates.emaViewModelDelegate
 import com.carmabs.ema.android.di.emaFragmentKoinScope
 import com.carmabs.ema.android.extension.addOnBackPressedListener
-import com.carmabs.ema.android.navigation.EmaFragmentNavControllerNavigator
 import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
 import com.carmabs.ema.android.viewmodel.EmaViewModelFactory
 import com.carmabs.ema.core.initializer.EmaInitializer
 import com.carmabs.ema.core.navigator.EmaDestination
+import com.carmabs.ema.core.navigator.EmaNavigator
 import com.carmabs.ema.core.state.EmaDataState
 import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.core.state.EmaState
@@ -105,7 +105,7 @@ abstract class EmaFragment<B : ViewBinding, S : EmaDataState, VM : EmaViewModel<
      */
     abstract fun createViewBinding(inflater: LayoutInflater, container: ViewGroup?): B
 
-    abstract override val navigator: EmaFragmentNavControllerNavigator<D>?
+    abstract override val navigator: EmaNavigator<D>?
 
     abstract fun provideAndroidViewModel(): EmaAndroidViewModel<VM>
 
@@ -292,8 +292,8 @@ abstract class EmaFragment<B : ViewBinding, S : EmaDataState, VM : EmaViewModel<
         isFirstOverlayedExecution = false
     }
 
-    final override fun onEmaStateError(error: Throwable) {
-        binding.onStateError(error)
+    final override fun onEmaStateErrorOverlayed(error: Throwable) {
+        binding.onStateErrorOverlayed(error)
         isFirstErrorExecution = false
     }
 
@@ -303,7 +303,7 @@ abstract class EmaFragment<B : ViewBinding, S : EmaDataState, VM : EmaViewModel<
 
     abstract fun B.onStateNormal(data: S)
     protected open fun B.onStateOverlayed(data: EmaExtraData) {}
-    protected open fun B.onStateError(throwable: Throwable) {}
+    protected open fun B.onStateErrorOverlayed(throwable: Throwable) {}
     protected open fun B.onSingleEvent(data: EmaExtraData) {}
 
 }
