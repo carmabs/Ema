@@ -58,6 +58,7 @@ rootProject.ext {
             rules      : "androidx.test:rules:" + project.rulesVersion,
             junitKotlin: "androidx.test.ext:junit-ktx:" + project.extJUnitVersion,
             mockito    : "org.mockito:mockito-core:" + project.mockitoVersion,
+            coroutines: "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
     ]
 
     emaAndroidDependencies = [

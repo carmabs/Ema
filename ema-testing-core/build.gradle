@@ -7,4 +7,5 @@ dependencies {
     api emaTesting.junitKotlin
     api emaTesting.rules
     api emaTesting.mockito
+    api emaTesting.coroutines
 }
