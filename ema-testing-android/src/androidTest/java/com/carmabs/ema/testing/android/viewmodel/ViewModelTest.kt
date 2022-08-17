@@ -26,11 +26,12 @@ import java.util.logging.Logger
 class ViewModelTest : EmaTest() {
 
     private val TAG = "TEST_VIEWMODEL"
-    private val logger:Logger = Logger.getLogger(TAG)
+    private val logger: Logger = Logger.getLogger(TAG)
 
-    fun log(message:String){
-        logger.log(Level.INFO,message)
+    fun log(message: String) {
+        logger.log(Level.INFO, message)
     }
+
     @Test
     fun testExecuteViewModelResult() {
         runBlocking {
@@ -54,18 +55,15 @@ class ViewModelTest : EmaTest() {
                 isFinished = true
                 log("Finish execution")
                 5
-            }.onFinish {
-                log("onFinish")
-                assert(isFinished)
             }.onSuccess {
                 log("onSuccess1 $it")
                 assert(isFinished)
             }
 
-            delay(3000)
+            delay(2000)
 
-            result.onSuccess {
-                log("onSuccess2 $it")
+            result.onFinish {
+                log("onFinish")
             }
             result.onError {
                 log("onError $it")

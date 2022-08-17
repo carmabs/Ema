@@ -4,7 +4,6 @@ import com.carmabs.ema.core.concurrency.ConcurrencyManager
 import com.carmabs.ema.core.delegate.emaSyncDelegate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import java.util.*
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
@@ -28,85 +27,82 @@ class EmaUseCaseResult<T> internal constructor(
     private val concurrencyManager: ConcurrencyManager,
     fullException: Boolean,
     onAction: suspend CoroutineScope.() -> T
-) {
-    val job: Job
+) : EmaOnSuccessFinish<T>, EmaOnErrorFinish {
 
     private var result: EmaResult<T, Throwable>? by emaSyncDelegate(null)
 
-    private var listenerList: MutableList<suspend (EmaResult<T, Throwable>) -> Unit> = Collections.synchronizedList(
-        mutableListOf())
+    private var successListener: ((T) -> Unit)? = null
+    private var errorListener: ((Throwable) -> Unit)? = null
 
-    private var finishList: MutableList<suspend () -> Unit> = Collections.synchronizedList(
-        mutableListOf())
+    private var finishListener: (() -> Unit)? = null
 
     private var finished: AtomicBoolean = AtomicBoolean(false)
 
-    init {
-        job = concurrencyManager.launch(fullException = fullException) {
-            try {
-                val data = onAction.invoke(this)
-                result = EmaResult.success(data)
+    override val job: Job = concurrencyManager.launch(fullException = fullException) {
+        try {
+            val data = onAction.invoke(this)
+            result = EmaResult.success(data)
 
-            } catch (e: Exception) {
-                result = EmaResult.failure(e)
+        } catch (e: Exception) {
+            result = EmaResult.failure(e)
 
-            } finally {
-                result?.also { resultData->
-                    listenerList.forEach {
-                        it.invoke(resultData)
-                    }
+        } finally {
+            result?.apply {
+                onSuccess {
+                    successListener?.invoke(it)
+                }.onFailure {
+                    errorListener?.invoke(it)
                 }
-                finished.set(true)
-                finishList.forEach {
-                    it.invoke()
-                }
-                listenerList.clear()
-                finishList.clear()
             }
+            finished.set(true)
+            finishListener?.invoke()
+            successListener = null
+            errorListener = null
+            finishListener = null
         }
     }
 
-     fun onSuccess(successAction: suspend (T) -> Unit): EmaUseCaseResult<T> {
-        (result as? EmaResult.Success)?.also {
-            concurrencyManager.launch {
-                successAction.invoke(it.data)
-            }
-        } ?: also {
-            listenerList.add {
-                it.onSuccess { data->
-                    successAction.invoke(data)
-                }
-
-            }
-        }
-        return this
-    }
-
-    fun onError(errorAction: suspend (Throwable) -> Unit): EmaUseCaseResult<T> {
-        (result as? EmaResult.Failure)?.also {
-            concurrencyManager.launch {
-                errorAction.invoke(it.failure)
-            }
-        } ?: also {
-            listenerList.add {
-                it.onFailure { exception->
-                    errorAction.invoke(exception)
-                }
-            }
-        }
-        return this
-    }
-
-    fun onFinish(finishAction: suspend () -> Unit): EmaUseCaseResult<T> {
+    override fun onFinish(finishAction: () -> Unit): Job {
         if (finished.get())
-            concurrencyManager.launch {
-                finishAction.invoke()
-            }
+            finishAction.invoke()
         else {
-            finishList.add(finishAction)
+            finishListener = finishAction
+        }
+        return job
+    }
+
+    override fun onSuccess(successAction: (T) -> Unit): EmaOnErrorFinish {
+        result?.onSuccess {
+            successAction.invoke(it)
+        } ?: also {
+            successListener = successAction
         }
         return this
     }
 
+    override fun onError(errorAction: (Throwable) -> Unit): EmaOnSuccessFinish<T> {
+        result?.onFailure {
+            errorAction.invoke(it)
+        } ?: also {
+            errorListener =  errorAction
+        }
+        return this
+    }
+}
+
+interface EmaOnJob {
+    val job: Job
+}
+
+interface EmaOnFinish : EmaOnJob {
+    fun onFinish(finishAction: () -> Unit): Job
+}
+
+interface EmaOnErrorFinish : EmaOnFinish, EmaOnJob {
+    fun onError(errorAction: (Throwable) -> Unit): EmaOnFinish
+}
+
+interface EmaOnSuccessFinish<T> : EmaOnFinish, EmaOnJob {
+    fun onSuccess(successAction: (T) -> Unit): EmaOnFinish
 }
 
