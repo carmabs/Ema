@@ -66,42 +66,15 @@ fun View.hideKeyboard() {
 
 fun ImageView.setImageDrawableWithTransition(
     drawable: Drawable,
-    durationMillis: Int = ANIMATION_DURATION.toInt(),
-    animateFirstTransition: Boolean = true,
-    endAnimationListener: (() -> Unit)? = null
+    durationMillis: Int = ANIMATION_DURATION.toInt()
 ) {
     getDrawable()?.also {
         val crossFadeTransition = TransitionDrawable(arrayOf(it, drawable))
         crossFadeTransition.isCrossFadeEnabled = true
         setImageDrawable(crossFadeTransition)
         crossFadeTransition.startTransition(durationMillis)
-    } ?: also {
-        if (animateFirstTransition) {
-            alpha = FLOAT_ZERO
-            val animation = animate()
-            animation.duration = durationMillis.toLong()
-            animation.setListener(object : Animator.AnimatorListener {
-                override fun onAnimationStart(animation: Animator?) {
-
-                }
-
-                override fun onAnimationEnd(animation: Animator?) {
-                    endAnimationListener?.invoke()
-                }
-
-                override fun onAnimationCancel(animation: Animator?) {
-
-                }
-
-                override fun onAnimationRepeat(animation: Animator?) {
-
-                }
-
-            })
-            animation.alpha(FLOAT_ONE)
-        }
-        setImageDrawable(drawable)
     }
+
 }
 
 
