@@ -1,7 +1,6 @@
 package com.carmabs.ema.core.broadcast
 
-import com.carmabs.ema.core.constants.INT_ONE
-import kotlinx.coroutines.channels.BufferOverflow
+import com.carmabs.ema.core.model.emaFlowSingleEvent
 import kotlinx.coroutines.flow.MutableSharedFlow
 
 /**
@@ -19,7 +18,7 @@ class EmaFlowBroadcastManager : EmaBroadcastManager {
 
     private fun addFlow(id:String): MutableSharedFlow<EmaBroadcastEvent<*>> {
         return sharedFlowsMap[id] ?:let {
-            MutableSharedFlow<EmaBroadcastEvent<*>>(extraBufferCapacity = INT_ONE, onBufferOverflow = BufferOverflow.DROP_OLDEST).apply{
+            emaFlowSingleEvent<EmaBroadcastEvent<*>>().apply{
                 sharedFlowsMap[id] = this
             }
         }
