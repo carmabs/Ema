@@ -4,6 +4,7 @@ import com.carmabs.ema.core.concurrency.ConcurrencyManager
 import com.carmabs.ema.core.concurrency.DefaultConcurrencyManager
 import com.carmabs.ema.core.constants.INT_ONE
 import com.carmabs.ema.core.initializer.EmaInitializer
+import com.carmabs.ema.core.model.emaFlowSingleEvent
 import com.carmabs.ema.core.model.EmaUseCaseResult
 import com.carmabs.ema.core.navigator.EmaDestination
 import com.carmabs.ema.core.state.EmaDataState
@@ -48,10 +49,7 @@ abstract class EmaViewModel<S : EmaDataState, D : EmaDestination> {
      * object that can contain any type of object. It will be used for
      * events that only has to be notified once to its observers, e.g: A toast message.
      */
-    private val singleObservableState: MutableSharedFlow<EmaExtraData> = MutableSharedFlow(
-        extraBufferCapacity = INT_ONE,
-        onBufferOverflow = BufferOverflow.DROP_OLDEST
-    )
+    private val singleObservableState: MutableSharedFlow<EmaExtraData> = emaFlowSingleEvent()
 
     /**
      * Observable state that launch event every time a value is set. [NT] value be will a [EmaDestination]
