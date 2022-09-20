@@ -1,6 +1,7 @@
 package com.carmabs.ema.android.extension
 
 import android.animation.Animator
+import android.animation.ValueAnimator
 import android.app.Activity
 import android.content.Context
 import android.content.res.ColorStateList
@@ -15,13 +16,19 @@ import android.view.animation.OvershootInterpolator
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.fragment.app.Fragment
 import com.carmabs.ema.android.ANIMATION_DURATION
 import com.carmabs.ema.android.ANIMATION_OVERSHOOT
-import com.carmabs.ema.core.constants.FLOAT_ONE
 import com.carmabs.ema.core.constants.FLOAT_ZERO
+import com.carmabs.ema.core.constants.INT_ZERO
+import com.carmabs.ema.core.constants.STRING_EMPTY
+import com.carmabs.ema.core.extension.emaRegexGetCharacterValue
+import com.carmabs.ema.core.extension.emaRegexGetFloatValue
+import java.text.NumberFormat
+import java.util.*
 
 
 /**
@@ -47,6 +54,40 @@ inline fun <T : View> T.afterMeasured(crossinline f: T.() -> Unit) {
             }
         })
     }
+}
+
+fun TextView.setIncrementAnimated(
+    endValue: Int,
+    formatter: String?,
+    duration: Long = ANIMATION_DURATION
+) {
+    val integerString = text.toString().replace(emaRegexGetCharacterValue, STRING_EMPTY)
+    val currentValue = integerString.toIntOrNull() ?: INT_ZERO
+    val animator = ValueAnimator.ofInt(currentValue, endValue)
+    animator.duration = duration
+    animator.addUpdateListener {
+        val value = it.animatedValue as Int
+        text = formatter?.let { form -> String.format(form, value) } ?: value.toString()
+    }
+    animator.start()
+}
+
+fun TextView.setIncrementAnimated(
+    endValue: Float,
+    formatter: String?,
+    duration: Long = ANIMATION_DURATION
+) {
+    val floatString = emaRegexGetFloatValue.find(text)?.value
+    val format = NumberFormat.getInstance(Locale.getDefault());
+    val currentValue =
+        floatString?.let { (format.parse(it) as? Double)?.toFloat() ?: FLOAT_ZERO } ?: FLOAT_ZERO
+    val animator = ValueAnimator.ofFloat(currentValue, endValue)
+    animator.duration = duration
+    animator.addUpdateListener {
+        val value = it.animatedValue as Float
+        text = formatter?.let { form -> String.format(form, value) } ?: value.toString()
+    }
+    animator.start()
 }
 
 fun Activity.hideKeyboard() {
