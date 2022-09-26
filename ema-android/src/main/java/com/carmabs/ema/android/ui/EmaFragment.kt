@@ -266,16 +266,10 @@ abstract class EmaFragment<B : ViewBinding, S : EmaDataState, VM : EmaViewModel<
     @CallSuper
     override fun onDestroyView() {
         previousState = null
+        _binding = null
         super.onDestroyView()
     }
-
-    @CallSuper
-    override fun onDestroy() {
-        _binding = null
-        super.onDestroy()
-    }
-
-
+    
 
     @CallSuper
     override fun onNavigation(navigation: D?) {
