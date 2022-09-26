@@ -41,6 +41,10 @@ fun Float.constraintValue(minLimit: Float, maxLimit: Float): Float {
     return coerceAtLeast(minLimit).coerceAtMost(maxLimit)
 }
 
+fun Int.constraintValue(minLimit: Int, maxLimit: Int): Int {
+    return coerceAtLeast(minLimit).coerceAtMost(maxLimit)
+}
+
 /**
  * Method to get index interpolating from center to alternatives vector ends
  */
