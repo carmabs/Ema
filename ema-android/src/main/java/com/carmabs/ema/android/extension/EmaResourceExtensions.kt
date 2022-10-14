@@ -59,7 +59,7 @@ fun @receiver:ColorRes Int.getColor(context: Context): Int {
     return ContextCompat.getColor(context, this)
 }
 
-fun @receiver:DimenRes Int.getAttributeDimenValue(context: Context): Int {
+fun @receiver:AttrRes Int.getAttributeDimenValue(context: Context): Int {
     val tv = TypedValue()
     return if (context.theme.resolveAttribute(this, tv, true)) {
         TypedValue.complexToDimensionPixelSize(tv.data, context.resources.displayMetrics)
