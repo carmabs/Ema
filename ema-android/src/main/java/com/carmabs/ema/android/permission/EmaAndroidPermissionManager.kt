@@ -40,6 +40,12 @@ class EmaAndroidPermissionManager : PermissionManager {
         fragment?.requireContext() ?: activity!!
     }
 
+    companion object{
+        fun isPermissionGranted(context: Context,permission: String): Boolean {
+            return ContextCompat.checkSelfPermission(context, permission) == PERMISSION_GRANTED
+        }
+    }
+
     constructor(
         fragment: Fragment
     ) {
@@ -252,7 +258,7 @@ class EmaAndroidPermissionManager : PermissionManager {
         resultListener: (PermissionState) -> Unit
     ) {
         checkPermissionInManifest(permission)
-        if (isPermissionsGranted(permission) == PermissionState.GRANTED)
+        if (isPermissionGranted(permission) == PermissionState.GRANTED)
             resultListener.invoke(PermissionState.GRANTED)
         else {
             contractSinglePermission.launch(permission, permissionSingleRequest, resultListener)
@@ -343,7 +349,7 @@ class EmaAndroidPermissionManager : PermissionManager {
                 LocationPermissionCheck.Continue
             }
             //Different behaviour dependent of OS Version
-            isPermissionsGranted(Manifest.permission.ACCESS_COARSE_LOCATION) != PermissionState.GRANTED && permission.contains(
+            isPermissionGranted(Manifest.permission.ACCESS_COARSE_LOCATION) != PermissionState.GRANTED && permission.contains(
                 Manifest.permission.ACCESS_FINE_LOCATION
             ) -> {
                 LocationPermissionCheck.CallRequestFineLocation(this.javaClass.name)
@@ -372,7 +378,7 @@ class EmaAndroidPermissionManager : PermissionManager {
         object Continue : LocationPermissionCheck
     }
 
-    override fun isPermissionsGranted(permission: String): PermissionState {
+    override fun isPermissionGranted(permission: String): PermissionState {
         val granted =
             ContextCompat.checkSelfPermission(context, permission) == PERMISSION_GRANTED
         return granted.toState(shouldShowRequestPermissionRationale(permission))
@@ -444,7 +450,7 @@ class EmaAndroidPermissionManager : PermissionManager {
     override fun areAllPermissionsGranted(vararg permission: String): Boolean {
         var permissionsGranted = true
         permission.forEach {
-            permissionsGranted = isPermissionsGranted(it) == PermissionState.GRANTED
+            permissionsGranted = isPermissionGranted(it) == PermissionState.GRANTED
             if (!permissionsGranted)
                 return false
         }

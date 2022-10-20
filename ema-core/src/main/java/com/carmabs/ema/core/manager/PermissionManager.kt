@@ -18,7 +18,7 @@ interface PermissionManager {
         resultListener: (Map<String, PermissionState>) -> Unit
     )
 
-    fun isPermissionsGranted(permission: String): PermissionState
+    fun isPermissionGranted(permission: String): PermissionState
 
     fun areAllPermissionsGranted(vararg permission: String): Boolean
 
