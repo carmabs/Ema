@@ -25,6 +25,7 @@ import com.carmabs.ema.core.constants.INT_ZERO
 class EmaSingleToast {
     companion object {
         private var singleToast: Toast? = null
+
         fun show(
             context: Context,
             message: String,
@@ -38,7 +39,7 @@ class EmaSingleToast {
                 INT_ZERO, message.length - INT_ONE,
                 Spannable.SPAN_INCLUSIVE_INCLUSIVE
             )
-            singleToast = Toast.makeText(context, alignedMessage, duration).apply {
+            singleToast = Toast.makeText(context.applicationContext, alignedMessage, duration).apply {
                 show()
             }
         }
