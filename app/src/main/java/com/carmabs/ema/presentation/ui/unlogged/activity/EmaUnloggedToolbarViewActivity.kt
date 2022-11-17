@@ -7,7 +7,6 @@ import android.widget.Toast
 import com.carmabs.ema.R
 import com.carmabs.ema.android.databinding.EmaToolbarActivityBinding
 import com.carmabs.ema.android.di.injectDirect
-import com.carmabs.ema.android.extension.dpToPx
 import com.carmabs.ema.android.extension.getColor
 import com.carmabs.ema.android.extension.getFormattedString
 import com.carmabs.ema.android.ui.EmaActivity
@@ -58,7 +57,7 @@ class EmaUnloggedToolbarViewActivity : EmaActivity<EmaUnloggedToolbarState, EmaU
             setBackgroundColor(R.color.colorPrimary.getColor(context))
             logo = getDrawable(R.drawable.ic_error_toolbar)
             setTitleTextColor(whiteColor)
-            titleMarginStart = resources.getDimension(R.dimen.space_medium).roundToInt().dpToPx(context)
+            titleMarginStart = resources.getDimension(R.dimen.space_medium).roundToInt()
 
         }
     }

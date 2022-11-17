@@ -1,6 +1,7 @@
 package com.carmabs.ema.android.extension
 
 import android.content.Context
+import android.content.res.Resources
 import android.os.Build
 import android.util.DisplayMetrics
 import android.util.TypedValue
@@ -14,13 +15,47 @@ import kotlin.math.roundToInt
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
 
+
 /**
- * Convert a dp integer to pixel
+ * Return the Int dp into its equivalent px
  */
-fun Int.dpToPx(context: Context):Int {
-    return TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP, toFloat(), context.resources.displayMetrics).roundToInt()
-}
+val Int.dp
+    get() = TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_DIP,
+        this.toFloat(),
+        Resources.getSystem().displayMetrics
+    ).roundToInt()
+
+/**
+ * Return the Int dp into its equivalent px
+ */
+val Float.dp
+    get() = TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_DIP,
+        this,
+        Resources.getSystem().displayMetrics
+    )
+
+
+/**
+ * Return the Int sp into its equivalent px
+ */
+val Int.sp
+    get() = TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_SP,
+        this.toFloat(),
+        Resources.getSystem().displayMetrics
+    ).roundToInt()
+
+/**
+ * Return the Float sp into its equivalent px
+ */
+val Float.sp
+    get() = TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_SP,
+        this,
+        Resources.getSystem().displayMetrics
+    )
 
 /**
  * Get display metrics
@@ -36,14 +71,13 @@ fun getScreenMetrics(context: Context): DisplayMetrics {
             widthPixels = boundsActivity.width()
         }
 
-    }
-    else {
+    } else {
         windowManager.defaultDisplay.getMetrics(displayMetrics)
     }
     return displayMetrics
 }
 
-fun Context.getStatusBarHeight():Int{
+fun Context.getStatusBarHeight(): Int {
     val resourceId: Int =
         resources.getIdentifier("status_bar_height", "dimen", "android")
 
