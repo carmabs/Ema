@@ -282,6 +282,11 @@ abstract class EmaActivity<B : ViewBinding, S : EmaDataState, VM : EmaViewModel<
         }
     }
 
+    final override fun onBack(): Boolean {
+        onBackPressedDispatcher.onBackPressed()
+        return false
+    }
+    
     protected open fun overridePopTransitionAnimations():EmaPopActivityTransitionAnimations? = null
 
     abstract fun B.onStateNormal(data: S)

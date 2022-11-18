@@ -208,7 +208,7 @@ interface EmaView<S : EmaDataState, VM : EmaViewModel<S, D>, D : EmaDestination>
      */
     @Suppress("UNCHECKED_CAST")
     fun navigate(state: D) {
-        navigator?.navigate(state)?:throwNavigationException()
+        navigator?.navigate(state) ?: throwNavigationException()
     }
 
     @Throws
@@ -221,11 +221,10 @@ interface EmaView<S : EmaDataState, VM : EmaViewModel<S, D>, D : EmaDestination>
      * @return True
      */
     fun navigateBack(): Boolean {
-        return navigator?.navigateBack() ?: let {
-            throwNavigationException()
-            false
-        }
+        return navigator?.navigateBack() ?: onBack()
     }
+
+    fun onBack(): Boolean
 
     /**
      * Called when view model is started
@@ -297,7 +296,7 @@ interface EmaView<S : EmaDataState, VM : EmaViewModel<S, D>, D : EmaDestination>
         viewModel.onPauseView()
     }
 
-    fun onUnbindView(viewJob: MutableList<Job>?,viewModel: VM) {
+    fun onUnbindView(viewJob: MutableList<Job>?, viewModel: VM) {
         viewJob?.forEach {
             try {
                 if (!it.isCancelled && !it.isCompleted)
