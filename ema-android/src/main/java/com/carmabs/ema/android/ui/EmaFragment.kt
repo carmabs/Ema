@@ -99,7 +99,6 @@ abstract class EmaFragment<B : ViewBinding, S : EmaDataState, VM : EmaViewModel<
     override var previousState: S? = null
 
 
-
     /**
      * Method to provide the fragment ViewBinding class to represent the layout.
      */
@@ -259,7 +258,7 @@ abstract class EmaFragment<B : ViewBinding, S : EmaDataState, VM : EmaViewModel<
     @CallSuper
     override fun onStop() {
         super.onStop()
-        onUnbindView(viewJob,vm)
+        onUnbindView(viewJob, vm)
         removeExtraViewModels()
     }
 
@@ -269,7 +268,7 @@ abstract class EmaFragment<B : ViewBinding, S : EmaDataState, VM : EmaViewModel<
         _binding = null
         super.onDestroyView()
     }
-    
+
 
     @CallSuper
     override fun onNavigation(navigation: D?) {
@@ -293,6 +292,15 @@ abstract class EmaFragment<B : ViewBinding, S : EmaDataState, VM : EmaViewModel<
 
     final override fun onSingleEvent(data: EmaExtraData) {
         binding.onSingleEvent(data)
+    }
+
+    final override fun onBack(): Boolean {
+        val hasMoreFragments = parentFragmentManager.backStackEntryCount > INT_ZERO
+        if (hasMoreFragments)
+            parentFragmentManager.popBackStack()
+        else
+            requireActivity().onBackPressedDispatcher.onBackPressed()
+        return hasMoreFragments
     }
 
     abstract fun B.onStateNormal(data: S)
