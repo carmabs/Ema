@@ -2,7 +2,7 @@ rootProject.ext {
 
     //Libraries
 
-    navigationVersion = "2.5.1"
+    navigationVersion = "2.5.3"
 
     lifecycleExtensionsVersion = "2.2.0"
 
@@ -10,7 +10,7 @@ rootProject.ext {
 
     constraintVersion = "2.1.4"
 
-    materialVersion = "1.6.1"
+    materialVersion = "1.7.0"
 
     coroutinesVersion = "1.6.4"
 
@@ -24,25 +24,25 @@ rootProject.ext {
 
     espressoVersion = "3.4.0"
 
-    kotlinVersion = '1.7.10'
+    kotlinVersion = '1.7.21'
 
     kotlinCompilerExtensionVersion = '1.0.5'
 
-    koinVersion = "3.2.0"
+    koinVersion = "3.3.0"
 
     lifecycleKtExtensionVersion = '2.5.1'
 
-    fragmentVersion = "1.5.2"
-
-    reflectionVersion = "1.7.10"
+    fragmentVersion = "1.5.4"
 
     emaVersioning = [
-            buildTools : "31.0.0",
             minSdk     : 21,
-            compileSdk : 31,
-            targetSdk  : 31,
-            versionCode: 7,
-            versionName: "3.0.0"
+            compileSdk : 33,
+            targetSdk  : 33,
+            versionCode: 8,
+            versionName: "4.0.0",
+            groupId    : 'com.github.carmabs',
+            artifactCoreId : 'ema-core',
+            artifactAndroidId : 'ema-android'
     ]
 
     emaCoreDependencies = [
@@ -58,12 +58,12 @@ rootProject.ext {
             rules      : "androidx.test:rules:" + project.rulesVersion,
             junitKotlin: "androidx.test.ext:junit-ktx:" + project.extJUnitVersion,
             mockito    : "org.mockito:mockito-core:" + project.mockitoVersion,
-            coroutines: "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
+            coroutines : "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
     ]
 
     emaAndroidDependencies = [
             koin                : "io.insert-koin:koin-android:$koinVersion",
-            reflection          : "org.jetbrains.kotlin:kotlin-reflect:$reflectionVersion",
+            reflection          : "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion",
             fragment            : "androidx.fragment:fragment-ktx:$fragmentVersion",
             navigationFragment  : "androidx.navigation:navigation-fragment-ktx:" + project.navigationVersion,
             navigationUI        : "androidx.navigation:navigation-ui-ktx:" + project.navigationVersion,

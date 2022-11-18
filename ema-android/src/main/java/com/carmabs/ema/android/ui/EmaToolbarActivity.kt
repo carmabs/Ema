@@ -98,19 +98,19 @@ abstract class EmaToolbarActivity<B : ViewBinding, S : EmaDataState, VM : EmaVie
                 alpha(FLOAT_ZERO)
                 setListener(object : Animator.AnimatorListener {
 
-                    override fun onAnimationEnd(p0: Animator?) {
+                    override fun onAnimationEnd(p0: Animator) {
                         toolbarLayout.visibility = checkVisibility(false, gone)
                     }
 
-                    override fun onAnimationStart(p0: Animator?) {
+                    override fun onAnimationStart(p0: Animator) {
 
                     }
 
-                    override fun onAnimationRepeat(p0: Animator?) {
+                    override fun onAnimationRepeat(p0: Animator) {
 
                     }
 
-                    override fun onAnimationCancel(p0: Animator?) {
+                    override fun onAnimationCancel(p0: Animator) {
 
                     }
 
@@ -130,19 +130,19 @@ abstract class EmaToolbarActivity<B : ViewBinding, S : EmaDataState, VM : EmaVie
                 alpha(FLOAT_ONE)
                 setListener(object : Animator.AnimatorListener {
 
-                    override fun onAnimationStart(p0: Animator?) {
+                    override fun onAnimationStart(p0: Animator) {
                         toolbarLayout.visibility = View.VISIBLE
                     }
 
-                    override fun onAnimationEnd(p0: Animator?) {
+                    override fun onAnimationEnd(p0: Animator) {
 
                     }
 
-                    override fun onAnimationCancel(p0: Animator?) {
+                    override fun onAnimationCancel(p0: Animator) {
 
                     }
 
-                    override fun onAnimationRepeat(p0: Animator?) {
+                    override fun onAnimationRepeat(p0: Animator) {
 
                     }
                 })

@@ -133,19 +133,19 @@ fun ImageView.setImageWithOvershot(
     animation.interpolator = OvershootInterpolator(overshoot)
     animation.duration = durationMillis.toLong()
     animation.setListener(object : Animator.AnimatorListener {
-        override fun onAnimationStart(animation: Animator?) {
+        override fun onAnimationStart(animation: Animator) {
 
         }
 
-        override fun onAnimationEnd(animation: Animator?) {
+        override fun onAnimationEnd(animation: Animator) {
             endAnimationListener?.invoke()
         }
 
-        override fun onAnimationCancel(animation: Animator?) {
+        override fun onAnimationCancel(animation: Animator) {
 
         }
 
-        override fun onAnimationRepeat(animation: Animator?) {
+        override fun onAnimationRepeat(animation: Animator) {
 
         }
 
