@@ -1,13 +1,13 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-group = 'com.github.carmabs'
+apply plugin: 'maven-publish'
 
 android {
 
     defaultConfig {
         compileSdkVersion emaVersioning.compileSdk
         minSdkVersion emaVersioning.minSdk
-        targetSdkVersion emaVersioning.targetSdk
+        targetSdk emaVersioning.targetSdk
         versionCode emaVersioning.versionCode
         versionName emaVersioning.versionName
 
@@ -65,4 +65,20 @@ dependencies {
     api emaAndroidDependencies.material
 
     api project(path: ':ema-core')
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                groupId = emaVersioning.groupId
+                artifactId = emaVersioning.artifactAndroidId
+                version = emaVersioning.versionName
+
+                afterEvaluate {
+                    from components.release
+                }
+            }
+        }
+    }
 }

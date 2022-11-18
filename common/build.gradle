@@ -1,11 +1,10 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 android {
-    compileSdkVersion emaVersioning.compileSdk
-    buildToolsVersion emaVersioning.buildTools
 
     defaultConfig {
         minSdkVersion emaVersioning.minSdk
+        compileSdkVersion emaVersioning.compileSdk
         targetSdkVersion emaVersioning.targetSdk
         versionCode emaVersioning.versionCode
         versionName emaVersioning.versionName

@@ -25,10 +25,8 @@ import com.carmabs.ema.core.viewmodel.EmaViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import org.koin.android.ext.android.getKoin
 import org.koin.android.scope.AndroidScopeComponent
-import org.koin.core.component.getScopeId
-import org.koin.core.component.getScopeName
+import org.koin.androidx.scope.activityScope
 import org.koin.core.scope.Scope
 
 /**
@@ -43,14 +41,7 @@ abstract class EmaActivity<B : ViewBinding, S : EmaDataState, VM : EmaViewModel<
 
     protected lateinit var binding: B
 
-    final override val scope: Scope by lazy {
-        getKoin().createScope(
-            getScopeId(),
-            getScopeName(),
-            this
-        )
-    }
-
+    final override val scope: Scope by activityScope()
 
     /**
      * Method to provide the activity ViewBinding class to represent the layout.

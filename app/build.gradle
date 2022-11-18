@@ -5,7 +5,6 @@ apply plugin: 'kotlin-kapt'
 
 android {
 
-    buildToolsVersion emaVersioning.buildTools
     defaultConfig {
         applicationId "com.carmabs.ema"
         minSdkVersion emaVersioning.minSdk
