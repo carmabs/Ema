@@ -8,8 +8,6 @@ android {
         compileSdkVersion emaVersioning.compileSdk
         minSdkVersion emaVersioning.minSdk
         targetSdk emaVersioning.targetSdk
-        versionCode emaVersioning.versionCode
-        versionName emaVersioning.versionName
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -31,15 +29,17 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
-
     packagingOptions {
-        pickFirst 'META-INF/kotlinx-io.kotlin_module'
-        pickFirst 'META-INF/ema-android_debug.kotlin_module'
+        resources {
+            pickFirsts += ['META-INF/kotlinx-io.kotlin_module', 'META-INF/ema-android_debug.kotlin_module']
+        }
     }
+
 
     buildFeatures {
         viewBinding true
     }
+    namespace 'com.carmabs.ema.android'
 }
 
 dependencies {
@@ -71,13 +71,10 @@ afterEvaluate {
     publishing {
         publications {
             release(MavenPublication) {
+                from components.release
                 groupId = emaVersioning.groupId
                 artifactId = emaVersioning.artifactAndroidId
                 version = emaVersioning.versionName
-
-                afterEvaluate {
-                    from components.release
-                }
             }
         }
     }

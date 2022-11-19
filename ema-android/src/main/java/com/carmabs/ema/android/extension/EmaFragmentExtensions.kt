@@ -21,7 +21,7 @@ fun Fragment.addOnBackPressedListener(listener:()->Boolean){
             override fun handleOnBackPressed() {
                 isEnabled = listener.invoke()
                 if(!isEnabled){
-                    requireActivity().onBackPressed()
+                    requireActivity().onBackPressedDispatcher.onBackPressed()
                 }
             }
         }

@@ -14,14 +14,15 @@ dependencies {
 }
 
 
-publishing {
-    publications {
-        release(MavenPublication) {
-            groupId = emaVersioning.groupId
-            artifactId = emaVersioning.artifactCoreId
-            version = emaVersioning.versionName
-
-            from(components["java"])
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components["java"]
+                groupId = emaVersioning.groupId
+                artifactId = emaVersioning.artifactCoreId
+                version = emaVersioning.versionName
+            }
         }
     }
 }

@@ -1,10 +1,23 @@
-include ':app',
-        ':injection',
-        ':data',
-        ':domain',
-        ':common',
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        google()
+        mavenCentral()
+        maven { url "https://jitpack.io" }
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+        maven { url "https://jitpack.io" }
+    }
+}
+rootProject.name = "Ema"
+
+include ':ema-core',
         ':ema-android',
         ':ema-android-compose',
-        ':ema-core',
         ':ema-testing-core',
         ':ema-testing-android'

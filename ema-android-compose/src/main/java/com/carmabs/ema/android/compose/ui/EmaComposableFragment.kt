@@ -1,4 +1,4 @@
-package com.carmabs.ema.android.uicompose
+package com.carmabs.ema.android.compose.ui
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,9 +9,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.lifecycle.lifecycleScope
-import com.carmabs.ema.android.ui.EmaBaseFragment
-import com.carmabs.ema.core.navigator.EmaNavigationState
-import com.carmabs.ema.core.state.EmaBaseState
+import androidx.viewbinding.ViewBinding
+import com.carmabs.ema.android.ui.EmaFragment
+import com.carmabs.ema.core.navigator.EmaDestination
+import com.carmabs.ema.core.state.EmaDataState
 import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.core.state.EmaState
 import com.carmabs.ema.core.viewmodel.EmaViewModel
@@ -23,7 +24,8 @@ import kotlinx.coroutines.Job
  *
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
-abstract class EmaComposableFragment<S : EmaBaseState, VM : EmaViewModel<S, D>, D : EmaNavigationState> : EmaBaseFragment<S,VM,D>() {
+abstract class EmaComposableFragment<DS : EmaDataState, S : EmaState<DS>, VM : EmaViewModel<DS, D>, D : EmaDestination> :
+    EmaFragment<ViewBinding, DS, VM, D>() {
 
     private var viewJobs: MutableList<Job> = mutableListOf()
 
@@ -38,13 +40,17 @@ abstract class EmaComposableFragment<S : EmaBaseState, VM : EmaViewModel<S, D>, 
                 val state = vm.getObservableState().collectAsState(vm.getCurrentState())
                 val emaState = state.value
                 onStateNormalComposable(data = emaState.data)
-                when(emaState){
+                when (emaState) {
+                    is EmaState.Normal -> {
+                        /*DO NOTHING, ALREADY HANDLED*/
+                    }
                     is EmaState.Overlayed -> {
                         onStateOverlayedComposable(data = emaState.dataOverlayed)
                     }
                     is EmaState.Error -> {
                         onStateErrorComposable(error = emaState.error)
                     }
+
                 }
             }
         }
@@ -53,32 +59,32 @@ abstract class EmaComposableFragment<S : EmaBaseState, VM : EmaViewModel<S, D>, 
     @CallSuper
     override fun onStart() {
         super.onStart()
-        viewJobs.add(onBindNavigation(lifecycleScope,vm))
-        viewJobs.add(onBindSingle(lifecycleScope,vm))
+        viewJobs.add(onBindNavigation(lifecycleScope, vm))
+        viewJobs.add(onBindSingle(lifecycleScope, vm))
     }
 
     @CallSuper
     override fun onStop() {
-        onUnbindView(viewJobs)
+        onUnbindView(viewJobs, vm)
         super.onStop()
 
     }
 
     @Composable
-    abstract fun onStateNormalComposable(data:S)
+    abstract fun onStateNormalComposable(data: DS)
 
     @Composable
-    protected open fun onStateOverlayedComposable(data:EmaExtraData){}
+    protected open fun onStateOverlayedComposable(data: EmaExtraData) {
+    }
 
     @Composable
-    protected open fun onStateErrorComposable(error: Throwable){}
+    protected open fun onStateErrorComposable(error: Throwable) {
+    }
 
     // Discard these methods because they are called now by compose
-    final override fun onStateNormal(data: S) {}
+    override fun ViewBinding.onStateNormal(data: DS) = Unit
 
-    final override fun onStateOverlayed(data: EmaExtraData) {}
-
-    final override fun onStateError(error: Throwable) {}
-
-    override fun onSingleEvent(data: EmaExtraData) {}
+    override fun createViewBinding(inflater: LayoutInflater, container: ViewGroup?): ViewBinding {
+        TODO("Not yet implemented")
+    }
 }
