@@ -1,7 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply from: '../build-system/compose.gradle'
-group = 'com.github.carmabs'
 
 android {
 
@@ -9,8 +8,6 @@ android {
         compileSdkVersion emaVersioning.compileSdk
         minSdkVersion emaVersioning.minSdk
         targetSdkVersion emaVersioning.targetSdk
-        versionCode emaVersioning.versionCode
-        versionName emaVersioning.versionName
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -33,23 +30,27 @@ android {
         jvmTarget = JavaVersion.VERSION_1_8.toString()
         //useIR = true
     }
-
     packagingOptions {
-        pickFirst 'META-INF/kotlinx-io.kotlin_module'
-        pickFirst 'META-INF/ema-android_debug.kotlin_module'
+        resources {
+            pickFirsts += ['META-INF/kotlinx-io.kotlin_module', 'META-INF/ema-android_debug.kotlin_module']
+        }
     }
 
+
     composeOptions {
-        kotlinCompilerExtensionVersion "1.0.5"
-        kotlinCompilerVersion '1.5.31'
+        kotlinCompilerExtensionVersion "1.3.2"
     }
 
     buildFeatures {
         compose true
         viewBinding true
     }
+    namespace 'com.carmabs.ema.android.compose'
 }
 
 dependencies {
-    api project(path: ':ema-android')
+    implementation project(path: ':ema-android')
+
+    //Java Time API for SDK version < 26
+    coreLibraryDesugaring emaAndroidDependencies.desugaring
 }

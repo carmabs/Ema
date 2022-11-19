@@ -274,7 +274,7 @@ abstract class EmaActivity<B : ViewBinding, S : EmaDataState, VM : EmaViewModel<
     }
 
     final override fun onBack(): Boolean {
-        onBackPressedDispatcher.onBackPressed()
+        finish()
         return false
     }
     

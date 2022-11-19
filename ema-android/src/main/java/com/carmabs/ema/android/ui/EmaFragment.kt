@@ -300,7 +300,7 @@ abstract class EmaFragment<B : ViewBinding, S : EmaDataState, VM : EmaViewModel<
         if (hasMoreFragments)
             parentFragmentManager.popBackStack()
         else
-            requireActivity().onBackPressedDispatcher.onBackPressed()
+            requireActivity().finish()
         return hasMoreFragments
     }
 

@@ -1,5 +1,4 @@
 apply plugin: 'kotlin'
-group = 'com.github.carmabs'
 
 dependencies {
     api project(":ema-core")
