@@ -1,6 +1,4 @@
 apply plugin: 'kotlin'
-apply plugin: 'com.github.dcendents.android-maven'
-group = 'com.github.carmabs'
 
 dependencies {
     api project(":ema-core")
@@ -8,4 +6,5 @@ dependencies {
     api emaTesting.junitKotlin
     api emaTesting.rules
     api emaTesting.mockito
+    api emaTesting.coroutines
 }

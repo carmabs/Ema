@@ -215,7 +215,7 @@ These are the main features of ***EmaViewModel***:
 		
 	-  **Set ALTERNATIVE state for the view:**
 		
-		With ***updateToAlternativeState()*** you can set an alternative state for the view passing ***EmaExtraData*** if it is needed for the alternative data.
+		With ***updateToOverlayedState()*** you can set an alternative state for the view passing ***EmaExtraData*** if it is needed for the alternative data.
 		> 
 		***EmaExtraData*** is provided by dafault with the following parameters:
 		
@@ -225,7 +225,7 @@ These are the main features of ***EmaViewModel***:
 		> 
 	
 		~~~ kotlin
- 		updateToAlternativeState(
+ 		updateToOverlayedState(
  			EmaExtraData(
  				type:Int,
  				extraData:Any?
@@ -622,7 +622,7 @@ To use all the feature of **EMA** architecture, you must extends the app from **
 
 ~~~kotlin
 class EmaSampleApplication : EmaApplication() {
-    override fun injectAppModule(kodein: Kodein.MainBuilder): Kodein.Module? = null
+    override fun injectAppModule(kodein: DI.MainBuilder): DI.Module? = null
 }
 ~~~
 >
@@ -654,11 +654,11 @@ This is the class <mark>responsible for binding between view and **ViewModel**</
 You must implement the following interface:
 
 ~~~kotlin
-interface EmaView<S: EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigationState> {
+interface EmaView<S: EmaBaseState, VM : EmaViewModel<S, D>, D : EmaNavigationState> {
 
     val viewModelSeed: VM
     
-    val navigator: EmaBaseNavigator<NS>?
+    val navigator: EmaBaseNavigator<D>?
     
     fun onViewModelInitalized(viewModel: VM)
   
@@ -715,7 +715,7 @@ About the attributes and methods you must override, they are the following ones:
     
     or with KODEIN
     
-    override val viewModelSeed: EmaUserViewModel by instance()
+    override val viewModelSeed: EmaUserViewModel by inject()
     ~~~
     
 * **override val navigator: EmaBaseNavigator<NS>?** 
@@ -727,7 +727,7 @@ About the attributes and methods you must override, they are the following ones:
     
     or with KODEIN
     
-    override val navigator: EmaUserNavigator by instance()
+    override val navigator: EmaUserNavigator by inject()
 	~~~
 	
 
@@ -769,7 +769,7 @@ abstract class EmaFragmentActivity : EmaBaseActivity() {
   
     abstract val navGraph: Int
     
-    abstract fun injectActivityModule(kodein: Kodein.MainBuilder): Kodein.Module?
+    abstract fun injectActivityModule(kodein: DI.MainBuilder): DI.Module?
 }
 ~~~
 
@@ -782,7 +782,7 @@ abstract class EmaToolbarFragmentActivity : EmaFragmentActivity() {
   	 
   	 abstract fun provideFixedToolbar(): String?
   	 
-  	 abstract fun injectActivityModule(kodein: Kodein.MainBuilder): Kodein.Module?
+  	 abstract fun injectActivityModule(kodein: DI.MainBuilder): DI.Module?
 }
 ~~~
 
@@ -792,14 +792,14 @@ Depending the class implemented, we must override the following parameters:
 
 	We must provide the navigation graph layout resource that [Android Navigation Library](https://developer.android.com/guide/navigation/navigation-design-graph) use to define all posible navigations.
 	
-* **override fun injectActivityModule(kodein: Kodein.MainBuilder): Kodein.Module?**
+* **override fun injectActivityModule(kodein: DI.MainBuilder): DI.Module?**
 
 	The ***KODEIN*** injection module must be assigned here to provide the object assignation by ***instance()*** methods. The object defined by this module will have the **same lifecyle that the activity**.
 	
 	~~~ kotlin
-	override fun injectFragmentModule(kodein: Kodein.MainBuilder): Kodein.Module = activityInjection(this)
+	override fun injectFragmentModule(kodein: DI.MainBuilder): DI.Module = activityInjection(this)
 
-	fun activityInjection(activity: Activity) = Kodein.Module(name = "ActivityModule") {
+	fun activityInjection(activity: Activity) = DI.Module(name = "ActivityModule") {
 
     	bind<Activity>() with singleton { activity }
 
@@ -844,7 +844,7 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
 	
 	abstract val layoutId: Int 
 	
-	abstract fun injectFragmentModule(kodein: Kodein.MainBuilder): Kodein.Module?
+	abstract fun injectFragmentModule(kodein: DI.MainBuilder): DI.Module?
 }
 ~~~
 
@@ -868,14 +868,14 @@ Once we have defined the ***EmaFragment***, we must override the following param
 	~~~
 	override val layoutId: Int = R.layout.fragment_user	~~~
 
-* **override fun injectFragmentModule(kodein: Kodein.MainBuilder): Kodein.Module?**
+* **override fun injectFragmentModule(kodein: DI.MainBuilder): DI.Module?**
 
 	The ***KODEIN*** injection module must be assigned here to provide the object assignation by ***instance()*** methods. The object defined by this module will have the **same lifecyle that the fragment**.
 
 	~~~kotlin
-	override fun injectFragmentModule(kodein: Kodein.MainBuilder): Kodein.Module = fragmentInjection(this)
+	override fun injectFragmentModule(kodein: DI.MainBuilder): DI.Module = fragmentInjection(this)
 
-	fun fragmentInjection(fragment: Fragment) = Kodein.Module(name = "FragmentModule") {
+	fun fragmentInjection(fragment: Fragment) = DI.Module(name = "FragmentModule") {
 
    		bind<Fragment>() with singleton { fragment }
 
@@ -902,7 +902,7 @@ abstract class EmaViewModel<S, NS : EmaNavigationState> : EmaBaseViewModel<EmaSt
 		
 		abstract fun onStartFirstTime(statePreloaded: Boolean)
 		
-		abstract fun onResume(firstTime: Boolean)
+		abstract fun onViewResumed()
 }
 ~~~
 
@@ -946,12 +946,12 @@ Once we have defined the ***EmaViewModel***, we must override the following para
     }
    ~~~
    
-* **override fun onResume(firstTime: Boolean)**
+* **override fun onViewResumed()**
  
 	This method will be called everytime the view goes to foreground. It has a parameter to check if is the first time the view has gone to foreground.
 	
 	~~~kotlin
-	override fun onResume(firstTime: Boolean) {
+	override fun onViewResumed() {
 		///REFRESH DATA
    }
    ~~~
@@ -1029,7 +1029,7 @@ To provide dependencies, **EMA** use **KODEIN** modules. The **scopes** provided
  	For example, repositories,  database implementations, hardware managers, resource managers, app instance, should be go here.
 
 	~~~kotlin
-	fun generateAppModule(app: Application) = Kodein.Module(name = "AppModule") {
+	fun generateAppModule(app: Application) = DI.Module(name = "AppModule") {
 
    		bind<Logger>() with singleton { TimberLogger() }
 
@@ -1049,7 +1049,7 @@ To provide dependencies, **EMA** use **KODEIN** modules. The **scopes** provided
 	For example, navigators, activity view models, activity instance, should be go here.
 	
 	~~~kotlin
-	fun generateActivityModule(activity: Activity) = Kodein.Module(name = "ActivityModule") 
+	fun generateActivityModule(activity: Activity) = DI.Module(name = "ActivityModule")
 
     	//ACTIVITY//
   	 
@@ -1063,7 +1063,7 @@ To provide dependencies, **EMA** use **KODEIN** modules. The **scopes** provided
 
     	//VIEW MODEL//
 
-    	bind<MainToolbarsViewModel>() with provider { MainToolbarsViewModel(instance(),instance(),instance()) }
+    	bind<MainToolbarsViewModel> { MainToolbarsViewModel(instance(),instance(),instance()) }
 
     	bind<BiometricManager>() with singleton {
         if (activity.isBiometricPromptEnabled())
@@ -1081,21 +1081,21 @@ To provide dependencies, **EMA** use **KODEIN** modules. The **scopes** provided
 	For example, fragment view models, fragment instance, should be go here.
 
 	~~~kotlin
-	fun generateFragmentModule(fragment: Fragment) = Kodein.Module(name = "FragmentModule") {
+	fun generateFragmentModule(fragment: Fragment) = DI.Module(name = "FragmentModule") {
 
     	//FRAGMENT//
 
-    	bind<Fragment>() with provider { fragment }
+    	bind<Fragment> { fragment }
 
     	//FRAGMENT MANAGER//
 
-    	bind<FragmentManager>() with provider { fragment.requireFragmentManager() }
+    	bind<FragmentManager> { fragment.requireFragmentManager() }
 
     	//VIEW MODEL//
 
-    	bind<EmaHomeViewModel>() with provider { EmaHomeViewModel(instance())}
+    	bind<EmaHomeViewModel> { EmaHomeViewModel(instance())}
 
-    	bind<EmaUserViewModel>() with provider { EmaUserViewModel() }
+    	bind<EmaUserViewModel> { EmaUserViewModel() }
 	~~~
 
 >
@@ -1109,7 +1109,7 @@ To provide these modules, **EMA** classes provide the following methods:
 	~~~kotlin
 	class EmaApplication() {
     
-    	override fun injectAppModule(kodein: Kodein.MainBuilder): Kodein.Module?{
+    	override fun injectAppModule(kodein: DI.MainBuilder): DI.Module?{
     	//RETURN APP KODEIN DEPENDECY MODULE
     	}
 	}
@@ -1120,7 +1120,7 @@ To provide these modules, **EMA** classes provide the following methods:
 	~~~kotlin
 	class EmaFragmentActivity() {
     
-    	override fun injectActivityModule(kodein: Kodein.MainBuilder): Kodein.Module?{
+    	override fun injectActivityModule(kodein: DI.MainBuilder): DI.Module?{
     	//RETURN ACTIVITY KODEIN DEPENDECY MODULE
     	}
 	}
@@ -1131,7 +1131,7 @@ To provide these modules, **EMA** classes provide the following methods:
 	~~~kotlin
 	class EmaFragment() {
     
-   		override fun injectFragmentModule(kodein: Kodein.MainBuilder): Kodein.Module?{
+   		override fun injectFragmentModule(kodein: DI.MainBuilder): DI.Module?{
     	//RETURN FRAGMENT KODEIN DEPENDECY MODULE
     	}
 	}
@@ -1142,7 +1142,7 @@ To provide these modules, **EMA** classes provide the following methods:
 Example:
 
 ~~~kotlin
- 	override fun injectAppModule(kodein: Kodein.MainBuilder): Kodein.Module?{
+ 	override fun injectAppModule(kodein: DI.MainBuilder): DI.Module?{
  		kodein.import((generateExtraModule()))
     	//RETURN SCOPE KODEIN DEPENDECY MODULE
     }
@@ -1186,7 +1186,7 @@ Example:
 ~~~kotlin
 abstract class BaseFragment<S : EmaBaseState, VM : BaseViewModel<S, NS>, NS : EmaNavigationState> : EmaFragment<S, VM, NS>() {
 
-    override fun injectFragmentModule(kodein: Kodein.MainBuilder): Kodein.Module = generateFragmentModule(this)
+    override fun injectFragmentModule(kodein: DI.MainBuilder): DI.Module = generateFragmentModule(this)
 
     override val fragmentViewModelScope: Boolean = true
 
@@ -1591,7 +1591,7 @@ Once you have instantiated it you can do the following actions:
 The same tasks can be achieved with ***[Deferred](https://kotlinlang.org/docs/reference/coroutines/composing-suspending-functions.html#concurrent-using-async)*** object using the ***AsyncManager*** .
  
  ~~~kotlin
- val asyncManager: AsyncManager by instance()
+ val asyncManager: AsyncManager by inject()
  	
  or 
  	

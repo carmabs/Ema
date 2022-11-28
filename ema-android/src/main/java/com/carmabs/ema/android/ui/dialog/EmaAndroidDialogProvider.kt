@@ -12,45 +12,63 @@ import com.carmabs.ema.core.dialog.EmaDialogProvider
  *
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
-abstract class EmaAndroidDialogProvider constructor(private val fragmentManager: FragmentManager) : EmaDialogProvider {
+abstract class EmaAndroidDialogProvider constructor(private val fragmentManager: FragmentManager) :
+    EmaDialogProvider {
 
-    private var dialog: EmaBaseDialog<EmaDialogData>? = null
+    private var dialog: EmaDialog<*, EmaDialogData>? = null
 
-    abstract fun generateDialog(dialogData: EmaDialogData?): EmaBaseDialog<*>
+    abstract fun generateDialog(dialogData: EmaDialogData?): EmaDialog<*, *>
 
     override fun show(dialogData: EmaDialogData?) {
 
-        if (dialog == null)
-            dialog = generateDialog(dialogData) as EmaBaseDialog<EmaDialogData>
-
-        dialog?.let { dialog ->
-            dialog.dialogListener = dialogListener
-            dialogData?.also {
-                dialog.updateData {
-                    it
-                }
+        fragmentManager.findFragmentByTag(getTag())?.also {
+            dialog = (it as EmaDialog<*,EmaDialogData>).apply {
+                updateDialogData(this, dialogData)
             }
-            if (!dialog.isVisible)
-                dialog.show(fragmentManager, getTag())
+        } ?: also {
+            if (dialog == null) {
+                dialog = generateDialog(dialogData) as EmaDialog<*,EmaDialogData>
+            }
+            dialog?.let { dialog ->
+                updateDialogData(dialog, dialogData)
+                //Because fragment manager works asynchronously,
+                // check it to avoid that fragment has been added exception
+                fragmentManager.executePendingTransactions()
+                if (!dialog.isVisible && !dialog.isAdded) {
+                    dialog.show(fragmentManager, getTag())
+                }
 
+            }
+        }
+    }
+
+    private fun updateDialogData(
+        dialog: EmaDialog<*,EmaDialogData>,
+        dialogData: EmaDialogData?
+    ) {
+        dialog.dialogListener = dialogListener
+        dialogData?.also {
+            dialog.updateData {
+                it
+            }
         }
     }
 
     override fun hide() {
         dialog?.let {
             if (!it.isHidden) {
-                Log.d(this.javaClass.name, "Alternative dialog totally hidden")
-                it.dismissAllowingStateLoss()
+                Log.d(getTag(), "Alternative dialog totally hidden")
+                it.dismiss()
             }
-        } ?: also { _ ->
-            val oldDialog = fragmentManager.findFragmentByTag(getTag())
-            oldDialog?.also {
-                fragmentManager.beginTransaction().remove(it).commit()
-            }
-
+            fragmentManager.beginTransaction().remove(it).commit()
         }
+
+
         dialog = null
     }
+
+    override val isVisible: Boolean
+        get() = fragmentManager.findFragmentByTag(getTag())?.isVisible?:false
 
     override var dialogListener: EmaDialogListener? = null
         set(value) {
@@ -58,7 +76,14 @@ abstract class EmaAndroidDialogProvider constructor(private val fragmentManager:
             dialog?.dialogListener = value
         }
 
-    private fun getTag():String{
-        return javaClass.name.toString()
+    /**
+     * We use dialog class if it is available to handle rotation changes if different dialogs
+     * are showing through the same provider
+     */
+    private fun getTag(): String {
+
+        return dialog?.let { it.javaClass.name.toString() } ?: javaClass.name.toString()
     }
+
+
 }

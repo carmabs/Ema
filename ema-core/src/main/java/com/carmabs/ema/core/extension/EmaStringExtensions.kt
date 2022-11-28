@@ -1,6 +1,6 @@
 package com.carmabs.ema.core.extension
 
-import com.carmabs.ema.core.constants.*
+import com.carmabs.ema.core.constants.STRING_EMPTY
 
 /**
  * Created by Carlos Mateo Benito on 2019-11-24.
@@ -16,6 +16,16 @@ fun String?.checkNull(defaultValue: String = STRING_EMPTY): String {
     return this ?: defaultValue
 }
 
+fun String?.checkNullOrEmpty(defaultValue: String = STRING_EMPTY): String {
+    return if(isNullOrEmpty())defaultValue else this
+}
+
 fun String.getFormattedString(vararg data: Any?): String {
     return String.format(this, *data)
+}
+
+fun String.replaceLast(delimiter: Char, newString: String): String {
+    val startString = substringBeforeLast(delimiter).trim()
+    val endString = substringAfterLast(delimiter).trim()
+    return startString + newString + endString
 }

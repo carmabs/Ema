@@ -2,65 +2,50 @@ rootProject.ext {
 
     //Libraries
 
-    navigationVersion = "2.1.0"
+    navigationVersion = "2.5.3"
 
-    lifecycleVersion = "2.1.0"
+    lifecycleExtensionsVersion = "2.2.0"
 
-    kodeinVersion = "6.5.1"
+    desugaringVersion = "1.1.5"
 
-    constraintVersion = "1.1.3"
+    constraintVersion = "2.1.4"
 
-    designVersion = "28.0.0"
+    materialVersion = "1.7.0"
 
-    materialVersion = "1.0.0"
+    coroutinesVersion = "1.6.4"
 
-    coroutinesVersion = "1.4.0"
+    coreVersion = "1.4.0"
 
-    coreVersion = "1.2.0"
+    extJUnitVersion = "1.1.3"
 
-    extJUnitVersion = "1.1.0"
+    rulesVersion = "1.4.0"
 
-    rulesVersion = "1.2.0"
+    mockitoVersion = "4.6.1"
 
-    mockitoVersion = "3.2.4"
+    espressoVersion = "3.4.0"
 
-    archTesting = "1.1.1"
+    kotlinVersion = '1.7.21'
 
-    espressoVersion = "3.2.0"
+    kotlinCompilerExtensionVersion = '1.0.5'
 
-    kotlinVersion = '1.4.31'
+    koinVersion = "3.3.0"
 
-    lifecycleKtExtensionVersion='2.3.0'
+    lifecycleKtExtensionVersion = '2.5.1'
 
-    ema = [
-            buildTools : "30.0.2",
+    fragmentVersion = "1.5.4"
+
+    emaVersioning = [
             minSdk     : 21,
-            compileSdk : 30,
-            targetSdk  : 30,
-            versionCode: 7,
-            versionName: "3.0.0"
+            compileSdk : 33,
+            targetSdk  : 33,
+            versionCode: 8,
+            versionName: "4.0.0",
+            groupId    : 'com.github.carmabs',
+            artifactCoreId : 'ema-core',
+            artifactAndroidId : 'ema-android'
     ]
 
-    appDependencies = [
-    ]
-
-    dataDependencies = [
-            kotlin    : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:" + project.kotlinVersion,
-            coroutines: 'org.jetbrains.kotlinx:kotlinx-coroutines-android:' + project.coroutinesVersion
-    ]
-
-    domainDependencies = [
-    ]
-
-    commonDependencies = [
-    ]
-
-    injectionDependencies = [
-            kodein       : "org.kodein.di:kodein-di-generic-jvm:" + project.kodeinVersion,
-            kodeinAndroid: "org.kodein.di:kodein-di-framework-android-x:" + project.kodeinVersion,
-    ]
-
-    emaCore = [
+    emaCoreDependencies = [
             kotlin    : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:" + project.kotlinVersion,
             coroutines: 'org.jetbrains.kotlinx:kotlinx-coroutines-android:' + project.coroutinesVersion
     ]
@@ -73,19 +58,20 @@ rootProject.ext {
             rules      : "androidx.test:rules:" + project.rulesVersion,
             junitKotlin: "androidx.test.ext:junit-ktx:" + project.extJUnitVersion,
             mockito    : "org.mockito:mockito-core:" + project.mockitoVersion,
-            archTesting: "android.arch.core:core-testing:" + project.archTesting
+            coroutines : "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
     ]
 
-    emaAndroid = [
+    emaAndroidDependencies = [
+            koin                : "io.insert-koin:koin-android:$koinVersion",
+            reflection          : "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion",
+            fragment            : "androidx.fragment:fragment-ktx:$fragmentVersion",
             navigationFragment  : "androidx.navigation:navigation-fragment-ktx:" + project.navigationVersion,
             navigationUI        : "androidx.navigation:navigation-ui-ktx:" + project.navigationVersion,
             constraint          : "androidx.constraintlayout:constraintlayout:" + project.constraintVersion,
-            design              : "com.android.support:design:" + project.designVersion,
             material            : "com.google.android.material:material:" + project.materialVersion,
-            lifecycle           : "androidx.lifecycle:lifecycle-extensions:" + project.lifecycleVersion,
-            kodein              : "org.kodein.di:kodein-di-generic-jvm:" + project.kodeinVersion,
-            kodeinAndroid       : "org.kodein.di:kodein-di-framework-android-x:" + project.kodeinVersion,
-            lifecycleKtExtension: "androidx.lifecycle:lifecycle-runtime-ktx:" + project.lifecycleKtExtensionVersion
+            lifecycle           : "androidx.lifecycle:lifecycle-extensions:" + project.lifecycleExtensionsVersion,
+            lifecycleKtExtension: "androidx.lifecycle:lifecycle-runtime-ktx:" + project.lifecycleKtExtensionVersion,
+            desugaring          : "com.android.tools:desugar_jdk_libs:$desugaringVersion"
     ]
 
 }

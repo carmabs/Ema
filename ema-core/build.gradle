@@ -1,8 +1,28 @@
 apply plugin: 'kotlin'
-apply plugin: 'com.github.dcendents.android-maven'
-group = 'com.github.carmabs'
+apply plugin: 'maven-publish'
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+compileKotlin {
+    kotlinOptions.jvmTarget = JavaVersion.VERSION_1_8.toString()
+}
 
 dependencies {
-    api emaCore.kotlin
-    api emaCore.coroutines
+    api emaCoreDependencies.kotlin
+    api emaCoreDependencies.coroutines
+}
+
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components["java"]
+                groupId = emaVersioning.groupId
+                artifactId = emaVersioning.artifactCoreId
+                version = emaVersioning.versionName
+            }
+        }
+    }
 }
