@@ -1,16 +1,24 @@
 package com.carmabs.ema.android.viewmodel
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+
+
 /**
- * Class to wrap the  view model seed for first instance creation.
+ * Interface which all factories of [EmaViewModel] must use to be handled by the library
  *
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
-class EmaFactory<VM>(private val viewModelSeed: VM) : EmaBaseFactory<VM> {
+internal interface EmaFactory<VM> : ViewModelProvider.Factory{
 
     /**
-     * @return View model instance
+     * Called if the view model has not been created yet
+     * @param T View model class
+     * @param modelClass Class of the view model
      */
-    override fun createViewModel(): VM {
-        return viewModelSeed
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        return createViewModel() as T
     }
+
+    fun createViewModel():VM
 }

@@ -1,56 +1,69 @@
 package com.carmabs.ema.android.ui
 
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.annotation.CallSuper
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.viewbinding.ViewBinding
 import com.carmabs.ema.android.delegates.emaViewModelDelegate
+import com.carmabs.ema.android.extension.addOnBackPressedListener
 import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
-import com.carmabs.ema.android.viewmodel.EmaFactory
-import com.carmabs.ema.core.delegate.emaBooleanDelegate
-import com.carmabs.ema.core.navigator.EmaNavigationState
-import com.carmabs.ema.core.state.EmaBaseState
+import com.carmabs.ema.android.viewmodel.EmaViewModelFactory
+import com.carmabs.ema.core.constants.INT_ZERO
+import com.carmabs.ema.core.initializer.EmaInitializer
+import com.carmabs.ema.core.navigator.EmaDestination
+import com.carmabs.ema.core.navigator.EmaNavigator
+import com.carmabs.ema.core.state.EmaDataState
+import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.core.state.EmaState
 import com.carmabs.ema.core.view.EmaViewModelTrigger
-import com.carmabs.ema.core.viewmodel.EmaReceiverModel
-import com.carmabs.ema.core.viewmodel.EmaResultModel
 import com.carmabs.ema.core.viewmodel.EmaViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import org.koin.android.scope.AndroidScopeComponent
+import org.koin.androidx.scope.fragmentScope
+import org.koin.core.scope.Scope
 
 
 /**
- * Base fragment to bind and unbind view model
  *
- * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
+ * Abstract base class to implement Kodein framework in fragment context
+ * to handle dependency injection
+ *
+ * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
-abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigationState> :
-    EmaBaseFragment(), EmaAndroidView<S, VM, NS> {
+abstract class EmaFragment<B : ViewBinding, S : EmaDataState, VM : EmaViewModel<S, D>, D : EmaDestination> :
+    Fragment(), EmaAndroidView<S, VM, D>, AndroidScopeComponent {
 
-    override val viewModelSeed: VM
-        get() = androidViewModelSeed.emaViewModel
+    final override val scope: Scope by fragmentScope()
+
+    private var _binding: B? = null
+
+    // This property is only valid between onCreateView and
+    // onDestroyView.
+    protected val binding
+        get() = _binding!!
 
     private var viewJob: MutableList<Job>? = null
 
     private val extraViewJobs: MutableList<Job> by lazy {
-        mutableListOf<Job>()
+        mutableListOf()
     }
 
-    override val coroutineScope: CoroutineScope
-        get() = lifecycleScope
+    protected var isFirstNormalExecution: Boolean = true
+        private set
 
-    /**
-     * Determines first execution for each one of the state methods. EmaView determines when to set it to false.
-     */
-    final override var isFirstNormalExecution: Boolean by emaBooleanDelegate(true)
+    protected var isFirstOverlayedExecution: Boolean = true
+        private set
 
-    final override var isFirstAlternativeExecution: Boolean by emaBooleanDelegate(true)
-
-    final override var isFirstErrorExecution: Boolean by emaBooleanDelegate(true)
+    protected var isFirstErrorExecution: Boolean = true
+        private set
 
     /**
      * The view model of the fragment
@@ -58,13 +71,8 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
     protected val vm: VM by emaViewModelDelegate()
 
     /**
-     * The key id for incoming data through Bundle in fragment instantiation.This is set up when other fragment/activity
-     * launches a fragment with arguments provided by Bundle
+     * Trigger to start viewmodel only when startViewModel is launched
      */
-    protected open val inputStateKey: String by lazy {
-        vm.initialViewState.javaClass.name
-    }
-
     override val startTrigger: EmaViewModelTrigger? = null
 
     /**
@@ -73,41 +81,16 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
     override val updatePreviousStateAutomatically: Boolean = true
 
     /**
-     * The incoming state in fragment instantiation. This is set up when other fragment/activity
+     * The incoming initializer in fragment instantiation. This is set up when other fragment/activity
      * launches a fragment with arguments provided by Bundle
      */
-    override val inputState: S? by lazy { getInState() }
+    override val initializer: EmaInitializer? by lazy { getInitializerArgument() }
 
     /**
      * The list which handles the extra view models attached, to unbind the observers
      * when the view fragment is destroyed
      */
-    private val extraViewModelList: MutableList<EmaAndroidViewModel<*>> by lazy { mutableListOf<EmaAndroidViewModel<*>>() }
-
-
-    /**
-     * The view model is instantiated on fragment resume.
-     */
-    override fun onStart() {
-        super.onStart()
-        runBlocking {
-            viewJob = onStartAndBindData(
-                if (fragmentViewModelScope)
-                    this@EmaFragment
-                else
-                    requireActivity(),
-                vm
-            )
-        }
-    }
-
-    /**
-     * Notifies the view model that view has been gone to foreground.
-     */
-    override fun onResume() {
-        super.onResume()
-        onResumeView(vm)
-    }
+    private val extraViewModelList: MutableList<EmaAndroidViewModel<VM>> by lazy { mutableListOf() }
 
     protected open fun provideToolbarTitle(): String? = null
 
@@ -116,62 +99,26 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
      */
     override var previousState: S? = null
 
+
     /**
-     * Add a view model observer to current fragment
-     * @param viewModelAttachedSeed is the view model seed will used as factory instance if there is no previous
-     * view model retained by the OS
-     * @param fragment the fragment scope
-     * @param fragmentActivity the activity scope, if it is provided this will be the scope of the view model attached
-     * @param observerFunction the observer of the view model attached
-     * @return The view model attached
+     * Method to provide the fragment ViewBinding class to represent the layout.
      */
-    fun <S, VM : EmaAndroidViewModel<out EmaViewModel<S, *>>> addExtraViewModel(
-        viewModelAttachedSeed: EmaAndroidViewModel<*>,
-        fragment: Fragment,
-        fragmentActivity: FragmentActivity? = null,
-        observerFunction: ((attachedState: EmaState<S>) -> Unit)? = null
-    ): VM {
-        val viewModel =
-            fragmentActivity?.let {
-                ViewModelProviders.of(
-                    it,
-                    EmaFactory(viewModelAttachedSeed)
-                )[viewModelAttachedSeed::class.java]
-            }
-                ?: ViewModelProviders.of(
-                    fragment,
-                    EmaFactory(viewModelAttachedSeed)
-                )[viewModelAttachedSeed::class.java]
+    abstract fun createViewBinding(inflater: LayoutInflater, container: ViewGroup?): B
 
-        observerFunction?.also {
-            val job = coroutineScope.launch {
-                viewModel.emaViewModel.getObservableState().collect {
-                    observerFunction.invoke(it as EmaState<S>)
-                }
-            }
-            extraViewJobs.add(job)
-        }
-        extraViewModelList.add(viewModel)
+    abstract override val navigator: EmaNavigator<D>?
 
-        return viewModel as VM
+    abstract fun provideAndroidViewModel(): EmaAndroidViewModel<VM>
+
+
+    final override val androidViewModelSeed: EmaAndroidViewModel<VM> by lazy {
+        provideAndroidViewModel()
     }
 
-    /**
-     * Determine if the view model lifecycle is attached to the Activity or to the Fragment
-     */
-    abstract val fragmentViewModelScope: Boolean
+    final override val viewModelSeed: VM
+        get() = androidViewModelSeed.emaViewModel
 
-
-    /**
-     * Destroy the view and unbind the observers from view model
-     */
-    override fun onStop() {
-        removeExtraViewModels()
-        runBlocking {
-            onStopBinding(viewJob)
-        }
-        super.onStop()
-    }
+    override val coroutineScope: CoroutineScope
+        get() = lifecycleScope
 
     /**
      * Remove extra view models attached
@@ -184,20 +131,182 @@ abstract class EmaFragment<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaN
         extraViewModelList.clear()
     }
 
-    /**
-     * Get the incoming state from another fragment/activity by the key [inputStateKey] provided
-     */
-    private fun getInState(): S? {
-        return arguments?.let {
-            if (it.containsKey(inputStateKey)) {
-                it.get(inputStateKey) as? S
 
+    fun setInitializer(initializer: EmaInitializer) {
+        arguments = Bundle().apply { putSerializable(EmaInitializer.KEY, initializer) }
+    }
+
+    /**
+     * Get the incoming initializer from another fragment/activity by the key [inputStateKey] provided
+     */
+    private fun getInitializerArgument(): EmaInitializer? {
+        return arguments?.let {
+            if (it.containsKey(EmaInitializer.KEY)) {
+                it.get(EmaInitializer.KEY) as? EmaInitializer
             } else
                 null
         }
     }
 
-    fun setInputState(inState: S) {
-        arguments = Bundle().apply { putSerializable(inputStateKey, inState) }
+    /**
+     * Get the scope of the fragment depending the viewModelScopeSelected
+     */
+    protected fun getScope(): CoroutineScope {
+        return if (fragmentViewModelScope)
+            coroutineScope
+        else
+            requireActivity().lifecycleScope
     }
+
+    @CallSuper
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        isFirstNormalExecution = true
+        isFirstOverlayedExecution = true
+        isFirstErrorExecution = true
+        previousState = null
+        _binding = createViewBinding(inflater, container)
+        return binding.root
+    }
+
+    @CallSuper
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        addOnBackPressedListener {
+            vm.onActionHardwareBackPressed()
+        }
+    }
+
+
+    /**
+     * The view model is instantiated on fragment resume.
+     */
+    override fun onStart() {
+        super.onStart()
+        viewJob = onBindView(
+            getScope(),
+            vm
+        )
+        onStartView(vm)
+    }
+
+    /**
+     * Notifies the view model that view has been gone to foreground.
+     */
+    @CallSuper
+    override fun onResume() {
+        super.onResume()
+        onResumeView(vm)
+    }
+
+    /**
+     * Notifies the view model that view has been gone to background.
+     */
+    @CallSuper
+    override fun onPause() {
+        onPauseView(vm)
+        super.onPause()
+    }
+
+    /**
+     * Add a view model observer to current fragment
+     * @param viewModelAttachedSeed is the view model seed will used as factory instance if there is no previous
+     * view model retained by the OS
+     * @param fragment the fragment scope
+     * @param fragmentActivity the activity scope, if it is provided this will be the scope of the view model attached
+     * @param observerFunction the observer of the view model attached
+     * @return The view model attached
+     */
+    fun <AVM : EmaAndroidViewModel<out EmaViewModel<*, *>>> addExtraViewModel(
+        viewModelAttachedSeed: AVM,
+        fragment: Fragment,
+        fragmentActivity: FragmentActivity? = null,
+        observerFunction: ((attachedState: EmaState<*>) -> Unit)? = null
+    ): AVM {
+        val viewModel =
+            fragmentActivity?.let {
+                ViewModelProvider(
+                    it,
+                    EmaViewModelFactory(viewModelAttachedSeed)
+                )[viewModelAttachedSeed::class.java]
+            }
+                ?: ViewModelProvider(
+                    fragment,
+                    EmaViewModelFactory(viewModelAttachedSeed)
+                )[viewModelAttachedSeed::class.java]
+
+        observerFunction?.also {
+            val job = coroutineScope.launch {
+                viewModel.emaViewModel.getObservableState().collect {
+                    observerFunction.invoke(it)
+                }
+            }
+            extraViewJobs.add(job)
+        }
+        extraViewModelList.add(viewModel as EmaAndroidViewModel<VM>)
+
+        return viewModel
+    }
+
+    /**
+     * Determine if the view model lifecycle is attached to the Activity or to the Fragment
+     */
+    open val fragmentViewModelScope: Boolean = true
+
+    @CallSuper
+    override fun onStop() {
+        super.onStop()
+        onUnbindView(viewJob, vm)
+        removeExtraViewModels()
+    }
+
+    @CallSuper
+    override fun onDestroyView() {
+        previousState = null
+        _binding = null
+        super.onDestroyView()
+    }
+
+
+    @CallSuper
+    override fun onNavigation(navigation: D?) {
+        super.onNavigation(navigation)
+    }
+
+    final override fun onEmaStateNormal(data: S) {
+        binding.onStateNormal(data)
+        isFirstNormalExecution = false
+    }
+
+    final override fun onEmaStateOverlayed(data: EmaExtraData) {
+        binding.onStateOverlayed(data)
+        isFirstOverlayedExecution = false
+    }
+
+    final override fun onEmaStateErrorOverlayed(error: Throwable) {
+        binding.onStateErrorOverlayed(error)
+        isFirstErrorExecution = false
+    }
+
+    final override fun onSingleEvent(data: EmaExtraData) {
+        binding.onSingleEvent(data)
+    }
+
+    final override fun onBack(): Boolean {
+        val hasMoreFragments = parentFragmentManager.backStackEntryCount > INT_ZERO
+        if (hasMoreFragments)
+            parentFragmentManager.popBackStack()
+        else
+            requireActivity().finish()
+        return hasMoreFragments
+    }
+
+    abstract fun B.onStateNormal(data: S)
+    protected open fun B.onStateOverlayed(data: EmaExtraData) {}
+    protected open fun B.onStateErrorOverlayed(throwable: Throwable) {}
+    protected open fun B.onSingleEvent(data: EmaExtraData) {}
+
 }

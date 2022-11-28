@@ -18,5 +18,5 @@ abstract class EmaViewHolder<I>(view: View) : RecyclerView.ViewHolder(view) {
      * Methods called to implement the item view components
      * @param item shown in recycler view
      */
-    abstract fun bind(item: I)
+    abstract fun bind(item: I, holder: EmaViewHolder<I>, payloads: MutableList<Any>)
 }

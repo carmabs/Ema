@@ -1,15 +1,14 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'com.github.dcendents.android-maven'
-group = 'com.github.carmabs'
+
 android {
 
     defaultConfig {
-        minSdkVersion ema.minSdk
-        compileSdkVersion ema.compileSdk
-        targetSdkVersion ema.targetSdk
-        versionCode ema.versionCode
-        versionName ema.versionName
+        minSdkVersion emaVersioning.minSdk
+        compileSdkVersion emaVersioning.compileSdk
+        targetSdkVersion emaVersioning.targetSdk
+        testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
+
     }
 
     buildTypes {
@@ -29,6 +28,7 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
+    namespace 'com.carmabs.ema.testing.android'
 
 }
 
@@ -40,9 +40,4 @@ dependencies {
     implementation emaTesting.core
     implementation emaTesting.coreKotlin
     implementation emaTesting.espresso
-    implementation emaTesting.archTesting
-}
-
-repositories {
-    mavenCentral()
 }

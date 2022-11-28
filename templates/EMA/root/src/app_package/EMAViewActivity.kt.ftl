@@ -4,12 +4,12 @@ import com.carmabs.ema.android.navigation.EmaNavigator
 import com.carmabs.ema.android.ui.EmaActivity
 import com.carmabs.ema.core.state.EmaExtraData
 
-import org.kodein.di.Kodein
-import org.kodein.di.generic.instance
+
+import org.koin.android.ext.android.inject
 
 class ${functionalityName}Activity : EmaActivity<${functionalityName}State, ${functionalityName}ViewModel, <#if navigator?has_content>${navigator}<#else>${functionalityName}Navigator</#if>.Navigation>() {
 
-	override fun injectActivityModule(kodein: Kodein.MainBuilder): Kodein.Module? = null
+	override fun injectActivityModule(kodein: DI.MainBuilder): DI.Module? = null
 
 	override fun provideFixedToolbarTitle(): String? = null
 
@@ -17,7 +17,7 @@ class ${functionalityName}Activity : EmaActivity<${functionalityName}State, ${fu
 
     }
 
-    override val viewModelSeed: ${functionalityName}ViewModel by instance()
+    override val viewModelSeed: ${functionalityName}ViewModel by inject()
 
     override val navigator: EmaNavigator<<#if navigator?has_content>${navigator}<#else>${functionalityName}Navigator</#if>.Navigation> by instance<<#if navigator?has_content>${navigator}<#else>${functionalityName}Navigator</#if>>()
 

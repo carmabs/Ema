@@ -1,0 +1,40 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        google()
+        mavenCentral()
+        maven { url "https://jitpack.io" }
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+        maven { url "https://jitpack.io" }
+    }
+}
+rootProject.name = "Ema"
+include ':app',
+        ':injection',
+        ':data',
+        ':domain',
+        ':common'
+
+
+include(':ema-core')
+project(':ema-core').projectDir = new File("../ema-core")
+
+include(':ema-android')
+project(':ema-android').projectDir = new File("../ema-android")
+
+include(':ema-android-compose')
+project(':ema-android-compose').projectDir = new File("../ema-android-compose")
+
+include(':ema-testing-android')
+project(':ema-testing-android').projectDir = new File("../ema-testing-android")
+
+include(':ema-testing-core')
+project(':ema-testing-core').projectDir = new File("../ema-testing-core")
+
+

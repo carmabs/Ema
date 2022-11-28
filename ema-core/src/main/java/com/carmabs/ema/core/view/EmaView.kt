@@ -1,18 +1,17 @@
 package com.carmabs.ema.core.view
 
+import com.carmabs.ema.core.initializer.EmaInitializer
+import com.carmabs.ema.core.navigator.EmaDestination
 import com.carmabs.ema.core.navigator.EmaNavigator
-import com.carmabs.ema.core.navigator.EmaNavigationState
-import com.carmabs.ema.core.state.EmaBaseState
+import com.carmabs.ema.core.state.EmaDataState
 import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.core.state.EmaState
-import com.carmabs.ema.core.viewmodel.EmaReceiverModel
-import com.carmabs.ema.core.viewmodel.EmaResultModel
 import com.carmabs.ema.core.viewmodel.EmaViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancelAndJoin
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlin.jvm.Throws
 import kotlin.jvm.internal.PropertyReference0
 import kotlin.reflect.KProperty
 
@@ -21,11 +20,11 @@ import kotlin.reflect.KProperty
  * View to handle VM view logic states through [EmaState].
  * The user must provide in the constructor by template:
  *  - The view model class [EmaViewModel] is going to use the view
- *  - The navigation state class [EmaNavigationState] will handle the navigation
+ *  - The navigation state class [EmaDestination] will handle the navigation
  *
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
-interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigationState> {
+interface EmaView<S : EmaDataState, VM : EmaViewModel<S, D>, D : EmaDestination> {
 
     /**
      * Scope for flow updates
@@ -40,12 +39,12 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
     /**
      * The navigator [EmaNavigator]
      */
-    val navigator: EmaNavigator<NS>?
+    val navigator: EmaNavigator<D>?
 
     /**
-     * The state set up form previous views when it is launched.
+     * The initializer from previous views when it is launched.
      */
-    val inputState: S?
+    val initializer: EmaInitializer?
 
     /**
      * The previous state of the View
@@ -65,27 +64,21 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
      */
     val startTrigger: EmaViewModelTrigger?
 
-    var isFirstNormalExecution:Boolean
-
-    var isFirstAlternativeExecution :Boolean
-
-    var isFirstErrorExecution :Boolean
-
     /**
      * Called when view model trigger an update view event
      * @param state of the view
      */
-    fun onDataUpdated(state: EmaState<S>) {
-        onStateNormal(state.data)
-        isFirstNormalExecution = false
+    private fun onDataUpdated(state: EmaState<S>) {
+        onEmaStateNormal(state.data)
         when (state) {
-            is EmaState.Alternative -> {
-                isFirstAlternativeExecution = false
-                onStateAlternative(state.dataAlternative)
+            is EmaState.Overlayed -> {
+                onEmaStateOverlayed(state.dataOverlayed)
             }
             is EmaState.Error -> {
-                isFirstErrorExecution = false
-                onStateError(state.error)
+                onEmaStateErrorOverlayed(state.error)
+            }
+            else -> {
+                //DO NOTHING
             }
         }
 
@@ -103,13 +96,13 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
     @Suppress("UNCHECKED_CAST")
     fun <T> bindForUpdate(
         field: KProperty<T>,
-        areEqualComparator: ((old: T?, new: T?) -> Boolean)? = null,
-        action: (new: T?) -> Unit
+        areEqualComparator: ((old: T, new: T) -> Boolean)? = null,
+        action: (new: T) -> Unit
     ): Boolean {
         var updated = false
         val currentClass = (field as PropertyReference0).boundReceiver as? S
         currentClass?.also { _ ->
-            val currentValue = field.get() as T
+            val currentValue = (field.get() as T)
             previousState?.also {
                 try {
                     val previousField = it.javaClass.getDeclaredField(field.name)
@@ -139,13 +132,13 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
     @Suppress("UNCHECKED_CAST")
     fun <T> bindForUpdateWithPrevious(
         field: KProperty<T>,
-        areEqualComparator: ((old: T?, new: T?) -> Boolean)? = null,
-        action: (old: T?, new: T?) -> Unit
+        areEqualComparator: ((old: T, new: T) -> Boolean)? = null,
+        action: (old: T?, new: T) -> Unit
     ): Boolean {
         var updated = false
         val currentClass = (field as PropertyReference0).boundReceiver as? S
         currentClass?.also { _ ->
-            val currentValue = field.get() as T
+            val currentValue = (field.get() as T)
             previousState?.also {
                 try {
                     val previousField = it.javaClass.getDeclaredField(field.name)
@@ -177,9 +170,11 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
      * Called when view model trigger an only once notified event for navigation
      * @param navigation state with information about the destination
      */
-    fun onNavigation(navigation: EmaNavigationState?) {
+    fun onNavigation(navigation: D?) {
         navigation?.let {
-            navigate(navigation)
+            if (!it.isNavigated)
+                navigate(navigation)
+            it.setNavigated()
         } ?: navigateBack()
     }
 
@@ -187,13 +182,13 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
      * Called when view model trigger an update view event
      * @param data with the state of the view
      */
-    fun onStateNormal(data: S)
+    fun onEmaStateNormal(data: S)
 
     /**
-     * Called when view model trigger a updateAlternativeState event
-     * @param data with information about updateAlternativeState
+     * Called when view model trigger a updateOverlayedState event
+     * @param data with information about updateOverlayedState
      */
-    fun onStateAlternative(data: EmaExtraData)
+    fun onEmaStateOverlayed(data: EmaExtraData)
 
     /**
      * Called when view model trigger an only once notified event.Not called when the view is first time attached to the view model
@@ -205,15 +200,20 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
      * Called when view model trigger an error event
      * @param error generated by view model
      */
-    fun onStateError(error: Throwable)
+    fun onEmaStateErrorOverlayed(error: Throwable)
 
     /**
      * Called when view model trigger a navigation event
      * @param state with info about destination
      */
     @Suppress("UNCHECKED_CAST")
-    fun navigate(state: EmaNavigationState) {
-        navigator?.navigate(state as NS)
+    fun navigate(state: D) {
+        navigator?.navigate(state) ?: throwNavigationException()
+    }
+
+    @Throws
+    private fun throwNavigationException() {
+        throw RuntimeException("You must provide an EmaNavigator as navigator to handle the navigation")
     }
 
     /**
@@ -221,37 +221,62 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
      * @return True
      */
     fun navigateBack(): Boolean {
-        return navigator?.navigateBack() ?: false
+        return navigator?.navigateBack() ?: onBack()
     }
 
-    fun onStartView(coroutineScope: CoroutineScope, viewModel: VM): MutableList<Job> {
-        val jobList = mutableListOf<Job>()
+    fun onBack(): Boolean
+
+    /**
+     * Called when view model is started
+     */
+    fun onStartView(viewModel: VM) {
         startTrigger?.also {
             it.triggerAction = {
-                viewModel.onStart(inputState?.let { input -> EmaState.Normal(input) })
-                viewModel.onResumeView()
+                viewModel.onStart(initializer)
             }
         } ?: also {
-            viewModel.onStart(inputState?.let { input -> EmaState.Normal(input) })
+            viewModel.onStart(initializer)
         }
+    }
 
-        jobList.add(coroutineScope.launch {
-            viewModel.getObservableState().collect {
+
+    /**
+     * Called when view state is bound to viewmodel
+     */
+    fun onBindView(coroutineScope: CoroutineScope, viewModel: VM): MutableList<Job> {
+        val jobList = mutableListOf<Job>()
+        jobList.add(onBindState(coroutineScope, viewModel))
+        jobList.add(onBindSingle(coroutineScope, viewModel))
+        jobList.add(onBindNavigation(coroutineScope, viewModel))
+        return jobList
+    }
+
+    /**
+     * Called when view state is bound to viewmodel
+     */
+
+    fun onBindState(coroutineScope: CoroutineScope, viewModel: VM): Job {
+        return coroutineScope.launch {
+            viewModel.getObservableState().collectLatest {
                 onDataUpdated(it)
             }
-        })
-        jobList.add(coroutineScope.launch {
+        }
+    }
+
+    fun onBindNavigation(coroutineScope: CoroutineScope, viewModel: VM): Job {
+        return coroutineScope.launch {
+            viewModel.getNavigationState().collectLatest {
+                onNavigation(it)
+            }
+        }
+    }
+
+    fun onBindSingle(coroutineScope: CoroutineScope, viewModel: VM): Job {
+        return coroutineScope.launch {
             viewModel.getSingleObservableState().collect {
                 onSingleData(it)
             }
-        })
-        jobList.add(coroutineScope.launch {
-            viewModel.getNavigationState().collect {
-                onNavigation(it)
-            }
-        })
-
-        return jobList
+        }
     }
 
     /**
@@ -259,21 +284,28 @@ interface EmaView<S : EmaBaseState, VM : EmaViewModel<S, NS>, NS : EmaNavigation
      */
     fun onResumeView(viewModel: VM) {
         startTrigger?.also {
-            if(it.hasBeenStarted)
+            if (it.hasBeenStarted)
                 viewModel.onResumeView()
-        }?:also {
+        } ?: also {
             viewModel.onResumeView()
         }
     }
 
-    suspend fun onStopView(viewJob: MutableList<Job>?) {
+
+    fun onPauseView(viewModel: VM) {
+        viewModel.onPauseView()
+    }
+
+    fun onUnbindView(viewJob: MutableList<Job>?, viewModel: VM) {
         viewJob?.forEach {
             try {
-                it.cancelAndJoin()
+                if (!it.isCancelled && !it.isCompleted)
+                    it.cancel()
             } catch (e: java.lang.Exception) {
                 e.printStackTrace()
             }
         }
         viewJob?.clear()
+        viewModel.onStopView()
     }
 }
