@@ -93,9 +93,10 @@ abstract class EmaViewModel<S : EmaDataState, D : EmaDestination> {
     /**
      * Methods called the first time ViewModel is created
      * @param initializer
+     * @param startedFinishListener: (() -> Unit) listener when starting has been finished
      * @return true if it's the first time is started
      */
-    internal fun onStart(initializer: EmaInitializer? = null) {
+    fun onStart(initializer: EmaInitializer? = null, startedFinishListener: (() -> Unit)? = null) {
         if (!this::state.isInitialized) {
             concurrencyManager.launch {
                 normalContentData = onCreateState(initializer)
@@ -109,13 +110,16 @@ abstract class EmaViewModel<S : EmaDataState, D : EmaDestination> {
                     observableState.tryEmit(state)
                 onCreated()
                 pendingEvents.clear()
+                onViewStarted()
+                startedFinishListener?.invoke()
             }
         } else {
             //We call this to update the data if it has been not be emitted
             // if last time was updated by updateDataState
             observableState.tryEmit(state)
+            onViewStarted()
+            startedFinishListener?.invoke()
         }
-        onViewStarted()
     }
 
     /**
@@ -251,7 +255,7 @@ abstract class EmaViewModel<S : EmaDataState, D : EmaDestination> {
         fullException: Boolean = false,
         action: suspend CoroutineScope.() -> T
     ): EmaUseCaseResult<T> {
-        return EmaUseCaseResult(concurrencyManager,fullException,action)
+        return EmaUseCaseResult(concurrencyManager, fullException, action)
     }
 
     /**
