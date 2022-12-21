@@ -91,6 +91,13 @@ abstract class EmaViewModel<S : EmaDataState, D : EmaDestination> {
         private set
 
     /**
+     * Override and implement this to setup listener that is  called when physic back button is pressed
+     * @return True if you want the back pressed default behaviour is launched. False otherwise.
+     */
+    open val onBackHardwarePressedListener: (() -> Boolean)? = null
+
+
+    /**
      * Methods called the first time ViewModel is created
      * @param initializer
      * @param startedFinishListener: (() -> Unit) listener when starting has been finished
@@ -421,13 +428,5 @@ abstract class EmaViewModel<S : EmaDataState, D : EmaDestination> {
 
     fun getId(): Int {
         return this.javaClass.name.hashCode()
-    }
-
-    /**
-     * Method called when physic back button is called
-     * @return True if you wante the back pressed default behaviour is disabled. False you want the back pressed default behaviour is enabled
-     */
-    open fun onActionHardwareBackPressed(): Boolean {
-        return false
     }
 }
