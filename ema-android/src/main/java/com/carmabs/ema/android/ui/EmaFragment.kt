@@ -175,9 +175,10 @@ abstract class EmaFragment<B : ViewBinding, S : EmaDataState, VM : EmaViewModel<
     @CallSuper
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        addOnBackPressedListener {
-            vm.onActionHardwareBackPressed()
+        vm.onBackHardwarePressedListener?.also {
+            addOnBackPressedListener(it)
         }
+
     }
 
 

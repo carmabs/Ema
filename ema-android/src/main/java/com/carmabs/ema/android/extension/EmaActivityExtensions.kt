@@ -3,6 +3,7 @@ package com.carmabs.ema.android.extension
 import android.annotation.SuppressLint
 import android.window.OnBackInvokedCallback
 import android.window.OnBackInvokedDispatcher
+import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
 import androidx.core.os.BuildCompat
 import androidx.fragment.app.Fragment
@@ -20,32 +21,31 @@ import androidx.fragment.app.Fragment
  * back behaviour.
  */
 @SuppressLint("UnsafeOptInUsageError")
-fun Fragment.addOnBackPressedListener(listener: () -> Boolean) {
+fun ComponentActivity.addOnBackPressedListener(listener: () -> Boolean) {
     if (BuildCompat.isAtLeastT()) {
-        val activity = requireActivity()
         val onBackInvokedCallback = object : OnBackInvokedCallback {
             override fun onBackInvoked() {
                 val backDefaultLaunched = listener.invoke()
                 if (backDefaultLaunched) {
-                    activity.onBackInvokedDispatcher.unregisterOnBackInvokedCallback(this)
-                    activity.onBackPressedDispatcher.onBackPressed()
+                    onBackInvokedDispatcher.unregisterOnBackInvokedCallback(this)
+                    onBackPressedDispatcher.onBackPressed()
                 }
             }
         }
 
-        activity.onBackInvokedDispatcher
+        onBackInvokedDispatcher
             .registerOnBackInvokedCallback(
                 OnBackInvokedDispatcher.PRIORITY_DEFAULT, onBackInvokedCallback
             )
 
     } else {
-        requireActivity().onBackPressedDispatcher.addCallback(
-            viewLifecycleOwner, object : OnBackPressedCallback(true) {
+        onBackPressedDispatcher.addCallback(
+            this, object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
                     val backDefaultLaunched = listener.invoke()
                     isEnabled = !backDefaultLaunched
                     if (backDefaultLaunched) {
-                        requireActivity().onBackPressedDispatcher.onBackPressed()
+                        onBackPressedDispatcher.onBackPressed()
                     }
                 }
             }
