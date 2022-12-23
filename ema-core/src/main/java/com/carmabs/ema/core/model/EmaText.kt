@@ -19,7 +19,7 @@ sealed class EmaText(open val data: Array<out Any>? = null) : Serializable {
         fun plural(id: Int, quantity: Int, vararg data: Any) = Plural(id, quantity, data)
     }
 
-    data class Text(val text: String, override val data: Array<out Any>) : EmaText(data) {
+    data class Text(val text: String, override val data: Array<out Any>?) : EmaText(data) {
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
             if (javaClass != other?.javaClass) return false
@@ -39,7 +39,7 @@ sealed class EmaText(open val data: Array<out Any>? = null) : Serializable {
         }
     }
 
-    data class Id(val id: Int, override val data: Array<out Any>) : EmaText(data) {
+    data class Id(val id: Int, override val data: Array<out Any>?) : EmaText(data) {
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
             if (javaClass != other?.javaClass) return false
@@ -62,7 +62,7 @@ sealed class EmaText(open val data: Array<out Any>? = null) : Serializable {
 
     }
 
-    data class Plural(val id: Int, val quantity: Int, override val data: Array<out Any>) :
+    data class Plural(val id: Int, val quantity: Int, override val data: Array<out Any>?) :
         EmaText(data) {
         override fun equals(other: Any?): Boolean {
             if (this === other) return true

@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.viewbinding.ViewBinding
 import com.carmabs.ema.android.delegates.emaViewModelDelegate
+import com.carmabs.ema.android.extension.addOnBackPressedListener
 import com.carmabs.ema.android.navigation.EmaActivityNavControllerNavigator
 import com.carmabs.ema.android.navigation.EmaNavControllerNavigator
 import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
@@ -57,9 +58,13 @@ abstract class EmaActivity<B : ViewBinding, S : EmaDataState, VM : EmaViewModel<
     @CallSuper
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        //Call scope to call scope to enable injection
         scope
         binding = createViewBinding(layoutInflater)
         setContentView(binding.root)
+        vm.onBackHardwarePressedListener?.also {
+            addOnBackPressedListener(it)
+        }
         (navigator as? EmaActivityNavControllerNavigator)?.setup(overrideDestinationInitializer())
 
     }
@@ -277,7 +282,12 @@ abstract class EmaActivity<B : ViewBinding, S : EmaDataState, VM : EmaViewModel<
         finish()
         return false
     }
-    
+
+    //Override it to make it final to avoid deprecated implementation
+    final override fun onBackPressed() {
+        super.onBackPressed()
+    }
+
     protected open fun overridePopTransitionAnimations():EmaPopActivityTransitionAnimations? = null
 
     abstract fun B.onStateNormal(data: S)
