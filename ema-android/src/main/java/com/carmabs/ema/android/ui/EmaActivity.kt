@@ -16,6 +16,7 @@ import com.carmabs.ema.android.navigation.EmaActivityNavControllerNavigator
 import com.carmabs.ema.android.navigation.EmaNavControllerNavigator
 import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
 import com.carmabs.ema.android.viewmodel.EmaViewModelFactory
+import com.carmabs.ema.core.constants.INT_ZERO
 import com.carmabs.ema.core.initializer.EmaInitializer
 import com.carmabs.ema.core.navigator.EmaDestination
 import com.carmabs.ema.core.state.EmaDataState
@@ -274,7 +275,7 @@ abstract class EmaActivity<B : ViewBinding, S : EmaDataState, VM : EmaViewModel<
     override fun finish() {
         super.finish()
         overridePopTransitionAnimations()?.also {
-            overridePendingTransition(it.enterTransition,it.exitTransition)
+            overridePendingTransition(it.enterTransition?: INT_ZERO,it.exitTransition?: INT_ZERO)
         }
     }
 
@@ -296,7 +297,7 @@ abstract class EmaActivity<B : ViewBinding, S : EmaDataState, VM : EmaViewModel<
     protected open fun B.onSingleEvent(data: EmaExtraData) {}
 
     protected data class EmaPopActivityTransitionAnimations(
-        @AnimRes val enterTransition: Int,
-        @AnimRes val exitTransition: Int
+        @AnimRes val enterTransition: Int?,
+        @AnimRes val exitTransition: Int?
     )
 }
