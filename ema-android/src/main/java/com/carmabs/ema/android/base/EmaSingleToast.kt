@@ -1,6 +1,7 @@
 package com.carmabs.ema.android.base
 
 import android.content.Context
+import android.os.Build
 import android.text.Layout
 import android.text.Spannable
 import android.text.SpannableString
@@ -25,6 +26,7 @@ import com.carmabs.ema.core.constants.INT_ZERO
 class EmaSingleToast {
     companion object {
         private var singleToast: Toast? = null
+        private var previousText: String? = null
 
         fun show(
             context: Context,
@@ -32,16 +34,33 @@ class EmaSingleToast {
             duration: Int,
             textAlignment: Layout.Alignment = Layout.Alignment.ALIGN_CENTER
         ) {
-            singleToast?.cancel()
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+                previousText = null
+            }
             val alignedMessage: Spannable = SpannableString(message)
             alignedMessage.setSpan(
                 AlignmentSpan.Standard(textAlignment),
                 INT_ZERO, message.length - INT_ONE,
                 Spannable.SPAN_INCLUSIVE_INCLUSIVE
             )
-            singleToast = Toast.makeText(context.applicationContext, alignedMessage, duration).apply {
-                show()
+            if (message != previousText) {
+                singleToast?.cancel()
+                singleToast =
+                    Toast.makeText(context.applicationContext, alignedMessage, duration).apply {
+                        show()
+                    }.apply {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                            addCallback(object : Toast.Callback() {
+                                override fun onToastHidden() {
+                                    super.onToastHidden()
+                                    previousText = null
+                                    this@apply.removeCallback(this)
+                                }
+                            })
+                        }
+                    }
             }
+            previousText = message
         }
     }
 }

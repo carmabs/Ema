@@ -2,6 +2,7 @@ package com.carmabs.ema.core.view
 
 import com.carmabs.ema.core.initializer.EmaInitializer
 import com.carmabs.ema.core.navigator.EmaDestination
+import com.carmabs.ema.core.navigator.EmaEmptyNavigator
 import com.carmabs.ema.core.navigator.EmaNavigator
 import com.carmabs.ema.core.state.EmaDataState
 import com.carmabs.ema.core.state.EmaExtraData
@@ -221,7 +222,10 @@ interface EmaView<S : EmaDataState, VM : EmaViewModel<S, D>, D : EmaDestination>
      * @return True
      */
     fun navigateBack(): Boolean {
-        return navigator?.navigateBack() ?: onBack()
+        return if(navigator is EmaEmptyNavigator)
+            onBack()
+        else
+            navigator?.navigateBack() ?: onBack()
     }
 
     fun onBack(): Boolean
