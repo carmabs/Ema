@@ -12,6 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.viewbinding.ViewBinding
 import com.carmabs.ema.android.delegates.emaViewModelDelegate
 import com.carmabs.ema.android.extension.addOnBackPressedListener
+import com.carmabs.ema.android.extension.getSerializableCompat
 import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
 import com.carmabs.ema.android.viewmodel.EmaViewModelFactory
 import com.carmabs.ema.core.constants.INT_ZERO
@@ -90,7 +91,7 @@ abstract class EmaFragment<B : ViewBinding, S : EmaDataState, VM : EmaViewModel<
      * The list which handles the extra view models attached, to unbind the observers
      * when the view fragment is destroyed
      */
-    private val extraViewModelList: MutableList<EmaAndroidViewModel<VM>> by lazy { mutableListOf() }
+    private val extraViewModelList: MutableList<EmaAndroidViewModel> by lazy { mutableListOf() }
 
     protected open fun provideToolbarTitle(): String? = null
 
@@ -107,15 +108,15 @@ abstract class EmaFragment<B : ViewBinding, S : EmaDataState, VM : EmaViewModel<
 
     abstract override val navigator: EmaNavigator<D>?
 
-    abstract fun provideAndroidViewModel(): EmaAndroidViewModel<VM>
+    abstract fun provideAndroidViewModel(): EmaAndroidViewModel
 
 
-    final override val androidViewModelSeed: EmaAndroidViewModel<VM> by lazy {
+    final override val androidViewModelSeed: EmaAndroidViewModel by lazy {
         provideAndroidViewModel()
     }
 
     final override val viewModelSeed: VM
-        get() = androidViewModelSeed.emaViewModel
+        get() = androidViewModelSeed.emaViewModel as VM
 
     override val coroutineScope: CoroutineScope
         get() = lifecycleScope
@@ -142,7 +143,7 @@ abstract class EmaFragment<B : ViewBinding, S : EmaDataState, VM : EmaViewModel<
     private fun getInitializerArgument(): EmaInitializer? {
         return arguments?.let {
             if (it.containsKey(EmaInitializer.KEY)) {
-                it.get(EmaInitializer.KEY) as? EmaInitializer
+                it.getSerializableCompat(EmaInitializer.KEY)
             } else
                 null
         }
@@ -221,7 +222,7 @@ abstract class EmaFragment<B : ViewBinding, S : EmaDataState, VM : EmaViewModel<
      * @param observerFunction the observer of the view model attached
      * @return The view model attached
      */
-    fun <AVM : EmaAndroidViewModel<out EmaViewModel<*, *>>> addExtraViewModel(
+    fun <AVM : EmaAndroidViewModel> addExtraViewModel(
         viewModelAttachedSeed: AVM,
         fragment: Fragment,
         fragmentActivity: FragmentActivity? = null,
@@ -247,7 +248,7 @@ abstract class EmaFragment<B : ViewBinding, S : EmaDataState, VM : EmaViewModel<
             }
             extraViewJobs.add(job)
         }
-        extraViewModelList.add(viewModel as EmaAndroidViewModel<VM>)
+        extraViewModelList.add(viewModel as EmaAndroidViewModel)
 
         return viewModel
     }

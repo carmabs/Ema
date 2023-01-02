@@ -13,6 +13,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.viewbinding.ViewBinding
 import com.carmabs.ema.android.delegates.emaStateDelegate
 import com.carmabs.ema.android.extension.getScreenMetrics
+import com.carmabs.ema.android.extension.getSerializableCompat
 import com.carmabs.ema.core.dialog.EmaDialogData
 import com.carmabs.ema.core.dialog.EmaDialogListener
 
@@ -58,7 +59,8 @@ abstract class EmaDialog<B : ViewBinding, T : EmaDialogData> : DialogFragment(),
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog =  super.onCreateDialog(savedInstanceState)
-        (savedInstanceState?.getSerializable(KEY_DIALOG_DATA) as? T)?.also {
+        val savedData = (savedInstanceState?.getSerializableCompat(KEY_DIALOG_DATA) as? java.io.Serializable) as? T
+        savedData?.also {
             data = it
         }
         dialog.setOnShowListener(this)
