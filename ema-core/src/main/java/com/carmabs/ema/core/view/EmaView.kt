@@ -2,7 +2,6 @@ package com.carmabs.ema.core.view
 
 import com.carmabs.ema.core.initializer.EmaInitializer
 import com.carmabs.ema.core.navigator.EmaDestination
-import com.carmabs.ema.core.navigator.EmaEmptyNavigator
 import com.carmabs.ema.core.navigator.EmaNavigator
 import com.carmabs.ema.core.state.EmaDataState
 import com.carmabs.ema.core.state.EmaExtraData
@@ -12,7 +11,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import kotlin.jvm.Throws
 import kotlin.jvm.internal.PropertyReference0
 import kotlin.reflect.KProperty
 
@@ -222,10 +220,7 @@ interface EmaView<S : EmaDataState, VM : EmaViewModel<S, D>, D : EmaDestination>
      * @return True
      */
     fun navigateBack(): Boolean {
-        return if(navigator is EmaEmptyNavigator)
-            onBack()
-        else
-            navigator?.navigateBack() ?: onBack()
+        return navigator?.navigateBack() ?: onBack()
     }
 
     fun onBack(): Boolean

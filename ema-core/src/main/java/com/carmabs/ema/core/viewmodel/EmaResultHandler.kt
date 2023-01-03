@@ -1,8 +1,5 @@
 package com.carmabs.ema.core.viewmodel
 
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
-
 /**
  * Created by Carlos Mateo Benito on 2019-11-03.
  *
@@ -12,23 +9,17 @@ import kotlinx.coroutines.flow.SharedFlow
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-class EmaResultHandler private constructor() {
+internal class EmaResultHandler private constructor() {
 
 
     companion object {
-        const val RESULT_ID_DEFAULT = 15834
         private val emaResultHandler = EmaResultHandler()
 
-        fun getInstance():EmaResultHandler = emaResultHandler
+        fun getInstance(): EmaResultHandler = emaResultHandler
     }
 
     private val resultMap: HashMap<Int, EmaResultModel> = HashMap()
-    private val receiverMap: HashMap<Int, EmaReceiverModel> = HashMap()
-
-    /**
-     * Observable to notify result receiver invocation event when it is launched
-     */
-    val resultReceiverEvent: SharedFlow<EmaReceiverModel> = MutableSharedFlow()
+    private val receiverMap: HashMap<Int, HashMap<String, EmaReceiverModel>> = HashMap()
 
     /**
      * Used for notify result data between views
@@ -42,32 +33,29 @@ class EmaResultHandler private constructor() {
      * Notify the results to all receivers are listening to them. The owner code is the id of
      * the class (viewmodel) is notifying, to avoid notify results that are not theirs
      */
-    fun notifyResults(ownerId: Int) {
+    fun notifyResults(ownerId: String) {
         val keysToRemove = mutableListOf<Int>()
 
         //Map for avoid iteration exception if a result is added on receiver invocation
         val receiverExecutions = mutableListOf<() -> Unit>()
 
-        resultMap.forEach {
-            val data = it.value
-            val key = it.key
-            val dataOwnerId = data.ownerId
-
-            if (ownerId == dataOwnerId) {
-                receiverMap[key]?.also { receiver ->
-                    if (ownerId != receiver.ownerId) {
-                        receiverExecutions.add {
-                            receiver.function.invoke(data)
-                        }
+        resultMap.values.find { it.ownerId == ownerId }?.also {
+            val result = it
+            val key = it.code
+            receiverMap[key]?.forEach { entry ->
+                val receiver = entry.value
+                if (ownerId != receiver.ownerId) {
+                    receiverExecutions.add {
+                        receiver.function.invoke(result.data)
                     }
-                    keysToRemove.add(key)
                 }
+
+                keysToRemove.add(result.code)
             }
         }
 
         keysToRemove.forEach {
             resultMap.remove(it)
-            receiverMap.remove(it)
         }
 
         receiverExecutions.forEach {
@@ -80,12 +68,29 @@ class EmaResultHandler private constructor() {
     /**
      * Add listener when result is notified
      */
-    fun addResultReceiver(receiver: EmaReceiverModel) {
-        receiverMap[receiver.resultCode] = receiver
+    fun addResultReceiver(receiverModel: EmaReceiverModel) {
+        receiverMap[receiverModel.resultCode]?.apply {
+            put(receiverModel.ownerId, receiverModel)
+        } ?: also {
+            receiverMap[receiverModel.resultCode] = HashMap<String, EmaReceiverModel>().also {
+                it[receiverModel.ownerId] = receiverModel
+            }
+        }
     }
 
-    fun onDestroy() {
-        receiverMap.clear()
-        resultMap.clear()
+    /**
+     * Remove listener based on ownerId
+     */
+    fun removeResultListener(ownerId: String) {
+        val codeToClear = mutableSetOf<Int>()
+        receiverMap.forEach {
+            val receiverOwners = it.value
+            receiverOwners.remove(ownerId)
+            if (receiverOwners.isEmpty())
+                codeToClear.add(it.key)
+        }
+        codeToClear.forEach {
+            receiverMap.remove(it)
+        }
     }
 }
