@@ -7,8 +7,8 @@ package com.carmabs.ema.core.viewmodel
  * @implementation Function to handle activity result. Return true to remove the listener after use it
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
-data class EmaResultModel(
+internal data class EmaResultModel(
     val code: Int,
     val data: Any,
-    val ownerId:Int
+    val ownerId: String
 )

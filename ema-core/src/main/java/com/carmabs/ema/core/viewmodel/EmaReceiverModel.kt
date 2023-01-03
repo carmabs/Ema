@@ -7,8 +7,8 @@ package com.carmabs.ema.core.viewmodel
  * @function Function to execute when result is received
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
-data class EmaReceiverModel(
-        val resultCode: Int,
-        val ownerId:Int,
-        internal val function: (EmaResultModel) -> Unit,
+internal data class EmaReceiverModel(
+    val resultCode: Int,
+    val ownerId: String,
+    val function: (Any) -> Unit,
 )
