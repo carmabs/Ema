@@ -32,6 +32,18 @@ fun <T> List<T>.update(findCriteria: ((T) -> Boolean), updateAction: (T.() -> T)
     }
 }
 
+fun <T> List<T>.update(index:Int, updateAction: (T.() -> T)): List<T> {
+    return if (index < INT_ZERO) {
+        toList()
+    } else {
+        val itemToUpdate = get(index)
+        val newItem = updateAction.invoke(itemToUpdate)
+        val updatedList = toMutableList()
+        updatedList[index] = newItem
+        updatedList
+    }
+}
+
 fun <T> List<T>.forEachFirstLast(action: (T) -> Unit) {
     firstOrNull()?.let {
         action.invoke(it)

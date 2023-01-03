@@ -12,6 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.viewbinding.ViewBinding
 import com.carmabs.ema.android.delegates.emaViewModelDelegate
 import com.carmabs.ema.android.extension.addOnBackPressedListener
+import com.carmabs.ema.android.extension.getSerializableCompat
 import com.carmabs.ema.android.navigation.EmaActivityNavControllerNavigator
 import com.carmabs.ema.android.navigation.EmaNavControllerNavigator
 import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
@@ -79,18 +80,18 @@ abstract class EmaActivity<B : ViewBinding, S : EmaDataState, VM : EmaViewModel<
     protected open fun overrideDestinationInitializer(): EmaInitializer? = null
 
 
-    final override val androidViewModelSeed: EmaAndroidViewModel<VM> by lazy {
+    final override val androidViewModelSeed: EmaAndroidViewModel by lazy {
         provideAndroidViewModel()
     }
 
-    abstract fun provideAndroidViewModel(): EmaAndroidViewModel<VM>
+    abstract fun provideAndroidViewModel(): EmaAndroidViewModel
 
     override val coroutineScope: CoroutineScope
         get() = lifecycleScope
 
 
     override val viewModelSeed: VM
-        get() = androidViewModelSeed.emaViewModel
+        get() = androidViewModelSeed.emaViewModel as VM
 
     /**
      * Determines first execution for each one of the state methods. EmaView determines when to set it to false.
@@ -110,7 +111,7 @@ abstract class EmaActivity<B : ViewBinding, S : EmaDataState, VM : EmaViewModel<
      * The map which handles the view model attached with their respective scopes, to unbind the observers
      * when the view activity is destroyed
      */
-    private val extraViewModelList: MutableList<EmaAndroidViewModel<VM>> by lazy { mutableListOf() }
+    private val extraViewModelList: MutableList<EmaAndroidViewModel> by lazy { mutableListOf() }
 
     private val extraViewJobs: MutableList<Job> by lazy {
         mutableListOf()
@@ -180,7 +181,7 @@ abstract class EmaActivity<B : ViewBinding, S : EmaDataState, VM : EmaViewModel<
      * @param observerFunction the observer of the view model attached
      * @return The view model attached
      */
-    fun <AVM : EmaAndroidViewModel<out EmaViewModel<*, *>>> addExtraViewModel(
+    fun <AVM : EmaAndroidViewModel> addExtraViewModel(
         viewModelAttachedSeed: AVM,
         fragment: Fragment? = null,
         observerFunction: ((attachedState: EmaState<*>) -> Unit)? = null
@@ -206,7 +207,7 @@ abstract class EmaActivity<B : ViewBinding, S : EmaDataState, VM : EmaViewModel<
             }
             )
         }
-        extraViewModelList.add(viewModel as EmaAndroidViewModel<VM>)
+        extraViewModelList.add(viewModel as EmaAndroidViewModel)
 
         return viewModel
     }
@@ -216,7 +217,7 @@ abstract class EmaActivity<B : ViewBinding, S : EmaDataState, VM : EmaViewModel<
      */
     private fun getInitializerIntent(): EmaInitializer? {
         return intent?.let {
-            it.extras?.getSerializable(EmaInitializer.KEY) as? EmaInitializer
+            it.extras?.getSerializableCompat(EmaInitializer.KEY)
 
         }
     }

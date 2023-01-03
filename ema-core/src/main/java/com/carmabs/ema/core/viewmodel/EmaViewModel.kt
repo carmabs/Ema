@@ -17,6 +17,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.collect
 
 /**
  * View model to handle view states.
@@ -274,7 +275,7 @@ abstract class EmaViewModel<S : EmaDataState, D : EmaDestination> {
      * @return the job that can handle the lifecycle of the background task
      */
     protected fun runSuspend(
-        dispatcher: CoroutineDispatcher = Dispatchers.Main,
+        dispatcher: CoroutineDispatcher = Dispatchers.Main.immediate,
         fullException: Boolean = false,
         block: suspend CoroutineScope.() -> Unit
     ): Job {
@@ -299,7 +300,7 @@ abstract class EmaViewModel<S : EmaDataState, D : EmaDestination> {
 
 
     /**
-     * Here should implement the listener for result data from other views through [addOnResultReceived] method
+     * Here should implement the listener for result data from other views through [addOnResultListener] method
      */
     protected open fun onResultListenerSetup() = Unit
 
@@ -385,7 +386,7 @@ abstract class EmaViewModel<S : EmaDataState, D : EmaDestination> {
     /**
      * Set a result for previous view when the current one is destroyed
      */
-    protected fun addResult(data: Any, code: Int = EmaResultHandler.RESULT_ID_DEFAULT) {
+    protected fun addResult(code: Int, data: Any) {
         useAfterStateIsCreated {
             emaResultHandler.addResult(
                 EmaResultModel(
@@ -400,17 +401,18 @@ abstract class EmaViewModel<S : EmaDataState, D : EmaDestination> {
     /**
      * Set the listener for back data when the result view is destroyed
      */
-    protected fun addOnResultReceived(
-        code: Int = EmaResultHandler.RESULT_ID_DEFAULT,
-        receiver: (EmaResultModel) -> Unit
+    protected fun addOnResultListener(
+        code: Int,
+        receiver: (Any) -> Unit
     ) {
         useAfterStateIsCreated {
-            val emaReceiver = EmaReceiverModel(
-                ownerId = getId(),
-                resultCode = code,
-                function = receiver
+            emaResultHandler.addResultReceiver(
+                EmaReceiverModel(
+                    resultCode = code,
+                    ownerId = getId(),
+                    function = receiver
+                )
             )
-            emaResultHandler.addResultReceiver(emaReceiver)
         }
     }
 
@@ -420,13 +422,14 @@ abstract class EmaViewModel<S : EmaDataState, D : EmaDestination> {
      */
     internal fun onCleared() {
         emaResultHandler.notifyResults(getId())
+        emaResultHandler.removeResultListener(getId())
         concurrencyManager.cancelPendingTasks()
         useAfterStateIsCreated {
             onDestroy()
         }
     }
 
-    fun getId(): Int {
-        return this.javaClass.name.hashCode()
+    fun getId(): String {
+        return this.javaClass.name
     }
 }

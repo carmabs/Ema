@@ -15,7 +15,7 @@ import kotlin.reflect.jvm.javaMethod
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-abstract class EmaAndroidViewModel<VM:EmaViewModel<*,*>>(val emaViewModel:VM) :
+abstract class EmaAndroidViewModel(val emaViewModel:EmaViewModel<*,*>) :
     ViewModel() {
 
     @CallSuper
