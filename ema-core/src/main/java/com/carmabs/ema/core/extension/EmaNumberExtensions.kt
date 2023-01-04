@@ -17,20 +17,120 @@ fun Int?.checkNull(defaultValue: Int = INT_ZERO): Int {
     return this ?: defaultValue
 }
 
+/**
+ * Check if value is greater or equal than min or return null
+ */
+fun Int.minOrNull(min: Int): Int? {
+    return if(this>=min)
+        this
+    else
+        null
+}
+
+/**
+ * Check if value is smaller or equal than max or return null
+ */
+fun Int.maxOrNull(max: Int): Int? {
+    return if(this<=max)
+        this
+    else
+        null
+}
+
 fun Float?.checkNull(defaultValue: Float = FLOAT_ZERO): Float {
     return this ?: defaultValue
+}
+
+/**
+ * Check if value is greater or equal than min or return null
+ */
+fun Float.minOrNull(min: Float): Float? {
+    return if(this>=min)
+        this
+    else
+        null
+}
+
+/**
+ * Check if value is smaller or equal than max or return null
+ */
+fun Float.maxOrNull(max: Float): Float? {
+    return if(this<=max)
+        this
+    else
+        null
 }
 
 fun Short?.checkNull(defaultValue: Short = SHORT_ZERO): Short {
     return this ?: defaultValue
 }
 
-fun Long?.checNull(defaultValue: Long = LONG_ZERO): Long {
+/**
+ * Check if value is greater or equal than min or return null
+ */
+fun Short.minOrNull(min: Short): Short? {
+    return if(this>=min)
+        this
+    else
+        null
+}
+
+/**
+ * Check if value is smaller or equal than max or return null
+ */
+fun Short.maxOrNull(max: Short): Short? {
+    return if(this<=max)
+        this
+    else
+        null
+}
+
+fun Long?.checkNull(defaultValue: Long = LONG_ZERO): Long {
     return this ?: defaultValue
+}
+
+/**
+ * Check if value is greater or equal than min or return null
+ */
+fun Long.minOrNull(min: Long): Long? {
+    return if(this>=min)
+        this
+    else
+        null
+}
+
+/**
+ * Check if value is smaller or equal than max or return null
+ */
+fun Long.maxOrNull(max: Long): Long? {
+    return if(this<=max)
+        this
+    else
+        null
 }
 
 fun Double?.checkNull(defaultValue: Double = DOUBLE_ZERO): Double {
     return this ?: defaultValue
+}
+
+/**
+ * Check if value is greater or equal than min or return null
+ */
+fun Double.minOrNull(min: Double): Double? {
+    return if(this>=min)
+        this
+    else
+        null
+}
+
+/**
+ * Check if value is smaller or equal than max or return null
+ */
+fun Double.maxOrNull(max: Double): Double? {
+    return if(this<=max)
+        this
+    else
+        null
 }
 
 fun Boolean?.checkNull(defaultValue: Boolean = false): Boolean {
