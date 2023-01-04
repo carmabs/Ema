@@ -1,4 +1,4 @@
-package com.carmabs.ema.android.ui
+package com.carmabs.ema.android.ui.recycler
 
 
 import android.view.ViewGroup
@@ -38,7 +38,7 @@ abstract class EmaMultiRecyclerAdapter<I:Any>(diffCallback: DiffUtil.ItemCallbac
     /**
      * Function to implement different viewHolders depending the viewType provided.
      */
-    protected abstract fun createMultiViewHolder(view: ViewGroup, viewType: Int) :EmaAdapterMultiViewHolder
+    protected abstract fun createMultiViewHolder(view: ViewGroup, viewType: Int) : EmaAdapterMultiViewHolder
 
     protected open inner class EmaAdapterMultiViewHolder(private val viewBinding: ViewBinding, private val viewType: Int) :
         EmaViewHolder<I>(viewBinding.root) {

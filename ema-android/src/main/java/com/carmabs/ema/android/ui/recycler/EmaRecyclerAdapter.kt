@@ -1,10 +1,9 @@
-package com.carmabs.ema.android.ui
+package com.carmabs.ema.android.ui.recycler
 
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 
 /**
