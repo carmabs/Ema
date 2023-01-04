@@ -2,7 +2,7 @@ rootProject.ext {
 
     //Libraries
 
-    navigationVersion = "2.5.3"
+    navigationVersion = "2.6.0-alpha04"
 
     lifecycleExtensionsVersion = "2.2.0"
 

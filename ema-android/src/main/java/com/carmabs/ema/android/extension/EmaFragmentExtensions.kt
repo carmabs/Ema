@@ -37,19 +37,20 @@ fun Fragment.addOnBackPressedListener(listener: () -> Boolean) {
             .registerOnBackInvokedCallback(
                 OnBackInvokedDispatcher.PRIORITY_DEFAULT, onBackInvokedCallback
             )
-
     } else {
-        requireActivity().onBackPressedDispatcher.addCallback(
-            viewLifecycleOwner, object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    val backDefaultLaunched = listener.invoke()
-                    isEnabled = !backDefaultLaunched
-                    if (backDefaultLaunched) {
-                        requireActivity().onBackPressedDispatcher.onBackPressed()
-                    }
+        val onBackPressedCallback: OnBackPressedCallback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                val backDefaultLaunched = listener.invoke()
+                isEnabled = !backDefaultLaunched
+                if (backDefaultLaunched) {
+                    requireActivity().onBackPressedDispatcher.onBackPressed()
                 }
             }
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner, onBackPressedCallback
         )
     }
-
 }
+
+
