@@ -4,8 +4,8 @@ import com.carmabs.ema.core.concurrency.ConcurrencyManager
 import com.carmabs.ema.core.concurrency.DefaultConcurrencyManager
 import com.carmabs.ema.core.constants.INT_ONE
 import com.carmabs.ema.core.initializer.EmaInitializer
-import com.carmabs.ema.core.model.emaFlowSingleEvent
 import com.carmabs.ema.core.model.EmaUseCaseResult
+import com.carmabs.ema.core.model.emaFlowSingleEvent
 import com.carmabs.ema.core.navigator.EmaDestination
 import com.carmabs.ema.core.state.EmaDataState
 import com.carmabs.ema.core.state.EmaExtraData
@@ -17,7 +17,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.collect
 
 /**
  * View model to handle view states.
@@ -53,7 +52,7 @@ abstract class EmaViewModel<S : EmaDataState, D : EmaDestination> {
     private val singleObservableState: MutableSharedFlow<EmaExtraData> = emaFlowSingleEvent()
 
     /**
-     * Observable state that launch event every time a value is set. [NT] value be will a [EmaDestination]
+     * Observable state that launch event every time a value is set. [D] value be will a [EmaDestination]
      * object that represent the destination. This observable will be used for
      * events that only has to be notified once to its observers and is used to notify the navigation
      * events
@@ -386,7 +385,7 @@ abstract class EmaViewModel<S : EmaDataState, D : EmaDestination> {
     /**
      * Set a result for previous view when the current one is destroyed
      */
-    protected fun addResult(code: Int, data: Any) {
+    protected fun addResult(code: Int, data: Any?) {
         useAfterStateIsCreated {
             emaResultHandler.addResult(
                 EmaResultModel(
@@ -403,7 +402,7 @@ abstract class EmaViewModel<S : EmaDataState, D : EmaDestination> {
      */
     protected fun addOnResultListener(
         code: Int,
-        receiver: (Any) -> Unit
+        receiver: (Any?) -> Unit
     ) {
         useAfterStateIsCreated {
             emaResultHandler.addResultReceiver(
