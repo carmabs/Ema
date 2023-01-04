@@ -10,5 +10,5 @@ package com.carmabs.ema.core.viewmodel
 internal data class EmaReceiverModel(
     val resultCode: Int,
     val ownerId: String,
-    val function: (Any) -> Unit,
+    val function: (Any?) -> Unit,
 )
