@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.viewbinding.ViewBinding
 import com.carmabs.ema.android.delegates.emaViewModelDelegate
 import com.carmabs.ema.android.extension.addOnBackPressedListener
@@ -298,10 +299,18 @@ abstract class EmaFragment<B : ViewBinding, S : EmaDataState, VM : EmaViewModel<
     }
 
     final override fun onBack(): Boolean {
-        val hasMoreFragments = parentFragmentManager.backStackEntryCount > INT_ZERO
-        if (hasMoreFragments)
-            parentFragmentManager.popBackStack()
-        else
+        val hasMoreFragments = kotlin.runCatching {
+            findNavController().popBackStack()
+        }.getOrNull()?.let {
+            it
+        } ?: let {
+            val hasMoreFragments = parentFragmentManager.backStackEntryCount > INT_ZERO
+            if (hasMoreFragments)
+                parentFragmentManager.popBackStack()
+            hasMoreFragments
+        }
+
+        if (!hasMoreFragments)
             requireActivity().finish()
         return hasMoreFragments
     }
