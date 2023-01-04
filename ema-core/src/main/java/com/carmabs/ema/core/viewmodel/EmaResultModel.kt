@@ -9,6 +9,6 @@ package com.carmabs.ema.core.viewmodel
  */
 internal data class EmaResultModel(
     val code: Int,
-    val data: Any,
+    val data: Any?,
     val ownerId: String
 )

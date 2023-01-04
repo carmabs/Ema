@@ -39,18 +39,20 @@ internal class EmaResultHandler private constructor() {
         //Map for avoid iteration exception if a result is added on receiver invocation
         val receiverExecutions = mutableListOf<() -> Unit>()
 
-        resultMap.values.find { it.ownerId == ownerId }?.also {
-            val result = it
-            val key = it.code
-            receiverMap[key]?.forEach { entry ->
-                val receiver = entry.value
-                if (ownerId != receiver.ownerId) {
-                    receiverExecutions.add {
-                        receiver.function.invoke(result.data)
+        resultMap.forEach {
+            if (it.value.ownerId == ownerId) {
+                val result = it.value
+                val code = result.code
+                receiverMap[code]?.forEach { entry ->
+                    val receiver = entry.value
+                    if (ownerId != receiver.ownerId) {
+                        receiverExecutions.add {
+                            receiver.function.invoke(result.data)
+                        }
                     }
-                }
 
-                keysToRemove.add(result.code)
+                    keysToRemove.add(result.code)
+                }
             }
         }
 
