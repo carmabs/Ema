@@ -1,4 +1,4 @@
-package com.carmabs.ema.android.ui
+package com.carmabs.ema.android.ui.recycler
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
