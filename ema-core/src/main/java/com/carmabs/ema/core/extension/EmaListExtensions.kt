@@ -44,21 +44,40 @@ fun <T> List<T>.update(index:Int, updateAction: (T.() -> T)): List<T> {
     }
 }
 
-fun <T> List<T>.forEachFirstLast(action: (T) -> Unit) {
-    firstOrNull()?.let {
-        action.invoke(it)
-        drop(INT_ONE).internalForEachFirstLast(false, action)
-    }
+fun <T> List<T>.forEachFirstLast(action: (Int,T) -> Unit) {
+        internalForEachFirstLast(INT_ZERO,size,true, action)
 }
 
-internal fun <T> List<T>.internalForEachFirstLast(first: Boolean, action: (T) -> Unit) {
+fun <T,R> List<T>.mapEachFirstLast(action: (Int,T) -> R):List<R> {
+    val returnList = mutableListOf<R>()
+    internalMapEachFirstLast(returnList,INT_ZERO,size,true, action)
+    return returnList
+}
+
+internal fun <T> List<T>.internalForEachFirstLast(startIndex:Int,lastIndex:Int,first: Boolean, action: (Int,T) -> Unit) {
     if (first) {
         firstOrNull()?.also {
-            drop(INT_ONE).internalForEachFirstLast(false, action)
+            action.invoke(startIndex,it)
+            drop(INT_ONE).internalForEachFirstLast(startIndex+1,lastIndex,false, action)
         }
     } else {
         lastOrNull()?.also {
-            dropLast(INT_ONE).internalForEachFirstLast(true, action)
+            action.invoke(lastIndex-1,it)
+            dropLast(INT_ONE).internalForEachFirstLast(startIndex,lastIndex-1,true, action)
+        }
+    }
+}
+
+internal fun <T,R> List<T>.internalMapEachFirstLast(returnList:MutableList<R>,startIndex:Int,lastIndex:Int,first: Boolean, action: (Int,T) -> R) {
+    if (first) {
+        firstOrNull()?.also {
+            returnList.add(action.invoke(startIndex,it))
+            drop(INT_ONE).internalMapEachFirstLast(returnList,startIndex+1,lastIndex,false, action)
+        }
+    } else {
+        lastOrNull()?.also {
+            returnList.add(action.invoke(lastIndex-1,it))
+            dropLast(INT_ONE).internalMapEachFirstLast(returnList,startIndex,lastIndex-1,true, action)
         }
     }
 }
