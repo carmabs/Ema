@@ -2,7 +2,7 @@ rootProject.ext {
 
     //Libraries
 
-    navigationVersion = "2.6.0-alpha06"
+    navigationVersion = "2.7.7"
 
     navigationComposeVersion = "2.7.1"
 
@@ -48,8 +48,8 @@ rootProject.ext {
             minSdk           : 24,
             compileSdk       : 34,
             targetSdk        : 34,
-            versionCode      : 17,
-            versionName      : "6.0.0",
+            versionCode      : 18,
+            versionName      : "6.1.1",
             groupId          : 'com.github.carmabs',
             artifactCoreId   : 'ema-core',
             artifactAndroidId: 'ema-android',
