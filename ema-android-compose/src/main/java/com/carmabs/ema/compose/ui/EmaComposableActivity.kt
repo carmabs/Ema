@@ -23,29 +23,31 @@ abstract class EmaComposableActivity<S : EmaDataState, VM : EmaViewModel<S, N>, 
     protected var isFirstNormalExecution: Boolean = true
         private set
 
-    protected var isFirstOverlayedExecution: Boolean = true
+    protected var isFirstOverlappedExecution: Boolean = true
         private set
 
     final override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         isFirstNormalExecution = true
-        isFirstOverlayedExecution = true
+        isFirstOverlappedExecution = true
         setContent {
-                val state = viewModel.subscribeStateUpdates()
-                    .collectAsState(initial = EmaState.Normal(object : EmaDataState {} as S))
+            val state = viewModel.subscribeStateUpdates()
+                .collectAsState(initial = viewModel.initialState)
+            if (viewModel.shouldRenderState) {
                 when (val emaState = state.value) {
-                    is EmaState.Normal<S,N> -> {
-                        onStateNormal(data = emaState.data)
+                    is EmaState.Normal -> {
+                        onStateNormal(data = emaState.data as S)
                         isFirstNormalExecution = false
                     }
-                    is EmaState.Overlapped<S,N> -> {
-                        onStateNormal(data = emaState.data)
-                        onStateOverlapped(extraData = emaState.extraData)
-                        isFirstOverlayedExecution = false
-                    }
 
+                    is EmaState.Overlapped -> {
+                        onStateNormal(data = emaState.data as S)
+                        onStateOverlapped(extraData = emaState.extraData)
+                        isFirstOverlappedExecution = false
+                    }
                 }
             }
+        }
     }
 
     @Composable
