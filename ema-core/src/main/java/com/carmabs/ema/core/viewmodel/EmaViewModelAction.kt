@@ -30,7 +30,7 @@ abstract class EmaViewModelAction<S : EmaDataState, A : EmaAction.Screen, N : Em
     /**
      * Subscribe to the actions dispatched to this ViewModel
      */
-    override fun subscribeToActions(): Flow<A> = observableAction
+    final override fun subscribeToActions(): Flow<A> = observableAction
 
     final override fun dispatch(action: A) {
         onAction(action)
