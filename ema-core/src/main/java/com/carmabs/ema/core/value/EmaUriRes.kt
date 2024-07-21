@@ -9,7 +9,15 @@ package com.carmabs.ema.core.value
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-@JvmInline
-value class EmaUriRes(val value: String)
-val String.uriRes
-    get() = EmaUriRes(this)
+
+class EmaUriRes(val value: String, val type:EmaUriType)
+
+enum class EmaUriType{
+    Color,
+    Drawable,
+    String,
+    Plural,
+    Asset,
+    Raw
+}
+fun String.toUriRes(type:EmaUriType) = EmaUriRes(this,type)

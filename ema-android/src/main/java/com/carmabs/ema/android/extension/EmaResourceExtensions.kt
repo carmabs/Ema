@@ -12,9 +12,9 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
 import com.carmabs.ema.core.constants.FLOAT_ONE
-import com.carmabs.ema.core.constants.INT_ONE
 import com.carmabs.ema.core.constants.INT_ZERO
 import com.carmabs.ema.core.value.EmaUriRes
+import com.carmabs.ema.core.value.EmaUriType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
@@ -53,19 +53,11 @@ fun @receiver:FontRes Int.getTypeface(context: Context): Typeface {
     return ResourcesCompat.getFont(context, this)!!
 }
 
-fun Drawable.getProportionalDimensions(targetWidth: Int?, targetHeight: Int?): Pair<Int, Int> {
-    val whRation = intrinsicWidth / intrinsicHeight.toFloat()
-    val endWidth = if (whRation < INT_ONE)
-        (targetHeight ?: intrinsicHeight) * whRation
-    else
-        targetWidth ?: intrinsicWidth
-
-    val endHeight = if (whRation < INT_ONE)
-        (targetHeight ?: intrinsicHeight)
-    else
-        (targetWidth ?: intrinsicWidth) / whRation
-
-    return Pair(endWidth.toInt(), endHeight.toInt())
+/**
+ * Will return the size to maintain the proportions, keeping the max target size possible on width or height
+ */
+fun Drawable.fitInTargetMaxSizeProportionally(targetWidth: Int?, targetHeight: Int?): Pair<Int, Int> {
+    return fitInTargetMaxSizeProportionally(intrinsicWidth, intrinsicHeight, targetWidth?:intrinsicWidth, targetHeight?:intrinsicHeight)
 }
 
 
@@ -182,11 +174,11 @@ suspend fun @receiver:DrawableRes Int.getBitmapCropFromResource(
     return withContext(Dispatchers.Default) {
         val bitmap: Bitmap =
             BitmapFactory.decodeResource(context.resources, this@getBitmapCropFromResource)
-        bitmap.resizeCrop()
+        bitmap.resizeCropSquare()
     }
 }
 
-fun @receiver:AnyRes Int.toUriRes(context: Context): EmaUriRes {
+fun @receiver:AnyRes Int.toUriRes(context: Context, type: EmaUriType): EmaUriRes {
     val resources = context.resources
     val uriResource = Uri.Builder()
         .scheme(ContentResolver.SCHEME_ANDROID_RESOURCE)
@@ -201,5 +193,5 @@ fun @receiver:AnyRes Int.toUriRes(context: Context): EmaUriRes {
         )
         .build()
 
-    return EmaUriRes(uriResource.toString())
+    return EmaUriRes(uriResource.toString(), type)
 }

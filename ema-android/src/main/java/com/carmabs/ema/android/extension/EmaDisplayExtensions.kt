@@ -10,6 +10,7 @@ import android.util.Size
 import android.util.TypedValue
 import android.view.WindowInsets
 import android.view.WindowManager
+import com.carmabs.ema.core.constants.INT_ONE
 import com.carmabs.ema.core.constants.INT_ZERO
 import kotlin.math.roundToInt
 
@@ -123,6 +124,21 @@ fun Context.getStatusBarHeight(): Int {
 
 val Configuration.screenHeightPx
     get() = run { screenHeightDp.toFloat() * densityDpi / 160f }
+
+fun fitInTargetMaxSizeProportionally(currentWidth:Int, currentHeight:Int, targetWidth: Int, targetHeight: Int): Pair<Int, Int> {
+    val whRation = currentWidth / currentHeight.toFloat()
+    val endWidth = if (whRation < INT_ONE)
+        targetHeight * whRation
+    else
+        targetWidth
+
+    val endHeight = if (whRation < INT_ONE)
+        targetHeight
+    else
+        targetWidth / whRation
+
+    return Pair(endWidth.toInt(), endHeight.toInt())
+}
 
 val Configuration.screenWidthPx
     get() = run { screenWidthDp.toFloat() * densityDpi / 160f }

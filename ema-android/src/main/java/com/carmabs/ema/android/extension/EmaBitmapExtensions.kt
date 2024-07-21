@@ -5,11 +5,16 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.util.Size
 import androidx.annotation.ColorInt
+import com.carmabs.ema.core.constants.FLOAT_ONE
 import com.carmabs.ema.core.constants.FLOAT_ZERO
 import com.carmabs.ema.core.constants.INT_ONE
+import com.carmabs.ema.core.constants.INT_ZERO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
+import kotlin.math.absoluteValue
+import kotlin.math.max
+import kotlin.math.min
 import kotlin.math.roundToInt
 
 
@@ -58,11 +63,15 @@ fun Bitmap.toByteArray(): ByteArray {
     return stream.toByteArray()
 }
 
-fun Bitmap.copyDefault(mutable:Boolean = true): Bitmap {
-    return copy(config,mutable)
+fun Bitmap.copyDefault(mutable: Boolean = true): Bitmap {
+    return copy(config, mutable)
 }
 
-suspend fun ByteArray.toBitmap(width: Int? = null, height: Int? = null,@ColorInt colorTint:Int?=null): Bitmap {
+suspend fun ByteArray.toBitmap(
+    width: Int? = null,
+    height: Int? = null,
+    @ColorInt colorTint: Int? = null
+): Bitmap {
     return withContext(Dispatchers.Default) {
         val resultBitmap = if (width != null && height != null) {
             Bitmap.createScaledBitmap(
@@ -79,17 +88,17 @@ suspend fun ByteArray.toBitmap(width: Int? = null, height: Int? = null,@ColorInt
             BitmapFactory.decodeByteArray(this@toBitmap, 0, size)
         }
         colorTint?.let {
-            val tintBitmap = resultBitmap.copy(resultBitmap.config,true)
+            val tintBitmap = resultBitmap.copy(resultBitmap.config, true)
             val paint = Paint().apply {
-                colorFilter = PorterDuffColorFilter(it,PorterDuff.Mode.SRC_IN)
+                colorFilter = PorterDuffColorFilter(it, PorterDuff.Mode.SRC_IN)
             }
-            Canvas(tintBitmap).drawBitmap(resultBitmap,0f,0f,paint)
+            Canvas(tintBitmap).drawBitmap(resultBitmap, 0f, 0f, paint)
             tintBitmap
-        }?:resultBitmap
+        } ?: resultBitmap
     }
 }
 
-fun Bitmap.resizeCrop(): Bitmap {
+fun Bitmap.resizeCropSquare(): Bitmap {
     val dstBmp = if (width >= height) {
         Bitmap.createBitmap(
             this,
@@ -111,6 +120,35 @@ fun Bitmap.resizeCrop(): Bitmap {
     return dstBmp
 }
 
+fun Bitmap.resizeCrop(width: Int, height: Int): Bitmap {
+
+    val bitmap = this
+    val originalWidth = bitmap.width
+    val originalHeight = bitmap.height
+    min(originalWidth, originalHeight)
+    max(originalWidth, originalHeight)
+
+    val originalAspectRatio = originalWidth.toFloat() / originalHeight.toFloat()
+
+    val newWidth: Int = width
+    val newHeight: Int = (width / originalAspectRatio).toInt()
+
+    val cropY = (newHeight - height).absoluteValue / 2
+
+    val scaledBitmap =        Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true)
+
+    return if (newHeight < height) {
+        scaledBitmap
+    }
+    else{
+        Bitmap.createBitmap(scaledBitmap, INT_ZERO, cropY, width, height)
+    }
+
+}
+
+/**
+ * Will fit the bitmap proportionally in destWidth,destHeight
+ */
 fun Bitmap.resizeFitInside(destWidth: Int, destHeight: Int): Bitmap {
     val background = Bitmap.createBitmap(destWidth, destHeight, Bitmap.Config.ARGB_8888)
     val originalWidth = this.width.toFloat()
@@ -165,8 +203,8 @@ fun Drawable.toBitmapWithMaxSize(maxSize: Size? = null): Bitmap {
         val targetHeight = maxHeight
         val scaledBitmap = Bitmap.createBitmap(maxWidth, maxHeight, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(scaledBitmap)
-        val centerOriginX = originBitmap.width/2f
-        val centerOriginY = originBitmap.height/2f
+        val centerOriginX = originBitmap.width / 2f
+        val centerOriginY = originBitmap.height / 2f
         var targetOriginWidth = originBitmap.width
         var targetOriginHeight = originBitmap.height
 
