@@ -25,4 +25,11 @@ fun skipForPreview(
 }
 
 @Composable
-fun isInPreview()  = LocalInspectionMode.current
+fun isInPreview() = LocalInspectionMode.current
+
+@Composable
+fun <T> T?.changeForPreview(value: T?) =
+    if (isInPreview()) {
+        value
+    } else
+        this
