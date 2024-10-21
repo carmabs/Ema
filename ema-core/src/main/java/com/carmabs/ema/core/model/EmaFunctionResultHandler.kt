@@ -26,8 +26,12 @@ import kotlin.coroutines.CoroutineContext
 
 class EmaFunctionResultHandler<T> internal constructor(
     scope: CoroutineScope,
-    dispatcher:CoroutineContext,
-    onAction: suspend CoroutineScope.() -> T
+    dispatcher: CoroutineContext,
+    onAction: suspend CoroutineScope.() -> T,
+    throwExceptions:Boolean,
+    successDefaultAction: ((T) -> Unit)? = null,
+    errorDefaultAction: ((Throwable) -> Unit)? = null,
+    finishDefaultAction: (() -> Unit)? = null
 ) : EmaOnSuccessFinish<T>, EmaOnErrorFinish {
 
     private var result: EmaResult<T, Throwable>? by emaSyncDelegate(null)
@@ -42,12 +46,19 @@ class EmaFunctionResultHandler<T> internal constructor(
     override val job: Job = scope.launch(dispatcher) {
         try {
             val data = onAction.invoke(this)
+            successDefaultAction?.invoke(data)
             result = EmaResult.success(data)
 
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
+
+            if(throwExceptions)
+                throw e
+
+            errorDefaultAction?.invoke(e)
             result = EmaResult.failure(e)
 
         } finally {
+            finishDefaultAction?.invoke()
             result?.apply {
                 onSuccess {
                     successListener?.invoke(it)
@@ -62,6 +73,7 @@ class EmaFunctionResultHandler<T> internal constructor(
             finishListener = null
         }
     }
+
 
     override fun onFinish(finishAction: () -> Unit): Job {
         if (finished.get())
@@ -85,7 +97,7 @@ class EmaFunctionResultHandler<T> internal constructor(
         result?.onFailure {
             errorAction.invoke(it)
         } ?: also {
-            errorListener =  errorAction
+            errorListener = errorAction
         }
         return this
     }
