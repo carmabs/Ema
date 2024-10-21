@@ -13,6 +13,8 @@ import com.carmabs.ema.compose.extension.isInPreview
 import com.carmabs.ema.core.constants.INT_ZERO
 import com.carmabs.ema.core.manager.EmaPermissionManager
 import com.carmabs.ema.core.manager.PermissionState
+import com.carmabs.ema.core.model.EmaPermissionRequest
+import kotlinx.coroutines.CoroutineScope
 
 /**
  * Created by Carlos Mateo Benito on 15/9/23.
@@ -105,6 +107,21 @@ private object EmaPreviewPermissionManager : EmaPermissionManager {
 
     override fun isLocationCoarseGranted(): PermissionState {
         return PermissionState.GRANTED
+    }
+
+    override fun handleRequest(
+        request: EmaPermissionRequest,
+        permission: String,
+        scope: CoroutineScope
+    ) {
+        request.onPermissionResponse.invoke(PermissionState.GRANTED)
+    }
+
+    override fun responseRequestAs(
+        request: EmaPermissionRequest,
+        permissionState: PermissionState
+    ) {
+        request.onPermissionResponse.invoke(permissionState)
     }
 
 }

@@ -1,5 +1,6 @@
 package com.carmabs.ema.core.model
 
+import androidx.annotation.RestrictTo
 import com.carmabs.ema.core.manager.PermissionState
 
 /**
@@ -12,7 +13,9 @@ import com.carmabs.ema.core.manager.PermissionState
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
 class EmaPermissionRequest private constructor(
+    @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val shouldRequest: Boolean,
+    @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val onPermissionResponse: ((PermissionState) -> Unit)
 ) {
     companion object {
