@@ -19,6 +19,9 @@ import com.carmabs.ema.core.extension.toScope
 import com.carmabs.ema.core.manager.EmaPermissionManager
 import com.carmabs.ema.core.manager.PermissionState
 import com.carmabs.ema.core.manager.areAllPermissionsStateGranted
+import com.carmabs.ema.core.model.EmaPermissionRequest
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlin.coroutines.coroutineContext
 import kotlin.coroutines.resume
@@ -40,8 +43,10 @@ class EmaAndroidPermissionManager : EmaPermissionManager {
     private val permissionMultipleRequest: ActivityResultLauncher<Array<String>>
     private val contractSinglePermission: EmaContractSinglePermission
     private val contractMultiplePermission: EmaContractMultiplePermission
-    private val context: ()->Context
+    private val context: () -> Context
     private val shouldShowRequestPermissionRationaleFunction: (String) -> Boolean
+
+    private val requestMap = HashMap<String, Job>()
 
     companion object {
         fun isPermissionGranted(context: Context, permission: String): Boolean {
@@ -73,7 +78,7 @@ class EmaAndroidPermissionManager : EmaPermissionManager {
     constructor(
         fragment: Fragment
     ) {
-        this.context =  { fragment.requireContext() }
+        this.context = { fragment.requireContext() }
         this.shouldShowRequestPermissionRationaleFunction =
             { fragment.shouldShowRequestPermissionRationale(it) }
         this.contractSinglePermission =
@@ -505,5 +510,26 @@ class EmaAndroidPermissionManager : EmaPermissionManager {
                 throw RuntimeException("You must set <uses-permission android:name=\"$it\" /> in the manifest file")
         }
 
+    }
+
+    override fun handleRequest(
+        request: EmaPermissionRequest,
+        permission: String,
+        scope: CoroutineScope
+    ) {
+        if (request.shouldRequest) {
+            requestMap[permission]?.cancel()
+            requestMap[permission] = scope.launch {
+                val state = requestPermission(permission)
+                request.onPermissionResponse.invoke(state)
+            }
+        }
+    }
+
+    override fun responseRequestAs(
+        request: EmaPermissionRequest,
+        permissionState: PermissionState
+    ) {
+        request.onPermissionResponse.invoke(permissionState)
     }
 }
