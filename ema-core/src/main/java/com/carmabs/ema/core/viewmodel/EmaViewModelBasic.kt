@@ -4,11 +4,19 @@ import com.carmabs.ema.core.broadcast.BackBroadcastId
 import com.carmabs.ema.core.broadcast.backBroadcastId
 import com.carmabs.ema.core.concurrency.EmaMainScope
 import com.carmabs.ema.core.constants.INT_ONE
+import com.carmabs.ema.core.constants.STRING_EMPTY
+import com.carmabs.ema.core.extension.checkNull
 import com.carmabs.ema.core.extension.distinctNavigationChanges
 import com.carmabs.ema.core.extension.distinctSingleEventChanges
 import com.carmabs.ema.core.initializer.EmaInitializer
+import com.carmabs.ema.core.model.EmaApplicationConfig
+import com.carmabs.ema.core.model.EmaApplicationConfigProvider
 import com.carmabs.ema.core.model.EmaEvent
 import com.carmabs.ema.core.model.EmaFunctionResultHandler
+import com.carmabs.ema.core.model.EmaSideEffectConfig
+import com.carmabs.ema.core.model.reflection.EmaReflection
+import com.carmabs.ema.core.model.reflection.EmaReflectionData
+import com.carmabs.ema.core.model.reflection.EmaReflectionException
 import com.carmabs.ema.core.navigator.EmaNavigationDirectionEvent
 import com.carmabs.ema.core.navigator.EmaNavigationEvent
 import com.carmabs.ema.core.state.EmaDataState
@@ -33,8 +41,19 @@ abstract class EmaViewModelBasic<S : EmaDataState, N : EmaNavigationEvent>(
 ) : EmaViewModel<S, N> {
 
     private val singleSideEffectMap by lazy {
-        hashMapOf<String,Job>()
+        hashMapOf<String, Job>()
     }
+
+    /**
+     * Ema configuration
+     */
+    private val config: EmaApplicationConfig = EmaApplicationConfigProvider.instance
+
+    /**
+     * SideEffect configuration
+     */
+    private val sideEffectConfig = config.sideEffectConfig
+
     /**
      * The scope where coroutines will be launched by default.
      */
@@ -42,7 +61,7 @@ abstract class EmaViewModelBasic<S : EmaDataState, N : EmaNavigationEvent>(
         private set
 
 
-     /**
+    /**
      * To determine if the view must be updated when view model is created automatically
      */
     protected open val updateOnInitialization: Boolean = true
@@ -259,21 +278,72 @@ abstract class EmaViewModelBasic<S : EmaDataState, N : EmaNavigationEvent>(
      */
     protected fun <T> sideEffect(
         dispatcher: CoroutineContext = this.scope.coroutineContext,
+        throwException: Boolean = shouldThrowException(),
         action: suspend CoroutineScope.() -> T
     ): EmaFunctionResultHandler<T> {
-        return EmaFunctionResultHandler(scope, dispatcher, action)
+        return generateResultHandler(dispatcher, throwException, action)
+    }
+
+    private fun <T> generateResultHandler(
+        dispatcher: CoroutineContext,
+        throwException: Boolean,
+        action: suspend CoroutineScope.() -> T
+    ) = EmaFunctionResultHandler(
+        scope = scope,
+        dispatcher = dispatcher,
+        onAction = action,
+        throwExceptions = throwException,
+        successDefaultAction = sideEffectConfig.defaultSuccessAction?.let { success ->
+            {
+                success.invoke(EmaReflectionData(generateEmaReflection(action), it))
+            }
+        },
+        errorDefaultAction = when (val exceptionPolicy = sideEffectConfig.exceptionPolicy) {
+            is EmaSideEffectConfig.ExceptionPolicy.CatchExceptions -> {
+                {
+                    exceptionPolicy.defaultAction?.invoke(
+                        EmaReflectionException(
+                            generateEmaReflection(
+                                action
+                            ), it
+                        )
+                    )
+                }
+            }
+
+            EmaSideEffectConfig.ExceptionPolicy.ThrowExceptions -> null
+        },
+        finishDefaultAction = sideEffectConfig.defaultFinishAction?.let {
+            {
+                it.invoke(generateEmaReflection(action))
+            }
+        }
+    )
+
+    private fun <T> generateEmaReflection(action: suspend CoroutineScope.() -> T): EmaReflection {
+        val delimiter = "$"
+        return EmaReflection(
+            containerClassName = this::class.java.simpleName,
+            containerClassQualifiedName = this::class.qualifiedName.checkNull(this::class.java.name),
+            methodName = action::class.java.name.substringAfter(this::class.java.name)
+                .substringBeforeLast(delimiter, STRING_EMPTY).substringAfter(delimiter)
+        )
     }
 
     protected fun <T> singleSideEffect(
-        id:String,
+        id: String,
         dispatcher: CoroutineContext = this.scope.coroutineContext,
+        throwException: Boolean = shouldThrowException(),
         action: suspend CoroutineScope.() -> T
     ): EmaFunctionResultHandler<T> {
         singleSideEffectMap[id]?.cancel()
-        val handler =  EmaFunctionResultHandler(scope, dispatcher, action)
+        val handler = generateResultHandler(dispatcher, throwException, action)
         singleSideEffectMap[id] = handler.job
         return handler
     }
+
+    private fun shouldThrowException() =
+        sideEffectConfig.exceptionPolicy is EmaSideEffectConfig.ExceptionPolicy.ThrowExceptions
 
     /**
      * Method to override onCleared ViewModel method
@@ -390,7 +460,7 @@ abstract class EmaViewModelBasic<S : EmaDataState, N : EmaNavigationEvent>(
                 function = receiver
             )
         )
-        emaResultHandler.notifyPendingResults(id,backBroadcastId)
+        emaResultHandler.notifyPendingResults(id, backBroadcastId)
     }
 
     /**

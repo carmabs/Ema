@@ -2,6 +2,7 @@ package com.carmabs.ema.android.base
 
 import android.app.Application
 import androidx.annotation.CallSuper
+import com.carmabs.ema.core.model.EmaApplicationConfig
 
 /**
  *
@@ -12,9 +13,12 @@ import androidx.annotation.CallSuper
  */
 abstract class EmaApplication : Application(), EmaApplicationAware {
 
+    abstract val emaConfiguration: EmaApplicationConfig
+
     @CallSuper
     override fun onCreate() {
         super.onCreate()
-        initializeEma()
+        initializeEma(emaConfiguration)
     }
+
 }
