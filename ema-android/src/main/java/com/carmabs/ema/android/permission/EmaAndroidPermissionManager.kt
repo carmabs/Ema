@@ -15,10 +15,12 @@ import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
 import androidx.fragment.app.Fragment
 import com.carmabs.ema.android.R
 import com.carmabs.ema.android.extension.findActivity
+import com.carmabs.ema.core.extension.ifTrueLet
 import com.carmabs.ema.core.extension.toScope
 import com.carmabs.ema.core.manager.EmaPermissionManager
 import com.carmabs.ema.core.manager.PermissionState
 import com.carmabs.ema.core.manager.areAllPermissionsStateGranted
+import com.carmabs.ema.core.model.EmaMultiplePermissionRequest
 import com.carmabs.ema.core.model.EmaPermissionRequest
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -514,22 +516,50 @@ class EmaAndroidPermissionManager : EmaPermissionManager {
 
     override fun handleRequest(
         request: EmaPermissionRequest,
-        permission: String,
-        scope: CoroutineScope
+        scope: CoroutineScope,
+        permission: String
     ) {
         if (request.shouldRequest) {
             requestMap[permission]?.cancel()
             requestMap[permission] = scope.launch {
                 val state = requestPermission(permission)
                 request.onPermissionResponse.invoke(state)
+                requestMap.remove(permission)
             }
+        } else {
+            requestMap.remove(permission)
         }
     }
 
-    override fun responseRequestAs(
+    override fun handleRequestMultiple(
+        request: EmaMultiplePermissionRequest,
+        scope: CoroutineScope,
+        vararg permission: String,
+    ) {
+        val permissionKey = permission.reduce { acc, s -> "$acc,$s" }
+        if (request.shouldRequest) {
+            requestMap[permissionKey]?.cancel()
+            requestMap[permissionKey] = scope.launch {
+                val stateMap = requestMultiplePermission(*permission)
+                request.onPermissionResponse.invoke(stateMap)
+                requestMap.remove(permissionKey)
+            }
+        } else {
+            requestMap.remove(permissionKey)
+        }
+    }
+
+    override fun responseRequest(
         request: EmaPermissionRequest,
         permissionState: PermissionState
     ) {
         request.onPermissionResponse.invoke(permissionState)
+    }
+
+    override fun responseRequest(
+        request: EmaMultiplePermissionRequest,
+        permissionMap: Map<String, PermissionState>
+    ) {
+        request.onPermissionResponse.invoke(permissionMap)
     }
 }

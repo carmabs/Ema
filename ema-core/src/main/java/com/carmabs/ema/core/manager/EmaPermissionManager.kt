@@ -1,5 +1,6 @@
 package com.carmabs.ema.core.manager
 
+import com.carmabs.ema.core.model.EmaMultiplePermissionRequest
 import com.carmabs.ema.core.model.EmaPermissionRequest
 import kotlinx.coroutines.CoroutineScope
 
@@ -36,7 +37,16 @@ interface EmaPermissionManager {
 
     fun isLocationCoarseGranted(): PermissionState
 
-    fun handleRequest(request: EmaPermissionRequest, permission: String, scope: CoroutineScope)
+    fun handleRequest(request: EmaPermissionRequest, scope: CoroutineScope, permission: String)
 
-    fun responseRequestAs(request: EmaPermissionRequest,permissionState:PermissionState)
+    fun handleRequestMultiple(
+        request: EmaMultiplePermissionRequest,
+        scope: CoroutineScope,
+        vararg permission: String
+    )
+
+    fun responseRequest(request: EmaPermissionRequest, permissionState: PermissionState)
+
+    fun responseRequest(request: EmaMultiplePermissionRequest, permissionMap: Map<String,PermissionState>)
+
 }

@@ -13,6 +13,7 @@ import com.carmabs.ema.compose.extension.isInPreview
 import com.carmabs.ema.core.constants.INT_ZERO
 import com.carmabs.ema.core.manager.EmaPermissionManager
 import com.carmabs.ema.core.manager.PermissionState
+import com.carmabs.ema.core.model.EmaMultiplePermissionRequest
 import com.carmabs.ema.core.model.EmaPermissionRequest
 import kotlinx.coroutines.CoroutineScope
 
@@ -111,17 +112,31 @@ private object EmaPreviewPermissionManager : EmaPermissionManager {
 
     override fun handleRequest(
         request: EmaPermissionRequest,
+        scope: CoroutineScope,
         permission: String,
-        scope: CoroutineScope
     ) {
         request.onPermissionResponse.invoke(PermissionState.GRANTED)
     }
 
-    override fun responseRequestAs(
+    override fun responseRequest(
         request: EmaPermissionRequest,
         permissionState: PermissionState
     ) {
         request.onPermissionResponse.invoke(permissionState)
     }
 
+    override fun handleRequestMultiple(
+        request: EmaMultiplePermissionRequest,
+        scope: CoroutineScope,
+        vararg permission: String
+    ) {
+        request.onPermissionResponse.invoke(permission.associateWith { PermissionState.GRANTED })
+    }
+
+    override fun responseRequest(
+        request: EmaMultiplePermissionRequest,
+        permissionMap: Map<String, PermissionState>
+    ) {
+        request.onPermissionResponse.invoke(permissionMap)
+    }
 }
