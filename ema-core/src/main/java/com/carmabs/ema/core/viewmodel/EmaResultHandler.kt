@@ -1,5 +1,6 @@
 package com.carmabs.ema.core.viewmodel
 
+import androidx.annotation.RestrictTo
 import com.carmabs.ema.core.broadcast.BackBroadcastId
 
 /**
@@ -11,7 +12,8 @@ import com.carmabs.ema.core.broadcast.BackBroadcastId
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-internal class EmaResultHandler private constructor() {
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+class EmaResultHandler private constructor() {
 
 
     companion object {

@@ -1,5 +1,6 @@
 package com.carmabs.ema.core.state
 
+import androidx.annotation.RestrictTo
 import com.carmabs.ema.core.model.EmaEvent
 import com.carmabs.ema.core.navigator.EmaNavigationDirection
 import com.carmabs.ema.core.navigator.EmaNavigationDirectionEvent
@@ -112,15 +113,16 @@ sealed class EmaState<S : EmaDataState, N : EmaNavigationEvent> private construc
             is Overlapped -> copy(singleEvent = EmaEvent.Launched(extraData))
         }
     }
-
-    internal fun onNavigated(): EmaState<S, N> {
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    fun onNavigated(): EmaState<S, N> {
         return when (this) {
             is Normal -> copy(navigation = EmaNavigationDirectionEvent.OnNavigated)
             is Overlapped -> copy(navigation = EmaNavigationDirectionEvent.OnNavigated)
         }
     }
 
-    internal fun consumeSingleEvent(): EmaState<S, N> {
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    fun consumeSingleEvent(): EmaState<S, N> {
         return when (this) {
             is Normal -> copy(singleEvent = EmaEvent.Consumed)
             is Overlapped -> copy(singleEvent = EmaEvent.Consumed)

@@ -1,5 +1,7 @@
 package com.carmabs.ema.core.viewmodel
 
+import androidx.annotation.RestrictTo
+
 /**
  * Model to handle activity result feature
  *
@@ -7,7 +9,8 @@ package com.carmabs.ema.core.viewmodel
  * @implementation Function to handle activity result. Return true to remove the listener after use it
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
-internal data class EmaResultModel(
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+data class EmaResultModel internal constructor(
     val key: String,
     val data: Any?,
     val ownerId: String
