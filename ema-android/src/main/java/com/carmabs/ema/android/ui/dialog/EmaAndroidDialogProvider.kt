@@ -12,13 +12,14 @@ import com.carmabs.ema.core.dialog.EmaDialogProvider
  *
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
-abstract class EmaAndroidDialogProvider constructor(
+abstract class EmaAndroidDialogProvider(
     private val fragmentManager: FragmentManager,
     private val dialogTag: String? = null
 ) :
     EmaDialogProvider {
 
-    private var dialog: EmaDialog<*, EmaDialogData>? = null
+    private val dialog: EmaDialog<*, EmaDialogData>?
+        get() = fragmentManager.findFragmentByTag(tag) as? EmaDialog<*, EmaDialogData>
 
     abstract fun generateDialog(dialogData: EmaDialogData?): EmaDialog<*, *>
 
@@ -26,66 +27,54 @@ abstract class EmaAndroidDialogProvider constructor(
 
         //We use this to avoid fragment duplication due to internal fragment save state. It guarantees that on rotation
         //the same fragment is updated and not generate a new one
-        fragmentManager.findFragmentByTag(tag)?.also {
-            dialog = (it as EmaDialog<*, EmaDialogData>).apply {
-                updateDialogData(this, dialogData)
-            }
+        dialog?.also {
+            updateDialogData(it, dialogData)
         } ?: also {
-            val dialogToUpdate = dialog ?: let {
-                val newDialog = (generateDialog(dialogData) as EmaDialog<*, EmaDialogData>)
-                if (!newDialog.isVisible && !newDialog.isAdded) {
-                    newDialog.show(
-                        fragmentManager,
-                        tag
-                    )
-                }
-                newDialog
+            generateDialog(dialogData).also { dialog ->
+                val emaDialog = dialog as EmaDialog<*, EmaDialogData>
+                emaDialog.show(fragmentManager, tag)
+                updateDialogData(emaDialog, dialogData)
             }
-            updateDialogData(dialogToUpdate,dialogData)
-            dialog = dialogToUpdate
-    }
-}
-
-private fun updateDialogData(
-    dialog: EmaDialog<*, EmaDialogData>,
-    dialogData: EmaDialogData?
-) {
-    dialog.dialogListener = dialogListener
-    dialogData?.also {
-        dialog.updateData {
-            it
         }
     }
-}
 
-override fun hide() {
-    //It guarantees that fragment is totally destroyed when it is hidden. Otherwise, the fragment could be saved
-    //internally and create duplications on fragment recreations.
-    dialog?.let {
-        if (!it.isHidden) {
-            Log.d(tag, "Alternative dialog totally hidden")
-            it.dismissAllowingStateLoss()
+    private fun updateDialogData(
+        dialog: EmaDialog<*, EmaDialogData>,
+        dialogData: EmaDialogData?
+    ) {
+        dialog.dialogListener = dialogListener
+        dialogData?.also {
+            dialog.updateData {
+                it
+            }
         }
-        fragmentManager.beginTransaction().remove(it).commitNowAllowingStateLoss()
+    }
+
+    override fun hide() {
+        //It guarantees that fragment is totally destroyed when it is hidden. Otherwise, the fragment could be saved
+        //internally and create duplications on fragment recreations.
+        dialog?.let {
+            if (!it.isHidden) {
+                Log.d(tag, "Alternative dialog totally hidden")
+                it.dismissAllowingStateLoss()
+            }
+            fragmentManager.beginTransaction().remove(it).commitNowAllowingStateLoss()
+        }
     }
 
 
-    dialog = null
-}
+    override val isVisible: Boolean
+        get() = fragmentManager.findFragmentByTag(tag)?.isVisible ?: false
 
+    override var dialogListener: EmaDialogListener? = null
+        set(value) {
+            field = value
+            dialog?.dialogListener = value
+        }
 
-override val isVisible: Boolean
-    get() = fragmentManager.findFragmentByTag(tag)?.isVisible ?: false
-
-override var dialogListener: EmaDialogListener? = null
-    set(value) {
-        field = value
-        dialog?.dialogListener = value
+    private val tag by lazy {
+        dialogTag ?: javaClass.name.toString()
     }
-
-private val tag by lazy {
-    dialogTag ?: javaClass.name.toString()
-}
 
 
 }
