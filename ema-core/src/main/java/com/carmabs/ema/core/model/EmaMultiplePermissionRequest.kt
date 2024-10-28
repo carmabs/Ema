@@ -12,22 +12,22 @@ import com.carmabs.ema.core.manager.PermissionState
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-class EmaPermissionRequest private constructor(
+class EmaMultiplePermissionRequest private constructor(
     @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val shouldRequest: Boolean,
     @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    val onPermissionResponse: ((PermissionState) -> Unit)
+    val onPermissionResponse: ((Map<String, PermissionState>) -> Unit)
 ) {
     companion object {
-        fun createRequest(onPermissionResponse: (PermissionState) -> Unit): EmaPermissionRequest {
-            return EmaPermissionRequest(
+        fun createRequest(onPermissionResponse: (Map<String, PermissionState>) -> Unit): EmaMultiplePermissionRequest {
+            return EmaMultiplePermissionRequest(
                 shouldRequest = true,
                 onPermissionResponse = onPermissionResponse
             )
         }
 
-        fun cancelRequest(): EmaPermissionRequest {
-            return EmaPermissionRequest(
+        fun cancelRequest(): EmaMultiplePermissionRequest {
+            return EmaMultiplePermissionRequest(
                 shouldRequest = false,
                 onPermissionResponse = { }
             )

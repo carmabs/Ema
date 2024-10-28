@@ -15,10 +15,15 @@ import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
 import androidx.fragment.app.Fragment
 import com.carmabs.ema.android.R
 import com.carmabs.ema.android.extension.findActivity
+import com.carmabs.ema.core.extension.ifTrueLet
 import com.carmabs.ema.core.extension.toScope
 import com.carmabs.ema.core.manager.EmaPermissionManager
 import com.carmabs.ema.core.manager.PermissionState
 import com.carmabs.ema.core.manager.areAllPermissionsStateGranted
+import com.carmabs.ema.core.model.EmaMultiplePermissionRequest
+import com.carmabs.ema.core.model.EmaPermissionRequest
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlin.coroutines.coroutineContext
 import kotlin.coroutines.resume
@@ -40,8 +45,10 @@ class EmaAndroidPermissionManager : EmaPermissionManager {
     private val permissionMultipleRequest: ActivityResultLauncher<Array<String>>
     private val contractSinglePermission: EmaContractSinglePermission
     private val contractMultiplePermission: EmaContractMultiplePermission
-    private val context: ()->Context
+    private val context: () -> Context
     private val shouldShowRequestPermissionRationaleFunction: (String) -> Boolean
+
+    private val requestMap = HashMap<String, Job>()
 
     companion object {
         fun isPermissionGranted(context: Context, permission: String): Boolean {
@@ -73,7 +80,7 @@ class EmaAndroidPermissionManager : EmaPermissionManager {
     constructor(
         fragment: Fragment
     ) {
-        this.context =  { fragment.requireContext() }
+        this.context = { fragment.requireContext() }
         this.shouldShowRequestPermissionRationaleFunction =
             { fragment.shouldShowRequestPermissionRationale(it) }
         this.contractSinglePermission =
@@ -505,5 +512,54 @@ class EmaAndroidPermissionManager : EmaPermissionManager {
                 throw RuntimeException("You must set <uses-permission android:name=\"$it\" /> in the manifest file")
         }
 
+    }
+
+    override fun handleRequest(
+        request: EmaPermissionRequest,
+        scope: CoroutineScope,
+        permission: String
+    ) {
+        if (request.shouldRequest) {
+            requestMap[permission]?.cancel()
+            requestMap[permission] = scope.launch {
+                val state = requestPermission(permission)
+                request.onPermissionResponse.invoke(state)
+                requestMap.remove(permission)
+            }
+        } else {
+            requestMap.remove(permission)
+        }
+    }
+
+    override fun handleRequestMultiple(
+        request: EmaMultiplePermissionRequest,
+        scope: CoroutineScope,
+        vararg permission: String,
+    ) {
+        val permissionKey = permission.reduce { acc, s -> "$acc,$s" }
+        if (request.shouldRequest) {
+            requestMap[permissionKey]?.cancel()
+            requestMap[permissionKey] = scope.launch {
+                val stateMap = requestMultiplePermission(*permission)
+                request.onPermissionResponse.invoke(stateMap)
+                requestMap.remove(permissionKey)
+            }
+        } else {
+            requestMap.remove(permissionKey)
+        }
+    }
+
+    override fun responseRequest(
+        request: EmaPermissionRequest,
+        permissionState: PermissionState
+    ) {
+        request.onPermissionResponse.invoke(permissionState)
+    }
+
+    override fun responseRequest(
+        request: EmaMultiplePermissionRequest,
+        permissionMap: Map<String, PermissionState>
+    ) {
+        request.onPermissionResponse.invoke(permissionMap)
     }
 }

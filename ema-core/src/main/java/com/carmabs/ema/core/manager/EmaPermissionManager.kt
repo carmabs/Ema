@@ -1,5 +1,9 @@
 package com.carmabs.ema.core.manager
 
+import com.carmabs.ema.core.model.EmaMultiplePermissionRequest
+import com.carmabs.ema.core.model.EmaPermissionRequest
+import kotlinx.coroutines.CoroutineScope
+
 /**
  * Created by Carlos Mateo Benito on 2022-08-12.
  *
@@ -23,13 +27,26 @@ interface EmaPermissionManager {
 
     fun shouldShowRequestPermissionRationale(permission: String): Boolean
 
-    suspend fun requestCoarseLocationPermission():PermissionState
+    suspend fun requestCoarseLocationPermission(): PermissionState
 
-    suspend fun requestFineLocationPermission():PermissionState
+    suspend fun requestFineLocationPermission(): PermissionState
 
     fun isLocationFineGranted(): PermissionState
 
     fun isLocationBackgroundGranted(): PermissionState
 
     fun isLocationCoarseGranted(): PermissionState
+
+    fun handleRequest(request: EmaPermissionRequest, scope: CoroutineScope, permission: String)
+
+    fun handleRequestMultiple(
+        request: EmaMultiplePermissionRequest,
+        scope: CoroutineScope,
+        vararg permission: String
+    )
+
+    fun responseRequest(request: EmaPermissionRequest, permissionState: PermissionState)
+
+    fun responseRequest(request: EmaMultiplePermissionRequest, permissionMap: Map<String,PermissionState>)
+
 }
