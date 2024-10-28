@@ -1,5 +1,8 @@
 package com.carmabs.ema.core.usecase
 
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+
 /**
  * Base class to handle every use case.
  *
@@ -19,14 +22,14 @@ interface UseCase<I, O> {
      * Executes a function inside a background thread by async way
      * @return the object with the return value
      */
-    suspend operator fun invoke(input: I): O
+    suspend operator fun invoke(input: I, dispatcher: CoroutineDispatcher = Dispatchers.IO): O
 
     /**
      * Executes a function inside blocking the thread until
      * the result is delivered
      * @return the object with the return value
      */
-    fun executeBlocking(input: I): O
+    fun executeBlocking(input: I, dispatcher: CoroutineDispatcher = Dispatchers.IO): O
 
     /**
      * Executes a function inside the current thread by dispatcher blocking the thread until
