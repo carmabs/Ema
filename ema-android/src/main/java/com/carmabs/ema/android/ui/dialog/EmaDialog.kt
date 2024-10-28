@@ -77,6 +77,7 @@ abstract class EmaDialog<B : ViewBinding, T : EmaDialogData> : DialogFragment(),
     fun updateData(updateAction: T.() -> T): T {
         data = data.let(updateAction)
         _binding?.setup(data)
+        updateDialogSizeAndBehaviour()
         return data
     }
 
@@ -103,6 +104,12 @@ abstract class EmaDialog<B : ViewBinding, T : EmaDialogData> : DialogFragment(),
     @CallSuper
     override fun onResume() {
         super.onResume()
+        updateDialogSizeAndBehaviour()
+
+
+    }
+
+    private fun updateDialogSizeAndBehaviour() {
         dialog?.window?.also { win ->
             val display = getScreenMetrics(requireContext())
             val size = Point().apply {
@@ -122,8 +129,6 @@ abstract class EmaDialog<B : ViewBinding, T : EmaDialogData> : DialogFragment(),
                 }
             }
         }
-
-
     }
 
     @CallSuper
@@ -132,16 +137,6 @@ abstract class EmaDialog<B : ViewBinding, T : EmaDialogData> : DialogFragment(),
             dismissAllowingStateLoss()
     }
 
-    @CallSuper
-    override fun show(manager: FragmentManager, tag: String?) {
-        manager.apply {
-            val oldFragment = findFragmentByTag(tag)
-            val ft = beginTransaction()
-            oldFragment?.let { ft.remove(oldFragment) }
-            ft.add(this@EmaDialog, tag)
-            ft.commit()
-        }
-    }
 
     protected abstract fun createInitialState(): T
 
