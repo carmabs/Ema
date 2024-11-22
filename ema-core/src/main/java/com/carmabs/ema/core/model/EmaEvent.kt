@@ -13,7 +13,7 @@ import com.carmabs.ema.core.state.EmaExtraData
  */
 sealed class EmaEvent {
     data class Launched(val data: EmaExtraData = EmaExtraData()) : EmaEvent()
-    object Consumed : EmaEvent()
+    data object Consumed : EmaEvent()
 
     fun isConsumed(): Boolean {
         return this is Consumed
