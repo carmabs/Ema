@@ -6,9 +6,11 @@ import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 
 /**
  * Created by Carlos Mateo Benito on 11/5/23
@@ -35,6 +37,11 @@ fun @receiver:StringRes Int.toComposeString(vararg args: Any): String {
 @Composable
 fun @receiver:DrawableRes Int.toComposePainter(): Painter {
     return painterResource(id = this)
+}
+
+@Composable
+fun @receiver:DrawableRes Int.toComposeImageVector(): ImageVector {
+    return ImageVector.vectorResource(id = this)
 }
 
 @Composable
