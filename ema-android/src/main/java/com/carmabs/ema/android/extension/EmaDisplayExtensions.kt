@@ -66,7 +66,7 @@ val Float.sp
 /**
  * Get display metrics
  */
-fun getScreenMetrics(context: Context,excludeInsets:Boolean = false): DisplayMetrics {
+fun getScreenMetrics(context: Context, includeInsets:Boolean = false): DisplayMetrics {
     val displayMetrics = context.resources.displayMetrics
     val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
 
@@ -98,7 +98,7 @@ fun getScreenMetrics(context: Context,excludeInsets:Boolean = false): DisplayMet
          *
          *
         */
-        if(excludeInsets) {
+        if(includeInsets) {
             val boundsActivity = windowManager.currentWindowMetrics.bounds
             displayMetrics.apply {
                 heightPixels = boundsActivity.height()
