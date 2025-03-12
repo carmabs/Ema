@@ -34,7 +34,7 @@ rootProject.ext {
 
     kotlinCompilerExtensionVersion = '1.0.5'
 
-    koinVersion = "3.3.0"
+    koinVersion = "4.0.2"
 
     lifecycleKtExtensionVersion = '2.5.1'
 
