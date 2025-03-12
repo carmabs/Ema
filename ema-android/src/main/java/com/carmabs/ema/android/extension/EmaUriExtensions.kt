@@ -30,6 +30,11 @@ fun EmaUriRes.getResourceId(context: Context, type: String = "id"): Int {
     )
 }
 
+@SuppressLint("DiscouragedApi")
+fun EmaUriRes.requireResourceDrawable(context: Context): Int {
+    return getResourceId(context, "drawable")
+}
+
 inline fun EmaUriRes.onDrawable(context: Context, onAction: Drawable.() -> Unit): EmaUriRes {
     if (type == EmaUriType.Drawable) {
         requireDrawable(context).onAction()

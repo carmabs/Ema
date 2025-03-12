@@ -508,7 +508,7 @@ class EmaAndroidPermissionManager : EmaPermissionManager {
             PackageManager.GET_PERMISSIONS
         ).requestedPermissions
         permissions.forEach {
-            if (!manifestPermissions.contains(it))
+            if (manifestPermissions?.contains(it) == false)
                 throw RuntimeException("You must set <uses-permission android:name=\"$it\" /> in the manifest file")
         }
 

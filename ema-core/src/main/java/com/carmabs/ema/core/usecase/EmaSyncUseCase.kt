@@ -1,8 +1,5 @@
 package com.carmabs.ema.core.usecase
 
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
-
 /**
  * Base class to handle every use case.
  *
@@ -16,12 +13,12 @@ import kotlinx.coroutines.Dispatchers
  * @param O Output.Must be the model object that the use case must return
  */
 
-interface UseCase<I, O> {
+interface EmaSyncUseCase<I, O> {
 
     /**
-     * Executes a function inside a background thread by async way
+     * Executes the use case function
      * @return the object with the return value
      */
-    suspend operator fun invoke(input: I, dispatcher: CoroutineDispatcher = Dispatchers.IO): O
+    operator fun invoke(input: I): O
 
 }

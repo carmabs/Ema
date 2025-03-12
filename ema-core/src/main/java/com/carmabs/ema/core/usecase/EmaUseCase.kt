@@ -29,28 +29,6 @@ abstract class EmaUseCase<I, O> : UseCase<I, O> {
     }
 
     /**
-     * Executes a function inside a background thread provided by dispatcher blocking the thread until
-     * the result is delivered
-     * @return the object with the return value
-     */
-    override fun executeBlocking(input: I, dispatcher: CoroutineDispatcher): O {
-        return runBlocking(dispatcher) {
-            useCaseFunction(input)
-        }
-    }
-
-    /**
-     * Executes a function inside the current thread by dispatcher blocking the thread until
-     * the result is delivered
-     * @return the object with the return value
-     */
-    override fun executeBlockingInCurrentThread(input: I): O {
-        return runBlocking {
-            useCaseFunction(input)
-        }
-    }
-
-    /**
      * Function to implement by child classes to execute the code associated to data retrieving.
      * It will be executed on background thread
      */

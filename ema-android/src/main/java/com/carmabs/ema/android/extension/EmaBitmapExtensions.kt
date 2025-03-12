@@ -64,7 +64,7 @@ fun Bitmap.toByteArray(): ByteArray {
 }
 
 fun Bitmap.copyDefault(mutable: Boolean = true): Bitmap {
-    return copy(config, mutable)
+    return copy(config!!, mutable)
 }
 
 suspend fun ByteArray.toBitmap(
@@ -88,7 +88,7 @@ suspend fun ByteArray.toBitmap(
             BitmapFactory.decodeByteArray(this@toBitmap, 0, size)
         }
         colorTint?.let {
-            val tintBitmap = resultBitmap.copy(resultBitmap.config, true)
+            val tintBitmap = resultBitmap.copy(resultBitmap.config!!, true)
             val paint = Paint().apply {
                 colorFilter = PorterDuffColorFilter(it, PorterDuff.Mode.SRC_IN)
             }
