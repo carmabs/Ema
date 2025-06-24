@@ -46,8 +46,8 @@ rootProject.ext {
 
     emaVersioning = [
             minSdk           : 24,
-            compileSdk       : 34,
-            targetSdk        : 34,
+            compileSdk       : 35,
+            targetSdk        : 35,
             versionCode      : 18,
             versionName      : "6.1.1",
             groupId          : 'com.github.carmabs',
