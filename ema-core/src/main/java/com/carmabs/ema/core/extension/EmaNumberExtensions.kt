@@ -61,6 +61,10 @@ fun Float.maxOrNull(max: Float): Float? {
         null
 }
 
+fun Float.hasDecimals(): Boolean {
+    return this != ceil(this)
+}
+
 fun Short?.checkNull(defaultValue: Short = SHORT_ZERO): Short {
     return this ?: defaultValue
 }
