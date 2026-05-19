@@ -1,5 +1,4 @@
 apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
 android {
 
     defaultConfig {
@@ -26,8 +25,10 @@ android {
         targetCompatibility = javaVersion
     }
 
-    kotlinOptions {
-        jvmTarget = javaVersion.toString()
+    kotlin {
+        compilerOptions {
+            jvmTarget = "JVM_17"
+        }
     }
 
     namespace 'com.carmabs.ema.sample.data'

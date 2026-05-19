@@ -1,5 +1,19 @@
+apply from: '../build-system/dependencies.gradle'
+
+buildscript {
+    apply from: '../build-system/dependencies.gradle'
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath "com.android.tools.build:gradle:${emaVersioning.agpVersion}"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${emaVersioning.kotlinVersion}"
+    }
+}
+
 apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
+apply plugin: 'org.jetbrains.kotlin.plugin.compose'
 apply from: '../build-system/compose.gradle'
 apply plugin: 'maven-publish'
 
@@ -10,37 +24,42 @@ android {
         minSdkVersion emaVersioning.minSdk
         targetSdkVersion emaVersioning.targetSdk
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner emaVersioning.testRunner
 
     }
 
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 
-    def javaVersion= JavaVersion.VERSION_17
-
     compileOptions {
-        sourceCompatibility = javaVersion
-        targetCompatibility = javaVersion
+        sourceCompatibility = emaVersioning.javaVersion
+        targetCompatibility = emaVersioning.javaVersion
     }
 
-    kotlinOptions {
-        jvmTarget = javaVersion.toString()
+    kotlin {
+        compilerOptions {
+            jvmTarget = emaVersioning.kotlinJvmTarget
+        }
     }
 
     packagingOptions {
         resources {
-            pickFirsts += ['META-INF/kotlinx-io.kotlin_module', 'META-INF/ema-android_debug.kotlin_module']
+            pickFirsts += emaVersioning.resourceExclusions
         }
     }
 
 
     with(composeConfig)
-    namespace 'com.carmabs.ema.compose'
+
+    publishing {
+        singleVariant("release")
+    }
+
+    namespace emaVersioning.namespaceCompose
 }
 
 dependencies {

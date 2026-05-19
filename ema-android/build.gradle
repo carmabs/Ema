@@ -1,5 +1,18 @@
+apply from: '../build-system/dependencies.gradle'
+
+buildscript {
+    apply from: '../build-system/dependencies.gradle'
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath "com.android.tools.build:gradle:${emaVersioning.agpVersion}"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${emaVersioning.kotlinVersion}"
+    }
+}
+
 apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
 
 android {
@@ -9,31 +22,31 @@ android {
         minSdkVersion emaVersioning.minSdk
         targetSdk emaVersioning.targetSdk
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner emaVersioning.testRunner
 
     }
 
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 
-    def javaVersion= JavaVersion.VERSION_17
-
     compileOptions {
-        sourceCompatibility = javaVersion
-        targetCompatibility = javaVersion
+        sourceCompatibility = emaVersioning.javaVersion
+        targetCompatibility = emaVersioning.javaVersion
     }
 
-    kotlinOptions {
-        jvmTarget = javaVersion.toString()
+    kotlin {
+        compilerOptions {
+            jvmTarget = emaVersioning.kotlinJvmTarget
+        }
     }
 
     packagingOptions {
         resources {
-            pickFirsts += ['META-INF/kotlinx-io.kotlin_module', 'META-INF/ema-android_debug.kotlin_module']
+            pickFirsts += emaVersioning.resourceExclusions
         }
     }
 
@@ -41,7 +54,12 @@ android {
     buildFeatures {
         viewBinding true
     }
-    namespace 'com.carmabs.ema.android'
+
+    publishing {
+        singleVariant("release")
+    }
+
+    namespace emaVersioning.namespaceAndroid
 }
 
 dependencies {

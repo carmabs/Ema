@@ -1,5 +1,5 @@
 apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
+apply from: '../build-system/dependencies.gradle'
 
 android {
 
@@ -7,7 +7,7 @@ android {
         minSdkVersion emaVersioning.minSdk
         compileSdkVersion emaVersioning.compileSdk
         targetSdkVersion emaVersioning.targetSdk
-        testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
+        testInstrumentationRunner emaVersioning.testRunner
 
     }
 
@@ -16,19 +16,21 @@ android {
         }
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility = emaVersioning.javaVersion
+        targetCompatibility = emaVersioning.javaVersion
     }
 
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8.toString()
+    kotlin {
+        compilerOptions {
+            jvmTarget = emaVersioning.kotlinJvmTarget
+        }
     }
-    namespace 'com.carmabs.ema.testing.android'
+    namespace emaVersioning.namespaceTestingAndroid
 
 }
 

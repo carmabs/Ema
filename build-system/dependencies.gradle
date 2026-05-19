@@ -26,7 +26,7 @@ rootProject.ext {
 
     espressoVersion = "3.4.0"
 
-    kotlinVersion = '1.9.10'
+    kotlinVersion = '2.2.21'
 
     viewmodelVersion = "2.5.1"
 
@@ -45,6 +45,8 @@ rootProject.ext {
     serializationJsonVersion = "1.6.0"
 
     emaVersioning = [
+            kotlinVersion    : '2.2.21',
+            agpVersion       : '9.2.1',
             minSdk           : 24,
             compileSdk       : 35,
             targetSdk        : 35,
@@ -53,7 +55,14 @@ rootProject.ext {
             groupId          : 'com.github.carmabs',
             artifactCoreId   : 'ema-core',
             artifactAndroidId: 'ema-android',
-            artifactComposeId: 'ema-compose'
+            artifactComposeId: 'ema-compose',
+            javaVersion      : JavaVersion.VERSION_21,
+            kotlinJvmTarget  : "JVM_21",
+            testRunner       : "androidx.test.runner.AndroidJUnitRunner",
+            resourceExclusions: ['META-INF/kotlinx-io.kotlin_module', 'META-INF/ema-android_debug.kotlin_module'],
+            namespaceAndroid : 'com.carmabs.ema.android',
+            namespaceCompose : 'com.carmabs.ema.compose',
+            namespaceTestingAndroid : 'com.carmabs.ema.testing.android'
     ]
 
     emaCoreDependencies = [
