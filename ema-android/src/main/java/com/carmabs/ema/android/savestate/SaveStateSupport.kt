@@ -1,7 +1,7 @@
 package com.carmabs.ema.android.savestate
 
 import androidx.lifecycle.SavedStateHandle
-import com.carmabs.ema.core.state.EmaEffect
+import com.carmabs.ema.core.state.EmaEvent
 import com.carmabs.ema.core.state.EmaState
 
 /**
@@ -13,7 +13,7 @@ import com.carmabs.ema.core.state.EmaState
  *
  * @author <a href=“mailto:apps.carmabs@gmail.comm”>Carlos Mateo Benito</a>
  */
-data class SavedStateSupport<S : EmaState, E : EmaEffect>(
+data class SavedStateSupport<S : EmaState, E : EmaEvent>(
     val savedStateHandle: SavedStateHandle,
     val saveStateManager: SaveStateManager<S, E>
 )

@@ -1,7 +1,7 @@
 package com.carmabs.ema.android.savestate
 
 import androidx.lifecycle.SavedStateHandle
-import com.carmabs.ema.core.state.EmaEffect
+import com.carmabs.ema.core.state.EmaEvent
 import com.carmabs.ema.core.state.EmaState
 import com.carmabs.ema.core.viewmodel.EmaViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -15,7 +15,7 @@ import kotlinx.coroutines.CoroutineScope
  *
  * @author <a href=“mailto:apps.carmabs@gmail.comm”>Carlos Mateo Benito</a>
  */
-interface SaveStateManager<S : EmaState, E : EmaEffect> {
+interface SaveStateManager<S : EmaState, E : EmaEvent> {
     fun onSaveStateHandling(
         scope: CoroutineScope,
         saveStateHandle: SavedStateHandle,
@@ -23,7 +23,7 @@ interface SaveStateManager<S : EmaState, E : EmaEffect> {
     )
 }
 
-fun <S : EmaState, E : EmaEffect> emaSaveStateManager(
+fun <S : EmaState, E : EmaEvent> emaSaveStateManager(
     scope: CoroutineScope,
     saveStateHandle: SavedStateHandle,
     viewModel: EmaViewModel<S, E>

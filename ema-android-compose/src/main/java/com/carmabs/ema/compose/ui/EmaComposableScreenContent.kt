@@ -5,15 +5,14 @@ import android.content.Context
 import androidx.compose.runtime.Composable
 import com.carmabs.ema.compose.action.EmaImmutableActionDispatcher
 import com.carmabs.ema.core.action.EmaAction
-import com.carmabs.ema.core.state.EmaEffect
-import com.carmabs.ema.core.state.EmaExtraData
+import com.carmabs.ema.core.state.EmaEvent
 import com.carmabs.ema.core.state.EmaState
 
-interface EmaComposableScreenContent<S : EmaState, A : EmaAction.Screen> {
+interface EmaComposableScreenContent<S : EmaState, A : EmaAction.Screen, E: EmaEvent> {
 
     suspend fun onEffect(
         context: Context,
-        effect: EmaEffect,
+        effect: E,
         actions: EmaImmutableActionDispatcher<A>
     ) = Unit
 

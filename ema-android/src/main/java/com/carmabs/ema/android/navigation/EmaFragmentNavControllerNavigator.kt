@@ -4,7 +4,7 @@ import android.app.Activity
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
-import com.carmabs.ema.core.state.EmaEffect
+import com.carmabs.ema.core.state.EmaEvent
 import com.google.gson.Gson
 
 /**
@@ -19,7 +19,7 @@ import com.google.gson.Gson
  *  Navigator to handle navigation through navController in a Fragment
  * Created by: Carlos Mateo Benito on 29/07/22.
  */
-abstract class EmaFragmentNavControllerNavigator<E : EmaEffect>(
+abstract class EmaFragmentNavControllerNavigator<E : EmaEvent>(
     private val fragment: Fragment
 ) : EmaNavControllerNavigator<E> {
 

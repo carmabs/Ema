@@ -5,14 +5,14 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
 import com.carmabs.ema.android.viewmodel.EmaViewModelFactory
-import com.carmabs.ema.core.state.EmaEffect
+import com.carmabs.ema.core.state.EmaEvent
 import com.carmabs.ema.core.state.EmaState
 import com.carmabs.ema.core.viewmodel.EmaViewModel
 
 object EmaScreenProvider {
 
     @Composable
-    fun <S : EmaState, E : EmaEffect> provideComposableViewModel(
+    fun <S : EmaState, E : EmaEvent> provideComposableViewModel(
         viewModel: EmaViewModel<S, E>,
         savedStateHandle: SavedStateHandle?
     ): EmaAndroidViewModel<S, E> {

@@ -1,5 +1,6 @@
 package com.carmabs.ema.core.viewmodel
 
+import com.carmabs.ema.core.action.EmaEventDispatcher
 import com.carmabs.ema.core.broadcast.BackBroadcastId
 import com.carmabs.ema.core.broadcast.backBroadcastId
 import com.carmabs.ema.core.concurrency.EmaMainScope
@@ -13,15 +14,13 @@ import com.carmabs.ema.core.model.EmaSideEffectConfig
 import com.carmabs.ema.core.model.reflection.EmaReflection
 import com.carmabs.ema.core.model.reflection.EmaReflectionData
 import com.carmabs.ema.core.model.reflection.EmaReflectionException
-import com.carmabs.ema.core.state.EmaEffect
+import com.carmabs.ema.core.state.EmaEvent
 import com.carmabs.ema.core.state.EmaState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlin.coroutines.CoroutineContext
 
 /**
@@ -29,10 +28,10 @@ import kotlin.coroutines.CoroutineContext
  *
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
-abstract class EmaViewModelBasic<S : EmaState, E : EmaEffect>(
+abstract class EmaViewModelBasic<S : EmaState, E : EmaEvent>(
     initialDataState: S,
     defaultScope: CoroutineScope = EmaMainScope()
-) : EmaViewModel<S, E> {
+) : EmaViewModel<S, E>, EmaEventDispatcher<E>() {
 
     private val singleSideEffectMap by lazy {
         hashMapOf<String, Job>()
@@ -81,13 +80,8 @@ abstract class EmaViewModelBasic<S : EmaState, E : EmaEffect>(
      * Observable state that launch event every time a value is set. This value will be the state
      * of the view.
      */
-    private val dataFlow: MutableStateFlow<S> = MutableStateFlow(initialDataState)
+    private val mStateFlow: MutableStateFlow<S> = MutableStateFlow(initialDataState)
 
-    /**
-     * Observable for effects
-     */
-    private val effectFlow: MutableStateFlow<List<E>> =
-        MutableStateFlow(emptyList())
 
     private var firstTimeResumed = true
 
@@ -105,7 +99,7 @@ abstract class EmaViewModelBasic<S : EmaState, E : EmaEffect>(
             }
             hasBeenInitialized = true
             if (updateOnInitialization)
-                dataFlow.tryEmit(state)
+                mStateFlow.tryEmit(state)
             onStateCreated(initializer)
             onBroadcastListenerSetup()
         }
@@ -159,18 +153,8 @@ abstract class EmaViewModelBasic<S : EmaState, E : EmaEffect>(
      */
     protected open fun onViewStopped() = Unit
 
-    override fun subscribeStateUpdates(): Flow<S> = dataFlow
+    override val stateFlow: Flow<S> = mStateFlow
 
-    override fun subscribeToEffectUpdates(): Flow<List<E>> =
-        effectFlow.asStateFlow()
-
-    override fun consumeEffect(effect: E) {
-        effectFlow.update { it - effect }
-    }
-
-    protected fun dispatchEffect(effect: E) {
-        effectFlow.update { it + effect }
-    }
 
     /**
      * When a background task must be executed for data retrieving or other background job, it must
@@ -283,14 +267,6 @@ abstract class EmaViewModelBasic<S : EmaState, E : EmaEffect>(
     protected fun updateState(changeStateFunction: S.() -> S) {
         state = state.changeStateFunction()
         hasBeenUpdated = true
-    }
-
-    /**
-     * Update the data of current state without notify it to the view.
-     * @param changeStateFunction create the new state
-     */
-    protected fun modifyState(changeStateFunction: S.() -> S) {
-        state = state.changeStateFunction()
     }
 
     /**

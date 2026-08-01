@@ -5,7 +5,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
 import com.carmabs.ema.android.viewmodel.EmaViewModelFactory
-import com.carmabs.ema.core.state.EmaEffect
+import com.carmabs.ema.core.state.EmaEvent
 import com.carmabs.ema.core.state.EmaState
 import com.carmabs.ema.core.view.EmaView
 import com.carmabs.ema.core.viewmodel.EmaViewModel
@@ -19,7 +19,7 @@ import com.carmabs.ema.core.viewmodel.EmaViewModel
  *
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
-interface EmaAndroidView<S : EmaState, VM : EmaViewModel<S, E>, E : EmaEffect> :
+interface EmaAndroidView<S : EmaState, VM : EmaViewModel<S, E>, E : EmaEvent> :
     EmaView<S, VM, E> {
 
     fun initializeViewModel(

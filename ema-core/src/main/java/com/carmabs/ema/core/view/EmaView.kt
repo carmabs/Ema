@@ -1,8 +1,9 @@
 package com.carmabs.ema.core.view
 
+import com.carmabs.ema.core.action.EmaEventDispatcher
 import com.carmabs.ema.core.initializer.EmaInitializerSerializer
 import com.carmabs.ema.core.navigator.EmaNavigator
-import com.carmabs.ema.core.state.EmaEffect
+import com.carmabs.ema.core.state.EmaEvent
 import com.carmabs.ema.core.state.EmaState
 import com.carmabs.ema.core.viewmodel.EmaViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -20,7 +21,7 @@ import kotlin.reflect.KProperty
  *
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
-interface EmaView<S : EmaState, VM : EmaViewModel<S, E>, E : EmaEffect> {
+interface EmaView<S : EmaState, VM : EmaViewModel<S, E>, E : EmaEvent> {
 
     /**
      * Scope for flow updates
@@ -206,7 +207,7 @@ interface EmaView<S : EmaState, VM : EmaViewModel<S, E>, E : EmaEffect> {
 
     fun onBindState(coroutineScope: CoroutineScope, viewModel: VM): Job {
         return coroutineScope.launch {
-            viewModel.subscribeStateUpdates().collectLatest {
+            viewModel.stateFlow.collectLatest {
                 onStateUpdated(it)
             }
         }
@@ -214,10 +215,10 @@ interface EmaView<S : EmaState, VM : EmaViewModel<S, E>, E : EmaEffect> {
 
     fun onBindEffects(coroutineScope: CoroutineScope, viewModel: VM): Job {
         return coroutineScope.launch {
-            viewModel.subscribeToEffectUpdates().collectLatest {
+            viewModel.eventFlow.collectLatest {
                 it.forEach { effect ->
                     onEffect(effect)
-                    viewModel.consumeEffect(effect)
+                    (viewModel as? EmaEventDispatcher<E>)?.consumeEvent(effect)
                 }
             }
         }

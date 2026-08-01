@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import androidx.annotation.CallSuper
 import androidx.viewbinding.ViewBinding
 import com.carmabs.ema.android.base.EmaCoreActivity
-import com.carmabs.ema.core.state.EmaEffect
+import com.carmabs.ema.core.state.EmaEvent
 import com.carmabs.ema.core.state.EmaState
 import com.carmabs.ema.core.viewmodel.EmaViewModel
 
@@ -16,7 +16,7 @@ import com.carmabs.ema.core.viewmodel.EmaViewModel
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
-abstract class EmaActivity<B : ViewBinding, S : EmaState, VM : EmaViewModel<S,E>, E : EmaEffect> :
+abstract class EmaActivity<B : ViewBinding, S : EmaState, VM : EmaViewModel<S,E>, E : EmaEvent> :
     EmaCoreActivity<S, VM, E>() {
 
     protected lateinit var binding: B
@@ -46,7 +46,7 @@ abstract class EmaActivity<B : ViewBinding, S : EmaState, VM : EmaViewModel<S,E>
         private set
 
 
-    final override suspend fun onState(state: S) {
+    final override fun onState(state: S) {
         binding.onState(state)
         isFirstNormalExecution = false
     }
@@ -56,6 +56,6 @@ abstract class EmaActivity<B : ViewBinding, S : EmaState, VM : EmaViewModel<S,E>
         binding.onEffect(effect)
     }
 
-    abstract suspend fun B.onState(data: S)
-    protected open suspend fun B.onEffect(effect: E) {}
+    abstract fun B.onState(data: S)
+    protected open suspend fun B.onEffect(effect: E) = Unit
 }

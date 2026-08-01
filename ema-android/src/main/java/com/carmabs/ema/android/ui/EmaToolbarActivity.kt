@@ -10,7 +10,7 @@ import com.carmabs.ema.android.extension.checkVisibility
 import com.carmabs.ema.android.initializer.bundle.strategy.BundleSerializerStrategy
 import com.carmabs.ema.core.constants.FLOAT_ONE
 import com.carmabs.ema.core.constants.FLOAT_ZERO
-import com.carmabs.ema.core.state.EmaEffect
+import com.carmabs.ema.core.state.EmaEvent
 import com.carmabs.ema.core.state.EmaState
 import com.carmabs.ema.core.viewmodel.EmaViewModel
 import com.google.android.material.appbar.AppBarLayout
@@ -21,7 +21,7 @@ import com.google.android.material.appbar.AppBarLayout
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
-abstract class EmaToolbarActivity<B : ViewBinding, S : EmaState, VM : EmaViewModel<S,E>, E : EmaEffect> :
+abstract class EmaToolbarActivity<B : ViewBinding, S : EmaState, VM : EmaViewModel<S,E>, E : EmaEvent> :
     EmaActivity<B, S, VM, E>() {
 
     override val initializerStrategy: BundleSerializerStrategy

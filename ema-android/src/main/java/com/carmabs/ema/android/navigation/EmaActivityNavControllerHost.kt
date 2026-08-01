@@ -23,13 +23,13 @@ class EmaActivityNavControllerHost(
     activity: Activity,
     navHostId: Int,
     graphId: Int
-) : EmaActivityNavControllerNavigator<EmaEmptyNavigationEffect>(activity, navHostId, graphId) {
+) : EmaActivityNavControllerNavigator<EmaEmptyNavigationEvent>(activity, navHostId, graphId) {
 
     private val gson by lazy {
         Gson()
     }
 
-    override fun navigate(effect: EmaEmptyNavigationEffect) = Unit
+    override fun navigate(effect: EmaEmptyNavigationEvent) = Unit
 
     /**
      * Navigates back

@@ -17,8 +17,4 @@ import kotlinx.coroutines.flow.emptyFlow
  */
 class EmaActionDispatcherEmpty<A : EmaAction>: EmaActionDispatcher<A> {
     override fun dispatch(action: A) = Unit
-
-    override fun subscribeToActions(): Flow<A> {
-        return emptyFlow()
-    }
 }

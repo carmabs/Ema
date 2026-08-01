@@ -17,6 +17,4 @@ import kotlinx.coroutines.flow.Flow
 
 interface EmaActionDispatcher<A : EmaAction> {
     fun dispatch(action: A)
-
-    fun subscribeToActions(): Flow<A>
 }

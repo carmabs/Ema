@@ -5,22 +5,22 @@ import android.content.Intent
 import androidx.navigation.NavController
 import com.carmabs.ema.android.constants.EMA_RESULT_CODE
 import com.carmabs.ema.android.constants.EMA_RESULT_KEY
-import com.carmabs.ema.core.state.EmaEffect
+import com.carmabs.ema.core.state.EmaEvent
 import com.carmabs.ema.core.navigator.EmaNavigator
 import com.google.gson.Gson
 
-data object EmaEmptyNavigationEffect : EmaEffect
+data object EmaEmptyNavigationEvent : EmaEvent
 
 class EmaEmptyNavigator constructor(
     private val activity: Activity,
     private val navController: NavController
-) : EmaNavigator<EmaEmptyNavigationEffect> {
+) : EmaNavigator<EmaEmptyNavigationEvent> {
 
     private val gson by lazy {
         Gson()
     }
 
-    override fun navigate(effect: EmaEmptyNavigationEffect) = Unit
+    override fun navigate(effect: EmaEmptyNavigationEvent) = Unit
 
     override fun navigateBack(result: Any?): Boolean {
         val hasMoreBackScreens = navController.popBackStack()
