@@ -5,23 +5,19 @@ import android.content.Context
 import androidx.compose.runtime.Composable
 import com.carmabs.ema.compose.action.EmaImmutableActionDispatcher
 import com.carmabs.ema.core.action.EmaAction
-import com.carmabs.ema.core.state.EmaDataState
+import com.carmabs.ema.core.state.EmaEffect
 import com.carmabs.ema.core.state.EmaExtraData
+import com.carmabs.ema.core.state.EmaState
 
+interface EmaComposableScreenContent<S : EmaState, A : EmaAction.Screen> {
 
-interface EmaComposableScreenContent<S : EmaDataState, A : EmaAction.Screen> {
-
-    @Composable
-    @SuppressLint("ComposableNaming")
-    fun onStateOverlapped(extra: EmaExtraData, actions: EmaImmutableActionDispatcher<A>) = Unit
-
-    suspend fun onSingleEvent(
+    suspend fun onEffect(
         context: Context,
-        extraData: EmaExtraData,
+        effect: EmaEffect,
         actions: EmaImmutableActionDispatcher<A>
     ) = Unit
 
     @Composable
     @SuppressLint("ComposableNaming")
-    fun onStateNormal(state: S, actions: EmaImmutableActionDispatcher<A>)
+    fun onState(state: S, actions: EmaImmutableActionDispatcher<A>)
 }

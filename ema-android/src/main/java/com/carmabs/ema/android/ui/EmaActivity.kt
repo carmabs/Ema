@@ -5,9 +5,8 @@ import android.view.LayoutInflater
 import androidx.annotation.CallSuper
 import androidx.viewbinding.ViewBinding
 import com.carmabs.ema.android.base.EmaCoreActivity
-import com.carmabs.ema.core.navigator.EmaNavigationEvent
-import com.carmabs.ema.core.state.EmaDataState
-import com.carmabs.ema.core.state.EmaExtraData
+import com.carmabs.ema.core.state.EmaEffect
+import com.carmabs.ema.core.state.EmaState
 import com.carmabs.ema.core.viewmodel.EmaViewModel
 
 /**
@@ -17,8 +16,8 @@ import com.carmabs.ema.core.viewmodel.EmaViewModel
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
-abstract class EmaActivity<B : ViewBinding, S : EmaDataState, VM : EmaViewModel<S, D>, D : EmaNavigationEvent> :
-    EmaCoreActivity<S, VM, D>() {
+abstract class EmaActivity<B : ViewBinding, S : EmaState, VM : EmaViewModel<S,E>, E : EmaEffect> :
+    EmaCoreActivity<S, VM, E>() {
 
     protected lateinit var binding: B
 
@@ -46,24 +45,17 @@ abstract class EmaActivity<B : ViewBinding, S : EmaDataState, VM : EmaViewModel<
     protected var isFirstNormalExecution: Boolean = true
         private set
 
-    protected var isFirstOverlayedExecution: Boolean = true
-        private set
 
-    final override fun onEmaStateNormal(data: S) {
-        binding.onStateNormal(data)
+    final override suspend fun onState(state: S) {
+        binding.onState(state)
         isFirstNormalExecution = false
     }
 
-    final override fun onEmaStateOverlapped(extraData: EmaExtraData) {
-        binding.onStateOverlayed(extraData)
-        isFirstOverlayedExecution = false
+
+    final override suspend fun onEffect(effect: E) {
+        binding.onEffect(effect)
     }
 
-    final override fun onSingleEvent(extra: EmaExtraData) {
-        binding.onSingleEvent(extra)
-    }
-
-    abstract fun B.onStateNormal(data: S)
-    protected open fun B.onStateOverlayed(data: EmaExtraData) {}
-    protected open fun B.onSingleEvent(data: EmaExtraData) {}
+    abstract suspend fun B.onState(data: S)
+    protected open suspend fun B.onEffect(effect: E) {}
 }

@@ -10,8 +10,8 @@ import com.carmabs.ema.android.extension.checkVisibility
 import com.carmabs.ema.android.initializer.bundle.strategy.BundleSerializerStrategy
 import com.carmabs.ema.core.constants.FLOAT_ONE
 import com.carmabs.ema.core.constants.FLOAT_ZERO
-import com.carmabs.ema.core.navigator.EmaNavigationEvent
-import com.carmabs.ema.core.state.EmaDataState
+import com.carmabs.ema.core.state.EmaEffect
+import com.carmabs.ema.core.state.EmaState
 import com.carmabs.ema.core.viewmodel.EmaViewModel
 import com.google.android.material.appbar.AppBarLayout
 
@@ -21,8 +21,8 @@ import com.google.android.material.appbar.AppBarLayout
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
-abstract class EmaToolbarActivity<B : ViewBinding, S : EmaDataState, VM : EmaViewModel<S, D>, D : EmaNavigationEvent> :
-    EmaActivity<B, S, VM, D>() {
+abstract class EmaToolbarActivity<B : ViewBinding, S : EmaState, VM : EmaViewModel<S,E>, E : EmaEffect> :
+    EmaActivity<B, S, VM, E>() {
 
     override val initializerStrategy: BundleSerializerStrategy
         get() = BundleSerializerStrategy.EMPTY
@@ -75,7 +75,7 @@ abstract class EmaToolbarActivity<B : ViewBinding, S : EmaDataState, VM : EmaVie
     private fun setupToolbar(toolbar: Toolbar) {
 
         setSupportActionBar(toolbar)
-        (navigator as? com.carmabs.ema.android.navigation.EmaNavControllerNavigator)?.navController?.also {
+        (navigator as? com.carmabs.ema.android.navigation.EmaNavControllerNavigator<*>)?.navController?.also {
             setupActionBarWithNavController(it)
             it.addOnDestinationChangedListener { _, destination, _ ->
                 setToolbarTitle(provideFixedToolbarTitle())
@@ -87,7 +87,7 @@ abstract class EmaToolbarActivity<B : ViewBinding, S : EmaDataState, VM : EmaVie
     protected fun setToolbarTitle(title: String?) {
         supportActionBar?.title =
             title ?: provideFixedToolbarTitle()
-                    ?: (navigator as? com.carmabs.ema.android.navigation.EmaNavControllerNavigator)?.navController?.currentDestination?.label
+                    ?: (navigator as? com.carmabs.ema.android.navigation.EmaNavControllerNavigator<*>)?.navController?.currentDestination?.label
     }
 
     /**

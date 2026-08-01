@@ -3,12 +3,11 @@ package com.carmabs.ema.android.extension
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.ViewModel
 import com.carmabs.ema.android.ui.EmaAndroidView
 import com.carmabs.ema.android.ui.EmaFragment
 import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
-import com.carmabs.ema.core.navigator.EmaNavigationEvent
-import com.carmabs.ema.core.state.EmaDataState
+import com.carmabs.ema.core.state.EmaEffect
+import com.carmabs.ema.core.state.EmaState
 import com.carmabs.ema.core.viewmodel.EmaViewModel
 
 /**
@@ -21,9 +20,9 @@ import com.carmabs.ema.core.viewmodel.EmaViewModel
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
 @Suppress("ClassName")
-internal fun <S : EmaDataState, VM : EmaViewModel<S, N>, N : EmaNavigationEvent> EmaAndroidView<S, VM, N>.generateViewModel(
+internal fun <S : EmaState, VM : EmaViewModel<S, E>, E : EmaEffect> EmaAndroidView<S, VM, E>.generateViewModel(
     vm: VM
-): EmaAndroidViewModel<S,N> {
+): EmaAndroidViewModel<S, E> {
 
     val fragmentScope =
         (this as? EmaFragment<*, *, *, *>)?.fragmentViewModelScope ?: false

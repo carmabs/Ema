@@ -5,21 +5,21 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
 import com.carmabs.ema.android.viewmodel.EmaViewModelFactory
-import com.carmabs.ema.core.navigator.EmaNavigationEvent
-import com.carmabs.ema.core.state.EmaDataState
+import com.carmabs.ema.core.state.EmaEffect
+import com.carmabs.ema.core.state.EmaState
 import com.carmabs.ema.core.viewmodel.EmaViewModel
 
 object EmaScreenProvider {
 
     @Composable
-    fun <S : EmaDataState, N : EmaNavigationEvent> provideComposableViewModel(
-        viewModel: EmaViewModel<S, N>,
+    fun <S : EmaState, E : EmaEffect> provideComposableViewModel(
+        viewModel: EmaViewModel<S, E>,
         savedStateHandle: SavedStateHandle?
-    ): EmaAndroidViewModel<S, N> {
+    ): EmaAndroidViewModel<S, E> {
         return viewModel(
             modelClass = EmaAndroidViewModel::class.java,
             key = viewModel.id,
             factory = EmaViewModelFactory(viewModel, savedStateHandle)
-        ) as EmaAndroidViewModel<S, N>
+        ) as EmaAndroidViewModel<S, E>
     }
 }

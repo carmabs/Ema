@@ -1,10 +1,7 @@
 package com.carmabs.ema.core.viewmodel
 
 import com.carmabs.ema.core.initializer.EmaInitializer
-import com.carmabs.ema.core.model.EmaEvent
-import com.carmabs.ema.core.navigator.EmaNavigationEvent
-import com.carmabs.ema.core.navigator.EmaNavigationDirectionEvent
-import com.carmabs.ema.core.state.EmaDataState
+import com.carmabs.ema.core.state.EmaEffect
 import com.carmabs.ema.core.state.EmaState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -15,10 +12,13 @@ import kotlinx.coroutines.flow.emptyFlow
  *
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
-interface EmaViewModel<S : EmaDataState, N : EmaNavigationEvent> {
+interface EmaViewModel<S : EmaState, E: EmaEffect> {
 
-
-    val initialState: EmaState<S,N>
+    val id: String
+        get() {
+            return "EmaViewModel ID: ${this.javaClass.name}"
+        }
+    val initialState: S
 
     /**
      * Used to know if subscribed view should render the state
@@ -39,34 +39,20 @@ interface EmaViewModel<S : EmaDataState, N : EmaNavigationEvent> {
 
     fun onCleared()
 
-    fun subscribeStateUpdates(): Flow<EmaState<S,N>>
+    fun subscribeStateUpdates(): Flow<S>
 
     /**
-     * Get navigation state as LiveData to avoid state setting from the view
+     * Get effect state to be handled by the view
      */
-    fun subscribeToNavigationEvents(): Flow<EmaNavigationDirectionEvent>
+    fun subscribeToEffectUpdates(): Flow<List<E>>
 
-    /**
-     * Get single state as LiveData to avoid state setting from the view
-     */
-    fun subscribeToSingleEvents(): Flow<EmaEvent>
-
-    fun consumeSingleEvent()
-
-    fun notifyOnNavigated()
-
-    fun onActionBackHardwarePressed()
+    fun consumeEffect(effect: E)
 
 
-    val id: String
-        get() {
-            return "EmaViewModel ID: ${this.javaClass.name}"
-        }
-
-    object EMPTY : EmaViewModel<EmaDataState.EMPTY, EmaNavigationEvent.EMPTY> {
+    object EMPTY : EmaViewModel<EmaState.EMPTY, EmaEffect.EMPTY> {
 
 
-        override val initialState: EmaState<EmaDataState.EMPTY,EmaNavigationEvent.EMPTY> = EmaState.Normal(EmaDataState.EMPTY)
+        override val initialState: EmaState.EMPTY = EmaState.EMPTY
         override val shouldRenderState: Boolean
         get() = true
 
@@ -98,28 +84,16 @@ interface EmaViewModel<S : EmaDataState, N : EmaNavigationEvent> {
 
         }
 
-        override fun subscribeStateUpdates(): Flow<EmaState<EmaDataState.EMPTY,EmaNavigationEvent.EMPTY>> {
+        override fun subscribeStateUpdates(): Flow<EmaState.EMPTY> {
             return emptyFlow()
         }
 
-        override fun subscribeToNavigationEvents(): Flow<EmaNavigationDirectionEvent> {
+        override fun subscribeToEffectUpdates(): Flow<List<EmaEffect.EMPTY>> {
             return emptyFlow()
         }
 
-        override fun subscribeToSingleEvents(): Flow<EmaEvent> {
-            return emptyFlow()
-        }
-
-        override fun consumeSingleEvent() {
-
-        }
-
-        override fun notifyOnNavigated() {
-
-        }
-
-        override fun onActionBackHardwarePressed() {
-
+        override fun consumeEffect(effect: EmaEffect.EMPTY) {
+            
         }
     }
 }

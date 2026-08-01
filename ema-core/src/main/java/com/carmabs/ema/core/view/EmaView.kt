@@ -1,17 +1,9 @@
 package com.carmabs.ema.core.view
 
 import com.carmabs.ema.core.initializer.EmaInitializerSerializer
-import com.carmabs.ema.core.model.EmaEvent
-import com.carmabs.ema.core.model.onLaunched
-import com.carmabs.ema.core.navigator.EmaNavigationDirection
-import com.carmabs.ema.core.navigator.EmaNavigationDirectionEvent
-import com.carmabs.ema.core.navigator.EmaNavigationEvent
 import com.carmabs.ema.core.navigator.EmaNavigator
-import com.carmabs.ema.core.navigator.onNavigation
-import com.carmabs.ema.core.state.EmaDataState
-import com.carmabs.ema.core.state.EmaExtraData
+import com.carmabs.ema.core.state.EmaEffect
 import com.carmabs.ema.core.state.EmaState
-import com.carmabs.ema.core.state.EmaStateTransition
 import com.carmabs.ema.core.viewmodel.EmaViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -25,11 +17,10 @@ import kotlin.reflect.KProperty
  * View to handle VM view logic states through [EmaState].
  * The user must provide in the constructor by template:
  *  - The view model class [EmaViewModel] is going to use the view
- *  - The navigation state class [EmaNavigationEvent] will handle the navigation
  *
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
-interface EmaView<S : EmaDataState, VM : EmaViewModel<S, N>, N : EmaNavigationEvent> {
+interface EmaView<S : EmaState, VM : EmaViewModel<S, E>, E : EmaEffect> {
 
     /**
      * Scope for flow updates
@@ -44,20 +35,17 @@ interface EmaView<S : EmaDataState, VM : EmaViewModel<S, N>, N : EmaNavigationEv
     /**
      * The navigator [EmaNavigator]
      */
-    val navigator: EmaNavigator<N>?
+    val navigator: EmaNavigator<E>?
 
     /**
      * The initializer from previous views when it is launched.
      */
-    val initializerSerializer:EmaInitializerSerializer?
+    val initializerSerializer: EmaInitializerSerializer?
 
     /**
      * The previous state of the View
      */
-    var previousEmaState: EmaState<S, N>?
-
-    val previousStateData: S?
-        get() = previousEmaState?.data
+    var previousState: S?
 
 
     /**
@@ -69,47 +57,10 @@ interface EmaView<S : EmaDataState, VM : EmaViewModel<S, N>, N : EmaNavigationEv
      * Called when view model trigger an update view event
      * @param state of the view
      */
-    private fun onDataUpdated(state: EmaState<S, N>) {
-
-        previousEmaState?.let { previousState ->
-            if (previousState.javaClass.name != state.javaClass.name) {
-                when (state) {
-                    is EmaState.Overlapped -> {
-                        onEmaStateTransition(
-                            EmaStateTransition.NormalToOverlapped(
-                                previousState.data,
-                                state.extraData
-                            )
-                        )
-                    }
-
-                    is EmaState.Normal -> {
-                        onEmaStateTransition(
-                            EmaStateTransition.OverlappedToNormal(
-                                (previousState as EmaState.Overlapped<S, N>).extraData,
-                                state.data
-                            )
-                        )
-                    }
-                }
-            }
-        }
-
-        onEmaStateNormal(state.data)
-        when (state) {
-            is EmaState.Overlapped -> {
-                onEmaStateOverlapped(state.extraData)
-            }
-
-            else -> {
-                //DO NOTHING
-            }
-        }
-
-        previousEmaState = state
+    private suspend fun onStateUpdated(state: S) {
+        onState(state)
+        previousState = state
     }
-
-    fun onEmaStateTransition(transition: EmaStateTransition) = Unit
 
     /**
      * Check EMA state selected property to execute action with new value if it has changed
@@ -128,11 +79,11 @@ interface EmaView<S : EmaDataState, VM : EmaViewModel<S, N>, N : EmaNavigationEv
         val currentClass = (field as PropertyReference0).boundReceiver as? S
         currentClass?.also { _ ->
             val currentValue = (field.get() as T)
-            previousEmaState?.data?.also {
+            previousState?.also {
                 try {
                     val previousField = it.javaClass.getDeclaredField(field.name)
                     previousField.isAccessible = true
-                    val previousValue = previousField.get(previousEmaState?.data) as T
+                    val previousValue = previousField.get(previousState) as T
                     if (areEqualComparator?.invoke(previousValue, currentValue)?.not()
                             ?: (previousValue != currentValue)
                     ) {
@@ -164,11 +115,11 @@ interface EmaView<S : EmaDataState, VM : EmaViewModel<S, N>, N : EmaNavigationEv
         val currentClass = (field as PropertyReference0).boundReceiver as? S
         currentClass?.also { _ ->
             val currentValue = (field.get() as T)
-            previousEmaState?.data?.also {
+            previousState?.also {
                 try {
                     val previousField = it.javaClass.getDeclaredField(field.name)
                     previousField.isAccessible = true
-                    val previousValue = previousField.get(previousEmaState?.data) as T
+                    val previousValue = previousField.get(previousState) as T
                     if (areEqualComparator?.invoke(previousValue, currentValue)?.not()
                             ?: (previousValue != currentValue)
                     ) {
@@ -183,61 +134,20 @@ interface EmaView<S : EmaDataState, VM : EmaViewModel<S, N>, N : EmaNavigationEv
         return updated
     }
 
-    /**
-     * Called when view model trigger an only once notified event
-     * @param event for extra information
-     */
-    fun onSingleData(event: EmaEvent) {
-        event.onLaunched {
-            onSingleEvent(it)
-            viewModel.consumeSingleEvent()
-        }
-
-    }
-
-    /**
-     * Called when view model trigger a navigation event for navigation
-     * @param navigation state with information about the destination
-     */
-    fun onNavigation(navigation: EmaNavigationDirectionEvent) {
-        navigation.onNavigation {
-            when (val direction = it) {
-                is EmaNavigationDirection.Back -> {
-                    navigateBack(direction.result)
-                }
-
-                is EmaNavigationDirection.Forward -> {
-                    navigate(direction.navigationEvent as N)
-                }
-            }
-            viewModel.notifyOnNavigated()
-        }
-    }
 
     /**
      * Called when view model trigger an update view event
-     * @param data with the state of the view
+     * @param state with the state of the view
      */
-    fun onEmaStateNormal(data: S)
+    fun onState(state: S)
 
     /**
-     * Called when view model trigger a updateOverlappedState event
-     * @param extra with information about updateOverlappedState
+     * Called when view model trigger an effect
+     * @param effect effect dispatched by viewmodel
      */
-    fun onEmaStateOverlapped(extra: EmaExtraData)
+    suspend fun onEffect(effect: E)
 
-    /**
-     * Called when view model trigger an only once notified event.Not called when the view is first time attached to the view model
-     * @param extra with information about updateAlternativeState
-     */
-    fun onSingleEvent(extra: EmaExtraData)
-
-    /**
-     * Called when view model trigger a navigation event
-     * @param navigationEvent for the navigation event data
-     */
-
-    fun navigate(navigationEvent: N) {
+    fun navigate(navigationEvent: E) {
         navigator?.navigate(navigationEvent) ?: throwNavigationException()
     }
 
@@ -286,8 +196,7 @@ interface EmaView<S : EmaDataState, VM : EmaViewModel<S, N>, N : EmaNavigationEv
     fun onBindView(coroutineScope: CoroutineScope, viewModel: VM): MutableList<Job> {
         val jobList = mutableListOf<Job>()
         jobList.add(onBindState(coroutineScope, viewModel))
-        jobList.add(onBindSingle(coroutineScope, viewModel))
-        jobList.add(onBindNavigation(coroutineScope, viewModel))
+        jobList.add(onBindEffects(coroutineScope, viewModel))
         return jobList
     }
 
@@ -298,23 +207,18 @@ interface EmaView<S : EmaDataState, VM : EmaViewModel<S, N>, N : EmaNavigationEv
     fun onBindState(coroutineScope: CoroutineScope, viewModel: VM): Job {
         return coroutineScope.launch {
             viewModel.subscribeStateUpdates().collectLatest {
-                onDataUpdated(it)
+                onStateUpdated(it)
             }
         }
     }
 
-    fun onBindNavigation(coroutineScope: CoroutineScope, viewModel: VM): Job {
+    fun onBindEffects(coroutineScope: CoroutineScope, viewModel: VM): Job {
         return coroutineScope.launch {
-            viewModel.subscribeToNavigationEvents().collectLatest {
-                onNavigation(it)
-            }
-        }
-    }
-
-    fun onBindSingle(coroutineScope: CoroutineScope, viewModel: VM): Job {
-        return coroutineScope.launch {
-            viewModel.subscribeToSingleEvents().collect {
-                onSingleData(it)
+            viewModel.subscribeToEffectUpdates().collectLatest {
+                it.forEach { effect ->
+                    onEffect(effect)
+                    viewModel.consumeEffect(effect)
+                }
             }
         }
     }
