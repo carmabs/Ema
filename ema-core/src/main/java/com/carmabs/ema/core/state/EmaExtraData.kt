@@ -10,7 +10,7 @@ data class EmaExtraData(
     val id: String = DEFAULT_ID,
     val data: Any? = null,
     internal val ts: Long = System.nanoTime() //Timestamp to guarantee each extra data is different from before. To support guarantee same event is delivered for observables.
-) : EmaDataState {
+) : EmaState {
     companion object {
         const val DEFAULT_ID = "EXTRA_DEFAULT_ID"
     }

@@ -2,7 +2,7 @@ package com.carmabs.ema.core.state
 
 import com.carmabs.ema.core.dialog.EmaDialogData
 import com.carmabs.ema.core.dialog.EmaDialogListener
-import com.carmabs.ema.core.state.EmaDataState
+import com.carmabs.ema.core.state.EmaState
 
 /**
  * Class to handle extra data used for dialogs.
@@ -16,4 +16,4 @@ import com.carmabs.ema.core.state.EmaDataState
 data class EmaExtraDialogData(
     val data:EmaDialogData,
     val listener:EmaDialogListener?=null
-):EmaDataState
+):EmaState

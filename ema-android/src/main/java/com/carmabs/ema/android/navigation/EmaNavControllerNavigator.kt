@@ -1,20 +1,13 @@
 package com.carmabs.ema.android.navigation
 
 import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.annotation.IdRes
 import androidx.navigation.NavController
-import androidx.navigation.NavDirections
 import androidx.navigation.NavOptions
-import androidx.navigation.Navigator
 import androidx.navigation.fragment.FragmentNavigator
-import com.carmabs.ema.android.extension.setInitializer
-import com.carmabs.ema.android.initializer.EmaInitializerBundle
-import com.carmabs.ema.core.initializer.EmaInitializer
-import com.carmabs.ema.core.navigator.EmaNavigationEvent
 import com.carmabs.ema.core.navigator.EmaNavigator
+import com.carmabs.ema.core.state.EmaEffect
 
 /**
  *  *<p>
@@ -26,7 +19,7 @@ import com.carmabs.ema.core.navigator.EmaNavigator
  * Navigator to handle navigation through navController with navigation back support and no target navigation
  * Created by: Carlos Mateo Benito on 20/1/19.
  */
-interface EmaNavControllerNavigator<D : EmaNavigationEvent> : EmaNavigator<D> {
+interface EmaNavControllerNavigator<E : EmaEffect> : EmaNavigator<E> {
 
     val navController: NavController
 
@@ -50,42 +43,10 @@ interface EmaNavControllerNavigator<D : EmaNavigationEvent> : EmaNavigator<D> {
 
 
     /**
-     * Navigate to new activity
-     * @param destinationActivity is the activity class where you are going to navigate
-     * @param initializer is the data you want to pass to next activity. It will be handled in viewmodel
-     * @param finishMain if [activity] must be finished when [destinationActivity] is launched
+     * Navigates back
+     * @return true if a destination was popped, false otherwise
      */
-    fun <I>navigateToActivity(
-        destinationActivity: Class<out ComponentActivity>,
-        initializerData: EmaInitializerBundle? = null,
-        finishMain: Boolean = false
-    ) {
-        activity.startActivity(
-            Intent(activity.applicationContext, destinationActivity).run {
-                initializerData?.let { setInitializer<EmaInitializer>(initializerData.initializer,initializerData.serializer) } ?: this
-            },
-        )
-        if (finishMain) {
-            activity.finish()
-        }
-    }
-
-
-    /**
-     * Navigate with android architecture components within navDirections safeargs
-     * @param navDirections
-     * @param navOptions
-     */
-    fun navigateWithDirections(navDirections: NavDirections, navOptions: NavOptions? = null) {
-        navController.navigate(navDirections, navOptions)
-    }
-
-    /**
-     * Navigate with android architecture components within navDirections safeargs
-     * @param navDirections
-     * @param extras
-     */
-    fun navigateWithDirections(navDirections: NavDirections, extras: Navigator.Extras) {
-        navController.navigate(navDirections, extras)
+    override fun navigateBack(result: Any?): Boolean {
+        return navController.popBackStack()
     }
 }
