@@ -10,7 +10,7 @@ import androidx.navigation.fragment.findNavController
 import com.carmabs.ema.android.extension.toBundle
 import com.carmabs.ema.android.initializer.bundle.strategy.BundleSerializerStrategy
 import com.carmabs.ema.core.initializer.EmaInitializer
-import com.carmabs.ema.core.state.EmaEffect
+import com.carmabs.ema.core.state.EmaEvent
 import com.google.gson.Gson
 
 /**
@@ -25,7 +25,7 @@ import com.google.gson.Gson
  * Navigator to handle navigation through navController in an Activity
  * Created by: Carlos Mateo Benito on 29/07/22.
  */
-abstract class EmaActivityNavControllerNavigator<E : EmaEffect>(
+abstract class EmaActivityNavControllerNavigator<E : EmaEvent>(
     override val activity: Activity,
     @IdRes private val navHostId: Int,
     @NavigationRes private val graphId: Int

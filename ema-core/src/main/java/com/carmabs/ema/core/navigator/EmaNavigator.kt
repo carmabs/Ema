@@ -1,6 +1,6 @@
 package com.carmabs.ema.core.navigator
 
-import com.carmabs.ema.core.state.EmaEffect
+import com.carmabs.ema.core.state.EmaEvent
 
 /**
  * EmaBaseNavigator used to navigate between views. You have to provide a NavigationState object
@@ -10,7 +10,7 @@ import com.carmabs.ema.core.state.EmaEffect
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
 
-interface EmaNavigator<E : EmaEffect> {
+interface EmaNavigator<E : EmaEvent> {
 
     fun navigate(effect: E)
 

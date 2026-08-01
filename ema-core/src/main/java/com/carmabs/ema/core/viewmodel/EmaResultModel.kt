@@ -10,7 +10,7 @@ import androidx.annotation.RestrictTo
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-data class EmaResultModel internal constructor(
+class EmaResultModel internal constructor(
     val key: String,
     val data: Any?,
     val ownerId: String

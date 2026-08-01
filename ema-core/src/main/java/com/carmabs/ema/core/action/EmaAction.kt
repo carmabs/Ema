@@ -18,7 +18,7 @@ interface EmaAction {
 
 
     val type: String
-        get() = type
+        get() = EmaAction.type
 
     interface Initializer : EmaAction {
         override val type: String
@@ -31,16 +31,12 @@ interface EmaAction {
         data object Paused : Lifecycle
         data object Stopped : Lifecycle
 
-    }
+        override val type: String
+            get() = Lifecycle::class.java.simpleName
 
-    sealed interface ViewModel: EmaAction{
-        data object ConsumeSingleEvent:ViewModel
-
-        data object NavigationBack:ViewModel
-
-        data object OnNavigated:ViewModel
 
     }
+
 
     interface Screen : EmaAction {
         fun checkIsValidScreenActionClass() = this is EMPTY || this::class.isSealed

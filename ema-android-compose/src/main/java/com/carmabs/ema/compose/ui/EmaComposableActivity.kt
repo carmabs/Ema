@@ -5,8 +5,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import com.carmabs.ema.android.base.EmaCoreActivity
-import com.carmabs.ema.core.state.EmaEffect
-import com.carmabs.ema.core.state.EmaExtraData
+import com.carmabs.ema.core.state.EmaEvent
 import com.carmabs.ema.core.state.EmaState
 import com.carmabs.ema.core.viewmodel.EmaViewModel
 
@@ -16,8 +15,8 @@ import com.carmabs.ema.core.viewmodel.EmaViewModel
  *
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
-abstract class EmaComposableActivity<S : EmaState, VM : EmaViewModel<S,E>, E : EmaEffect>
-    : EmaCoreActivity<S, VM, N>() {
+abstract class EmaComposableActivity<S : EmaState, VM : EmaViewModel<S,E>, E : EmaEvent>
+    : EmaCoreActivity<S, VM, E>() {
 
     protected var isFirstNormalExecution: Boolean = true
         private set
@@ -26,7 +25,7 @@ abstract class EmaComposableActivity<S : EmaState, VM : EmaViewModel<S,E>, E : E
         super.onCreate(savedInstanceState)
         isFirstNormalExecution = true
         setContent {
-            val state = viewModel.subscribeStateUpdates()
+            val state = viewModel.stateFlow
                 .collectAsState(initial = viewModel.initialState)
             if (viewModel.shouldRenderState) {
                 onRenderState(state = state.value)

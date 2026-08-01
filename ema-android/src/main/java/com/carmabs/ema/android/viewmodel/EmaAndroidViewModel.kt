@@ -4,7 +4,7 @@ import androidx.annotation.CallSuper
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.carmabs.ema.core.state.EmaEffect
+import com.carmabs.ema.core.state.EmaEvent
 import com.carmabs.ema.core.state.EmaState
 import com.carmabs.ema.core.viewmodel.EmaViewModel
 
@@ -17,7 +17,7 @@ import com.carmabs.ema.core.viewmodel.EmaViewModel
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-open class EmaAndroidViewModel<S:EmaState,E: EmaEffect>(
+open class EmaAndroidViewModel<S:EmaState,E: EmaEvent>(
     val emaViewModel:EmaViewModel<S,E>,
     val savedStateHandle: SavedStateHandle
 ) : ViewModel() {

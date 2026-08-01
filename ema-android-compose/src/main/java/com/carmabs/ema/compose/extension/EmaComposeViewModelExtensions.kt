@@ -4,8 +4,8 @@ package com.carmabs.ema.compose.extension
 
 import com.carmabs.ema.core.action.EmaAction
 import com.carmabs.ema.core.action.EmaActionDispatcher
-import com.carmabs.ema.core.navigator.EmaNavigationEvent
-import com.carmabs.ema.core.state.EmaDataState
+import com.carmabs.ema.core.state.EmaEvent
+import com.carmabs.ema.core.state.EmaState
 import com.carmabs.ema.core.viewmodel.EmaViewModel
 import com.carmabs.ema.core.viewmodel.EmaViewModelAction
 
@@ -18,8 +18,8 @@ import com.carmabs.ema.core.viewmodel.EmaViewModelAction
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-fun <A : EmaAction.Screen, S : EmaDataState, D : EmaNavigationEvent> EmaViewModel<S, D>.asViewModelAction(): EmaViewModelAction<S, A, D> {
-    return (this as? EmaViewModelAction<S, A, D>)
+fun <S : EmaState, A : EmaAction.Screen, E : EmaEvent> EmaViewModel<S, E>.asViewModelAction(): EmaViewModelAction<S, A, E> {
+    return (this as? EmaViewModelAction<S, A, E>)
         ?: throw java.lang.IllegalStateException("${this::class} must inherit form EmaViewModelAction class")
 }
 

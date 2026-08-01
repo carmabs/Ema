@@ -8,10 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.ComposeView
 import com.carmabs.ema.android.base.EmaCoreFragment
-import com.carmabs.ema.core.initializer.EmaInitializer
-import com.carmabs.ema.core.navigator.EmaNavigationEvent
-import com.carmabs.ema.core.state.EmaDataState
-import com.carmabs.ema.core.state.EmaExtraData
+import com.carmabs.ema.core.state.EmaEvent
 import com.carmabs.ema.core.state.EmaState
 import com.carmabs.ema.core.viewmodel.EmaViewModel
 
@@ -21,13 +18,10 @@ import com.carmabs.ema.core.viewmodel.EmaViewModel
  *
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
-abstract class EmaComposableFragment<S : EmaDataState, VM : EmaViewModel<S, N>, N : EmaNavigationEvent>
-    : EmaCoreFragment<S, VM, N>() {
+abstract class EmaComposableFragment<S : EmaState, VM : EmaViewModel<S, E>, E : EmaEvent>
+    : EmaCoreFragment<S, VM, E>() {
 
     protected var isFirstNormalExecution: Boolean = true
-        private set
-
-    protected var isFirstOverlayedExecution: Boolean = true
         private set
 
     final override fun onCreateView(
@@ -37,36 +31,23 @@ abstract class EmaComposableFragment<S : EmaDataState, VM : EmaViewModel<S, N>, 
     ): View {
         super.onCreateView(inflater, container, savedInstanceState)
         isFirstNormalExecution = true
-        isFirstOverlayedExecution = true
         return ComposeView(requireContext()).apply {
             setContent {
-                val state = viewModel.subscribeStateUpdates()
-                    .collectAsState(initial = EmaState.Normal(object : EmaDataState {} as S))
-                when (val emaState = state.value) {
-                    is EmaState.Normal<S, N> -> {
-                        onStateNormal(data = emaState.data)
-                        isFirstNormalExecution = false
-                    }
-
-                    is EmaState.Overlapped<S, N> -> {
-                        onStateNormal(data = emaState.data)
-                        onStateOverlapped(data = emaState.extraData)
-                        isFirstOverlayedExecution = false
-                    }
-
+                val state = viewModel.stateFlow
+                    .collectAsState(initial = viewModel.initialState)
+                if (viewModel.shouldRenderState) {
+                    onRenderState(state = state.value)
+                    isFirstNormalExecution = false
                 }
             }
         }
     }
 
-    @Composable
-    abstract fun onStateNormal(data: S)
-
-    @Composable
-    protected open fun onStateOverlapped(data: EmaExtraData) = Unit
-
     // Discard these methods because they are called now by compose
-    final override fun onEmaStateNormal(data: S) = Unit
+    final override fun onState(state: S) = Unit
 
-    final override fun onEmaStateOverlapped(extra: EmaExtraData) = Unit
+    @Composable
+    abstract fun onRenderState(state: S)
+
+
 }

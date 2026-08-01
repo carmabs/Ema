@@ -22,7 +22,7 @@ import com.carmabs.ema.core.constants.INT_ZERO
 import com.carmabs.ema.core.initializer.EmaInitializerSerializer
 import com.carmabs.ema.core.model.EmaBackHandlerStrategy
 import com.carmabs.ema.core.navigator.EmaNavigator
-import com.carmabs.ema.core.state.EmaEffect
+import com.carmabs.ema.core.state.EmaEvent
 import com.carmabs.ema.core.state.EmaState
 import com.carmabs.ema.core.view.EmaViewModelTrigger
 import com.carmabs.ema.core.viewmodel.EmaViewModel
@@ -41,7 +41,7 @@ import org.koin.core.scope.Scope
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
-abstract class EmaCoreFragment<S : EmaState, VM : EmaViewModel<S,E>, E : EmaEffect> :
+abstract class EmaCoreFragment<S : EmaState, VM : EmaViewModel<S,E>, E : EmaEvent> :
     Fragment(), EmaAndroidView<S, VM, E>, AndroidScopeComponent {
 
     final override val scope: Scope by fragmentScope()
@@ -52,7 +52,7 @@ abstract class EmaCoreFragment<S : EmaState, VM : EmaViewModel<S,E>, E : EmaEffe
         get() = viewLifecycleOwner.lifecycleScope
 
     private var viewJob: MutableList<Job>? = null
-    
+
 
     @Suppress("UNCHECKED_CAST")
     override val viewModel: VM by lazy {

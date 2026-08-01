@@ -6,7 +6,7 @@ import androidx.fragment.app.FragmentActivity
 import com.carmabs.ema.android.ui.EmaAndroidView
 import com.carmabs.ema.android.ui.EmaFragment
 import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
-import com.carmabs.ema.core.state.EmaEffect
+import com.carmabs.ema.core.state.EmaEvent
 import com.carmabs.ema.core.state.EmaState
 import com.carmabs.ema.core.viewmodel.EmaViewModel
 
@@ -20,7 +20,7 @@ import com.carmabs.ema.core.viewmodel.EmaViewModel
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
 @Suppress("ClassName")
-internal fun <S : EmaState, VM : EmaViewModel<S, E>, E : EmaEffect> EmaAndroidView<S, VM, E>.generateViewModel(
+internal fun <S : EmaState, VM : EmaViewModel<S, E>, E : EmaEvent> EmaAndroidView<S, VM, E>.generateViewModel(
     vm: VM
 ): EmaAndroidViewModel<S, E> {
 

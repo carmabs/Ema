@@ -7,7 +7,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.FragmentNavigator
 import com.carmabs.ema.core.navigator.EmaNavigator
-import com.carmabs.ema.core.state.EmaEffect
+import com.carmabs.ema.core.state.EmaEvent
 
 /**
  *  *<p>
@@ -19,7 +19,7 @@ import com.carmabs.ema.core.state.EmaEffect
  * Navigator to handle navigation through navController with navigation back support and no target navigation
  * Created by: Carlos Mateo Benito on 20/1/19.
  */
-interface EmaNavControllerNavigator<E : EmaEffect> : EmaNavigator<E> {
+interface EmaNavControllerNavigator<E : EmaEvent> : EmaNavigator<E> {
 
     val navController: NavController
 

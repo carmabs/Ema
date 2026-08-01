@@ -20,7 +20,7 @@ import com.carmabs.ema.core.constants.INT_ZERO
 import com.carmabs.ema.core.initializer.EmaInitializer
 import com.carmabs.ema.core.initializer.EmaInitializerSerializer
 import com.carmabs.ema.core.model.EmaBackHandlerStrategy
-import com.carmabs.ema.core.state.EmaEffect
+import com.carmabs.ema.core.state.EmaEvent
 import com.carmabs.ema.core.state.EmaState
 import com.carmabs.ema.core.view.EmaViewModelTrigger
 import com.carmabs.ema.core.viewmodel.EmaViewModel
@@ -38,7 +38,7 @@ import org.koin.core.scope.Scope
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
-abstract class EmaCoreActivity<S : EmaState, VM : EmaViewModel<S, E>, E : EmaEffect> :
+abstract class EmaCoreActivity<S : EmaState, VM : EmaViewModel<S, E>, E : EmaEvent> :
     AppCompatActivity(), EmaAndroidView<S, VM, E>, AndroidScopeComponent, EmaActivityBackDelegate {
 
 

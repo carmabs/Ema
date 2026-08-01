@@ -1,7 +1,7 @@
 package com.carmabs.ema.core.viewmodel
 
 import com.carmabs.ema.core.initializer.EmaInitializer
-import com.carmabs.ema.core.state.EmaEffect
+import com.carmabs.ema.core.state.EmaEvent
 import com.carmabs.ema.core.state.EmaState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.emptyFlow
  *
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
-interface EmaViewModel<S : EmaState, E: EmaEffect> {
+interface EmaViewModel<S : EmaState, E : EmaEvent> {
 
     val id: String
         get() {
@@ -23,7 +23,7 @@ interface EmaViewModel<S : EmaState, E: EmaEffect> {
     /**
      * Used to know if subscribed view should render the state
      */
-    val shouldRenderState:Boolean
+    val shouldRenderState: Boolean
 
     fun setScope(scope: CoroutineScope)
 
@@ -39,22 +39,20 @@ interface EmaViewModel<S : EmaState, E: EmaEffect> {
 
     fun onCleared()
 
-    fun subscribeStateUpdates(): Flow<S>
+    val stateFlow: Flow<S>
 
-    /**
-     * Get effect state to be handled by the view
-     */
-    fun subscribeToEffectUpdates(): Flow<List<E>>
-
-    fun consumeEffect(effect: E)
+    val eventFlow: Flow<List<E>>
 
 
-    object EMPTY : EmaViewModel<EmaState.EMPTY, EmaEffect.EMPTY> {
+    object EMPTY : EmaViewModel<EmaState.EMPTY, EmaEvent.EMPTY> {
 
 
         override val initialState: EmaState.EMPTY = EmaState.EMPTY
+        override val stateFlow: Flow<EmaState.EMPTY> = emptyFlow()
+        override val eventFlow: Flow<List<EmaEvent.EMPTY>> = emptyFlow()
+
         override val shouldRenderState: Boolean
-        get() = true
+            get() = true
 
         override fun setScope(scope: CoroutineScope) {
 
@@ -82,18 +80,6 @@ interface EmaViewModel<S : EmaState, E: EmaEffect> {
 
         override fun onCleared() {
 
-        }
-
-        override fun subscribeStateUpdates(): Flow<EmaState.EMPTY> {
-            return emptyFlow()
-        }
-
-        override fun subscribeToEffectUpdates(): Flow<List<EmaEffect.EMPTY>> {
-            return emptyFlow()
-        }
-
-        override fun consumeEffect(effect: EmaEffect.EMPTY) {
-            
         }
     }
 }

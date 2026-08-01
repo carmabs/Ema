@@ -31,9 +31,8 @@ import com.carmabs.ema.compose.ui.EmaComposableScreen
 import com.carmabs.ema.compose.ui.EmaComposableScreenContent
 import com.carmabs.ema.core.action.EmaAction
 import com.carmabs.ema.core.initializer.EmaInitializer
-import com.carmabs.ema.core.model.EmaBackHandlerStrategy
-import com.carmabs.ema.core.navigator.EmaNavigationEvent
-import com.carmabs.ema.core.state.EmaDataState
+import com.carmabs.ema.core.state.EmaEvent
+import com.carmabs.ema.core.state.EmaState
 import com.carmabs.ema.core.viewmodel.EmaViewModel
 
 fun NavController.navigate(
@@ -55,19 +54,18 @@ fun NavController.navigate(
     navigate(routeParsed, navOptions, navigatorExtras)
 }
 
-fun <S : EmaDataState, A : EmaAction.Screen, N : EmaNavigationEvent> NavGraphBuilder.createComposableScreen(
-    screenContent: EmaComposableScreenContent<S, A>,
-    viewModel: () -> EmaViewModel<S, N>,
-    onNavigationEvent: (N) -> Unit,
-    onBackEvent: ((Any?, EmaImmutableActionDispatcher<A>) -> EmaBackHandlerStrategy)? = null,
+fun <S : EmaState, A : EmaAction.Screen, E : EmaEvent> NavGraphBuilder.createComposableScreen(
+    screenContent: EmaComposableScreenContent<S, A, E>,
+    viewModel: () -> EmaViewModel<S, E>,
     routeId: String = screenContent::class.routeId,
     initializerSupport: EmaInitializerSupport? = null,
-    saveStateManager: SaveStateManager<S, N>? = null,
-    onViewModelInstance: (@Composable (EmaViewModel<S, N>) -> Unit)? = null,
+    saveStateManager: SaveStateManager<S, E>? = null,
+    onViewModelInstance: (@Composable (EmaViewModel<S, E>) -> Unit)? = null,
     fullScreenDialogMode: Boolean = false,
     transitionAnimation: EmaComposableTransitions = EmaComposableTransitions(),
     decoration: @Composable ((content: @Composable () -> Unit, dispatcher: EmaImmutableActionDispatcher<A>) -> Unit)? = null,
-    previewRenderState: S? = null
+    previewRenderState: S? = null,
+    onEvent: (E) -> Unit
 ) {
 
     val content: @Composable (NavGraphBuilder.(NavBackStackEntry) -> Unit) =
@@ -76,9 +74,9 @@ fun <S : EmaDataState, A : EmaAction.Screen, N : EmaNavigationEvent> NavGraphBui
             //We use savedStateHandle of backEntry due to SavedStateHandled of viewmodel is attached to
             //navController and is restarted on kill process.
             //With backEntry.savedStateHandle data is rightly persisted
-            val androidVm =  EmaScreenProvider.provideComposableViewModel(viewModel = remember {
-                    viewModel.invoke()
-                }, backEntry.savedStateHandle) 
+            val androidVm = EmaScreenProvider.provideComposableViewModel(viewModel = remember {
+                viewModel.invoke()
+            }, backEntry.savedStateHandle)
 
             val vm = androidVm.emaViewModel
 
@@ -101,12 +99,11 @@ fun <S : EmaDataState, A : EmaAction.Screen, N : EmaNavigationEvent> NavGraphBui
             val screenToDraw = @Composable {
                 EmaComposableScreen(
                     initializer = initializer,
-                    onNavigationEvent = onNavigationEvent,
-                    onBackEvent = onBackEvent,
                     vm = vm,
                     actions = vmActions,
                     screenContent = screenContent,
-                    previewRenderState = previewRenderState
+                    previewRenderState = previewRenderState,
+                    onEvent = onEvent
                 )
             }
             decoration?.also {
@@ -171,5 +168,3 @@ fun NavController.navigateToExternalLink(url: String): Boolean {
         context.findComponentActivity().startActivity(intent)
     }.map { true }.getOrElse { false }
 }
-
-
