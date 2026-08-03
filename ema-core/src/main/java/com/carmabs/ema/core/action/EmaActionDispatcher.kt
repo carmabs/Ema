@@ -15,6 +15,6 @@ import kotlinx.coroutines.flow.Flow
  */
 
 
-interface EmaActionDispatcher<A : EmaAction> {
+interface EmaActionDispatcher<in A : EmaAction> {
     fun dispatch(action: A)
 }

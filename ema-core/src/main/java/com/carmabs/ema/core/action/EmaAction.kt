@@ -31,6 +31,8 @@ interface EmaAction {
         data object Paused : Lifecycle
         data object Stopped : Lifecycle
 
+        data object Destroyed : Lifecycle
+
         override val type: String
             get() = Lifecycle::class.java.simpleName
 

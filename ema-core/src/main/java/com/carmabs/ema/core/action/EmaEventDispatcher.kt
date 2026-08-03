@@ -1,6 +1,7 @@
 package com.carmabs.ema.core.action
 
 import com.carmabs.ema.core.state.EmaEvent
+import com.carmabs.ema.core.viewmodel.EmaViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,30 +19,9 @@ import kotlin.collections.plus
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-abstract class EmaEventDispatcher<E : EmaEvent>(private val mEventFlow: MutableStateFlow<List<E>> = MutableStateFlow(emptyList())) {
+interface EmaEventDispatcher<E : EmaEvent> {
 
-    fun consumeEvent(event: E) {
-        mEventFlow.update { it - event }
-    }
+    fun consumeEvent(event: E)
 
-    /**
-     * Dispatches an effect to be observed by the view.
-     * @param event The effect to be dispatched.
-     * @param allowDuplicated If true, allows the same effect to be dispatched multiple times before being consumed.
-     */
-    protected fun postEvent(event: E, allowDuplicated: Boolean) {
-        mEventFlow.update {
-            if (allowDuplicated)
-                it + event
-            else
-                if (it.contains(event)) it else it + event
-        }
-    }
-
-    val eventFlow: Flow<List<E>> =
-        mEventFlow.asStateFlow()
-            .distinctUntilChanged { old, new ->
-                new.all { old.contains(it) } && old.size >= new.size
-            }
-            .filter { it.isNotEmpty() }
+    val eventFlow: Flow<List<E>>
 }

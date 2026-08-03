@@ -1,10 +1,13 @@
 package com.carmabs.ema.core.viewmodel
 
+import com.carmabs.ema.core.action.EmaEventDispatcher
 import com.carmabs.ema.core.initializer.EmaInitializer
 import com.carmabs.ema.core.state.EmaEvent
 import com.carmabs.ema.core.state.EmaState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.emptyFlow
 
 /**
@@ -12,7 +15,7 @@ import kotlinx.coroutines.flow.emptyFlow
  *
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
-interface EmaViewModel<S : EmaState, E : EmaEvent> {
+interface EmaViewModel<S : EmaState, E : EmaEvent>: EmaEventDispatcher<E> {
 
     val id: String
         get() {
@@ -39,47 +42,32 @@ interface EmaViewModel<S : EmaState, E : EmaEvent> {
 
     fun onCleared()
 
-    val stateFlow: Flow<S>
-
-    val eventFlow: Flow<List<E>>
-
+    val stateFlow: StateFlow<S>
 
     object EMPTY : EmaViewModel<EmaState.EMPTY, EmaEvent.EMPTY> {
-
-
         override val initialState: EmaState.EMPTY = EmaState.EMPTY
-        override val stateFlow: Flow<EmaState.EMPTY> = emptyFlow()
+
+        override val stateFlow: StateFlow<EmaState.EMPTY> = MutableStateFlow(initialState)
+
+        override fun consumeEvent(event: EmaEvent.EMPTY) = Unit
+
         override val eventFlow: Flow<List<EmaEvent.EMPTY>> = emptyFlow()
 
         override val shouldRenderState: Boolean
             get() = true
 
-        override fun setScope(scope: CoroutineScope) {
+        override fun setScope(scope: CoroutineScope) = Unit
 
-        }
+        override fun onCreated(initializer: EmaInitializer?) = Unit
 
-        override fun onCreated(initializer: EmaInitializer?) {
+        override fun onStartView() = Unit
 
-        }
+        override fun onResumeView() = Unit
 
-        override fun onStartView() {
+        override fun onPauseView() = Unit
 
-        }
+        override fun onStopView() = Unit
 
-        override fun onResumeView() {
-
-        }
-
-        override fun onPauseView() {
-
-        }
-
-        override fun onStopView() {
-
-        }
-
-        override fun onCleared() {
-
-        }
+        override fun onCleared() = Unit
     }
 }
