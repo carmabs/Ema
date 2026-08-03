@@ -1,5 +1,6 @@
 package com.carmabs.ema.core.viewmodel
 
+import com.carmabs.ema.core.action.DefaultEmaEventDispatcher
 import com.carmabs.ema.core.action.EmaEventDispatcher
 import com.carmabs.ema.core.broadcast.BackBroadcastId
 import com.carmabs.ema.core.broadcast.backBroadcastId
@@ -21,6 +22,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlin.coroutines.CoroutineContext
 
 /**
@@ -31,8 +34,9 @@ import kotlin.coroutines.CoroutineContext
 abstract class EmaViewModelBasic<S : EmaState, E : EmaEvent>(
     initialDataState: S,
     defaultScope: CoroutineScope = EmaMainScope()
-) : EmaViewModel<S, E>, EmaEventDispatcher<E>() {
+) : EmaViewModel<S, E> {
 
+    private val emaEventDispatcher = DefaultEmaEventDispatcher<E>()
     private val singleSideEffectMap by lazy {
         hashMapOf<String, Job>()
     }
@@ -72,7 +76,7 @@ abstract class EmaViewModelBasic<S : EmaState, E : EmaEvent>(
             return updateOnInitialization || hasBeenUpdated
         }
 
-    override fun setScope(scope: CoroutineScope) {
+    final override fun setScope(scope: CoroutineScope) {
         this.scope = scope
     }
 
@@ -81,6 +85,10 @@ abstract class EmaViewModelBasic<S : EmaState, E : EmaEvent>(
      * of the view.
      */
     private val mStateFlow: MutableStateFlow<S> = MutableStateFlow(initialDataState)
+
+    final override val eventFlow: Flow<List<E>> = emaEventDispatcher.eventFlow
+
+    final override fun consumeEvent(event: E) =  emaEventDispatcher.consumeEvent(event)
 
 
     private var firstTimeResumed = true
@@ -105,19 +113,14 @@ abstract class EmaViewModelBasic<S : EmaState, E : EmaEvent>(
         }
     }
 
-    override fun onStartView() {
+    final override fun onStartView() {
         onViewStarted()
     }
 
     /**
-     * Called when the state of the view has been created
-     */
-    abstract fun onStateCreated(initializer: EmaInitializer? = null)
-
-    /**
      * Called when view is shown in foreground
      */
-    override fun onResumeView() {
+    final override fun onResumeView() {
         onViewResumed()
         firstTimeResumed = false
     }
@@ -125,13 +128,19 @@ abstract class EmaViewModelBasic<S : EmaState, E : EmaEvent>(
     /**
      * Called when view is hidden in background
      */
-    override fun onPauseView() {
+    final override fun onPauseView() {
         onViewPaused()
     }
 
-    override fun onStopView() {
+    final override fun onStopView() {
         onViewStopped()
     }
+
+    /**
+     * Called when the state of the view has been created
+     */
+    abstract fun onStateCreated(initializer: EmaInitializer? = null)
+
 
     /**
      * Called always the view goes to the foreground
@@ -153,7 +162,7 @@ abstract class EmaViewModelBasic<S : EmaState, E : EmaEvent>(
      */
     protected open fun onViewStopped() = Unit
 
-    override val stateFlow: Flow<S> = mStateFlow
+    final override val stateFlow: StateFlow<S> = mStateFlow.asStateFlow()
 
 
     /**
@@ -304,7 +313,7 @@ abstract class EmaViewModelBasic<S : EmaState, E : EmaEvent>(
      * Method called when the ViewModel is destroyed. It cancels all background pending tasks.
      * Check call name for EmaAndroidView. It uses reflection to call this internal method
      */
-    override fun onCleared() {
+    final override fun onCleared() {
         emaResultHandler.notifyResults(id)
         emaResultHandler.removeResultListener(id)
         scope.cancel()

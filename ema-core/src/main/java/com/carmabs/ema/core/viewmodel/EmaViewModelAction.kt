@@ -27,5 +27,5 @@ abstract class EmaViewModelAction<S : EmaState, A : EmaAction.Screen, E: EmaEven
         onAction(action)
     }
 
-    abstract fun onAction(action: A)
+    protected abstract fun onAction(action: A)
 }
