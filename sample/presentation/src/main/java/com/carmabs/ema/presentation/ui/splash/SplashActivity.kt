@@ -2,7 +2,11 @@ package com.carmabs.ema.presentation.ui.splash
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import com.carmabs.ema.android.navigation.EmaActivityNavControllerHost
 import com.carmabs.ema.android.ui.EmaToolbarActivity
 import com.carmabs.ema.core.navigator.EmaNavigator
@@ -22,8 +26,10 @@ class SplashActivity :
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         hideToolbar(animate = false)
+        applyWindowInsets()
 
     }
 
@@ -48,4 +54,18 @@ class SplashActivity :
        R.id.navHostFragment,
        R.navigation.main_graph
    )
+
+    /**
+     * The app is drawn edge to edge, so the fragments container is padded with the system bars
+     * and the keyboard insets
+     */
+    private fun applyWindowInsets() {
+        ViewCompat.setOnApplyWindowInsetsListener(binding.navHostFragment) { view, windowInsets ->
+            val insets = windowInsets.getInsets(
+                WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.ime()
+            )
+            view.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
+            WindowInsetsCompat.CONSUMED
+        }
+    }
 }

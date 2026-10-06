@@ -1,101 +1,52 @@
 package com.carmabs.ema.presentation.ui.compose
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.carmabs.ema.compose.extension.stringResource
 import com.carmabs.ema.core.model.EmaText
 import com.carmabs.ema.presentation.dialog.loading.LoadingDialogData
-import com.carmabs.ema.sample.ema.R
+import com.carmabs.ema.presentation.ui.theme.EmaSampleTheme
 
 @Composable
 fun LoadingDialogComposable(
     dialogData: LoadingDialogData
 ) {
-    Dialog(
-        onDismissRequest = {
-
-        }) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight()
+    Dialog(onDismissRequest = {}) {
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            shape = MaterialTheme.shapes.extraLarge,
+            color = MaterialTheme.colorScheme.surfaceContainerHigh
         ) {
-            Box(modifier = Modifier
-                .align(Alignment.Center)
-                .run {
-                    dialogData.proportionWidth?.let {
-                        fillMaxWidth(it)
-                    } ?: wrapContentWidth()
-                }
-                .clip(RoundedCornerShape(dimensionResource(id = R.dimen.radio_corner_big)))
-                .background(
-                    color = colorResource(id = R.color.white),
-                    shape = RoundedCornerShape(dimensionResource(id = R.dimen.cardview_default_radius))
-                )) {
-                Column(
-                    modifier = Modifier
-                        .padding(
-                            start = dimensionResource(id = R.dimen.space_medium),
-                            end = dimensionResource(id = R.dimen.space_medium)
-                        ),
-                    verticalArrangement = Arrangement.Bottom,
-                ) {
-                    Column {
-                        CircularProgressIndicator(
-                            modifier = Modifier
-                                .padding(top = dimensionResource(id = R.dimen.space_big))
-                                .align(Alignment.CenterHorizontally)
-                                .size(dimensionResource(id = R.dimen.icon_size_big))
-                        )
-                        Text(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(
-                                    top = dimensionResource(id = R.dimen.space_medium),
-                                )
-                                .align(
-                                    Alignment.CenterHorizontally
-                                ),
-                            text = dialogData.title.stringResource(),
-                            fontSize = 22.sp,
-                            textAlign = TextAlign.Center,
-                            fontWeight = FontWeight.Bold,
-                            color = colorResource(id = R.color.black)
-                        )
-                    }
+            Row(
+                modifier = Modifier.padding(24.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                CircularProgressIndicator(modifier = Modifier.size(32.dp))
+                Spacer(modifier = Modifier.width(16.dp))
+                Column {
                     Text(
-                        modifier = Modifier
-                            .padding(
-                                bottom = dimensionResource(id = R.dimen.space_big)
-                            )
-                            .align(Alignment.CenterHorizontally)
-                            .fillMaxWidth(),
-                        textAlign = TextAlign.Center,
+                        text = dialogData.title.stringResource(),
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    Text(
                         text = dialogData.message.stringResource(),
-                        fontSize = 18.sp,
-                        color = colorResource(id = R.color.grayDark)
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
@@ -104,16 +55,18 @@ fun LoadingDialogComposable(
 }
 
 //region Previews
-@Preview(
-    device = Devices.NEXUS_5
-)
+
+@Preview
 @Composable
 fun LoadingDialogPreview() {
-    LoadingDialogComposable(
-        LoadingDialogData(
-            title = EmaText.text("Preview title sample"),
-            message = EmaText.text("Preview message sample")
+    EmaSampleTheme {
+        LoadingDialogComposable(
+            LoadingDialogData(
+                title = EmaText.text("Preview title sample"),
+                message = EmaText.text("Preview message sample")
+            )
         )
-    )
+    }
 }
+
 //endregion

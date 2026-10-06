@@ -1,16 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#6200EE</color>
-    <color name="colorPrimaryDark">#3700B3</color>
-    <color name="colorSecondary">#03DAC6</color>
-    <color name="colorSecondaryVariant">#018786</color>
-
-
-    <color name="error">#B00020</color>
-    <color name="white">#FFFFFF</color>
-    <color name="black">#3d3d3d</color>
-
-    <color name="grayDark">#9b9b9b</color>
-    <color name="grayLight">#CDCDCD</color>
-
+    <!-- Ema sample palette (light). Indigo for the brand, teal as accent, slate neutrals -->
+    <color name="palette_primary">#4F46E5</color>
+    <color name="palette_onPrimary">#FFFFFF</color>
+    <color name="palette_primaryContainer">#E0E7FF</color>
+    <color name="palette_onPrimaryContainer">#312E81</color>
+    <color name="palette_secondary">#0D9488</color>
+    <color name="palette_onSecondary">#FFFFFF</color>
+    <color name="palette_secondaryContainer">#CCFBF1</color>
+    <color name="palette_onSecondaryContainer">#134E4A</color>
+    <color name="palette_surface">#F8FAFC</color>
+    <color name="palette_onSurface">#0F172A</color>
+    <color name="palette_onSurfaceVariant">#64748B</color>
+    <color name="palette_surfaceContainerLowest">#FFFFFF</color>
+    <color name="palette_surfaceContainerLow">#FFFFFF</color>
+    <color name="palette_surfaceContainer">#F1F5F9</color>
+    <color name="palette_surfaceContainerHigh">#FFFFFF</color>
+    <color name="palette_surfaceContainerHighest">#E2E8F0</color>
+    <color name="palette_outline">#CBD5E1</color>
+    <color name="palette_outlineVariant">#E2E8F0</color>
+    <color name="palette_error">#DC2626</color>
+    <color name="palette_onError">#FFFFFF</color>
+    <color name="palette_errorContainer">#FEE2E2</color>
+    <color name="palette_onErrorContainer">#7F1D1D</color>
+    <color name="palette_inverseSurface">#1E293B</color>
+    <color name="palette_inverseOnSurface">#F1F5F9</color>
+    <color name="palette_inversePrimary">#A5B4FC</color>
+    <color name="palette_brandStart">#6366F1</color>
+    <color name="palette_brandEnd">#8B5CF6</color>
+    <color name="palette_brandAccent">#5EEAD4</color>
 </resources>

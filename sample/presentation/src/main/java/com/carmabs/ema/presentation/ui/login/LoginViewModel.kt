@@ -35,17 +35,7 @@ class LoginViewModel(
 
             LoginAction.Error.BadCredentialsAccepted -> onActionBadCredentialsAccepted()
             LoginAction.Error.BackPressed -> onActionErrorBackPressed()
-            LoginAction.Error.PasswordEmptyAccepted -> onActionErrorPasswordEmptyAccepted()
-            LoginAction.Error.UserEmptyAccepted -> onActionErrorUserEmptyAccepted()
         }
-    }
-
-    private fun onActionErrorUserEmptyAccepted() {
-        hideOverlap()
-    }
-
-    private fun onActionErrorPasswordEmptyAccepted() {
-        hideOverlap()
     }
 
     private fun onActionBadCredentialsAccepted() {
@@ -87,10 +77,14 @@ class LoginViewModel(
 
     private fun doLogin() {
         sideEffect {
-            showOverlap(LoginOverlap.Loading)
+            updateState {
+                copy(isLoading = true)
+            }
             val userLogged =
                 loginUseCase.invoke(LoginUseCase.Input(state.userName, state.userPassword))
-            hideOverlap()
+            updateState {
+                copy(isLoading = false)
+            }
             userLogged.onSuccess {user->
                 postEvent(LoginEvent.Message(user.name))
                 postEvent(LoginEvent.LoginSuccess(user))
@@ -102,12 +96,16 @@ class LoginViewModel(
     }
 
     private fun onActionLogin() {
-        when {
-            state.userName.isEmpty() -> showOverlap(LoginOverlap.ErrorUserEmpty)
-
-            state.userPassword.isEmpty() -> showOverlap(LoginOverlap.ErrorPasswordEmpty)
-
-            else -> doLogin()
+        if (state.isLoading)
+            return
+        val userNameError = state.userName.isBlank()
+        val passwordError = state.userPassword.isBlank()
+        if (userNameError || passwordError) {
+            updateState {
+                copy(userNameError = userNameError, passwordError = passwordError)
+            }
+        } else {
+            doLogin()
         }
     }
 
@@ -115,7 +113,9 @@ class LoginViewModel(
         updateState {
             copy(
                 userName = STRING_EMPTY,
-                userPassword = STRING_EMPTY
+                userPassword = STRING_EMPTY,
+                userNameError = false,
+                passwordError = false
             )
         }
     }
@@ -126,13 +126,13 @@ class LoginViewModel(
         //previous state, so it doesn't conflict with the user typing. The state is kept if, for example, there is a device
         //rotation and the view is recreated, to set the text with last value saved on state
         updateState {
-            copy(userName = user)
+            copy(userName = user, userNameError = false)
         }
     }
 
     private fun onActionPasswordWrite(password: String) {
         updateState {
-            copy(userPassword = password)
+            copy(userPassword = password, passwordError = false)
         }
     }
 

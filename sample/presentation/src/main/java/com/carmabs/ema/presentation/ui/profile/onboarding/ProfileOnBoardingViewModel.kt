@@ -23,6 +23,7 @@ class ProfileOnBoardingViewModel(initialDataState: ProfileOnBoardingState) : Bas
         when (action) {
             ProfileOnBoardingActions.AdminClicked -> onActionAdminClicked()
             ProfileOnBoardingActions.UserClicked -> onActionUserClicked()
+            ProfileOnBoardingActions.BackClicked -> onActionBackClicked()
         }
     }
     private fun onActionAdminClicked() {
@@ -35,5 +36,9 @@ class ProfileOnBoardingViewModel(initialDataState: ProfileOnBoardingState) : Bas
         postEvent(
             ProfileOnBoardingEvent.UserTypeSelected(Role.BASIC)
         )
+    }
+
+    private fun onActionBackClicked() {
+        postEvent(ProfileOnBoardingEvent.OnBoardingCancelled)
     }
 }

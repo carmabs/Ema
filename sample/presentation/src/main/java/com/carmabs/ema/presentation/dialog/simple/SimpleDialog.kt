@@ -35,8 +35,7 @@ class SimpleDialog : EmaDialog<DialogSimpleBinding,SimpleDialogData>() {
 
             tvDialogSimpleTitle.text = title.string(requireContext())
 
-            if (showCross)
-                ivDialogSimpleCross.visibility = if (showCross) View.VISIBLE else View.GONE
+            ivDialogSimpleCross.visibility = if (showCross) View.VISIBLE else View.GONE
 
             tvDialogSimpleMessage.text = message.string(requireContext())
 

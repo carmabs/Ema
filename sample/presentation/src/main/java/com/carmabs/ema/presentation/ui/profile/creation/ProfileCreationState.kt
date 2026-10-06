@@ -19,7 +19,7 @@ data class ProfileCreationState(
         )
     }
 
-    val roleText
-        get() = role.name
+    val canCreate
+        get() = name.isNotBlank()
 }
 

@@ -16,10 +16,10 @@ import com.carmabs.ema.core.model.EmaText
 data class SimpleDialogData(
     val title: EmaText,
     val message: EmaText,
-    val showCross: Boolean = true,
+    val showCross: Boolean = false,
     val showCancel:Boolean = false,
     val image: Int? = null,
-    override val proportionWidth: Float? = 7.5f / 10f,
+    override val proportionWidth: Float? = 0.85f,
     override val proportionHeight: Float? = null,
     override val isModal: Boolean = true
 ) : EmaDialogData

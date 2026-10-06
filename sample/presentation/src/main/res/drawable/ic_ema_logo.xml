@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Ema logo: three bars as a minimal "E", representing the state, action and event flow -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="96dp"
+    android:height="96dp"
+    android:viewportWidth="96"
+    android:viewportHeight="96">
+    <path android:pathData="M24,0h48a24,24 0,0 1,24,24v48a24,24 0,0 1,-24,24h-48a24,24 0,0 1,-24,-24v-48a24,24 0,0 1,24,-24z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:endX="96"
+                android:endY="96"
+                android:startX="0"
+                android:startY="0"
+                android:endColor="@color/palette_brandEnd"
+                android:startColor="@color/palette_brandStart"
+                android:type="linear" />
+        </aapt:attr>
+    </path>
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M34,26h28a6,6 0,0 1,0,12h-28a6,6 0,0 1,0,-12z" />
+    <path
+        android:fillColor="@color/palette_brandAccent"
+        android:pathData="M34,42h18a6,6 0,0 1,0,12h-18a6,6 0,0 1,0,-12z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M34,58h28a6,6 0,0 1,0,12h-28a6,6 0,0 1,0,-12z" />
+</vector>

@@ -13,6 +13,7 @@ import com.carmabs.ema.presentation.dialog.loading.LoadingDialogData
 import com.carmabs.ema.presentation.dialog.simple.SimpleDialogData
 import com.carmabs.ema.presentation.dialog.simple.SimpleDialogListener
 import com.carmabs.ema.sample.ema.R
+import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 
@@ -60,6 +61,14 @@ abstract class BaseFragment<B : ViewBinding, S : EmaState, VM : EmaViewModel<S, 
         //Listener must be set before showing the dialog, otherwise it is not attached to the new dialog
         appDialogProvider.dialogListener = dialogListener
         appDialogProvider.show(errorDialogData)
+    }
+
+    /**
+     * Shows a message to the user. It is attached to the activity content, so it remains visible
+     * although the screen navigates to other one
+     */
+    protected fun showMessage(message: String) {
+        Snackbar.make(requireView(), message, Snackbar.LENGTH_SHORT).show()
     }
 
     protected fun hideDialog() {

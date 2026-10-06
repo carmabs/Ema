@@ -1,6 +1,8 @@
 package com.carmabs.ema.presentation.ui.splash
 
+import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import com.carmabs.ema.android.di.injectDirect
 import com.carmabs.ema.android.ui.EmaFragment
@@ -20,6 +22,23 @@ class SplashFragment :
     }
 
 
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding.animateEntrance()
+    }
+
+    private fun SplashFragmentBinding.animateEntrance() {
+        llSplashContent.apply {
+            alpha = 0f
+            translationY = resources.displayMetrics.density * 24
+            animate()
+                .alpha(1f)
+                .translationY(0f)
+                .setDuration(600)
+                .start()
+        }
+    }
 
     override fun provideViewModel(): SplashViewModel {
         return injectDirect()

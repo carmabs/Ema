@@ -1,6 +1,5 @@
 package com.carmabs.ema.presentation.ui.home
 
-import com.carmabs.domain.model.Role
 import com.carmabs.domain.model.User
 import com.carmabs.domain.usecase.GetUserFriendsUseCase
 import com.carmabs.ema.core.broadcast.backBroadcastId
@@ -22,13 +21,11 @@ class HomeViewModel(
                     val friends = getUserFriendsUseCase(GetUserFriendsUseCase.Input(homeInitializer.user))
                     updateState {
                         copy(
-                            userData = when(user.role) {
-                                Role.ADMIN -> HomeState.UserData.Admin(
-                                    user.name,
-                                    user.surname
-                                )
-                                Role.BASIC -> HomeState.UserData.Basic
-                            },
+                            userData = HomeState.UserData(
+                                name = user.name,
+                                surname = user.surname,
+                                role = user.role
+                            ),
                             userList = userList.toMutableList().apply {
                                 addAll(friends)
                             }

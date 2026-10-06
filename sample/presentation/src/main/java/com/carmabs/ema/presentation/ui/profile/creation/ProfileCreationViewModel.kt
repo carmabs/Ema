@@ -69,6 +69,8 @@ class ProfileCreationViewModel(
     }
 
     private fun onActionCreateClicked() {
+        if (!state.canCreate)
+            return
         showOverlap(ProfileCreationOverlap.DialogUserCreated(state.role))
     }
 

@@ -31,6 +31,8 @@ class ProfileOnBoardingNavigator(
                     )
                 )
             }
+
+            ProfileOnBoardingEvent.OnBoardingCancelled -> navigateBack()
         }
 
     }

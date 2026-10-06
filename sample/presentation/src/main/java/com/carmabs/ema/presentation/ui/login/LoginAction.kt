@@ -23,8 +23,6 @@ sealed interface LoginAction : EmaAction.Screen {
 
     sealed interface Error : LoginAction {
         data object BadCredentialsAccepted : Error
-        data object UserEmptyAccepted : Error
-        data object PasswordEmptyAccepted : Error
         data object BackPressed : Error
     }
 }

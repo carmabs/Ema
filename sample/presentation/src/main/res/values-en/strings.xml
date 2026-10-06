@@ -1,64 +1,60 @@
 <resources>
-    <string name="app_name">EMA SAMPLE</string>
-
-    <!--HOME-->
-    <string name="home_access">Access</string>
-    <string name="home_hello">Hello</string>
-    <string name="home_check_credentials">Please, check your data</string>
-    <string name="home_loading_title_message">Getting user data</string>
-    <string name="home_user">User:</string>
-    <string name="home_welcome">Welcome %s</string>
-    <string name="home_password">Password:</string>
-    <string name="home_identify">Identify to access app services</string>
-    <string name="home_toolbar_title">EMA HOME</string>
-    <string name="home_last_user">Last user created: %s on %s</string>
-
-    <!--DIALOG-->
-    <string name="dialog_loading_title">Loading…</string>
-    <string name="dialog_yes">Yes</string>
-    <string name="dialog_accept">Accept</string>
-    <string name="dialog_cancel">Cancelar</string>
-    <string name="dialog_no">No</string>
-
-
-    <!--EMA HEADER-->
-    <string name="ema_header_title">EMA</string>
-    <string name="ema_header_subtitle">MVI Architecture, powered by Carmabs</string>
-    <string name="home_admin_title">Administrator panel of %s %s</string>
-    <string name="home_user_title">Friends</string>
-
-
-    <!--LOGIN-->
-    <string name="login_last_user_added">Ultimo usuario añadido: %S</string>
-    <string name="login_error_password_empty">La contraseña no puede estar vacía</string>
-    <string name="login_error_user_empty">El usuario no puede estar vacío</string>
-    <string name="login_error_fail">Credenciales no válidas</string>
-
-    <!--HOME-->
-    <string name="home_create">Crear usuario</string>
-
-    <!--DIALOG-->
-    <string name="dialog_loading_message">Espere un momento...</string>
 
     <!--GENERAL-->
-    <string name="general_error_title">Error</string>
+    <string name="ema_name">Ema</string>
+    <string name="ema_tagline">Simple MVI architecture for Android</string>
+    <string name="ema_by">by Carmabs</string>
+    <string name="navigate_back">Back</string>
+    <string name="role_admin">Administrator</string>
+    <string name="role_basic">Basic</string>
+
+    <!--LOGIN-->
+    <string name="login_title">Welcome</string>
+    <string name="login_subtitle">Sign in to continue</string>
+    <string name="login_user_hint">User</string>
+    <string name="login_password_hint">Password</string>
+    <string name="login_access">Sign in</string>
+    <string name="login_demo_title">Demo users</string>
+    <string name="login_demo_credentials">Admin / 1234  ·  User / 1234</string>
+    <string name="login_error_user_empty">Enter your user</string>
+    <string name="login_error_password_empty">Enter your password</string>
+    <string name="login_error_fail_title">We couldn\'t sign you in</string>
+    <string name="login_error_fail">The user or the password are not correct</string>
+    <string name="login_welcome">Welcome, %s!</string>
+    <string name="login_last_user_added">Last user added: %s</string>
+
+    <!--HOME-->
+    <string name="home_greeting">Hi, %s</string>
+    <string name="home_subtitle_admin">Manage your team users</string>
+    <string name="home_subtitle_basic">These are your friends</string>
+    <string name="home_section_admin">Created users</string>
+    <string name="home_section_basic">Friends</string>
+    <string name="home_empty_title">No users yet</string>
+    <string name="home_empty_message">Tap \"Create user\" to add the first one</string>
+    <string name="home_create">Create user</string>
+
+    <!--DIALOG-->
+    <string name="dialog_accept">Accept</string>
+    <string name="dialog_cancel">Cancel</string>
+    <string name="dialog_loading_title">Loading</string>
+    <string name="dialog_loading_message">Please wait…</string>
 
     <!--PROFILE ONBOARDING-->
-    <string name="profile_admin">Administrator user: %s</string>
-    <string name="profile_panel">Administration panel</string>
-    <string name="profile_type_user_title">¿What type of user do you want to create?</string>
-    <string name="profile_user_basic">Basic</string>
-    <string name="profile_user_admin">Admin</string>
+    <string name="profile_panel">New user</string>
+    <string name="profile_admin">Created by %s</string>
+    <string name="profile_type_user_title">What type of user do you want to create?</string>
+    <string name="profile_user_admin_description">Can create and manage other users</string>
+    <string name="profile_user_basic_description">Can access their friends list</string>
 
     <!--PROFILE CREATION-->
-    <string name="profile_creation_user_admin_title">User ADMIN</string>
-    <string name="profile_creation_user_basic_title">User BASIC</string>
-    <string name="profile_creation_user_message">¿Do you want to create this user?</string>
-    <string name="profile_creation_create_user">Create user</string>
-    <string name="profile_creation_create_title">Form %s</string>
+    <string name="profile_creation_title">User details</string>
     <string name="profile_creation_create_name">Name</string>
     <string name="profile_creation_create_surname">Surname</string>
-    <string name="profile_creation_user_exit_title">Exit</string>
-    <string name="profile_creation_user_exit_message">¿Do you want to exit without create the user?</string>
+    <string name="profile_creation_create_user">Create user</string>
+    <string name="profile_creation_user_admin_title">Create administrator?</string>
+    <string name="profile_creation_user_basic_title">Create basic user?</string>
+    <string name="profile_creation_user_message">The user will be added to your list</string>
+    <string name="profile_creation_user_exit_title">Leave without saving?</string>
+    <string name="profile_creation_user_exit_message">The entered data will be lost</string>
 
 </resources>
