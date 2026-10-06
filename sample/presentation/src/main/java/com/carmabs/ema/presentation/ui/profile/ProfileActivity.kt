@@ -9,7 +9,7 @@ import androidx.navigation.compose.rememberNavController
 import com.carmabs.ema.android.di.injectDirect
 import com.carmabs.ema.android.extension.getInitializer
 import com.carmabs.ema.android.initializer.bundle.strategy.BundleSerializerStrategy
-import com.carmabs.ema.android.savestate.SaveStateManager
+import com.carmabs.ema.android.savestate.EmaSaveStateManager
 import com.carmabs.ema.compose.extension.asActionDispatcher
 import com.carmabs.ema.compose.extension.createComposableScreen
 import com.carmabs.ema.compose.extension.routeId
@@ -66,7 +66,7 @@ class ProfileActivity : ComponentActivity() {
                     initializerSupport = EmaInitializerSupport.kSerialization(
                         ProfileCreationInitializer.serializer()
                     ),
-                    saveStateManager = SaveStateManager<ProfileCreationState, ProfileCreationEvent> { coroutineScope, savedStateHandle, emaViewModel ->
+                    saveStateManager = EmaSaveStateManager<ProfileCreationState, ProfileCreationEvent> { coroutineScope, savedStateHandle, emaViewModel ->
 
                         //SAMPLE TO RETAIN STATE THROUGH SAVED STATE HANDLE WHEN PROCESS IS KILLED BY SYSTEM, FOR EXAMPLE,
                         //DENYING A PERMISSION IN SETTINGS

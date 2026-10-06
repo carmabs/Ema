@@ -20,7 +20,7 @@ import com.carmabs.ema.android.extension.findComponentActivity
 import com.carmabs.ema.android.extension.getInitializer
 import com.carmabs.ema.android.initializer.EmaInitializerBundle
 import com.carmabs.ema.android.initializer.bundle.strategy.BundleSerializerStrategy
-import com.carmabs.ema.android.savestate.SaveStateManager
+import com.carmabs.ema.android.savestate.EmaSaveStateManager
 import com.carmabs.ema.compose.action.EmaImmutableActionDispatcher
 import com.carmabs.ema.compose.action.toImmutable
 import com.carmabs.ema.compose.initializer.EmaInitializerSupport
@@ -59,7 +59,7 @@ fun <S : EmaState, A : EmaAction.Screen, E : EmaEvent> NavGraphBuilder.createCom
     viewModel: () -> EmaViewModel<S, E>,
     routeId: String = screenContent::class.routeId,
     initializerSupport: EmaInitializerSupport? = null,
-    saveStateManager: SaveStateManager<S, E>? = null,
+    saveStateManager: EmaSaveStateManager<S, E>? = null,
     onViewModelInstance: (@Composable (EmaViewModel<S, E>) -> Unit)? = null,
     fullScreenDialogMode: Boolean = false,
     transitionAnimation: EmaComposableTransitions = EmaComposableTransitions(),

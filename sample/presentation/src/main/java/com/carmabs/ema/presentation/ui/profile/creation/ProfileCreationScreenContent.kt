@@ -1,6 +1,5 @@
 package com.carmabs.ema.presentation.ui.profile.creation
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -34,14 +33,15 @@ import com.carmabs.ema.sample.ema.R
 class ProfileCreationScreenContent :
     BaseScreenComposable<ProfileCreationState, ProfileCreationAction, ProfileCreationEvent>() {
 
+    //When a dialog is shown, it handles the back press itself
+    override fun onBack(state: ProfileCreationState): ProfileCreationAction? =
+        if (state.overlap == null) ProfileCreationAction.OnBack else null
+
     @Composable
     override fun onState(
         state: ProfileCreationState,
         actions: EmaImmutableActionDispatcher<ProfileCreationAction>
     ) {
-        BackHandler {
-            actions.dispatch(ProfileCreationAction.OnBack)
-        }
         Surface(
             modifier = Modifier
                 .fillMaxWidth()

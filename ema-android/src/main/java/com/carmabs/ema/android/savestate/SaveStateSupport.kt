@@ -15,5 +15,5 @@ import com.carmabs.ema.core.state.EmaState
  */
 data class SavedStateSupport<S : EmaState, E : EmaEvent>(
     val savedStateHandle: SavedStateHandle,
-    val saveStateManager: SaveStateManager<S, E>
+    val saveStateManager: EmaSaveStateManager<S, E>
 )

@@ -1,6 +1,7 @@
 package com.carmabs.ema.compose.ui
 
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -178,6 +179,11 @@ private fun <S : EmaState, A : EmaAction.Screen, E : EmaEvent> RenderScreen(
                 }
             }
         }
+    }
+
+    val backAction = screenContent.onBack(state)
+    BackHandler(enabled = backAction != null) {
+        backAction?.also(immutableActions::dispatch)
     }
 
     if (vm.shouldRenderState) {
