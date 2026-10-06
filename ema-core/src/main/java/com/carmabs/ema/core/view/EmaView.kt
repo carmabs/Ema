@@ -143,10 +143,10 @@ interface EmaView<S : EmaState, VM : EmaViewModel<S, E>, E : EmaEvent> {
     fun onState(state: S)
 
     /**
-     * Called when view model trigger an effect
-     * @param effect effect dispatched by viewmodel
+     * Called when view model trigger an event
+     * @param event event dispatched by viewmodel
      */
-    suspend fun onEffect(effect: E)
+    suspend fun onEvent(event: E)
 
     fun navigate(navigationEvent: E) {
         navigator?.navigate(navigationEvent) ?: throwNavigationException()
@@ -197,7 +197,7 @@ interface EmaView<S : EmaState, VM : EmaViewModel<S, E>, E : EmaEvent> {
     fun onBindView(coroutineScope: CoroutineScope, viewModel: VM): MutableList<Job> {
         val jobList = mutableListOf<Job>()
         jobList.add(onBindState(coroutineScope, viewModel))
-        jobList.add(onBindEffects(coroutineScope, viewModel))
+        jobList.add(onBindEvents(coroutineScope, viewModel))
         return jobList
     }
 
@@ -213,12 +213,12 @@ interface EmaView<S : EmaState, VM : EmaViewModel<S, E>, E : EmaEvent> {
         }
     }
 
-    fun onBindEffects(coroutineScope: CoroutineScope, viewModel: VM): Job {
+    fun onBindEvents(coroutineScope: CoroutineScope, viewModel: VM): Job {
         return coroutineScope.launch {
             viewModel.eventFlow.collectLatest {
-                it.forEach { effect ->
-                    onEffect(effect)
-                    (viewModel as? EmaEventDispatcher<E>)?.consumeEvent(effect)
+                it.forEach { event ->
+                    onEvent(event)
+                    (viewModel as? EmaEventDispatcher<E>)?.consumeEvent(event)
                 }
             }
         }

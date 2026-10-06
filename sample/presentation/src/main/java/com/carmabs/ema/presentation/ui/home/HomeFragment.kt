@@ -21,7 +21,7 @@ import com.carmabs.ema.sample.ema.databinding.HomeFragmentBinding
 
 
 class HomeFragment :
-    EmaFragment<HomeFragmentBinding, HomeState, HomeViewModel, HomeNavigationEvent>() {
+    EmaFragment<HomeFragmentBinding, HomeState, HomeViewModel, HomeEvent>() {
 
     private var adapter: EmaBaseRecyclerAdapter<User>? = null
     override val initializerStrategy: BundleSerializerStrategy
@@ -60,19 +60,19 @@ class HomeFragment :
         return injectDirect()
     }
 
-    override fun HomeFragmentBinding.onStateNormal(data: HomeState) {
-        if (data.showAdminList) {
+    override fun HomeFragmentBinding.onState(state: HomeState) {
+        if (state.showAdminList) {
             if (adapter == null) {
-                adapter = when (data.userData?.role) {
+                adapter = when (state.userData?.role) {
                     Role.ADMIN -> HomeMultiAdapter()
                     Role.BASIC -> HomeSingleAdapter()
                     null -> null
                 }
                 rvHomeUsers.adapter = adapter
             }
-            adapter?.submitList(data.userList)
+            adapter?.submitList(state.userList)
         }
-        tvHomeListTitle.text = when (val user = data.userData) {
+        tvHomeListTitle.text = when (val user = state.userData) {
             is HomeState.UserData.Admin -> {
                 R.string.home_admin_title.getFormattedString(
                     requireContext(),
@@ -88,8 +88,12 @@ class HomeFragment :
             null -> STRING_EMPTY
         }
 
-        bHomeCreateProfile.isVisible = data.showCreateButton
+        bHomeCreateProfile.isVisible = state.showCreateButton
     }
 
-    override val navigator: EmaNavigator<HomeNavigationEvent> = HomeNavigator(this)
+    override suspend fun HomeFragmentBinding.onEvent(event: HomeEvent) {
+        navigate(event)
+    }
+
+    override val navigator: EmaNavigator<HomeEvent> = HomeNavigator(this)
 }

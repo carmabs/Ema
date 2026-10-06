@@ -276,6 +276,16 @@ abstract class EmaViewModelBasic<S : EmaState, E : EmaEvent>(
     protected fun updateState(changeStateFunction: S.() -> S) {
         state = state.changeStateFunction()
         hasBeenUpdated = true
+        mStateFlow.value = state
+    }
+
+    /**
+     * Dispatches a one-shot event to be consumed by the view
+     * @param event The event to be dispatched.
+     * @param allowDuplicated If true, allows the same event to be dispatched multiple times before being consumed.
+     */
+    protected fun postEvent(event: E, allowDuplicated: Boolean = false) {
+        emaEventDispatcher.postEvent(event, allowDuplicated)
     }
 
     /**

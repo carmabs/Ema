@@ -114,13 +114,15 @@ abstract class EmaCoreFragment<S : EmaState, VM : EmaViewModel<S,E>, E : EmaEven
                     if(parentActivity.ownsBackDelegate){
                         parentActivity.onBackDelegate()
                     }else{
-                        //Cancel because we are handling manually the navigation with onActionBackHardwarePressed()
+                        navigateBack()
+                        //Cancel because we are handling manually the navigation with navigateBack()
                         EmaBackHandlerStrategy.Cancelled
                     }
 
                 }
                 else{
-                    //Cancel because we are handling manually the navigation with onActionBackHardwarePressed()
+                    navigateBack()
+                    //Cancel because we are handling manually the navigation with navigateBack()
                     EmaBackHandlerStrategy.Cancelled
                 }
 

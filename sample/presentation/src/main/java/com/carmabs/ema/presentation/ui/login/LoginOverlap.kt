@@ -10,6 +10,7 @@ package com.carmabs.ema.presentation.ui.login
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
 sealed interface LoginOverlap {
+    data object Loading : LoginOverlap
     data object ErrorUserEmpty : LoginOverlap
     data object ErrorBadCredentials : LoginOverlap
     data object ErrorPasswordEmpty : LoginOverlap

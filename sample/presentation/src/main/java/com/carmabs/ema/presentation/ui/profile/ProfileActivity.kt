@@ -9,13 +9,14 @@ import androidx.navigation.compose.rememberNavController
 import com.carmabs.ema.android.di.injectDirect
 import com.carmabs.ema.android.extension.getInitializer
 import com.carmabs.ema.android.initializer.bundle.strategy.BundleSerializerStrategy
-import com.carmabs.ema.android.savestate.emaSaveStateManager
+import com.carmabs.ema.android.savestate.SaveStateManager
 import com.carmabs.ema.compose.extension.asActionDispatcher
 import com.carmabs.ema.compose.extension.createComposableScreen
 import com.carmabs.ema.compose.extension.routeId
 import com.carmabs.ema.compose.initializer.EmaInitializerSupport
-import com.carmabs.ema.core.model.EmaBackHandlerStrategy
 import com.carmabs.ema.presentation.ui.profile.creation.ProfileCreationAction
+import com.carmabs.ema.presentation.ui.profile.creation.ProfileCreationState
+import com.carmabs.ema.presentation.ui.profile.creation.ProfileCreationEvent
 import com.carmabs.ema.presentation.ui.profile.creation.ProfileCreationInitializer
 import com.carmabs.ema.presentation.ui.profile.creation.ProfileCreationScreenContent
 import com.carmabs.ema.presentation.ui.profile.creation.ProfileCreationViewModel
@@ -51,25 +52,21 @@ class ProfileActivity : ComponentActivity() {
                         ),
                     ),
                     screenContent = ProfileOnBoardingScreenContent(),
-                    onNavigationEvent = {
-                        navigator.handleProfileOnBoardingNavigation(it)
+                    onEvent = {
+                        navigator.handleProfileOnBoardingEvent(it)
                     },
                     viewModel = { injectDirect<ProfileOnBoardingViewModel>() }
                 )
                 createComposableScreen(
                     screenContent = ProfileCreationScreenContent(),
                     viewModel = { injectDirect<ProfileCreationViewModel>() },
-                    onNavigationEvent = {
-                        navigator.handleProfileCreationNavigation(it)
-                    },
-                    onBackEvent = { data, actions ->
-                        actions.dispatch(ProfileCreationAction.OnBack)
-                        EmaBackHandlerStrategy.Cancelled
+                    onEvent = {
+                        navigator.handleProfileCreationEvent(it)
                     },
                     initializerSupport = EmaInitializerSupport.kSerialization(
                         ProfileCreationInitializer.serializer()
                     ),
-                    saveStateManager = emaSaveStateManager { coroutineScope, savedStateHandle, emaViewModel ->
+                    saveStateManager = SaveStateManager<ProfileCreationState, ProfileCreationEvent> { coroutineScope, savedStateHandle, emaViewModel ->
 
                         //SAMPLE TO RETAIN STATE THROUGH SAVED STATE HANDLE WHEN PROCESS IS KILLED BY SYSTEM, FOR EXAMPLE,
                         //DENYING A PERMISSION IN SETTINGS
@@ -86,9 +83,9 @@ class ProfileActivity : ComponentActivity() {
                                 .dispatch(ProfileCreationAction.UserSurnameWritten(it))
                         }
                         coroutineScope.launch {
-                            emaViewModel.subscribeStateUpdates().collect {
-                                savedStateHandle[keyName] = it.data.name
-                                savedStateHandle[keySurname] = it.data.surname
+                            emaViewModel.stateFlow.collect {
+                                savedStateHandle[keyName] = it.name
+                                savedStateHandle[keySurname] = it.surname
                             }
                         }
                     }

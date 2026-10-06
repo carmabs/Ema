@@ -26,19 +26,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.carmabs.domain.model.User
-import com.carmabs.ema.core.action.EmaActionDispatcher
-import com.carmabs.ema.core.action.EmaActionDispatcherEmpty
+import com.carmabs.ema.compose.action.EmaImmutableActionDispatcher
+import com.carmabs.ema.compose.action.EmaImmutableActionDispatcherEmpty
 import com.carmabs.ema.presentation.base.compose.BaseScreenComposable
 import com.carmabs.ema.presentation.ui.compose.AppButton
 import com.carmabs.ema.sample.ema.R
 
 class ProfileOnBoardingScreenContent :
-    BaseScreenComposable<ProfileOnBoardingState, ProfileOnBoardingActions>() {
+    BaseScreenComposable<ProfileOnBoardingState, ProfileOnBoardingActions, ProfileOnBoardingEvent>() {
 
     @Composable
-    override fun onNormal(
+    override fun onState(
         state: ProfileOnBoardingState,
-        actions: EmaActionDispatcher<ProfileOnBoardingActions>
+        actions: EmaImmutableActionDispatcher<ProfileOnBoardingActions>
     ) {
         Surface(
             modifier = Modifier
@@ -96,14 +96,14 @@ class ProfileOnBoardingScreenContent :
     @Preview(device = Devices.NEXUS_5)
     @Composable
     private fun NormalPreview() {
-        onNormal(
+        onState(
             state = ProfileOnBoardingState(
                 User(
                     "Carlos",
                     "Mateo"
                 )
             ),
-            actions = EmaActionDispatcherEmpty()
+            actions = EmaImmutableActionDispatcherEmpty()
         )
     }
 }

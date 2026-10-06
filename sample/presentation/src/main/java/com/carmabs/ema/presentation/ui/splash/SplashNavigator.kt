@@ -6,11 +6,11 @@ import com.carmabs.ema.sample.ema.R
 
 class SplashNavigator(
     fragment: Fragment
-) : EmaFragmentNavControllerNavigator<SplashNavigationEvent>(fragment) {
+) : EmaFragmentNavControllerNavigator<SplashEvent>(fragment) {
 
-    override fun navigate(destination: SplashNavigationEvent) {
-        when(destination){
-            is SplashNavigationEvent.SplashFinished -> navController.navigate(R.id.action_splashFragment_to_loginFragment)
+    override fun navigate(event: SplashEvent) {
+        when(event){
+            is SplashEvent.SplashFinished -> navController.navigate(R.id.action_splashFragment_to_loginFragment)
         }
         
     }

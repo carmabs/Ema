@@ -67,7 +67,7 @@ fun <A : EmaAction.Screen, S : EmaState, E : EmaEvent> EmaComposableScreen(
     initializer: EmaInitializer? = null,
     vm: () -> EmaViewModel<S, E>,
     screenContent: EmaComposableScreenContent<S, A, E>,
-    onEffect: (E) -> Unit,
+    onEvent: (E) -> Unit,
     saveStateSupport: SavedStateSupport<S, E>? = null,
     previewRenderState: S? = null
 ) {
@@ -103,7 +103,7 @@ fun <A : EmaAction.Screen, S : EmaState, E : EmaEvent> EmaComposableScreen(
             screenContent,
             emaVm,
             immutableActions,
-            onEffect
+            onEvent
         )
     }
 }
@@ -114,7 +114,7 @@ private fun <S : EmaState, A : EmaAction.Screen, E : EmaEvent> RenderScreen(
     screenContent: EmaComposableScreenContent<S, A, E>,
     vm: EmaViewModel<S, E>,
     immutableActions: EmaImmutableActionDispatcher<A>,
-    onEffect: (E) -> Unit
+    onEvent: (E) -> Unit
 ) {
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     DisposableEffect(lifecycle) {
@@ -166,15 +166,15 @@ private fun <S : EmaState, A : EmaAction.Screen, E : EmaEvent> RenderScreen(
     val state = vm.stateFlow
         .collectAsStateWithLifecycle(initialValue = vm.initialState, lifecycle = lifecycle).value
 
-    val effectFlow = vm.eventFlow
+    val eventFlow = vm.eventFlow
     val context = LocalContext.current
-    LaunchedEffect(key1 = effectFlow, lifecycle) {
+    LaunchedEffect(key1 = eventFlow, lifecycle) {
         lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-            effectFlow.collect { effects ->
-                effects.forEach { effect ->
-                    onEffect(effect)
-                    screenContent.onEffect(context, effect, immutableActions)
-                    (vm as? EmaEventDispatcher<E>)?.consumeEvent(effect)
+            eventFlow.collect { events ->
+                events.forEach { event ->
+                    onEvent(event)
+                    screenContent.onEvent(context, event, immutableActions)
+                    (vm as? EmaEventDispatcher<E>)?.consumeEvent(event)
                 }
             }
         }

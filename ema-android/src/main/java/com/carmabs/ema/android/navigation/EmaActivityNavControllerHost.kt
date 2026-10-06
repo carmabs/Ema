@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import com.carmabs.ema.android.constants.EMA_RESULT_CODE
 import com.carmabs.ema.android.constants.EMA_RESULT_KEY
+import com.carmabs.ema.core.state.EmaEvent
 import com.google.gson.Gson
 
 /**
@@ -23,13 +24,13 @@ class EmaActivityNavControllerHost(
     activity: Activity,
     navHostId: Int,
     graphId: Int
-) : EmaActivityNavControllerNavigator<EmaEmptyNavigationEvent>(activity, navHostId, graphId) {
+) : EmaActivityNavControllerNavigator<EmaEvent.EMPTY>(activity, navHostId, graphId) {
 
     private val gson by lazy {
         Gson()
     }
 
-    override fun navigate(effect: EmaEmptyNavigationEvent) = Unit
+    override fun navigate(event: EmaEvent.EMPTY) = Unit
 
     /**
      * Navigates back

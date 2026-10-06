@@ -20,7 +20,7 @@ class EmaEmptyNavigator constructor(
         Gson()
     }
 
-    override fun navigate(effect: EmaEmptyNavigationEvent) = Unit
+    override fun navigate(event: EmaEmptyNavigationEvent) = Unit
 
     override fun navigateBack(result: Any?): Boolean {
         val hasMoreBackScreens = navController.popBackStack()

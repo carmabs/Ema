@@ -2,11 +2,11 @@ package com.carmabs.ema.presentation.ui.profile.onboarding
 
 import com.carmabs.domain.model.User
 import com.carmabs.ema.core.constants.STRING_EMPTY
-import com.carmabs.ema.core.state.EmaDataState
+import com.carmabs.ema.core.state.EmaState
 
 data class ProfileOnBoardingState(
     val user: User?
-) : EmaDataState {
+) : EmaState {
 
     companion object {
         val DEFAULT = ProfileOnBoardingState(

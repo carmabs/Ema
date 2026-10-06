@@ -26,9 +26,9 @@ class DefaultEmaEventDispatcher<E : EmaEvent>(private val mEventFlow: MutableSta
     }
 
     /**
-     * Dispatches an effect to be observed by the view.
-     * @param event The effect to be dispatched.
-     * @param allowDuplicated If true, allows the same effect to be dispatched multiple times before being consumed.
+     * Dispatches an event to be observed by the view.
+     * @param event The event to be dispatched.
+     * @param allowDuplicated If true, allows the same event to be dispatched multiple times before being consumed.
      */
     fun postEvent(event: E, allowDuplicated: Boolean) {
         mEventFlow.update {

@@ -11,7 +11,7 @@ import com.carmabs.ema.presentation.ui.profile.creation.ProfileCreationViewModel
 class HomeViewModel(
     private val getUserFriendsUseCase: GetUserFriendsUseCase,
     initialDataState: HomeState
-) : BaseViewModel<HomeState, HomeAction, HomeNavigationEvent>(initialDataState) {
+) : BaseViewModel<HomeState, HomeAction, HomeEvent>(initialDataState) {
 
     private lateinit var user: User
     override fun onStateCreated(initializer: EmaInitializer?) {
@@ -47,13 +47,13 @@ class HomeViewModel(
     }
 
     private fun onActionCreateProfileClicked() {
-        navigate(HomeNavigationEvent.ProfileClicked(user))
+        postEvent(HomeEvent.ProfileClicked(user))
     }
 
     override fun onBroadcastListenerSetup() {
         registerBackBroadcastListener(ProfileCreationViewModel::class.backBroadcastId) {
             val user = it as User
-            setBackBroadcastData(user)
+            dispatchBroadcast(user)
             updateState {
                 copy(userList = userList.toMutableList().apply {
                     add(user)

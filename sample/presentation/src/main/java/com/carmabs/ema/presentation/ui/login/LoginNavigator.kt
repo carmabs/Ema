@@ -10,23 +10,26 @@ import com.carmabs.ema.sample.ema.R
 
 class LoginNavigator(
     fragment: Fragment
-) : EmaFragmentNavControllerNavigator<LoginNavigationEvent>(fragment) {
+) : EmaFragmentNavControllerNavigator<LoginEvent>(fragment) {
 
-    override fun navigate(navigationEvent: LoginNavigationEvent) {
-        when (navigationEvent) {
-            is LoginNavigationEvent.LoginSuccess -> {
+    override fun navigate(event: LoginEvent) {
+        when (event) {
+            is LoginEvent.LoginSuccess -> {
                 navController.navigate(
                     id = R.id.action_loginFragment_to_homeFragment,
                     initializerBundle = EmaInitializerBundle(
-                        mapToHomeInitializer(navigationEvent),
+                        mapToHomeInitializer(event),
                         BundleSerializerStrategy.kSerialization(HomeInitializer.serializer())
                     )
                 )
             }
+
+            is LoginEvent.Message,
+            is LoginEvent.LastUserAdded -> Unit
         }
     }
 
-    private fun mapToHomeInitializer(navigationEvent: LoginNavigationEvent.LoginSuccess): HomeInitializer {
+    private fun mapToHomeInitializer(navigationEvent: LoginEvent.LoginSuccess): HomeInitializer {
         return navigationEvent.user.let {
             HomeInitializer.HomeUser(it)
         }

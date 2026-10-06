@@ -67,7 +67,8 @@ abstract class EmaCoreActivity<S : EmaState, VM : EmaViewModel<S, E>, E : EmaEve
     }
 
     final override fun onBackDelegate(): EmaBackHandlerStrategy {
-        //Cancel because we are handling manually
+        navigateBack()
+        //Cancel because we are handling manually the navigation with navigateBack()
         return EmaBackHandlerStrategy.Cancelled
     }
 

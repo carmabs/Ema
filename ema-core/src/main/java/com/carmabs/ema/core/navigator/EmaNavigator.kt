@@ -12,7 +12,7 @@ import com.carmabs.ema.core.state.EmaEvent
 
 interface EmaNavigator<E : EmaEvent> {
 
-    fun navigate(effect: E)
+    fun navigate(event: E)
 
     fun navigateBack(result:Any?=null): Boolean
 }

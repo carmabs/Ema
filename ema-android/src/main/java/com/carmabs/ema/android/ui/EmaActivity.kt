@@ -52,10 +52,10 @@ abstract class EmaActivity<B : ViewBinding, S : EmaState, VM : EmaViewModel<S,E>
     }
 
 
-    final override suspend fun onEffect(effect: E) {
-        binding.onEffect(effect)
+    final override suspend fun onEvent(event: E) {
+        binding.onEvent(event)
     }
 
     abstract fun B.onState(data: S)
-    protected open suspend fun B.onEffect(effect: E) = Unit
+    protected open suspend fun B.onEvent(event: E) = Unit
 }

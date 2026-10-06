@@ -10,9 +10,9 @@ import com.carmabs.ema.core.state.EmaState
 
 interface EmaComposableScreenContent<S : EmaState, A : EmaAction.Screen, E: EmaEvent> {
 
-    suspend fun onEffect(
+    suspend fun onEvent(
         context: Context,
-        effect: E,
+        event: E,
         actions: EmaImmutableActionDispatcher<A>
     ) = Unit
 

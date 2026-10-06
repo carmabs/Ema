@@ -1,5 +1,6 @@
 package com.carmabs.ema.presentation.ui.profile.creation
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -23,26 +24,24 @@ import com.carmabs.domain.model.Role
 import com.carmabs.ema.android.extension.toEmaText
 import com.carmabs.ema.compose.action.EmaImmutableActionDispatcher
 import com.carmabs.ema.compose.action.EmaImmutableActionDispatcherEmpty
-import com.carmabs.ema.compose.extension.toComposePainter
-import com.carmabs.ema.compose.extension.toComposeString
-import com.carmabs.ema.core.action.EmaActionDispatcher
 import com.carmabs.ema.core.model.EmaText
-import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.presentation.base.compose.BaseScreenComposable
 import com.carmabs.ema.presentation.dialog.simple.SimpleDialogData
 import com.carmabs.ema.presentation.dialog.simple.SimpleDialogListener
 import com.carmabs.ema.presentation.ui.compose.AppButton
-import com.carmabs.ema.presentation.ui.compose.SimpleDialogComposable
 import com.carmabs.ema.sample.ema.R
 
 class ProfileCreationScreenContent :
-    BaseScreenComposable<ProfileCreationState, ProfileCreationAction>() {
+    BaseScreenComposable<ProfileCreationState, ProfileCreationAction, ProfileCreationEvent>() {
 
     @Composable
-    override fun onNormal(
+    override fun onState(
         state: ProfileCreationState,
-        actions: EmaActionDispatcher<ProfileCreationAction>
+        actions: EmaImmutableActionDispatcher<ProfileCreationAction>
     ) {
+        BackHandler {
+            actions.dispatch(ProfileCreationAction.OnBack)
+        }
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
@@ -99,14 +98,17 @@ class ProfileCreationScreenContent :
             }
         }
 
+        state.overlap?.also {
+            Overlap(it, actions)
+        }
     }
 
     @Composable
-    override fun onOverlappedDialog(
-        data: Any?,
+    private fun Overlap(
+        overlap: ProfileCreationOverlap,
         actions: EmaImmutableActionDispatcher<ProfileCreationAction>
     ) {
-        when (val dialog = data as ProfileCreationOverlap) {
+        when (val dialog = overlap) {
             ProfileCreationOverlap.DialogBackConfirmation -> {
                 ShowDialog(
                     data = SimpleDialogData(
@@ -118,15 +120,15 @@ class ProfileCreationScreenContent :
                     ),
                     listener = object : SimpleDialogListener {
                         override fun onCancelClicked() {
-                            actions.dispatch(ProfileCreationAction.DialogCancelClicked)
+                            actions.dispatch(ProfileCreationAction.DialogBackCancel)
                         }
 
                         override fun onConfirmClicked() {
-                            actions.dispatch(ProfileCreationAction.DialogCancelClicked)
+                            actions.dispatch(ProfileCreationAction.DialogBackConfirm)
                         }
 
                         override fun onBackPressed() {
-                            actions.dispatch(ProfileCreationAction.DialogCancelClicked)
+                            actions.dispatch(ProfileCreationAction.DialogBackCancel)
                         }
                     }
                 )
@@ -169,7 +171,7 @@ class ProfileCreationScreenContent :
     @Preview(device = Devices.NEXUS_5)
     @Composable
     private fun NormalPreview() {
-        onStateNormal(
+        onState(
             state = ProfileCreationState(
                 Role.ADMIN,
                 "Carlos",
@@ -182,15 +184,14 @@ class ProfileCreationScreenContent :
     @Preview(device = Devices.PIXEL_3)
     @Composable
     private fun OverlappedPreview() {
-        NormalPreview()
-        ShowDialog(
-            data = SimpleDialogData(
-                title = EmaText.text("Test title"),
-                message = EmaText.text("test message"),
-                proportionWidth = 0.8f,
-                showCancel = true
+        onState(
+            state = ProfileCreationState(
+                Role.ADMIN,
+                "Carlos",
+                "Mateo",
+                ProfileCreationOverlap.DialogUserCreated(Role.ADMIN)
             ),
-            listener = SimpleDialogListener.EMPTY
+            actions = EmaImmutableActionDispatcherEmpty()
         )
     }
 }

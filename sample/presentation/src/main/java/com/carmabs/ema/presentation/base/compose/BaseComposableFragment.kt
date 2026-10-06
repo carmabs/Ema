@@ -1,12 +1,8 @@
 package com.carmabs.ema.presentation.base.compose
 
-import androidx.compose.runtime.Composable
-import com.carmabs.ema.android.ui.EmaActivity
 import com.carmabs.ema.compose.ui.EmaComposableFragment
-import com.carmabs.ema.core.initializer.EmaInitializer
-import com.carmabs.ema.core.navigator.EmaNavigationEvent
-import com.carmabs.ema.core.state.EmaDataState
-import com.carmabs.ema.core.state.EmaExtraData
+import com.carmabs.ema.core.state.EmaEvent
+import com.carmabs.ema.core.state.EmaState
 import com.carmabs.ema.core.viewmodel.EmaViewModel
 
 
@@ -18,30 +14,5 @@ import com.carmabs.ema.core.viewmodel.EmaViewModel
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
 
-abstract class BaseComposableFragment<S : EmaDataState, VM : EmaViewModel<S, N>, N : EmaNavigationEvent> :
-    EmaComposableFragment<S, VM, N>() {
-
-    @Composable
-    override fun onStateNormal(data: S) {
-        onNormal(data = data)
-    }
-
-    @Composable
-    override fun onStateOverlapped(data: EmaExtraData) {
-        onOverlapped(data = data)
-    }
-
-    final override fun onSingleEvent(extra: EmaExtraData) {
-        onSingle(extra)
-    }
-
-
-    @Composable
-    abstract fun onNormal(data: S)
-
-    @Composable
-    protected open fun onOverlapped(data: EmaExtraData) = Unit
-
-    protected open fun onSingle(data: EmaExtraData) = Unit
-
-}
+abstract class BaseComposableFragment<S : EmaState, VM : EmaViewModel<S, E>, E : EmaEvent> :
+    EmaComposableFragment<S, VM, E>()

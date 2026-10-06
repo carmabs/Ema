@@ -15,18 +15,10 @@ import kotlinx.coroutines.CoroutineScope
  *
  * @author <a href=“mailto:apps.carmabs@gmail.comm”>Carlos Mateo Benito</a>
  */
-interface SaveStateManager<S : EmaState, E : EmaEvent> {
+fun interface SaveStateManager<S : EmaState, E : EmaEvent> {
     fun onSaveStateHandling(
         scope: CoroutineScope,
         saveStateHandle: SavedStateHandle,
         viewModel: EmaViewModel<S, E>
     )
-}
-
-fun <S : EmaState, E : EmaEvent> emaSaveStateManager(
-    scope: CoroutineScope,
-    saveStateHandle: SavedStateHandle,
-    viewModel: EmaViewModel<S, E>
-) {
-
 }

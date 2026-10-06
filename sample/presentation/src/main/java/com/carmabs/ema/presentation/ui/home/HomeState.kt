@@ -2,12 +2,12 @@ package com.carmabs.ema.presentation.ui.home
 
 import com.carmabs.domain.model.Role
 import com.carmabs.domain.model.User
-import com.carmabs.ema.core.state.EmaDataState
+import com.carmabs.ema.core.state.EmaState
 
 data class HomeState(
     val userData: UserData?,
     val userList: List<User>
-) : EmaDataState {
+) : EmaState {
 
     companion object {
         val DEFAULT = HomeState(
