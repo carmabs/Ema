@@ -1,14 +1,10 @@
 rootProject.ext {
 
-    coroutinesVersion = "1.6.4"
-
-    kotlinVersion = '1.9.0'
-
     emaLibraries = [
-            emaAndroid       : project(':ema-android'),
-            emaAndroidCompose: project(':ema-android-compose'),
-            emaCore          : project(':ema-core'),
-            emaTestingCore   : project(':ema-testing-core'),
-            emaTestingAndroid: project(':ema-testing-android'),
+            emaAndroid       : ':ema-android',
+            emaAndroidCompose: ':ema-android-compose',
+            emaCore          : ':ema-core',
+            emaTestingCore   : ':ema-testing-core',
+            emaTestingAndroid: ':ema-testing-android',
     ]
 }

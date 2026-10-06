@@ -1,38 +1,39 @@
 plugins {
-    id 'org.jetbrains.kotlin.android'
-    id 'com.android.application'
+    alias(libs.plugins.android.application)
 }
 android {
+    compileSdk = rootProject.emaVersioning.compileSdk
 
     defaultConfig {
-        applicationId "com.carmabs.ema"
-        minSdkVersion emaVersioning.minSdk
-        compileSdkVersion emaVersioning.compileSdk
-        targetSdkVersion emaVersioning.targetSdk
-        versionCode emaVersioning.versionCode
-        versionName emaVersioning.versionName
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        applicationId = "com.carmabs.ema"
+        minSdk = rootProject.emaVersioning.minSdk
+        targetSdk = rootProject.emaVersioning.targetSdk
+        versionCode = rootProject.emaVersioning.versionCode
+        versionName = rootProject.emaVersioning.versionName
+        testInstrumentationRunner = "android.support.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled = false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 
-    def javaVersion= JavaVersion.VERSION_17
+    def javaVersion = rootProject.emaVersioning.javaVersion
 
     compileOptions {
         sourceCompatibility = javaVersion
         targetCompatibility = javaVersion
     }
 
-    kotlinOptions {
-        jvmTarget = javaVersion.toString()
+    kotlin {
+        compilerOptions {
+            jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.fromTarget(rootProject.emaVersioning.kotlinJvmTarget)
+        }
     }
 
-    namespace 'com.carmabs.ema.sample.injection'
+    namespace = 'com.carmabs.ema.sample.injection'
 
 }
 
@@ -42,6 +43,6 @@ dependencies {
     implementation project(path: ':common')
     implementation project(path: ':domain')
 
-    implementation emaLibraries.emaAndroid
-    implementation emaAndroidDependencies.koin
+    implementation project(rootProject.emaLibraries.emaAndroid)
+    implementation libs.koin.android
 }

@@ -1,6 +1,8 @@
-apply plugin: 'kotlin'
-apply plugin:  'org.jetbrains.kotlin.plugin.serialization'
+plugins {
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.kotlin.serialization)
+}
 
 dependencies {
-    api emaLibraries.emaCore
+    api project(rootProject.emaLibraries.emaCore)
 }

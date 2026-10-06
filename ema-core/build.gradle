@@ -1,38 +1,38 @@
-plugins{
-    id 'org.jetbrains.kotlin.plugin.serialization'
+plugins {
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.kotlin.serialization)
     id 'maven-publish'
-    id 'kotlin'
 }
 
-sourceCompatibility = JavaVersion.VERSION_17
-targetCompatibility = JavaVersion.VERSION_17
+java {
+    sourceCompatibility = rootProject.emaVersioning.javaVersion
+    targetCompatibility = rootProject.emaVersioning.javaVersion
+}
 
-compileKotlin {
-    kotlinOptions.jvmTarget = JavaVersion.VERSION_17.toString()
-    kotlinOptions.freeCompilerArgs = ["-Xcontext-receivers"]
-    kotlinOptions {
-        languageVersion = "1.9"
+kotlin {
+    compilerOptions {
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.fromTarget(rootProject.emaVersioning.kotlinJvmTarget)
     }
 }
 
-
 dependencies {
-    api emaCoreDependencies.kotlin
-    api emaCoreDependencies.coroutines
-    api emaCoreDependencies.serializationJson
-    implementation emaCoreDependencies.reflect
-    implementation emaTestingDependencies.junit
-}
+    api libs.kotlin.stdlib
+    api libs.kotlinx.coroutines.android
+    api libs.kotlinx.serialization.json
+    implementation libs.kotlin.reflect
+    implementation libs.androidx.annotation
 
+    testImplementation libs.junit
+}
 
 afterEvaluate {
     publishing {
         publications {
             release(MavenPublication) {
                 from components["java"]
-                groupId = emaVersioning.groupId
-                artifactId = emaVersioning.artifactCoreId
-                version = emaVersioning.versionName
+                groupId = rootProject.emaVersioning.groupId
+                artifactId = rootProject.emaVersioning.artifactCoreId
+                version = rootProject.emaVersioning.versionName
             }
         }
     }

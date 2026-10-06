@@ -1,69 +1,75 @@
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
-apply plugin: 'maven-publish'
+plugins {
+    alias(libs.plugins.android.library)
+    id 'maven-publish'
+}
 
 android {
+    compileSdk = rootProject.emaVersioning.compileSdk
 
     defaultConfig {
-        compileSdkVersion emaVersioning.compileSdk
-        minSdkVersion emaVersioning.minSdk
-        targetSdk emaVersioning.targetSdk
+        minSdk = rootProject.emaVersioning.minSdk
+        targetSdk = rootProject.emaVersioning.targetSdk
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = rootProject.emaVersioning.testRunner
 
     }
 
     buildTypes {
         release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            minifyEnabled = false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 
-    def javaVersion= JavaVersion.VERSION_17
-
     compileOptions {
-        sourceCompatibility = javaVersion
-        targetCompatibility = javaVersion
+        sourceCompatibility = rootProject.emaVersioning.javaVersion
+        targetCompatibility = rootProject.emaVersioning.javaVersion
     }
 
-    kotlinOptions {
-        jvmTarget = javaVersion.toString()
+    kotlin {
+        compilerOptions {
+            jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.fromTarget(rootProject.emaVersioning.kotlinJvmTarget)
+        }
     }
 
-    packagingOptions {
+    packaging {
         resources {
-            pickFirsts += ['META-INF/kotlinx-io.kotlin_module', 'META-INF/ema-android_debug.kotlin_module']
+            pickFirsts += rootProject.emaVersioning.resourceExclusions
         }
     }
 
 
     buildFeatures {
-        viewBinding true
+        viewBinding = true
     }
-    namespace 'com.carmabs.ema.android'
+
+    publishing {
+        singleVariant("release")
+    }
+
+    namespace = rootProject.emaVersioning.namespaceAndroid
 }
 
 dependencies {
 
-    implementation emaAndroidDependencies.reflection
-    implementation emaAndroidDependencies.gson
-    // Java language implementation
-    // Kotlin
-    api emaAndroidDependencies.fragment
-    api emaAndroidDependencies.koin
+    implementation libs.kotlin.reflect
+    implementation libs.gson
 
+    // Kotlin
+    api libs.androidx.fragment.ktx
+    api libs.koin.android
 
     //Navigation
-    api emaAndroidDependencies.navigationFragment
-    api emaAndroidDependencies.navigationUI
+    api libs.androidx.navigation.fragment.ktx
+    api libs.androidx.navigation.ui.ktx
 
     //Architecture components
-    api emaAndroidDependencies.lifecycle
-    api emaAndroidDependencies.lifecycleKtExtension
+    api libs.androidx.lifecycle.runtime.ktx
+    api libs.androidx.lifecycle.viewmodel.ktx
+
     //UI
-    api emaAndroidDependencies.constraint
-    api emaAndroidDependencies.material
+    api libs.androidx.constraintlayout
+    api libs.material
 
     api project(path: ':ema-core')
 }
@@ -73,9 +79,9 @@ afterEvaluate {
         publications {
             release(MavenPublication) {
                 from components.release
-                groupId = emaVersioning.groupId
-                artifactId = emaVersioning.artifactAndroidId
-                version = emaVersioning.versionName
+                groupId = rootProject.emaVersioning.groupId
+                artifactId = rootProject.emaVersioning.artifactAndroidId
+                version = rootProject.emaVersioning.versionName
             }
         }
     }
