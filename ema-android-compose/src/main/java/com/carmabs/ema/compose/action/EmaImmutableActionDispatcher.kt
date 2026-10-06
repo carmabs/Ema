@@ -27,9 +27,5 @@ fun <A : EmaAction.Screen> EmaActionDispatcher<A>.toImmutable():EmaImmutableActi
         override fun dispatch(action: A) {
             this@toImmutable.dispatch(action)
         }
-
-        override fun subscribeToActions(): Flow<A> {
-           return this@toImmutable.subscribeToActions()
-        }
     }
 }

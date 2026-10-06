@@ -21,13 +21,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 
 
 class DefaultEmaActionDispatcher<A : EmaAction>(private val dispatchAction:(A)->Unit) : EmaActionDispatcher<A>  {
-    private val actionFlow = MutableSharedFlow<A>(extraBufferCapacity = INT_ONE, onBufferOverflow = BufferOverflow.DROP_OLDEST)
+
     override fun dispatch(action: A){
         dispatchAction(action)
-        actionFlow.tryEmit(action)
-    }
-
-    override fun subscribeToActions(): Flow<A>{
-        return actionFlow
     }
 }

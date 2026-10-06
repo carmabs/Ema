@@ -1,13 +1,13 @@
 package com.carmabs.ema.core.viewmodel
 
+import com.carmabs.ema.core.action.EmaEventDispatcher
 import com.carmabs.ema.core.initializer.EmaInitializer
-import com.carmabs.ema.core.model.EmaEvent
-import com.carmabs.ema.core.navigator.EmaNavigationEvent
-import com.carmabs.ema.core.navigator.EmaNavigationDirectionEvent
-import com.carmabs.ema.core.state.EmaDataState
+import com.carmabs.ema.core.state.EmaEvent
 import com.carmabs.ema.core.state.EmaState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.emptyFlow
 
 /**
@@ -15,15 +15,18 @@ import kotlinx.coroutines.flow.emptyFlow
  *
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
-interface EmaViewModel<S : EmaDataState, N : EmaNavigationEvent> {
+interface EmaViewModel<S : EmaState, E : EmaEvent>: EmaEventDispatcher<E> {
 
-
-    val initialState: EmaState<S,N>
+    val id: String
+        get() {
+            return "EmaViewModel ID: ${this.javaClass.name}"
+        }
+    val initialState: S
 
     /**
      * Used to know if subscribed view should render the state
      */
-    val shouldRenderState:Boolean
+    val shouldRenderState: Boolean
 
     fun setScope(scope: CoroutineScope)
 
@@ -39,87 +42,32 @@ interface EmaViewModel<S : EmaDataState, N : EmaNavigationEvent> {
 
     fun onCleared()
 
-    fun subscribeStateUpdates(): Flow<EmaState<S,N>>
+    val stateFlow: StateFlow<S>
 
-    /**
-     * Get navigation state as LiveData to avoid state setting from the view
-     */
-    fun subscribeToNavigationEvents(): Flow<EmaNavigationDirectionEvent>
+    object EMPTY : EmaViewModel<EmaState.EMPTY, EmaEvent.EMPTY> {
+        override val initialState: EmaState.EMPTY = EmaState.EMPTY
 
-    /**
-     * Get single state as LiveData to avoid state setting from the view
-     */
-    fun subscribeToSingleEvents(): Flow<EmaEvent>
+        override val stateFlow: StateFlow<EmaState.EMPTY> = MutableStateFlow(initialState)
 
-    fun consumeSingleEvent()
+        override fun consumeEvent(event: EmaEvent.EMPTY) = Unit
 
-    fun notifyOnNavigated()
+        override val eventFlow: Flow<List<EmaEvent.EMPTY>> = emptyFlow()
 
-    fun onActionBackHardwarePressed()
-
-
-    val id: String
-        get() {
-            return "EmaViewModel ID: ${this.javaClass.name}"
-        }
-
-    object EMPTY : EmaViewModel<EmaDataState.EMPTY, EmaNavigationEvent.EMPTY> {
-
-
-        override val initialState: EmaState<EmaDataState.EMPTY,EmaNavigationEvent.EMPTY> = EmaState.Normal(EmaDataState.EMPTY)
         override val shouldRenderState: Boolean
-        get() = true
+            get() = true
 
-        override fun setScope(scope: CoroutineScope) {
+        override fun setScope(scope: CoroutineScope) = Unit
 
-        }
+        override fun onCreated(initializer: EmaInitializer?) = Unit
 
-        override fun onCreated(initializer: EmaInitializer?) {
+        override fun onStartView() = Unit
 
-        }
+        override fun onResumeView() = Unit
 
-        override fun onStartView() {
+        override fun onPauseView() = Unit
 
-        }
+        override fun onStopView() = Unit
 
-        override fun onResumeView() {
-
-        }
-
-        override fun onPauseView() {
-
-        }
-
-        override fun onStopView() {
-
-        }
-
-        override fun onCleared() {
-
-        }
-
-        override fun subscribeStateUpdates(): Flow<EmaState<EmaDataState.EMPTY,EmaNavigationEvent.EMPTY>> {
-            return emptyFlow()
-        }
-
-        override fun subscribeToNavigationEvents(): Flow<EmaNavigationDirectionEvent> {
-            return emptyFlow()
-        }
-
-        override fun subscribeToSingleEvents(): Flow<EmaEvent> {
-            return emptyFlow()
-        }
-
-        override fun consumeSingleEvent() {
-
-        }
-
-        override fun notifyOnNavigated() {
-
-        }
-
-        override fun onActionBackHardwarePressed() {
-
-        }
+        override fun onCleared() = Unit
     }
 }

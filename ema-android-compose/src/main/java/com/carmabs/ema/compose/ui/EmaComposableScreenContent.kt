@@ -5,23 +5,25 @@ import android.content.Context
 import androidx.compose.runtime.Composable
 import com.carmabs.ema.compose.action.EmaImmutableActionDispatcher
 import com.carmabs.ema.core.action.EmaAction
-import com.carmabs.ema.core.state.EmaDataState
-import com.carmabs.ema.core.state.EmaExtraData
+import com.carmabs.ema.core.state.EmaEvent
+import com.carmabs.ema.core.state.EmaState
 
+interface EmaComposableScreenContent<S : EmaState, A : EmaAction.Screen, E: EmaEvent> {
 
-interface EmaComposableScreenContent<S : EmaDataState, A : EmaAction.Screen> {
-
-    @Composable
-    @SuppressLint("ComposableNaming")
-    fun onStateOverlapped(extra: EmaExtraData, actions: EmaImmutableActionDispatcher<A>) = Unit
-
-    suspend fun onSingleEvent(
+    suspend fun onEvent(
         context: Context,
-        extraData: EmaExtraData,
+        event: E,
         actions: EmaImmutableActionDispatcher<A>
     ) = Unit
 
+    /**
+     * Action to dispatch when back is pressed. The view model decides how to react to it.
+     * @param state current state of the screen
+     * @return the action to dispatch, or null to let the system handle the back press
+     */
+    fun onBack(state: S): A? = null
+
     @Composable
     @SuppressLint("ComposableNaming")
-    fun onStateNormal(state: S, actions: EmaImmutableActionDispatcher<A>)
+    fun onState(state: S, actions: EmaImmutableActionDispatcher<A>)
 }

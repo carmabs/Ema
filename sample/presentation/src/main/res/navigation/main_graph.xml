@@ -28,8 +28,7 @@
     <activity
         android:id="@+id/profileActivity"
         android:name="com.carmabs.ema.presentation.ui.profile.ProfileActivity"
-        android:label="ProfileActivity"
-        tools:layout="@layout/profile_activity"/>
+        android:label="ProfileActivity" />
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.carmabs.ema.presentation.ui.home.HomeFragment"

@@ -5,7 +5,7 @@ import com.carmabs.domain.model.User
 import com.carmabs.ema.core.initializer.EmaInitializer
 import com.carmabs.ema.presentation.base.BaseViewModel
 
-class ProfileOnBoardingViewModel(initialDataState: ProfileOnBoardingState) : BaseViewModel<ProfileOnBoardingState, ProfileOnBoardingActions, ProfileOnBoardingNavigationEvent>(
+class ProfileOnBoardingViewModel(initialDataState: ProfileOnBoardingState) : BaseViewModel<ProfileOnBoardingState, ProfileOnBoardingActions, ProfileOnBoardingEvent>(
         initialDataState
     ){
 
@@ -23,17 +23,22 @@ class ProfileOnBoardingViewModel(initialDataState: ProfileOnBoardingState) : Bas
         when (action) {
             ProfileOnBoardingActions.AdminClicked -> onActionAdminClicked()
             ProfileOnBoardingActions.UserClicked -> onActionUserClicked()
+            ProfileOnBoardingActions.BackClicked -> onActionBackClicked()
         }
     }
     private fun onActionAdminClicked() {
-        navigate(
-            ProfileOnBoardingNavigationEvent.ProfileCreation(Role.ADMIN)
+        postEvent(
+            ProfileOnBoardingEvent.UserTypeSelected(Role.ADMIN)
         )
     }
 
     private fun onActionUserClicked() {
-        navigate(
-            ProfileOnBoardingNavigationEvent.ProfileCreation(Role.BASIC)
+        postEvent(
+            ProfileOnBoardingEvent.UserTypeSelected(Role.BASIC)
         )
+    }
+
+    private fun onActionBackClicked() {
+        postEvent(ProfileOnBoardingEvent.OnBoardingCancelled)
     }
 }

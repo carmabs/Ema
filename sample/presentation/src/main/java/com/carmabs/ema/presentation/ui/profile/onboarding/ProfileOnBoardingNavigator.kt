@@ -5,13 +5,12 @@ import androidx.navigation.NavController
 import com.carmabs.domain.model.Role
 import com.carmabs.ema.android.initializer.EmaInitializerBundle
 import com.carmabs.ema.android.initializer.bundle.strategy.BundleSerializerStrategy
-import com.carmabs.ema.android.initializer.bundle.strategy.KSerializationBundleStrategy
 import com.carmabs.ema.compose.extension.navigate
 import com.carmabs.ema.compose.extension.navigateBack
 import com.carmabs.ema.compose.extension.routeId
 import com.carmabs.ema.compose.navigation.EmaComposableNavigator
 import com.carmabs.ema.presentation.ui.profile.creation.ProfileCreationInitializer
-import com.carmabs.ema.presentation.ui.profile.creation.ProfileCreationNavigationEvent
+import com.carmabs.ema.presentation.ui.profile.creation.ProfileCreationEvent
 import com.carmabs.ema.presentation.ui.profile.creation.ProfileCreationScreenContent
 
 class ProfileOnBoardingNavigator(
@@ -21,17 +20,19 @@ class ProfileOnBoardingNavigator(
     context = activity,
     navController = navController
 ) {
-    fun handleProfileOnBoardingNavigation(navigationEvent: ProfileOnBoardingNavigationEvent) {
-        when (navigationEvent) {
-            is ProfileOnBoardingNavigationEvent.ProfileCreation -> {
+    fun handleProfileOnBoardingEvent(event: ProfileOnBoardingEvent) {
+        when (event) {
+            is ProfileOnBoardingEvent.UserTypeSelected -> {
                 navController.navigate(
                     route = ProfileCreationScreenContent::class.routeId,
                     initializerBundle = EmaInitializerBundle(
-                        mapToCreationInitializer(navigationEvent.role),
+                        mapToCreationInitializer(event.role),
                         BundleSerializerStrategy.kSerialization(ProfileCreationInitializer.serializer())
                     )
                 )
             }
+
+            ProfileOnBoardingEvent.OnBoardingCancelled -> navigateBack()
         }
 
     }
@@ -41,9 +42,9 @@ class ProfileOnBoardingNavigator(
         Role.BASIC -> ProfileCreationInitializer.UserBasic
     }
 
-    fun handleProfileCreationNavigation(navigationEvent: ProfileCreationNavigationEvent) {
-        when (navigationEvent) {
-            ProfileCreationNavigationEvent.DialogConfirmationAccepted -> navController.navigateBack()
+    fun handleProfileCreationEvent(event: ProfileCreationEvent) {
+        when (event) {
+            ProfileCreationEvent.DialogConfirmationAccepted -> navController.navigateBack()
         }
     }
 }

@@ -1,6 +1,5 @@
 package com.carmabs.ema.presentation.ui.home
 
-import com.carmabs.domain.model.Role
 import com.carmabs.domain.model.User
 import com.carmabs.domain.usecase.GetUserFriendsUseCase
 import com.carmabs.ema.core.broadcast.backBroadcastId
@@ -11,7 +10,7 @@ import com.carmabs.ema.presentation.ui.profile.creation.ProfileCreationViewModel
 class HomeViewModel(
     private val getUserFriendsUseCase: GetUserFriendsUseCase,
     initialDataState: HomeState
-) : BaseViewModel<HomeState, HomeAction, HomeNavigationEvent>(initialDataState) {
+) : BaseViewModel<HomeState, HomeAction, HomeEvent>(initialDataState) {
 
     private lateinit var user: User
     override fun onStateCreated(initializer: EmaInitializer?) {
@@ -22,13 +21,11 @@ class HomeViewModel(
                     val friends = getUserFriendsUseCase(GetUserFriendsUseCase.Input(homeInitializer.user))
                     updateState {
                         copy(
-                            userData = when(user.role) {
-                                Role.ADMIN -> HomeState.UserData.Admin(
-                                    user.name,
-                                    user.surname
-                                )
-                                Role.BASIC -> HomeState.UserData.Basic
-                            },
+                            userData = HomeState.UserData(
+                                name = user.name,
+                                surname = user.surname,
+                                role = user.role
+                            ),
                             userList = userList.toMutableList().apply {
                                 addAll(friends)
                             }
@@ -47,13 +44,13 @@ class HomeViewModel(
     }
 
     private fun onActionCreateProfileClicked() {
-        navigate(HomeNavigationEvent.ProfileClicked(user))
+        postEvent(HomeEvent.ProfileClicked(user))
     }
 
     override fun onBroadcastListenerSetup() {
         registerBackBroadcastListener(ProfileCreationViewModel::class.backBroadcastId) {
             val user = it as User
-            setBackBroadcastData(user)
+            dispatchBroadcast(user)
             updateState {
                 copy(userList = userList.toMutableList().apply {
                     add(user)

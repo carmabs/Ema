@@ -4,28 +4,24 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import android.view.inputmethod.EditorInfo
+import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
-import com.carmabs.domain.model.User
-import com.carmabs.ema.android.base.EmaSingleToast
 import com.carmabs.ema.android.di.injectDirect
-import com.carmabs.ema.android.extension.getFormattedString
 import com.carmabs.ema.android.extension.setTextWithCursorAtEnd
-import com.carmabs.ema.android.extension.string
 import com.carmabs.ema.core.constants.STRING_EMPTY
-import com.carmabs.ema.core.extension.toEmaText
 import com.carmabs.ema.core.model.EmaText
 import com.carmabs.ema.core.navigator.EmaNavigator
-import com.carmabs.ema.core.state.EmaExtraData
 import com.carmabs.ema.presentation.base.BaseFragment
 import com.carmabs.ema.presentation.dialog.error.ErrorDialogData
 import com.carmabs.ema.presentation.dialog.error.ErrorDialogListener
+import com.carmabs.ema.presentation.extension.fullName
 import com.carmabs.ema.sample.ema.R
 import com.carmabs.ema.sample.ema.databinding.LoginFragmentBinding
 
 
 class LoginFragment :
-    BaseFragment<LoginFragmentBinding, LoginState, LoginViewModel, LoginNavigationEvent>() {
+    BaseFragment<LoginFragmentBinding, LoginState, LoginViewModel, LoginEvent>() {
 
     override fun createViewBinding(
         inflater: LayoutInflater,
@@ -40,112 +36,96 @@ class LoginFragment :
     }
 
     private fun LoginFragmentBinding.setupListeners() {
-        layoutLoginUser.etUser.addTextChangedListener {
-            viewModel.onActionUserWrite(it?.toString() ?: STRING_EMPTY)
+        etUser.addTextChangedListener {
+            viewModel.dispatch(LoginAction.UserNameWritten(it?.toString() ?: STRING_EMPTY))
         }
-        layoutLoginPassword.etPassword.addTextChangedListener {
-            viewModel.onActionPasswordWrite(it?.toString() ?: STRING_EMPTY)
+        etPassword.addTextChangedListener {
+            viewModel.dispatch(LoginAction.PasswordWritten(it?.toString() ?: STRING_EMPTY))
+        }
+        etPassword.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                viewModel.dispatch(LoginAction.Login)
+                true
+            } else
+                false
         }
         bLoginSign.setOnClickListener {
-            viewModel.onActionLogin()
+            viewModel.dispatch(LoginAction.Login)
         }
-        layoutLoginUser.ivHomeTouchEmptyUser.setOnClickListener {
-            viewModel.onActionDeleteUser()
+        tilLoginUser.setEndIconOnClickListener {
+            viewModel.dispatch(LoginAction.DeleteUser)
         }
     }
 
-    override fun LoginFragmentBinding.onOverlappedError(extraData: EmaExtraData) {
-        when (extraData.data as LoginOverlap) {
+    override fun LoginFragmentBinding.onState(state: LoginState) {
+        bindForUpdate(state::userName) {
+            etUser.setTextWithCursorAtEnd(it)
+        }
+        bindForUpdate(state::userPassword) {
+            etPassword.setTextWithCursorAtEnd(it)
+        }
+        bindForUpdate(state::userNameError) {
+            tilLoginUser.error = if (it) getString(R.string.login_error_user_empty) else null
+        }
+        bindForUpdate(state::passwordError) {
+            tilLoginPassword.error = if (it) getString(R.string.login_error_password_empty) else null
+        }
+        bindForUpdate(state::isLoading) {
+            onLoading(it)
+        }
+        bindForUpdate(state::overlap) {
+            onOverlap(it)
+        }
+    }
+
+    private fun LoginFragmentBinding.onLoading(isLoading: Boolean) {
+        //The button is not disabled to keep its color behind the progress indicator
+        bLoginSign.isClickable = !isLoading
+        bLoginSign.text = if (isLoading) STRING_EMPTY else getString(R.string.login_access)
+        pbLoginSign.isVisible = isLoading
+        tilLoginUser.isEnabled = !isLoading
+        tilLoginPassword.isEnabled = !isLoading
+    }
+
+    private fun onOverlap(overlap: LoginOverlap?) {
+        when (overlap) {
+            null -> hideDialog()
+
             LoginOverlap.ErrorBadCredentials -> {
                 showError(ErrorDialogData(
-                    EmaText.id(R.string.general_error_title),
+                    EmaText.id(R.string.login_error_fail_title),
                     EmaText.id(R.string.login_error_fail),
                 ), object : ErrorDialogListener {
                     override fun onConfirmClicked() {
-                        viewModel.onAction(LoginAction.Error.BadCredentialsAccepted)
+                        viewModel.dispatch(LoginAction.Error.BadCredentialsAccepted)
                     }
 
                     override fun onBackPressed() {
-                        viewModel.onAction(LoginAction.Error.BackPressed)
+                        viewModel.dispatch(LoginAction.Error.BackPressed)
                     }
 
                 })
             }
-
-            LoginOverlap.ErrorUserEmpty -> {
-                showError(ErrorDialogData(
-                    EmaText.id(R.string.general_error_title),
-                    EmaText.id(R.string.login_error_user_empty),
-                ), object : ErrorDialogListener {
-                    override fun onConfirmClicked() {
-                        viewModel.onAction(LoginAction.Error.UserEmptyAccepted)
-                    }
-
-                    override fun onBackPressed() {
-                        viewModel.onAction(LoginAction.Error.BackPressed)
-                    }
-
-                })
-            }
-
-            LoginOverlap.ErrorPasswordEmpty -> {
-                showError(ErrorDialogData(
-                    EmaText.id(R.string.general_error_title),
-                    EmaText.id(R.string.login_error_password_empty),
-                ), object : ErrorDialogListener {
-                    override fun onConfirmClicked() {
-                        viewModel.onAction(LoginAction.Error.PasswordEmptyAccepted)
-                    }
-
-                    override fun onBackPressed() {
-                        viewModel.onAction(LoginAction.Error.BackPressed)
-                    }
-
-                })
-            }
-
         }
-
     }
 
     override fun provideViewModel(): LoginViewModel {
         return injectDirect()
     }
 
-    override fun LoginFragmentBinding.onNormal(data: LoginState) {
-        bindForUpdate(data::userName) {
-            layoutLoginUser.etUser.setTextWithCursorAtEnd(data.userName)
-        }
-        bindForUpdate(data::userPassword) {
-            layoutLoginPassword.etPassword.setTextWithCursorAtEnd(data.userPassword)
-        }
-    }
+    override suspend fun LoginFragmentBinding.onEvent(event: LoginEvent) {
+        when (event) {
+            is LoginEvent.LoginSuccess -> navigate(event)
 
-
-    override fun LoginFragmentBinding.onSingle(extra: EmaExtraData) {
-        when (val event = extra.data as LoginSingleEvent) {
-            is LoginSingleEvent.LastUserAdded -> {
-                val user = event.user
-                EmaSingleToast.show(
-                    requireContext(),
-                    R.string.login_last_user_added.getFormattedString(
-                        requireContext(),
-                        "${user.name} ${user.surname})"
-                    ),
-                    Toast.LENGTH_SHORT
-                )
+            is LoginEvent.LastUserAdded -> {
+                showMessage(getString(R.string.login_last_user_added, event.user.fullName))
             }
 
-            is LoginSingleEvent.Message -> {
-                EmaSingleToast.show(
-                    requireContext(),
-                    R.string.home_welcome.getFormattedString(requireContext(),event.userName),
-                    Toast.LENGTH_SHORT
-                )
-
+            is LoginEvent.Message -> {
+                showMessage(getString(R.string.login_welcome, event.userName))
             }
         }
     }
 
-    override val navigator: EmaNavigator<LoginNavigationEvent> = LoginNavigator(this)
+    override val navigator: EmaNavigator<LoginEvent> = LoginNavigator(this)
 }

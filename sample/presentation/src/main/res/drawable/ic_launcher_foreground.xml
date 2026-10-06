@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Ema logo bars, scaled to the adaptive icon safe zone -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M42.8,36.4h22.4a4.8,4.8 0,0 1,0,9.6h-22.4a4.8,4.8 0,0 1,0,-9.6z" />
+    <path
+        android:fillColor="@color/palette_brandAccent"
+        android:pathData="M42.8,49.2h14.4a4.8,4.8 0,0 1,0,9.6h-14.4a4.8,4.8 0,0 1,0,-9.6z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M42.8,62h22.4a4.8,4.8 0,0 1,0,9.6h-22.4a4.8,4.8 0,0 1,0,-9.6z" />
+</vector>

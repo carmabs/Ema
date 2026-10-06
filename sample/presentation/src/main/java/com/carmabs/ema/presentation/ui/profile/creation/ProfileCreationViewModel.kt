@@ -7,7 +7,7 @@ import com.carmabs.ema.presentation.base.BaseViewModel
 
 class ProfileCreationViewModel(
     initialDataState: ProfileCreationState
-) : BaseViewModel<ProfileCreationState, ProfileCreationAction, ProfileCreationNavigationEvent>(
+) : BaseViewModel<ProfileCreationState, ProfileCreationAction, ProfileCreationEvent>(
     initialDataState
 ) {
     override fun onStateCreated(initializer: EmaInitializer?) {
@@ -35,13 +35,25 @@ class ProfileCreationViewModel(
         }
     }
 
+    private fun showOverlap(overlap: ProfileCreationOverlap) {
+        updateState {
+            copy(overlap = overlap)
+        }
+    }
+
+    private fun hideOverlap() {
+        updateState {
+            copy(overlap = null)
+        }
+    }
+
     private fun onActionBackCancel() {
-        updateToNormalState()
+        hideOverlap()
     }
 
     private fun onActionBackConfirmed() {
-        updateToNormalState()
-        navigate(ProfileCreationNavigationEvent.DialogConfirmationAccepted)
+        hideOverlap()
+        postEvent(ProfileCreationEvent.DialogConfirmationAccepted)
     }
 
     private fun onActionUserNameWritten(name: String) {
@@ -57,21 +69,23 @@ class ProfileCreationViewModel(
     }
 
     private fun onActionCreateClicked() {
-        showSimpleDialog(ProfileCreationOverlap.DialogUserCreated(stateData.role))
+        if (!state.canCreate)
+            return
+        showOverlap(ProfileCreationOverlap.DialogUserCreated(state.role))
     }
 
     private fun onActionDialogConfirmClicked() {
-        updateToNormalState()
-        setBackBroadcastData(User(stateData.name, stateData.surname, stateData.role))
-        navigate(ProfileCreationNavigationEvent.DialogConfirmationAccepted)
+        hideOverlap()
+        dispatchBroadcast(User(state.name, state.surname, state.role))
+        postEvent(ProfileCreationEvent.DialogConfirmationAccepted)
     }
 
     private fun onActionDialogCancelClicked() {
-        updateToNormalState()
+        hideOverlap()
     }
 
 
     private fun onActionBack() {
-        showSimpleDialog(ProfileCreationOverlap.DialogBackConfirmation)
+        showOverlap(ProfileCreationOverlap.DialogBackConfirmation)
     }
 }

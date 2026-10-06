@@ -1,6 +1,6 @@
 package com.carmabs.ema.presentation.ui.profile.creation
 
-import com.carmabs.ema.core.navigator.EmaNavigationEvent
+import com.carmabs.ema.core.state.EmaEvent
 
 /**
  * Created by Carlos Mateo Benito on 6/3/24.
@@ -11,6 +11,6 @@ import com.carmabs.ema.core.navigator.EmaNavigationEvent
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-sealed interface ProfileCreationNavigationEvent: EmaNavigationEvent {
-    data object DialogConfirmationAccepted : ProfileCreationNavigationEvent
+sealed interface ProfileCreationEvent: EmaEvent {
+    data object DialogConfirmationAccepted : ProfileCreationEvent
 }

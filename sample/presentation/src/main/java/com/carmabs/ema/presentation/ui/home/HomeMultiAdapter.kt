@@ -7,6 +7,8 @@ import com.carmabs.domain.model.Role
 import com.carmabs.domain.model.User
 import com.carmabs.ema.android.ui.recycler.EmaMultiRecyclerAdapter
 import com.carmabs.ema.android.ui.recycler.EmaViewHolder
+import com.carmabs.ema.presentation.extension.fullName
+import com.carmabs.ema.presentation.extension.initials
 import com.carmabs.ema.sample.ema.R
 import com.carmabs.ema.sample.ema.databinding.HomeLayoutItemAdminBinding
 import com.carmabs.ema.sample.ema.databinding.HomeLayoutItemUserBinding
@@ -22,14 +24,14 @@ class HomeMultiAdapter : EmaMultiRecyclerAdapter<User>() {
        when(Role.entries[viewType]){
            Role.ADMIN -> {
                (this as HomeLayoutItemAdminBinding).apply {
-                   tvHomeItemAdmin.text = "${item.name} ${item.surname}"
-
+                   tvHomeItemAdminAvatar.text = item.initials
+                   tvHomeItemAdmin.text = item.fullName
                }
            }
            Role.BASIC -> {
                (this as HomeLayoutItemUserBinding).apply {
-                   tvHomeItemUser.text = item.name
-                   tvHomeItemUserSurname.text = item.surname
+                   tvHomeItemUserAvatar.text = item.initials
+                   tvHomeItemUser.text = item.fullName
                }
            }
        }

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Ema sample palette (dark) -->
+    <color name="palette_primary">#A5B4FC</color>
+    <color name="palette_onPrimary">#1E1B4B</color>
+    <color name="palette_primaryContainer">#3730A3</color>
+    <color name="palette_onPrimaryContainer">#E0E7FF</color>
+    <color name="palette_secondary">#5EEAD4</color>
+    <color name="palette_onSecondary">#042F2E</color>
+    <color name="palette_secondaryContainer">#115E59</color>
+    <color name="palette_onSecondaryContainer">#CCFBF1</color>
+    <color name="palette_surface">#0B1220</color>
+    <color name="palette_onSurface">#E2E8F0</color>
+    <color name="palette_onSurfaceVariant">#94A3B8</color>
+    <color name="palette_surfaceContainerLowest">#111A2E</color>
+    <color name="palette_surfaceContainerLow">#131D33</color>
+    <color name="palette_surfaceContainer">#172338</color>
+    <color name="palette_surfaceContainerHigh">#1C2840</color>
+    <color name="palette_surfaceContainerHighest">#24314B</color>
+    <color name="palette_outline">#55657F</color>
+    <color name="palette_outlineVariant">#24314B</color>
+    <color name="palette_error">#F87171</color>
+    <color name="palette_onError">#450A0A</color>
+    <color name="palette_errorContainer">#7F1D1D</color>
+    <color name="palette_onErrorContainer">#FEE2E2</color>
+    <color name="palette_inverseSurface">#E2E8F0</color>
+    <color name="palette_inverseOnSurface">#0F172A</color>
+    <color name="palette_inversePrimary">#4F46E5</color>
+    <color name="palette_brandStart">#6366F1</color>
+    <color name="palette_brandEnd">#8B5CF6</color>
+    <color name="palette_brandAccent">#5EEAD4</color>
+</resources>

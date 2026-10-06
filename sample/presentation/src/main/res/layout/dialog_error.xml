@@ -1,66 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/shape_dialog_white"
-    android:padding="5dp"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
-
+    android:background="@drawable/bg_dialog"
+    android:orientation="vertical"
+    android:paddingHorizontal="@dimen/space_xl"
+    android:paddingTop="@dimen/space_xl"
+    android:paddingBottom="@dimen/space_m">
 
     <ImageView
         android:id="@+id/ivDialogError"
-        style="@style/Base.Widget.AppCompat.ProgressBar"
-        android:layout_width="@dimen/icon_size_big"
+        android:layout_width="@dimen/icon_size"
+        android:layout_height="@dimen/icon_size"
+        android:layout_gravity="center_horizontal"
+        android:importantForAccessibility="no"
         android:src="@drawable/ic_error"
-        android:layout_height="@dimen/icon_size_big"
-        android:layout_marginTop="24dp"
-        android:indeterminate="true"
-        app:layout_constraintEnd_toEndOf="@+id/tvDialogErrorTitle"
-        app:layout_constraintStart_toStartOf="@+id/tvDialogErrorTitle"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:tint="?attr/colorError" />
 
-        <TextView
-            android:id="@+id/tvDialogErrorTitle"
-            style="@style/DialogTitle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:gravity="center"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ivDialogError"
-            tools:text="TITLE"/>
+    <TextView
+        android:id="@+id/tvDialogErrorTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/space_l"
+        android:gravity="center"
+        android:textAppearance="?attr/textAppearanceHeadlineSmall"
+        android:textColor="?attr/colorOnSurface"
+        tools:text="Error" />
 
     <TextView
         android:id="@+id/tvDialogErrorMessage"
-        style="@style/DialogMessage"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/space_l"
         android:gravity="center"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvDialogErrorTitle"
-        app:layout_constraintVertical_bias="0.0"
-        tools:text="MESSAGE" />
+        android:textAppearance="?attr/textAppearanceBodyMedium"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        tools:text="Message" />
 
-    <TextView
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/tvDialogErrorAccept"
+        style="@style/Widget.Material3.Button.TextButton.Dialog"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="8dp"
-        android:padding="5dp"
-        android:textStyle="bold"
-        android:text="@string/dialog_accept"
-        android:textColor="@color/error"
-        android:textSize="@dimen/letter_big"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvDialogErrorMessage" />
-
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:layout_gravity="end"
+        android:layout_marginTop="@dimen/space_l"
+        android:text="@string/dialog_accept" />
+</LinearLayout>
