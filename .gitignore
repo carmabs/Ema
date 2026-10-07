@@ -4,3 +4,7 @@
 /.gradle
 /gradlew.bat
 local.properties
+
+# Documentation preview (MkDocs)
+/.venv
+/site
