@@ -58,11 +58,14 @@ class LoginFragment :
     }
 
     override fun LoginFragmentBinding.onState(state: LoginState) {
+        //The text is written only when it differs, otherwise the cursor would jump to the end while typing
         bindForUpdate(state::userName) {
-            etUser.setTextWithCursorAtEnd(it)
+            if (etUser.text?.toString() != it)
+                etUser.setTextWithCursorAtEnd(it)
         }
         bindForUpdate(state::userPassword) {
-            etPassword.setTextWithCursorAtEnd(it)
+            if (etPassword.text?.toString() != it)
+                etPassword.setTextWithCursorAtEnd(it)
         }
         bindForUpdate(state::userNameError) {
             tilLoginUser.error = if (it) getString(R.string.login_error_user_empty) else null

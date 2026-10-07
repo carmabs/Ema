@@ -122,9 +122,8 @@ class LoginViewModel(
 
 
     private fun onActionUserWrite(user: String) {
-        //The view is notified, but bindForUpdate in the view only sets the text when it differs from the
-        //previous state, so it doesn't conflict with the user typing. The state is kept if, for example, there is a device
-        //rotation and the view is recreated, to set the text with last value saved on state
+        //The text is kept in the state so it is restored if, for example, there is a device rotation
+        //and the view is recreated
         updateState {
             copy(userName = user, userNameError = false)
         }
