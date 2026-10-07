@@ -57,6 +57,7 @@ dependencies {
     implementation project(path: ':android-utils')
     implementation project(rootProject.emaLibraries.emaAndroidCompose)
     implementation project(rootProject.emaLibraries.emaAndroid)
+    implementation libs.koin.android
     implementation libs.material
     implementation libs.androidx.compose.material3
 }

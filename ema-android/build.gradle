@@ -58,7 +58,6 @@ dependencies {
 
     // Kotlin
     api libs.androidx.fragment.ktx
-    api libs.koin.android
 
     //Navigation
     api libs.androidx.navigation.fragment.ktx

@@ -8,16 +8,15 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.viewbinding.ViewBinding
 import com.carmabs.ema.android.delegates.emaStateDelegate
-import org.koin.core.component.KoinComponent
 
 
 /**
  *
- * Abstract base class to implement custom layouts. It handles dependency injection as well.
+ * Abstract base class to implement custom layouts.
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
-abstract class EmaLayout<B : ViewBinding, T : Any> : FrameLayout,KoinComponent {
+abstract class EmaLayout<B : ViewBinding, T : Any> : FrameLayout {
 
     var binding: B? = null
         private set

@@ -11,7 +11,6 @@ import androidx.core.app.JobIntentService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.koin.core.component.KoinComponent
 
 
 /**
@@ -22,14 +21,12 @@ import org.koin.core.component.KoinComponent
  * </p>
  *
  * Service to handle job intents
- * - It has implemented koin to handle koin instances of application module
- * - If you want to use a custom module you can provide it by inject module function
  * - It has static enqueue methods to execute work implicitily
  * - Use suspend execute work function to handle async operations in the service job thread
  * - EmaJobListener implemented to handle work listener
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  **/
-abstract class EmaJobService : JobIntentService(),KoinComponent {
+abstract class EmaJobService : JobIntentService() {
 
     private val coroutineScope = CoroutineScope(Dispatchers.Default)
 

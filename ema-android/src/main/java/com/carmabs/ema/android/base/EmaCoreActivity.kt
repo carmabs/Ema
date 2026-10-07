@@ -27,23 +27,15 @@ import com.carmabs.ema.core.viewmodel.EmaViewModel
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import org.koin.android.scope.AndroidScopeComponent
-import org.koin.androidx.scope.activityScope
-import org.koin.core.scope.Scope
 
 /**
  *
- * Abstract base class to implement Kodein framework in activity context
- * to handle dependency injection
+ * Abstract base class to implement Activity with binding to ViewModel
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
 abstract class EmaCoreActivity<S : EmaState, VM : EmaViewModel<S, E>, E : EmaEvent> :
-    AppCompatActivity(), EmaAndroidView<S, VM, E>, AndroidScopeComponent, EmaActivityBackDelegate {
-
-
-    final override val scope: Scope by activityScope()
-
+    AppCompatActivity(), EmaAndroidView<S, VM, E>, EmaActivityBackDelegate {
 
     override val ownsBackDelegate = false
 
@@ -55,8 +47,6 @@ abstract class EmaCoreActivity<S : EmaState, VM : EmaViewModel<S, E>, E : EmaEve
     @CallSuper
     override fun onCreate(savedInstanceState: Bundle?) {
         super<AppCompatActivity>.onCreate(savedInstanceState)
-        //Call scope to call scope to enable injection
-        scope
         if (!ownsBackDelegate) {
             addOnBackPressedListener {
                 onBackDelegate()
@@ -172,12 +162,6 @@ abstract class EmaCoreActivity<S : EmaState, VM : EmaViewModel<S, E>, E : EmaEve
         super.onStop()
     }
 
-
-    @CallSuper
-    override fun onDestroy() {
-        super.onDestroy()
-        scope.close()
-    }
 
     @CallSuper
     override fun finish() {

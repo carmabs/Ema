@@ -29,22 +29,16 @@ import com.carmabs.ema.core.viewmodel.EmaViewModel
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import org.koin.android.scope.AndroidScopeComponent
-import org.koin.androidx.scope.fragmentScope
-import org.koin.core.scope.Scope
 
 
 /**
  *
- * Abstract base class to implement Fragment with binding to ViewModel and Koin
- * fragment scope
+ * Abstract base class to implement Fragment with binding to ViewModel
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
 abstract class EmaCoreFragment<S : EmaState, VM : EmaViewModel<S,E>, E : EmaEvent> :
-    Fragment(), EmaAndroidView<S, VM, E>, AndroidScopeComponent {
-
-    final override val scope: Scope by fragmentScope()
+    Fragment(), EmaAndroidView<S, VM, E> {
 
     open val handleBackPressedManually = false
 

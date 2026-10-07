@@ -4,13 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.carmabs.ema.android.di.injectDirect
 import com.carmabs.ema.android.ui.EmaFragment
 import com.carmabs.ema.core.navigator.EmaNavigator
 import com.carmabs.ema.core.state.EmaState
 import com.carmabs.ema.presentation.splash.SplashEvent
 import com.carmabs.ema.presentation.splash.SplashViewModel
 import com.carmabs.ema.sample.ema.databinding.SplashFragmentBinding
+import org.koin.android.ext.android.get
 
 
 class SplashFragment :
@@ -43,7 +43,7 @@ class SplashFragment :
     }
 
     override fun provideViewModel(): SplashViewModel {
-        return injectDirect()
+        return get()
     }
 
     override fun SplashFragmentBinding.onState(state: EmaState.EMPTY){

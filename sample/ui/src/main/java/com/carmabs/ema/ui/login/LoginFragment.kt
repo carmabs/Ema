@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
-import com.carmabs.ema.android.di.injectDirect
 import com.carmabs.ema.android.extension.bindForUpdate
 import com.carmabs.ema.android.extension.setTextWithCursorAtEnd
 import com.carmabs.ema.core.constants.STRING_EMPTY
@@ -24,6 +23,7 @@ import com.carmabs.ema.sample.ema.databinding.LoginFragmentBinding
 import com.carmabs.ema.ui.base.BaseFragment
 import com.carmabs.ema.ui.dialog.error.ErrorDialogData
 import com.carmabs.ema.ui.dialog.error.ErrorDialogListener
+import org.koin.android.ext.android.get
 
 
 class LoginFragment :
@@ -119,7 +119,7 @@ class LoginFragment :
     }
 
     override fun provideViewModel(): LoginViewModel {
-        return injectDirect()
+        return get()
     }
 
     override suspend fun LoginFragmentBinding.onEvent(event: LoginEvent) {

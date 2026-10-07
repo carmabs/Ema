@@ -1,5 +1,7 @@
 package com.carmabs.ema.core
 
+import com.carmabs.ema.core.broadcast.EmaBroadcastManager
+import com.carmabs.ema.core.broadcast.EmaFlowBroadcastManager
 import com.carmabs.ema.core.model.EmaConfiguration
 
 /**
@@ -19,6 +21,11 @@ object Ema {
         get() = initializedConfiguration ?: defaultConfiguration
 
     private val defaultConfiguration by lazy { EmaConfiguration() }
+
+    /**
+     * Manager to send events to any part of the app that is listening to them.
+     */
+    val broadcastManager: EmaBroadcastManager by lazy { EmaFlowBroadcastManager() }
 
     /**
      * Sets the configuration of Ema. It can be called only once.

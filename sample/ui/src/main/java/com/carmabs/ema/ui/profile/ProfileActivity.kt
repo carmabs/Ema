@@ -7,7 +7,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.remember
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
-import com.carmabs.ema.android.di.injectDirect
 import com.carmabs.ema.android.extension.getInitializer
 import com.carmabs.ema.android.initializer.bundle.strategy.BundleSerializerStrategy
 import com.carmabs.ema.android.savestate.EmaSaveStateManager
@@ -27,6 +26,7 @@ import com.carmabs.ema.ui.profile.onboarding.ProfileOnBoardingNavigator
 import com.carmabs.ema.ui.profile.onboarding.ProfileOnBoardingScreenContent
 import com.carmabs.ema.ui.theme.EmaSampleTheme
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.get
 
 
 class ProfileActivity : ComponentActivity() {
@@ -59,11 +59,11 @@ class ProfileActivity : ComponentActivity() {
                         onEvent = {
                             navigator.handleProfileOnBoardingEvent(it)
                         },
-                        viewModel = { injectDirect<ProfileOnBoardingViewModel>() }
+                        viewModel = { get<ProfileOnBoardingViewModel>() }
                     )
                     createComposableScreen(
                         screenContent = ProfileCreationScreenContent(),
-                        viewModel = { injectDirect<ProfileCreationViewModel>() },
+                        viewModel = { get<ProfileCreationViewModel>() },
                         onEvent = {
                             navigator.handleProfileCreationEvent(it)
                         },

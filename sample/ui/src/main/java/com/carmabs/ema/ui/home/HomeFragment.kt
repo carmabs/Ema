@@ -8,7 +8,6 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.carmabs.domain.model.Role
 import com.carmabs.domain.model.User
-import com.carmabs.ema.android.di.injectDirect
 import com.carmabs.ema.android.initializer.bundle.strategy.BundleSerializerStrategy
 import com.carmabs.ema.android.ui.EmaFragment
 import com.carmabs.ema.android.ui.recycler.EmaBaseRecyclerAdapter
@@ -22,6 +21,7 @@ import com.carmabs.ema.presentation.home.HomeState
 import com.carmabs.ema.presentation.home.HomeViewModel
 import com.carmabs.ema.sample.ema.R
 import com.carmabs.ema.sample.ema.databinding.HomeFragmentBinding
+import org.koin.android.ext.android.get
 
 
 class HomeFragment :
@@ -53,7 +53,7 @@ class HomeFragment :
 
 
     override fun provideViewModel(): HomeViewModel {
-        return injectDirect()
+        return get()
     }
 
     override fun HomeFragmentBinding.onState(state: HomeState) {
