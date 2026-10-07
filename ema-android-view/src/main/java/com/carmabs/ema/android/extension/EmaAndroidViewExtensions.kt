@@ -3,8 +3,8 @@ package com.carmabs.ema.android.extension
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import com.carmabs.ema.android.base.EmaCoreFragment
 import com.carmabs.ema.android.ui.EmaAndroidView
-import com.carmabs.ema.android.ui.EmaFragment
 import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
 import com.carmabs.ema.core.state.EmaEvent
 import com.carmabs.ema.core.state.EmaState
@@ -25,7 +25,7 @@ internal fun <S : EmaState, VM : EmaViewModel<S, E>, E : EmaEvent> EmaAndroidVie
 ): EmaAndroidViewModel<S, E> {
 
     val fragmentScope =
-        (this as? EmaFragment<*, *, *, *>)?.fragmentViewModelScope ?: false
+        (this as? EmaCoreFragment<*, *, *>)?.fragmentViewModelScope ?: false
 
     val newVm = if (fragmentScope) {
         val fragment = this as Fragment

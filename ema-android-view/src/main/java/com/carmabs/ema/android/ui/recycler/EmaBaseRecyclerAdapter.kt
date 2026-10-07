@@ -55,10 +55,9 @@ abstract class EmaBaseRecyclerAdapter<I:Any>(diffCallback: DiffUtil.ItemCallback
      */
     @CallSuper
     open fun updateItem(item: I) {
-        val index = this.currentList.indexOf(item)
+        val index = currentList.indexOf(item)
         if (index > -1) {
-            currentList[index] = item
-            submitList(currentList)
+            submitList(currentList.toMutableList().apply { set(index, item) })
         }
     }
 
@@ -76,8 +75,7 @@ abstract class EmaBaseRecyclerAdapter<I:Any>(diffCallback: DiffUtil.ItemCallback
      */
     @CallSuper
     open fun addItem(item: I, position: Int = itemCount) {
-        currentList.add(position, item)
-        submitList(currentList)
+        submitList(currentList.toMutableList().apply { add(position, item) })
     }
 
     /**
@@ -86,9 +84,7 @@ abstract class EmaBaseRecyclerAdapter<I:Any>(diffCallback: DiffUtil.ItemCallback
      */
     @CallSuper
     open fun removeItem(position: Int) {
-        currentList.removeAt(position)
-        submitList(currentList)
-
+        submitList(currentList.toMutableList().apply { removeAt(position) })
     }
 
     protected open fun onItemClicked(item: I, position: Int, size: Int) {

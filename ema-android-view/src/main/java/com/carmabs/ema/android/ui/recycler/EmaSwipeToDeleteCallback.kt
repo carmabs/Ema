@@ -128,8 +128,8 @@ class EmaSwipeToDeleteCallback(
 
         when {
             dX > INT_ZERO -> { // Swiping to the right
-                val iconLeft: Int = itemView.left + iconMargin + icon.intrinsicWidth
-                val iconRight: Int = itemView.left + iconMargin
+                val iconLeft: Int = itemView.left + iconMargin
+                val iconRight: Int = itemView.left + iconMargin + icon.intrinsicWidth
                 icon.setBounds(iconLeft, iconTop, iconRight, iconBottom)
             }
             dX < INT_ZERO -> { // Swiping to the left

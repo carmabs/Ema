@@ -81,7 +81,7 @@ fun TextView.setIncrementAnimated(
     val floatString = emaRegexGetFloatValue.find(text)?.value
     val format = NumberFormat.getInstance(Locale.getDefault());
     val currentValue =
-        floatString?.let { (format.parse(it) as? Double)?.toFloat() ?: FLOAT_ZERO } ?: FLOAT_ZERO
+        floatString?.let { (format.parse(it) as? Number)?.toFloat() ?: FLOAT_ZERO } ?: FLOAT_ZERO
     val animator = ValueAnimator.ofFloat(currentValue, endValue)
     animator.duration = duration
     animator.addUpdateListener {
