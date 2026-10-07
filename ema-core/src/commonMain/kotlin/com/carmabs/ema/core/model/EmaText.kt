@@ -20,31 +20,26 @@ sealed class EmaText(open val data: Array<out Any>? = null) {
         fun composition(vararg texts: EmaText) = Composition(listOf(*texts))
     }
 
-    data class Composition internal constructor(val texts:List<EmaText>) : EmaText(null) {
+    // The subclasses are regular classes, not data classes: their constructors are not public, and a data
+    // class would expose them through copy(). Equality takes the content of the arguments into account.
+
+    class Composition internal constructor(val texts: List<EmaText>) : EmaText(null) {
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
             if (other == null || this::class != other::class) return false
 
             other as Composition
 
-            if (texts != other.texts) return false
-            if (data != null) {
-                if (other.data == null) return false
-                if (!data.contentEquals(other.data)) return false
-            } else if (other.data != null) return false
-
-            return true
+            return texts == other.texts
         }
 
-        override fun hashCode(): Int {
-            var result = texts.hashCode()
-            result = 31 * result + (data?.contentHashCode() ?: 0)
-            return result
-        }
+        override fun hashCode(): Int = texts.hashCode()
 
+        override fun toString(): String = "Composition(texts=$texts)"
     }
 
-    data class Text internal constructor(val text: String, override val data: Array<out Any>?=null) : EmaText(data) {
+    class Text internal constructor(val text: String, override val data: Array<out Any>? = null) :
+        EmaText(data) {
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
             if (other == null || this::class != other::class) return false
@@ -52,43 +47,48 @@ sealed class EmaText(open val data: Array<out Any>? = null) {
             other as Text
 
             if (text != other.text) return false
-            if (!data.contentEquals(other.data)) return false
+            if (!data.sameArguments(other.data)) return false
 
             return true
         }
 
         override fun hashCode(): Int {
             var result = text.hashCode()
-            result = 31 * result + data.contentHashCode()
+            result = 31 * result + data.argumentsHashCode()
             return result
         }
+
+        override fun toString(): String = "Text(text=$text, data=${data.argumentsToString()})"
     }
 
-    data class Id internal constructor(val id: Int, override val data: Array<out Any>?=null) : EmaText(data) {
+    class Id internal constructor(val id: Int, override val data: Array<out Any>? = null) :
+        EmaText(data) {
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
             if (other == null || this::class != other::class) return false
-            if (!super.equals(other)) return false
 
             other as Id
 
             if (id != other.id) return false
-            if (!data.contentEquals(other.data)) return false
+            if (!data.sameArguments(other.data)) return false
 
             return true
         }
 
         override fun hashCode(): Int {
-            var result = super.hashCode()
-            result = 31 * result + id
-            result = 31 * result + data.contentHashCode()
+            var result = id
+            result = 31 * result + data.argumentsHashCode()
             return result
         }
 
+        override fun toString(): String = "Id(id=$id, data=${data.argumentsToString()})"
     }
 
-    data class Plural internal constructor(val id: Int, val quantity: Int, override val data: Array<out Any>?) :
-        EmaText(data) {
+    class Plural internal constructor(
+        val id: Int,
+        val quantity: Int,
+        override val data: Array<out Any>?
+    ) : EmaText(data) {
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
             if (other == null || this::class != other::class) return false
@@ -97,7 +97,7 @@ sealed class EmaText(open val data: Array<out Any>? = null) {
 
             if (id != other.id) return false
             if (quantity != other.quantity) return false
-            if (!data.contentEquals(other.data)) return false
+            if (!data.sameArguments(other.data)) return false
 
             return true
         }
@@ -105,12 +105,25 @@ sealed class EmaText(open val data: Array<out Any>? = null) {
         override fun hashCode(): Int {
             var result = id
             result = 31 * result + quantity
-            result = 31 * result + data.contentHashCode()
+            result = 31 * result + data.argumentsHashCode()
             return result
         }
+
+        override fun toString(): String =
+            "Plural(id=$id, quantity=$quantity, data=${data.argumentsToString()})"
     }
 
-    fun isEmpty():Boolean{
-       return (this is Text) && this.text.isEmpty()
+    fun isEmpty(): Boolean {
+        return (this is Text) && this.text.isEmpty()
     }
 }
+
+// Texts without arguments are the same whether the arguments are null or an empty array
+private fun Array<out Any>?.sameArguments(other: Array<out Any>?): Boolean =
+    (this ?: emptyArray<Any>()).contentEquals(other ?: emptyArray<Any>())
+
+private fun Array<out Any>?.argumentsHashCode(): Int =
+    if (isNullOrEmpty()) 0 else contentHashCode()
+
+private fun Array<out Any>?.argumentsToString(): String =
+    (this ?: emptyArray<Any>()).contentToString()

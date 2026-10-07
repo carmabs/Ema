@@ -9,6 +9,7 @@ package com.carmabs.ema.core.model.reflection
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
+@ConsistentCopyVisibility
 data class EmaReflectionData internal constructor(
     val reflection: EmaReflection,
     val data:Any?
