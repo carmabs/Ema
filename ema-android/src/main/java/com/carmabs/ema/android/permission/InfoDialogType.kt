@@ -13,9 +13,6 @@ import android.app.AlertDialog
  */
 sealed interface InfoDialogType {
     data class Default(val title: String, val message: String) : InfoDialogType
-    data class CustomDialog(
-        val alertDialog: AlertDialog,
-        val onAcceptClickListener: (() -> Unit)? = null
-    ) :
+    data class CustomDialog(val alertDialog: AlertDialog, val onAcceptClickListener: (() -> Unit)? = null) :
         InfoDialogType
 }

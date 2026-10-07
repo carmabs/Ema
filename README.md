@@ -10,12 +10,12 @@ This way you can create by a very easy and fast way robust and maintenable apps 
 To use the library add the following dependencies to gradle:
 
 Add the maven repository:
-  
+
       allprojects {
-		    repositories {
-			    ...
-			    maven { url 'https://jitpack.io' }
-    	  }
+            repositories {
+                ...
+                maven { url 'https://jitpack.io' }
+          }
       }
 
 Add the **EMA** dependencies, it include ema-core library and its library dependencies.
@@ -31,12 +31,8 @@ For compose support you can add the following.
     }
 
 If the module is pure kotlin, add the ema-core library
-  
+
 
     dependencies {
-	      implementation 'com.github.carmabs.ema:ema-core:6.0.0'
+          implementation 'com.github.carmabs.ema:ema-core:6.0.0'
     }
-
-
-
-

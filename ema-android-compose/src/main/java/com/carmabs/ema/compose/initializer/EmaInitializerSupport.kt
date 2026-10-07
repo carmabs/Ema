@@ -18,13 +18,10 @@ open class EmaInitializerSupport(
     val overrideInitializer: EmaInitializer? = null
 ) {
     companion object {
-        fun <I : EmaInitializer> kSerialization(
-            serializer: KSerializer<I>,
-            overrideInitializer: I? = null
-        ) = EmaInitializerSupport(
-            BundleSerializerStrategy.kSerialization(serializer),
-            overrideInitializer
-        )
+        fun <I : EmaInitializer> kSerialization(serializer: KSerializer<I>, overrideInitializer: I? = null) =
+            EmaInitializerSupport(
+                BundleSerializerStrategy.kSerialization(serializer),
+                overrideInitializer
+            )
     }
-
 }

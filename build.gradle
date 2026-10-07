@@ -3,8 +3,44 @@ plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.android.library) apply false
     alias(libs.plugins.kotlin.jvm) apply false
+    alias(libs.plugins.kotlin.multiplatform) apply false
     alias(libs.plugins.kotlin.compose) apply false
     alias(libs.plugins.kotlin.serialization) apply false
+    alias(libs.plugins.kover)
+    alias(libs.plugins.spotless)
 }
 
 apply from: 'build-system/config.gradle'
+
+// Coverage report of the published modules: ./gradlew koverHtmlReport (build/reports/kover/html)
+dependencies {
+    kover project(':ema-core')
+    kover project(':ema-android')
+    kover project(':ema-android-view')
+    kover project(':ema-android-compose')
+}
+
+kover {
+    reports {
+        filters {
+            excludes {
+                // Generated code
+                classes('*.databinding.*', '*.BuildConfig')
+            }
+        }
+    }
+}
+
+// Code format of the library: ./gradlew spotlessApply (the rules are in .editorconfig)
+spotless {
+    kotlin {
+        target 'ema-*/src/**/*.kt'
+        ktlint(libs.versions.ktlint.get())
+    }
+    format 'misc', {
+        target '*.gradle', 'ema-*/*.gradle', 'build-system/*.gradle', 'gradle/*.toml', '*.md', '.editorconfig', '.gitignore'
+        trimTrailingWhitespace()
+        leadingTabsToSpaces()
+        endWithNewline()
+    }
+}

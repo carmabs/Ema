@@ -9,9 +9,7 @@ package com.carmabs.ema.android.permission
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-abstract class EmaContractPermission(private val shouldShowRequestPermissionRationaleFunction:(String)->Boolean) {
-    protected fun shouldShowRequestPermissionRationale(permission: String): Boolean {
-        return shouldShowRequestPermissionRationaleFunction.invoke(permission)
-    }
-
+abstract class EmaContractPermission(private val shouldShowRequestPermissionRationaleFunction: (String) -> Boolean) {
+    protected fun shouldShowRequestPermissionRationale(permission: String): Boolean =
+        shouldShowRequestPermissionRationaleFunction.invoke(permission)
 }

@@ -1,0 +1,64 @@
+plugins {
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.compose)
+}
+
+android {
+    compileSdk = rootProject.emaVersioning.compileSdk
+
+    defaultConfig {
+        minSdk = rootProject.emaVersioning.minSdk
+        targetSdk = rootProject.emaVersioning.targetSdk
+        testInstrumentationRunner = "android.support.test.runner.AndroidJUnitRunner"
+    }
+    flavorDimensions = ["default"]
+
+    buildTypes {
+        debug {
+            minifyEnabled = false
+        }
+        release {
+            minifyEnabled = false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    buildFeatures {
+        compose = true
+    }
+
+    def javaVersion = rootProject.emaVersioning.javaVersion
+
+    compileOptions {
+        sourceCompatibility = javaVersion
+        targetCompatibility = javaVersion
+    }
+
+    kotlin {
+        compilerOptions {
+            jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.fromTarget(rootProject.emaVersioning.kotlinJvmTarget)
+        }
+    }
+
+    packaging {
+        resources {
+            excludes += ['META-INF/LICENSE', 'META-INF/DEPENDENCIES']
+        }
+    }
+
+    namespace = 'com.carmabs.ema.sample.ema'
+    buildFeatures {
+        viewBinding = true
+    }
+}
+
+dependencies {
+    implementation project(path: ':presentation')
+    implementation project(path: ':android-utils')
+    implementation project(rootProject.emaLibraries.emaAndroidCompose)
+    implementation project(rootProject.emaLibraries.emaAndroid)
+    implementation project(rootProject.emaLibraries.emaAndroidView)
+    implementation libs.koin.android
+    implementation libs.material
+    implementation libs.androidx.compose.material3
+}

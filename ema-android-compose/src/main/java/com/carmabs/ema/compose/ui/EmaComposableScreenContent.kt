@@ -8,13 +8,9 @@ import com.carmabs.ema.core.action.EmaAction
 import com.carmabs.ema.core.state.EmaEvent
 import com.carmabs.ema.core.state.EmaState
 
-interface EmaComposableScreenContent<S : EmaState, A : EmaAction.Screen, E: EmaEvent> {
+interface EmaComposableScreenContent<S : EmaState, A : EmaAction.Screen, E : EmaEvent> {
 
-    suspend fun onEvent(
-        context: Context,
-        event: E,
-        actions: EmaImmutableActionDispatcher<A>
-    ) = Unit
+    suspend fun onEvent(context: Context, event: E, actions: EmaImmutableActionDispatcher<A>) = Unit
 
     /**
      * Action to dispatch when back is pressed. The view model decides how to react to it.

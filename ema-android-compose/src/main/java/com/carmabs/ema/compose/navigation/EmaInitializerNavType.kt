@@ -14,22 +14,15 @@ import com.carmabs.ema.core.initializer.EmaInitializer
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-internal class EmaInitializerNavType(
-    private val serializerStrategy: BundleSerializerStrategy
-) : NavType<EmaInitializer>(isNullableAllowed = true) {
-    override fun get(bundle: Bundle, key: String): EmaInitializer? {
-        return serializerStrategy.restore(bundle)
-    }
+internal class EmaInitializerNavType(private val serializerStrategy: BundleSerializerStrategy) :
+    NavType<EmaInitializer>(isNullableAllowed = true) {
+    override fun get(bundle: Bundle, key: String): EmaInitializer? = serializerStrategy.restore(bundle)
 
-    override fun parseValue(value: String): EmaInitializer {
-        return serializerStrategy.fromStringValue(value)
-    }
+    override fun parseValue(value: String): EmaInitializer = serializerStrategy.fromStringValue(value)
 
-    override fun serializeAsValue(value: EmaInitializer): String {
-        return serializerStrategy.toStringValue(value)
-    }
+    override fun serializeAsValue(value: EmaInitializer): String = serializerStrategy.toStringValue(value)
 
     override fun put(bundle: Bundle, key: String, value: EmaInitializer) {
-        serializerStrategy.save(value,bundle)
+        serializerStrategy.save(value, bundle)
     }
 }

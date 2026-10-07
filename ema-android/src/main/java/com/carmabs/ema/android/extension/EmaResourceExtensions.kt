@@ -2,12 +2,25 @@ package com.carmabs.ema.android.extension
 
 import android.content.ContentResolver
 import android.content.Context
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.PorterDuff
+import android.graphics.Typeface
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.util.TypedValue
-import androidx.annotation.*
+import androidx.annotation.AnyRes
+import androidx.annotation.AttrRes
+import androidx.annotation.ColorInt
+import androidx.annotation.ColorRes
+import androidx.annotation.DimenRes
+import androidx.annotation.DrawableRes
+import androidx.annotation.FontRes
+import androidx.annotation.PluralsRes
+import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
@@ -15,13 +28,12 @@ import com.carmabs.ema.core.constants.FLOAT_ONE
 import com.carmabs.ema.core.constants.INT_ZERO
 import com.carmabs.ema.core.value.EmaUriRes
 import com.carmabs.ema.core.value.EmaUriType
+import java.io.ByteArrayOutputStream
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.io.ByteArrayOutputStream
 
-
-/**
- *  *<p>
+/*
+ * <p>
  * Copyright (c) 2020, Carmabs. All rights reserved.
  * </p>
  *
@@ -37,83 +49,62 @@ import java.io.ByteArrayOutputStream
  *
  * Example: Hello world %d -> data = 1 -> Hello wworld 1
  */
-fun @receiver:StringRes Int.getFormattedString(context: Context, vararg data: Any?): String {
-    return String.format(context.getString(this), *data)
-}
+fun @receiver:StringRes Int.getFormattedString(context: Context, vararg data: Any?): String =
+    String.format(context.getString(this), *data)
 
-fun @receiver:PluralsRes Int.getFormattedPluralsString(
-    context: Context,
-    times: Int,
-    vararg data: Any?
-): String {
-    return context.resources.getQuantityString(this, times, *data)
-}
+fun @receiver:PluralsRes Int.getFormattedPluralsString(context: Context, times: Int, vararg data: Any?): String =
+    context.resources.getQuantityString(this, times, *data)
 
-fun @receiver:FontRes Int.getTypeface(context: Context): Typeface {
-    return ResourcesCompat.getFont(context, this)!!
-}
+fun @receiver:FontRes Int.getTypeface(context: Context): Typeface = ResourcesCompat.getFont(context, this)!!
 
 /**
  * Will return the size to maintain the proportions, keeping the max target size possible on width or height
  */
-fun Drawable.fitInTargetMaxSizeProportionally(targetWidth: Int?, targetHeight: Int?): Pair<Int, Int> {
-    return fitInTargetMaxSizeProportionally(intrinsicWidth, intrinsicHeight, targetWidth?:intrinsicWidth, targetHeight?:intrinsicHeight)
-}
-
+fun Drawable.fitInTargetMaxSizeProportionally(targetWidth: Int?, targetHeight: Int?): Pair<Int, Int> =
+    fitInTargetMaxSizeProportionally(
+        intrinsicWidth,
+        intrinsicHeight,
+        targetWidth ?: intrinsicWidth,
+        targetHeight ?: intrinsicHeight
+    )
 
 /**
  * Get color from a @ColorRes
  * @param context Application context
  */
 
-fun @receiver:ColorRes Int.getColor(context: Context): Int {
-    return ContextCompat.getColor(context, this)
-}
+fun @receiver:ColorRes Int.getColor(context: Context): Int = ContextCompat.getColor(context, this)
 
 fun @receiver:AttrRes Int.getAttributeDimenValue(context: Context): Int {
     val tv = TypedValue()
     return if (context.theme.resolveAttribute(this, tv, true)) {
         TypedValue.complexToDimensionPixelSize(tv.data, context.resources.displayMetrics)
-    } else
+    } else {
         INT_ZERO
-
-
+    }
 }
 
-fun @receiver:DrawableRes Int.getDrawable(context: Context): Drawable {
-    return ContextCompat.getDrawable(context, this)!!
-}
+fun @receiver:DrawableRes Int.getDrawable(context: Context): Drawable = ContextCompat.getDrawable(context, this)!!
 
-fun @receiver:DimenRes Int.getDimension(context: Context): Float {
-    return context.resources.getDimension(this)
-}
+fun @receiver:DimenRes Int.getDimension(context: Context): Float = context.resources.getDimension(this)
 
-fun @receiver:FontRes Int.getFont(context: Context): Typeface {
-    return ResourcesCompat.getFont(context, this)!!
-}
+fun @receiver:FontRes Int.getFont(context: Context): Typeface = ResourcesCompat.getFont(context, this)!!
 
-fun @receiver:DrawableRes Int.getBitmap(
-    context: Context,
-    width: Int? = null,
-    height: Int? = null
-): Bitmap {
-    return when {
-        width != null && height != null -> {
-            ContextCompat.getDrawable(context, this)!!.toBitmap(width = width, height = height)
-        }
+fun @receiver:DrawableRes Int.getBitmap(context: Context, width: Int? = null, height: Int? = null): Bitmap = when {
+    width != null && height != null -> {
+        ContextCompat.getDrawable(context, this)!!.toBitmap(width = width, height = height)
+    }
 
-        width != null -> {
-            ContextCompat.getDrawable(context, this)!!.toBitmap(width = width)
-        }
+    width != null -> {
+        ContextCompat.getDrawable(context, this)!!.toBitmap(width = width)
+    }
 
-        height != null -> {
-            ContextCompat.getDrawable(context, this)!!.toBitmap(height = height)
-        }
+    height != null -> {
+        ContextCompat.getDrawable(context, this)!!.toBitmap(height = height)
+    }
 
-        else -> {
-            ContextCompat.getDrawable(context, this)!!.toBitmap()
-        }
-
+    else -> {
+        ContextCompat.getDrawable(context, this)!!.toBitmap()
     }
 }
 
@@ -132,50 +123,46 @@ suspend fun @receiver:DrawableRes Int.getBitmapFromResource(
     width: Int? = null,
     height: Int? = null,
     @ColorInt color: Int? = null
-): Bitmap {
-    return withContext(Dispatchers.Default) {
-        ContextCompat.getDrawable(context, this@getBitmapFromResource)?.let {
-            val drawable: Drawable = it
-            val bitmap: Bitmap = Bitmap.createBitmap(
-                width ?: drawable.intrinsicWidth,
-                height ?: drawable.intrinsicHeight, Bitmap.Config.ARGB_8888
-            )
-            val canvas = Canvas(bitmap)
-            // TO ANTIALIAS //
-            val ratio = drawable.intrinsicWidth / drawable.intrinsicHeight.toFloat()
-            val boundWidth = when {
-                ratio < FLOAT_ONE -> bitmap.height * ratio
-                else -> bitmap.width.toFloat()
-            }
-            val boundHeight = when {
-                ratio < FLOAT_ONE -> bitmap.height.toFloat()
-                else -> bitmap.width / ratio
-            }
-            canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
-            drawable.setBounds(
-                (bitmap.width / 2f - boundWidth / 2f).toInt(),
-                (bitmap.height / 2f - boundHeight / 2f).toInt(),
-                (bitmap.width / 2f + boundWidth / 2f).toInt(),
-                (bitmap.height / 2f + boundHeight / 2f).toInt()
-            )
-            color?.also { col -> drawable.setTint(col) }
-            drawable.draw(canvas)
-            bitmap
-        } ?: throw Exception("Drawable not found")
-    }
+): Bitmap = withContext(Dispatchers.Default) {
+    ContextCompat.getDrawable(context, this@getBitmapFromResource)?.let {
+        val drawable: Drawable = it
+        val bitmap: Bitmap = Bitmap.createBitmap(
+            width ?: drawable.intrinsicWidth,
+            height ?: drawable.intrinsicHeight,
+            Bitmap.Config.ARGB_8888
+        )
+        val canvas = Canvas(bitmap)
+        // TO ANTIALIAS //
+        val ratio = drawable.intrinsicWidth / drawable.intrinsicHeight.toFloat()
+        val boundWidth = when {
+            ratio < FLOAT_ONE -> bitmap.height * ratio
+            else -> bitmap.width.toFloat()
+        }
+        val boundHeight = when {
+            ratio < FLOAT_ONE -> bitmap.height.toFloat()
+            else -> bitmap.width / ratio
+        }
+        canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
+        drawable.setBounds(
+            (bitmap.width / 2f - boundWidth / 2f).toInt(),
+            (bitmap.height / 2f - boundHeight / 2f).toInt(),
+            (bitmap.width / 2f + boundWidth / 2f).toInt(),
+            (bitmap.height / 2f + boundHeight / 2f).toInt()
+        )
+        color?.also { col -> drawable.setTint(col) }
+        drawable.draw(canvas)
+        bitmap
+    } ?: throw Exception("Drawable not found")
 }
 
 suspend fun @receiver:DrawableRes Int.getBitmapCropFromResource(
     context: Context,
     width: Int? = null,
     height: Int? = null
-): Bitmap {
-
-    return withContext(Dispatchers.Default) {
-        val bitmap: Bitmap =
-            BitmapFactory.decodeResource(context.resources, this@getBitmapCropFromResource)
-        bitmap.resizeCropSquare()
-    }
+): Bitmap = withContext(Dispatchers.Default) {
+    val bitmap: Bitmap =
+        BitmapFactory.decodeResource(context.resources, this@getBitmapCropFromResource)
+    bitmap.resizeCropSquare()
 }
 
 fun @receiver:AnyRes Int.toUriRes(context: Context, type: EmaUriType): EmaUriRes {

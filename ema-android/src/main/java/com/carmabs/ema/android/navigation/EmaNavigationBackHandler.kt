@@ -16,7 +16,7 @@ import com.carmabs.ema.core.model.EmaBackHandlerStrategy
  */
 class EmaNavigationBackHandler(
     private val activity: ComponentActivity,
-    private val lifecycleOwner:LifecycleOwner,
+    private val lifecycleOwner: LifecycleOwner,
     private val listener: () -> EmaBackHandlerStrategy
 ) {
     private val backPressedCallback: OnBackPressedCallback
@@ -29,15 +29,15 @@ class EmaNavigationBackHandler(
                     is EmaBackHandlerStrategy.ContinueOnBackPressed -> {
                         remove()
                         activity.onBackPressedDispatcher.onBackPressed()
-                        if (!backHandlingEnabled.removeBackHandler)
+                        if (!backHandlingEnabled.removeBackHandler) {
                             activity.onBackPressedDispatcher.addCallback(
                                 lifecycleOwner,
                                 this
                             )
+                        }
                     }
 
                     EmaBackHandlerStrategy.Cancelled -> {
-
                     }
                 }
             }
@@ -51,12 +51,12 @@ class EmaNavigationBackHandler(
 
     fun restore() {
         if (shouldRestore) {
-            activity.onBackPressedDispatcher.addCallback(lifecycleOwner,backPressedCallback)
+            activity.onBackPressedDispatcher.addCallback(lifecycleOwner, backPressedCallback)
             shouldRestore = false
         }
     }
 
     internal fun add() {
-        activity.onBackPressedDispatcher.addCallback(lifecycleOwner,backPressedCallback)
+        activity.onBackPressedDispatcher.addCallback(lifecycleOwner, backPressedCallback)
     }
 }

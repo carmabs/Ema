@@ -11,12 +11,13 @@ rootProject.ext {
             artifactCoreId         : 'ema-core',
             artifactAndroidId      : 'ema-android',
             artifactComposeId      : 'ema-compose',
+            artifactAndroidViewId  : 'ema-android-view',
             javaVersion            : JavaVersion.VERSION_21,
             kotlinJvmTarget        : "21",
             testRunner             : "androidx.test.runner.AndroidJUnitRunner",
             resourceExclusions     : ['META-INF/kotlinx-io.kotlin_module', 'META-INF/ema-android_debug.kotlin_module'],
             namespaceAndroid       : 'com.carmabs.ema.android',
             namespaceCompose       : 'com.carmabs.ema.compose',
-            namespaceTestingAndroid: 'com.carmabs.ema.testing.android'
+            namespaceAndroidView   : 'com.carmabs.ema.android.view'
     ]
 }

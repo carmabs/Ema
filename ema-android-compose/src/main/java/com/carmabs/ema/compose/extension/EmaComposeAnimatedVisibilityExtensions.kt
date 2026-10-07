@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.filter
  */
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun AnimatedVisibilityScope.setOnVisibleListener(listener:suspend ()->Unit){
+fun AnimatedVisibilityScope.setOnVisibleListener(listener: suspend () -> Unit) {
     LaunchedEffect(key1 = Unit) {
         snapshotFlow { transition.currentState }
             .filter { it == EnterExitState.Visible }
@@ -31,7 +31,7 @@ fun AnimatedVisibilityScope.setOnVisibleListener(listener:suspend ()->Unit){
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun AnimatedVisibilityScope.setOnBeforeVisibleListener(listener:suspend ()->Unit){
+fun AnimatedVisibilityScope.setOnBeforeVisibleListener(listener: suspend () -> Unit) {
     LaunchedEffect(key1 = Unit) {
         snapshotFlow { transition.currentState }
             .filter { it == EnterExitState.PreEnter }
@@ -43,7 +43,7 @@ fun AnimatedVisibilityScope.setOnBeforeVisibleListener(listener:suspend ()->Unit
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun AnimatedVisibilityScope.setOnHideListener(listener:suspend ()->Unit){
+fun AnimatedVisibilityScope.setOnHideListener(listener: suspend () -> Unit) {
     LaunchedEffect(key1 = Unit) {
         snapshotFlow { transition.targetState }
             .filter { it == EnterExitState.PostExit }

@@ -1,0 +1,5 @@
+# Commits that only format the code, ignored by git blame:
+# git config blame.ignoreRevsFile .git-blame-ignore-revs
+
+# Format the code with Spotless
+b5533b5778620c9c550589726a724d1432982744

@@ -14,10 +14,8 @@ val User.fullName: String
 val User.initials: String
     get() = initialsOf(name, surname)
 
-fun fullNameOf(vararg parts: String): String =
-    parts.filter { it.isNotBlank() }.joinToString(" ") { it.trim() }
+fun fullNameOf(vararg parts: String): String = parts.filter { it.isNotBlank() }.joinToString(" ") { it.trim() }
 
-fun initialsOf(vararg parts: String): String =
-    parts.filter { it.isNotBlank() }
-        .take(2)
-        .joinToString("") { it.trim().first().uppercase() }
+fun initialsOf(vararg parts: String): String = parts.filter { it.isNotBlank() }
+    .take(2)
+    .joinToString("") { it.trim().first().uppercase() }

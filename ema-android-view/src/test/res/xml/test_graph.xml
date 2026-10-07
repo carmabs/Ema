@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/test_graph"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.carmabs.ema.android.ui.HomeFragment"
+        android:label="Home" />
+
+    <fragment
+        android:id="@+id/detailFragment"
+        android:name="com.carmabs.ema.android.ui.DetailFragment"
+        android:label="Detail" />
+</navigation>

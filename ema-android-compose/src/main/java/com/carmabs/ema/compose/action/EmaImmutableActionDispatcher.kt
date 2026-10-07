@@ -22,10 +22,9 @@ import kotlinx.coroutines.flow.Flow
 @Immutable
 interface EmaImmutableActionDispatcher<A : EmaAction.Screen> : EmaActionDispatcher<A>
 
-fun <A : EmaAction.Screen> EmaActionDispatcher<A>.toImmutable():EmaImmutableActionDispatcher<A> {
-    return object :EmaImmutableActionDispatcher<A>{
+fun <A : EmaAction.Screen> EmaActionDispatcher<A>.toImmutable(): EmaImmutableActionDispatcher<A> =
+    object : EmaImmutableActionDispatcher<A> {
         override fun dispatch(action: A) {
             this@toImmutable.dispatch(action)
         }
     }
-}

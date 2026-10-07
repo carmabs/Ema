@@ -1,6 +1,15 @@
 package com.carmabs.ema.android.extension
 
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Canvas
+import android.graphics.Matrix
+import android.graphics.Paint
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
+import android.graphics.PorterDuffXfermode
+import android.graphics.Rect
+import android.graphics.RectF
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.util.Size
@@ -9,14 +18,13 @@ import com.carmabs.ema.core.constants.FLOAT_ONE
 import com.carmabs.ema.core.constants.FLOAT_ZERO
 import com.carmabs.ema.core.constants.INT_ONE
 import com.carmabs.ema.core.constants.INT_ZERO
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 import kotlin.math.absoluteValue
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
-
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 /**
  * Created by Carlos Mateo Benito on 2020-07-13.
@@ -63,16 +71,10 @@ fun Bitmap.toByteArray(): ByteArray {
     return stream.toByteArray()
 }
 
-fun Bitmap.copyDefault(mutable: Boolean = true): Bitmap {
-    return copy(config!!, mutable)
-}
+fun Bitmap.copyDefault(mutable: Boolean = true): Bitmap = copy(config!!, mutable)
 
-suspend fun ByteArray.toBitmap(
-    width: Int? = null,
-    height: Int? = null,
-    @ColorInt colorTint: Int? = null
-): Bitmap {
-    return withContext(Dispatchers.Default) {
+suspend fun ByteArray.toBitmap(width: Int? = null, height: Int? = null, @ColorInt colorTint: Int? = null): Bitmap =
+    withContext(Dispatchers.Default) {
         val resultBitmap = if (width != null && height != null) {
             Bitmap.createScaledBitmap(
                 BitmapFactory.decodeByteArray(
@@ -82,7 +84,11 @@ suspend fun ByteArray.toBitmap(
                     BitmapFactory.Options().apply {
                         outHeight = height
                         outWidth = width
-                    }), width, height, true
+                    }
+                ),
+                width,
+                height,
+                true
             )
         } else {
             BitmapFactory.decodeByteArray(this@toBitmap, 0, size)
@@ -96,7 +102,6 @@ suspend fun ByteArray.toBitmap(
             tintBitmap
         } ?: resultBitmap
     }
-}
 
 fun Bitmap.resizeCropSquare(): Bitmap {
     val dstBmp = if (width >= height) {
@@ -106,8 +111,7 @@ fun Bitmap.resizeCropSquare(): Bitmap {
             0,
             this.height,
             this.height
-        );
-
+        )
     } else {
         Bitmap.createBitmap(
             this,
@@ -115,13 +119,12 @@ fun Bitmap.resizeCropSquare(): Bitmap {
             this.height / 2 - this.width / 2,
             this.width,
             this.width
-        );
+        )
     }
     return dstBmp
 }
 
 fun Bitmap.resizeCrop(width: Int, height: Int): Bitmap {
-
     val bitmap = this
     val originalWidth = bitmap.width
     val originalHeight = bitmap.height
@@ -135,15 +138,13 @@ fun Bitmap.resizeCrop(width: Int, height: Int): Bitmap {
 
     val cropY = (newHeight - height).absoluteValue / 2
 
-    val scaledBitmap =        Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true)
+    val scaledBitmap = Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true)
 
     return if (newHeight < height) {
         scaledBitmap
-    }
-    else{
+    } else {
         Bitmap.createBitmap(scaledBitmap, INT_ZERO, cropY, width, height)
     }
-
 }
 
 /**
@@ -182,15 +183,17 @@ fun Drawable.toBitmapWithMaxSize(maxSize: Size? = null): Bitmap {
             return bitmapDrawable.bitmap
         }
 
-        val maxHeight = if (maxSize.height > intrinsicHeight)
+        val maxHeight = if (maxSize.height > intrinsicHeight) {
             intrinsicHeight
-        else
+        } else {
             maxSize.height
+        }
 
-        val maxWidth = if (maxSize.width > intrinsicWidth)
+        val maxWidth = if (maxSize.width > intrinsicWidth) {
             intrinsicWidth
-        else
+        } else {
             maxSize.width
+        }
 
         val originBitmap = bitmap
         val originRatio = intrinsicWidth / intrinsicHeight.toFloat()

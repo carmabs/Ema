@@ -3,6 +3,9 @@ package com.carmabs.ema.android.permission
 import androidx.activity.result.ActivityResultLauncher
 import com.carmabs.ema.core.manager.PermissionState
 import com.carmabs.ema.core.model.emaFlowSingleEvent
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.first
 
 /**
@@ -14,9 +17,10 @@ import kotlinx.coroutines.flow.first
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-class EmaContractSinglePermission(shouldShowRequestPermissionRationaleFunction: (String) -> Boolean) : EmaContractPermission(
-    shouldShowRequestPermissionRationaleFunction
-) {
+class EmaContractSinglePermission(shouldShowRequestPermissionRationaleFunction: (String) -> Boolean) :
+    EmaContractPermission(
+        shouldShowRequestPermissionRationaleFunction
+    ) {
 
     private var permissionId: String? = null
     private var flow = emaFlowSingleEvent<PermissionState>()
@@ -28,12 +32,12 @@ class EmaContractSinglePermission(shouldShowRequestPermissionRationaleFunction: 
         Unit
     }
 
-    suspend fun launch(
-        permission: String,
-        permissionRequest: ActivityResultLauncher<String>,
-    ): PermissionState {
-        permissionId = permission
-        permissionRequest.launch(permission)
-        return flow.first()
-    }
+    suspend fun launch(permission: String, permissionRequest: ActivityResultLauncher<String>): PermissionState =
+        coroutineScope {
+            // Subscribe before launching: the result can arrive synchronously, like when the system cancels the request
+            val result = async(start = CoroutineStart.UNDISPATCHED) { flow.first() }
+            permissionId = permission
+            permissionRequest.launch(permission)
+            result.await()
+        }
 }

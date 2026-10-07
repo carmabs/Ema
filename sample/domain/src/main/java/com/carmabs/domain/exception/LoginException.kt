@@ -10,4 +10,4 @@ package com.carmabs.domain.exception
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
 
-data class LoginException(val message:String= "Login failed, please retry it")
+data class LoginException(val message: String = "Login failed, please retry it")

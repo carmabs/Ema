@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="test_greeting">Hello %1$s</string>
+    <color name="test_red">#FFFF0000</color>
+    <plurals name="test_items">
+        <item quantity="one">%d item</item>
+        <item quantity="other">%d items</item>
+    </plurals>
+</resources>

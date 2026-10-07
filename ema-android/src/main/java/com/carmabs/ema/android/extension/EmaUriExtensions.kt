@@ -22,18 +22,15 @@ import java.io.InputStream
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
 @SuppressLint("DiscouragedApi")
-fun EmaUriRes.getResourceId(context: Context, type: String = "id"): Int {
-    return context.resources.getIdentifier(
+fun EmaUriRes.getResourceId(context: Context, type: String = this.type.resourceType): Int =
+    context.resources.getIdentifier(
         Uri.parse(value).lastPathSegment,
         type,
         context.packageName
     )
-}
 
 @SuppressLint("DiscouragedApi")
-fun EmaUriRes.requireResourceDrawable(context: Context): Int {
-    return getResourceId(context, "drawable")
-}
+fun EmaUriRes.requireResourceDrawable(context: Context): Int = getResourceId(context, "drawable")
 
 inline fun EmaUriRes.onDrawable(context: Context, onAction: Drawable.() -> Unit): EmaUriRes {
     if (type == EmaUriType.Drawable) {
@@ -54,7 +51,6 @@ inline fun EmaUriRes.onBitmap(
     }
 
     return this
-
 }
 
 inline fun EmaUriRes.onColor(context: Context, action: Int.() -> Unit): EmaUriRes {
@@ -64,25 +60,16 @@ inline fun EmaUriRes.onColor(context: Context, action: Int.() -> Unit): EmaUriRe
     return this
 }
 
-inline fun EmaUriRes.onString(
-    context: Context,
-    vararg args: Any?,
-    action: String.() -> Unit
-): EmaUriRes {
+inline fun EmaUriRes.onString(context: Context, vararg args: Any?, action: String.() -> Unit): EmaUriRes {
     if (type == EmaUriType.String) {
-        getResourceId(context).getFormattedString(context, args).action()
+        getResourceId(context).getFormattedString(context, *args).action()
     }
     return this
 }
 
-inline fun EmaUriRes.onPlural(
-    context: Context,
-    times: Int,
-    vararg args: Any?,
-    action: String.() -> Unit
-): EmaUriRes {
+inline fun EmaUriRes.onPlural(context: Context, times: Int, vararg args: Any?, action: String.() -> Unit): EmaUriRes {
     if (type == EmaUriType.Plural) {
-        getResourceId(context).getFormattedPluralsString(context, times, args).action()
+        getResourceId(context).getFormattedPluralsString(context, times, *args).action()
     }
     return this
 }
@@ -114,12 +101,21 @@ fun EmaUriRes.requireDrawable(context: Context): Drawable {
     return (drawable ?: vectorDrawable!!)
 }
 
-fun EmaUriRes.requireBitmap(
-    context: Context,
-    width: Int? = null,
-    height: Int? = null
-): Bitmap {
+fun EmaUriRes.requireBitmap(context: Context, width: Int? = null, height: Int? = null): Bitmap {
     val drawable = requireDrawable(context)
     val dimensions = drawable.fitInTargetMaxSizeProportionally(width, height)
     return drawable.toBitmap(dimensions.first, dimensions.second)
 }
+
+/**
+ * Android resource type of each kind of uri resource
+ */
+private val EmaUriType.resourceType: String
+    get() = when (this) {
+        EmaUriType.Color -> "color"
+        EmaUriType.Drawable -> "drawable"
+        EmaUriType.String -> "string"
+        EmaUriType.Plural -> "plurals"
+        EmaUriType.Raw -> "raw"
+        EmaUriType.Asset -> "id"
+    }

@@ -15,11 +15,9 @@ object EmaScreenProvider {
     fun <S : EmaState, E : EmaEvent> provideComposableViewModel(
         viewModel: EmaViewModel<S, E>,
         savedStateHandle: SavedStateHandle?
-    ): EmaAndroidViewModel<S, E> {
-        return viewModel(
-            modelClass = EmaAndroidViewModel::class.java,
-            key = viewModel.id,
-            factory = EmaViewModelFactory(viewModel, savedStateHandle)
-        ) as EmaAndroidViewModel<S, E>
-    }
+    ): EmaAndroidViewModel<S, E> = viewModel(
+        modelClass = EmaAndroidViewModel::class.java,
+        key = viewModel.id,
+        factory = EmaViewModelFactory(viewModel, savedStateHandle)
+    ) as EmaAndroidViewModel<S, E>
 }

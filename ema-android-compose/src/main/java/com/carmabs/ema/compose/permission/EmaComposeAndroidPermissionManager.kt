@@ -10,7 +10,6 @@ import com.carmabs.ema.android.permission.EmaContractMultiplePermission
 import com.carmabs.ema.android.permission.EmaContractSinglePermission
 import com.carmabs.ema.compose.extension.activity
 import com.carmabs.ema.compose.extension.isInPreview
-import com.carmabs.ema.core.constants.INT_ZERO
 import com.carmabs.ema.core.manager.EmaPermissionManager
 import com.carmabs.ema.core.manager.PermissionState
 import com.carmabs.ema.core.model.EmaMultiplePermissionRequest
@@ -28,9 +27,9 @@ import kotlinx.coroutines.CoroutineScope
  */
 @Composable
 fun rememberEmaPermissionManager(): EmaPermissionManager {
-    val permissionManager: EmaPermissionManager = if (isInPreview())
+    val permissionManager: EmaPermissionManager = if (isInPreview()) {
         EmaPreviewPermissionManager
-    else {
+    } else {
         val context = LocalContext.current
 
         val activity = LocalContext.activity
@@ -70,58 +69,34 @@ fun rememberEmaPermissionManager(): EmaPermissionManager {
 }
 
 private object EmaPreviewPermissionManager : EmaPermissionManager {
-    override suspend fun requestPermission(permission: String): PermissionState {
-        return PermissionState.GRANTED
-    }
+    override suspend fun requestPermission(permission: String): PermissionState = PermissionState.GRANTED
 
-    override suspend fun requestMultiplePermission(vararg permission: String): Map<String, PermissionState> {
-        return mapOf(Pair(permission[INT_ZERO], PermissionState.GRANTED))
-    }
+    override suspend fun requestMultiplePermission(vararg permission: String): Map<String, PermissionState> =
+        permission.associateWith {
+            PermissionState.GRANTED
+        }
 
-    override fun isPermissionGranted(permission: String): PermissionState {
-        return PermissionState.GRANTED
-    }
+    override fun isPermissionGranted(permission: String): PermissionState = PermissionState.GRANTED
 
-    override fun areAllPermissionsGranted(vararg permission: String): Boolean {
-        return true
-    }
+    override fun areAllPermissionsGranted(vararg permission: String): Boolean = true
 
-    override fun shouldShowRequestPermissionRationale(permission: String): Boolean {
-        return true
-    }
+    override fun shouldShowRequestPermissionRationale(permission: String): Boolean = true
 
-    override suspend fun requestCoarseLocationPermission(): PermissionState {
-        return PermissionState.GRANTED
-    }
+    override suspend fun requestCoarseLocationPermission(): PermissionState = PermissionState.GRANTED
 
-    override suspend fun requestFineLocationPermission(): PermissionState {
-        return PermissionState.GRANTED
-    }
+    override suspend fun requestFineLocationPermission(): PermissionState = PermissionState.GRANTED
 
-    override fun isLocationFineGranted(): PermissionState {
-        return PermissionState.GRANTED
-    }
+    override fun isLocationFineGranted(): PermissionState = PermissionState.GRANTED
 
-    override fun isLocationBackgroundGranted(): PermissionState {
-        return PermissionState.GRANTED
-    }
+    override fun isLocationBackgroundGranted(): PermissionState = PermissionState.GRANTED
 
-    override fun isLocationCoarseGranted(): PermissionState {
-        return PermissionState.GRANTED
-    }
+    override fun isLocationCoarseGranted(): PermissionState = PermissionState.GRANTED
 
-    override fun handleRequest(
-        request: EmaPermissionRequest,
-        scope: CoroutineScope,
-        permission: String,
-    ) {
+    override fun handleRequest(request: EmaPermissionRequest, scope: CoroutineScope, permission: String) {
         request.onPermissionResponse.invoke(PermissionState.GRANTED)
     }
 
-    override fun responseRequest(
-        request: EmaPermissionRequest,
-        permissionState: PermissionState
-    ) {
+    override fun responseRequest(request: EmaPermissionRequest, permissionState: PermissionState) {
         request.onPermissionResponse.invoke(permissionState)
     }
 
@@ -133,10 +108,7 @@ private object EmaPreviewPermissionManager : EmaPermissionManager {
         request.onPermissionResponse.invoke(permission.associateWith { PermissionState.GRANTED })
     }
 
-    override fun responseRequest(
-        request: EmaMultiplePermissionRequest,
-        permissionMap: Map<String, PermissionState>
-    ) {
+    override fun responseRequest(request: EmaMultiplePermissionRequest, permissionMap: Map<String, PermissionState>) {
         request.onPermissionResponse.invoke(permissionMap)
     }
 }

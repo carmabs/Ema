@@ -21,14 +21,12 @@ fun <D : EmaEvent> rememberEmaNodeNavigator(
     return navigator
 }
 
-abstract class EmaComposableNodeNavigator<D : EmaEvent>(
-    activity: Activity,
-    navController: NavHostController
-) : EmaComposableNavigator(activity, navController) {
+abstract class EmaComposableNodeNavigator<D : EmaEvent>(activity: Activity, navController: NavHostController) :
+    EmaComposableNavigator(activity, navController) {
 
     private var previousNavigationNode: EmaNavigationNode<D>? = null
 
-    fun navigate(navigationNode: EmaNavigationNode<D>,onNavigated:((D)->Unit)?=null) {
+    fun navigate(navigationNode: EmaNavigationNode<D>, onNavigated: ((D) -> Unit)? = null) {
         if (navigationNode.id != previousNavigationNode?.id) {
             val destination = navigationNode.value
             if (previousNavigationNode?.hasPreviousNode(node = navigationNode) == true) {

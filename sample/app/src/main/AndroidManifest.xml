@@ -14,7 +14,7 @@
         android:theme="@style/AppTheme.NoActionBar"
         tools:ignore="GoogleAppIndexingWarning">
 
-        <activity android:name="com.carmabs.ema.presentation.ui.splash.SplashActivity"
+        <activity android:name="com.carmabs.ema.ui.splash.SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -22,7 +22,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="com.carmabs.ema.presentation.ui.profile.ProfileActivity"
+        <activity android:name="com.carmabs.ema.ui.profile.ProfileActivity"
             android:exported="false">
         </activity>
     </application>

@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.library)
     id 'maven-publish'
+    alias(libs.plugins.kover)
 }
 
 android {
@@ -29,6 +30,7 @@ android {
     kotlin {
         compilerOptions {
             jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.fromTarget(rootProject.emaVersioning.kotlinJvmTarget)
+            optIn.add("com.carmabs.ema.core.EmaInternalApi")
         }
     }
 
@@ -38,9 +40,15 @@ android {
         }
     }
 
-
-    buildFeatures {
-        viewBinding = true
+    testOptions {
+        unitTests {
+            // Robolectric runs the Android code of the tests on the JVM with the module resources
+            includeAndroidResources = true
+            all {
+                // Robolectric accesses JDK internals
+                jvmArgs '--add-opens=java.base/java.io=ALL-UNNAMED', '--add-opens=java.base/java.lang=ALL-UNNAMED', '--add-exports=java.base/jdk.internal.access=ALL-UNNAMED'
+            }
+        }
     }
 
     publishing {
@@ -52,26 +60,24 @@ android {
 
 dependencies {
 
-    implementation libs.kotlin.reflect
-    implementation libs.gson
-
-    // Kotlin
-    api libs.androidx.fragment.ktx
-    api libs.koin.android
-
-    //Navigation
-    api libs.androidx.navigation.fragment.ktx
-    api libs.androidx.navigation.ui.ktx
+    // Activity, results and back handling
+    api libs.androidx.activity.ktx
 
     //Architecture components
     api libs.androidx.lifecycle.runtime.ktx
     api libs.androidx.lifecycle.viewmodel.ktx
+    api libs.androidx.lifecycle.viewmodel.savedstate
 
-    //UI
-    api libs.androidx.constraintlayout
-    api libs.material
+    implementation libs.androidx.vectordrawable
 
     api project(path: ':ema-core')
+    api libs.kotlinx.coroutines.android
+
+    testImplementation libs.junit
+    testImplementation libs.kotlin.test.junit
+    testImplementation libs.robolectric
+    testImplementation libs.androidx.test.core
+    testImplementation libs.kotlinx.coroutines.test
 }
 
 afterEvaluate {

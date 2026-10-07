@@ -17,17 +17,18 @@ import com.carmabs.ema.core.viewmodel.EmaViewModel
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-open class EmaAndroidViewModel<S:EmaState,E: EmaEvent>(
-    val emaViewModel:EmaViewModel<S,E>,
+open class EmaAndroidViewModel<S : EmaState, E : EmaEvent>(
+    val emaViewModel: EmaViewModel<S, E>,
     val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     init {
         emaViewModel.setScope(viewModelScope)
     }
+
     @CallSuper
     override fun onCleared() {
-       emaViewModel.onCleared()
+        emaViewModel.onCleared()
         super.onCleared()
     }
 }

@@ -1,38 +1,99 @@
 plugins {
-    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.kotlin.serialization)
     id 'maven-publish'
+    alias(libs.plugins.kover)
 }
 
-java {
-    sourceCompatibility = rootProject.emaVersioning.javaVersion
-    targetCompatibility = rootProject.emaVersioning.javaVersion
+group = rootProject.emaVersioning.groupId
+version = rootProject.emaVersioning.versionName
+
+// Targets to compile. All of them by default (needed to publish). For faster local builds set
+// ema.targets in local.properties (not versioned), or pass -Pema.targets, with a comma separated list of:
+// all, jvm, js, wasm, apple, linux, windows, androidNative. JVM is always built because the Android modules use it.
+def emaTargetGroups = ['jvm', 'js', 'wasm', 'apple', 'linux', 'windows', 'androidNative']
+def emaLocalProperties = new Properties()
+def emaLocalPropertiesFile = file('../local.properties')
+if (emaLocalPropertiesFile.exists()) {
+    emaLocalPropertiesFile.withInputStream { emaLocalProperties.load(it) }
 }
+def emaTargetsValue = (findProperty('ema.targets') ?: emaLocalProperties.getProperty('ema.targets') ?: 'all').toString()
+def emaRequestedTargets = emaTargetsValue.split(',')*.trim().findAll { !it.isEmpty() }
+if (emaRequestedTargets.contains('all')) {
+    emaRequestedTargets = emaTargetGroups
+}
+def emaUnknownTargets = emaRequestedTargets - emaTargetGroups
+if (!emaUnknownTargets.isEmpty()) {
+    throw new GradleException("Unknown ema.targets: ${emaUnknownTargets.join(', ')}. Valid values: all, ${emaTargetGroups.join(', ')}")
+}
+def emaTargets = (emaRequestedTargets + 'jvm') as Set
 
 kotlin {
-    compilerOptions {
-        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.fromTarget(rootProject.emaVersioning.kotlinJvmTarget)
+    // All the code lives in commonMain, so every target shares the same sources
+    jvm {
+        compilerOptions {
+            jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.fromTarget(rootProject.emaVersioning.kotlinJvmTarget)
+        }
     }
-}
+    if ('js' in emaTargets) {
+        js {
+            browser()
+            nodejs()
+        }
+    }
+    if ('wasm' in emaTargets) {
+        wasmJs {
+            browser()
+            nodejs()
+        }
+        wasmWasi {
+            nodejs()
+        }
+    }
+    if ('apple' in emaTargets) {
+        iosArm64()
+        iosSimulatorArm64()
+        iosX64()
+        macosArm64()
+        macosX64()
+        watchosArm32()
+        watchosArm64()
+        watchosDeviceArm64()
+        watchosSimulatorArm64()
+        watchosX64()
+        tvosArm64()
+        tvosSimulatorArm64()
+        tvosX64()
+    }
+    if ('linux' in emaTargets) {
+        linuxX64()
+        linuxArm64()
+    }
+    if ('windows' in emaTargets) {
+        mingwX64()
+    }
+    if ('androidNative' in emaTargets) {
+        androidNativeArm32()
+        androidNativeArm64()
+        androidNativeX86()
+        androidNativeX64()
+    }
 
-dependencies {
-    api libs.kotlin.stdlib
-    api libs.kotlinx.coroutines.android
-    api libs.kotlinx.serialization.json
-    implementation libs.kotlin.reflect
-    implementation libs.androidx.annotation
-
-    testImplementation libs.junit
-}
-
-afterEvaluate {
-    publishing {
-        publications {
-            release(MavenPublication) {
-                from components["java"]
-                groupId = rootProject.emaVersioning.groupId
-                artifactId = rootProject.emaVersioning.artifactCoreId
-                version = rootProject.emaVersioning.versionName
+    sourceSets {
+        all {
+            languageSettings.optIn("com.carmabs.ema.core.EmaInternalApi")
+        }
+        commonMain {
+            dependencies {
+                api libs.kotlinx.coroutines.core
+                api libs.kotlinx.serialization.json
+                api libs.kotlinx.datetime
+            }
+        }
+        commonTest {
+            dependencies {
+                implementation libs.kotlin.test
+                implementation libs.kotlinx.coroutines.test
             }
         }
     }
