@@ -1,7 +1,7 @@
 package com.carmabs.ema.core.usecase
 
+import com.carmabs.ema.core.Ema
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 
@@ -24,7 +24,7 @@ abstract class EmaUseCase<I, O>  {
      * Executes a function inside a background thread provided by dispatcher
      * @return the object with the return value
      */
-    suspend operator fun invoke(input: I, dispatcher: CoroutineDispatcher = Dispatchers.IO): O {
+    suspend operator fun invoke(input: I, dispatcher: CoroutineDispatcher = Ema.configuration.useCaseBackgroundDispatcher): O {
         return withContext(dispatcher) { useCaseFunction(input) }
     }
 

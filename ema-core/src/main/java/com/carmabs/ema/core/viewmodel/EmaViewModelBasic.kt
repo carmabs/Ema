@@ -1,15 +1,14 @@
 package com.carmabs.ema.core.viewmodel
 
+import com.carmabs.ema.core.Ema
 import com.carmabs.ema.core.action.DefaultEmaEventDispatcher
 import com.carmabs.ema.core.action.EmaEventDispatcher
 import com.carmabs.ema.core.broadcast.BackBroadcastId
 import com.carmabs.ema.core.broadcast.backBroadcastId
 import com.carmabs.ema.core.concurrency.EmaMainScope
-import com.carmabs.ema.core.constants.STRING_EMPTY
 import com.carmabs.ema.core.extension.checkNull
 import com.carmabs.ema.core.initializer.EmaInitializer
-import com.carmabs.ema.core.model.EmaApplicationConfig
-import com.carmabs.ema.core.model.EmaApplicationConfigProvider
+import com.carmabs.ema.core.model.EmaConfiguration
 import com.carmabs.ema.core.model.EmaFunctionResultHandler
 import com.carmabs.ema.core.model.EmaSideEffectConfig
 import com.carmabs.ema.core.model.reflection.EmaReflection
@@ -17,6 +16,7 @@ import com.carmabs.ema.core.model.reflection.EmaReflectionData
 import com.carmabs.ema.core.model.reflection.EmaReflectionException
 import com.carmabs.ema.core.state.EmaEvent
 import com.carmabs.ema.core.state.EmaState
+import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
@@ -24,7 +24,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlin.coroutines.CoroutineContext
 
 /**
  * View model to handle view states.
@@ -44,7 +43,7 @@ abstract class EmaViewModelBasic<S : EmaState, E : EmaEvent>(
     /**
      * Ema configuration
      */
-    private val config: EmaApplicationConfig = EmaApplicationConfigProvider.instance
+    private val config: EmaConfiguration = Ema.configuration
 
     /**
      * SideEffect configuration
@@ -170,6 +169,8 @@ abstract class EmaViewModelBasic<S : EmaState, E : EmaEvent>(
      * be called through this method with [action] function
      * @param action is the function that will be executed in background
      * @param dispatcher where the useCase is launched by default
+     * @param logName name reported as method name in [EmaReflection] for the default actions of
+     * [EmaSideEffectConfig]. If it is null, [EmaSideEffectConfig.methodNameResolver] is used
      * @return The EmaUseCaseResult where you can handle the result with the methods
      * - onSuccess when the result of action function is successful
      * - onError when the action function has thrown an error
@@ -179,14 +180,16 @@ abstract class EmaViewModelBasic<S : EmaState, E : EmaEvent>(
     protected fun <T> sideEffect(
         dispatcher: CoroutineContext = this.scope.coroutineContext,
         throwException: Boolean = shouldThrowException(),
+        logName: String? = null,
         action: suspend CoroutineScope.() -> T
     ): EmaFunctionResultHandler<T> {
-        return generateResultHandler(dispatcher, throwException, action)
+        return generateResultHandler(dispatcher, throwException, logName, action)
     }
 
     private fun <T> generateResultHandler(
         dispatcher: CoroutineContext,
         throwException: Boolean,
+        logName: String?,
         action: suspend CoroutineScope.() -> T
     ) = EmaFunctionResultHandler(
         scope = scope,
@@ -195,7 +198,7 @@ abstract class EmaViewModelBasic<S : EmaState, E : EmaEvent>(
         throwExceptions = throwException,
         successDefaultAction = sideEffectConfig.defaultSuccessAction?.let { success ->
             {
-                success.invoke(EmaReflectionData(generateEmaReflection(action), it))
+                success.invoke(EmaReflectionData(generateEmaReflection(action, logName), it))
             }
         },
         errorDefaultAction = when (val exceptionPolicy = sideEffectConfig.exceptionPolicy) {
@@ -204,7 +207,8 @@ abstract class EmaViewModelBasic<S : EmaState, E : EmaEvent>(
                     exceptionPolicy.defaultAction?.invoke(
                         EmaReflectionException(
                             generateEmaReflection(
-                                action
+                                action,
+                                logName
                             ), it
                         )
                     )
@@ -215,18 +219,19 @@ abstract class EmaViewModelBasic<S : EmaState, E : EmaEvent>(
         },
         finishDefaultAction = sideEffectConfig.defaultFinishAction?.let {
             {
-                it.invoke(generateEmaReflection(action))
+                it.invoke(generateEmaReflection(action, logName))
             }
         }
     )
 
-    private fun <T> generateEmaReflection(action: suspend CoroutineScope.() -> T): EmaReflection {
-        val delimiter = "$"
+    private fun <T> generateEmaReflection(
+        action: suspend CoroutineScope.() -> T,
+        logName: String?
+    ): EmaReflection {
         return EmaReflection(
             containerClassName = this::class.java.simpleName,
             containerClassQualifiedName = this::class.qualifiedName.checkNull(this::class.java.name),
-            methodName = action::class.java.name.substringAfter(this::class.java.name)
-                .substringBeforeLast(delimiter, STRING_EMPTY).substringAfter(delimiter)
+            methodName = logName ?: sideEffectConfig.methodNameResolver.resolve(this, action)
         )
     }
 
@@ -234,10 +239,11 @@ abstract class EmaViewModelBasic<S : EmaState, E : EmaEvent>(
         id: String,
         dispatcher: CoroutineContext = this.scope.coroutineContext,
         throwException: Boolean = shouldThrowException(),
+        logName: String? = null,
         action: suspend CoroutineScope.() -> T
     ): EmaFunctionResultHandler<T> {
         singleSideEffectMap[id]?.cancel()
-        val handler = generateResultHandler(dispatcher, throwException, action)
+        val handler = generateResultHandler(dispatcher, throwException, logName, action)
         singleSideEffectMap[id] = handler.job
         return handler
     }

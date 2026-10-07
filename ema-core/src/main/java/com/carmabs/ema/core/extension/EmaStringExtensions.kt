@@ -21,10 +21,6 @@ fun String?.checkNullOrEmpty(defaultValue: String = STRING_EMPTY): String {
     return if(isNullOrEmpty())defaultValue else this
 }
 
-fun String.getFormattedString(vararg data: Any?): String {
-    return String.format(this, *data)
-}
-
 fun String.replaceLast(delimiter: Char, newString: String): String {
     val startString = substringBeforeLast(delimiter).trim()
     val endString = substringAfterLast(delimiter).trim()

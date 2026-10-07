@@ -8,6 +8,7 @@ import android.view.inputmethod.EditorInfo
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import com.carmabs.ema.android.di.injectDirect
+import com.carmabs.ema.android.extension.bindForUpdate
 import com.carmabs.ema.android.extension.setTextWithCursorAtEnd
 import com.carmabs.ema.core.constants.STRING_EMPTY
 import com.carmabs.ema.core.model.EmaText

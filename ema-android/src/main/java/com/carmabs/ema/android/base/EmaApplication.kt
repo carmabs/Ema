@@ -2,7 +2,8 @@ package com.carmabs.ema.android.base
 
 import android.app.Application
 import androidx.annotation.CallSuper
-import com.carmabs.ema.core.model.EmaApplicationConfig
+import com.carmabs.ema.android.configuration.Android
+import com.carmabs.ema.core.model.EmaConfiguration
 
 /**
  * Base [Application] that initializes Ema with [emaConfiguration]. If your application already extends
@@ -12,7 +13,10 @@ import com.carmabs.ema.core.model.EmaApplicationConfig
  */
 abstract class EmaApplication : Application(), EmaApplicationAware {
 
-    abstract val emaConfiguration: EmaApplicationConfig
+    /**
+     * Ema configuration. By default [EmaConfiguration.Android].
+     */
+    open val emaConfiguration: EmaConfiguration = EmaConfiguration.Android
 
     @CallSuper
     override fun onCreate() {

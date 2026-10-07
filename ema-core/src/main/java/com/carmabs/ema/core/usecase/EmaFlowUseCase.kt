@@ -1,7 +1,7 @@
 package com.carmabs.ema.core.usecase
 
+import com.carmabs.ema.core.Ema
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
@@ -27,7 +27,7 @@ abstract class EmaFlowUseCase<I, O>  {
      * Executes a function inside a background thread provided by dispatcher
      * @return the object with the return value
      */
-    operator fun invoke(input: I, dispatcher: CoroutineDispatcher = Dispatchers.IO): Flow<O> {
+    operator fun invoke(input: I, dispatcher: CoroutineDispatcher = Ema.configuration.useCaseBackgroundDispatcher): Flow<O> {
         return useCaseFunction(input).flowOn(dispatcher)
     }
 

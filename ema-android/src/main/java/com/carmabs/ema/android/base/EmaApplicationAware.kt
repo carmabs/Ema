@@ -2,16 +2,13 @@ package com.carmabs.ema.android.base
 
 import android.app.Application
 import com.carmabs.ema.android.di.emaInjectionModule
-import com.carmabs.ema.core.concurrency.EmaScopeDispatcher
-import com.carmabs.ema.core.model.EmaApplicationConfig
-import com.carmabs.ema.core.model.EmaApplicationConfigProvider
-import kotlinx.coroutines.Dispatchers
+import com.carmabs.ema.android.configuration.Android
+import com.carmabs.ema.core.Ema
+import com.carmabs.ema.core.model.EmaConfiguration
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.KoinApplication
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
-import kotlin.reflect.full.functions
-import kotlin.reflect.jvm.javaMethod
 
 /**
  * Initializes Ema without extending [EmaApplication]. Implement it in your own [Application] and call
@@ -22,9 +19,8 @@ import kotlin.reflect.jvm.javaMethod
  */
 interface EmaApplicationAware {
 
-    fun Application.initializeEma(config: EmaApplicationConfig){
-        Class.forName(EmaScopeDispatcher::class.java.name).kotlin.functions.find { it.name == "changeEmaMainDispatcher" }?.javaMethod?.invoke(EmaScopeDispatcher,Dispatchers.Main.immediate)
-        EmaApplicationConfigProvider.init(config)
+    fun Application.initializeEma(config: EmaConfiguration = EmaConfiguration.Android){
+        Ema.init(config)
         startKoin{
             androidContext(this@initializeEma)
 
