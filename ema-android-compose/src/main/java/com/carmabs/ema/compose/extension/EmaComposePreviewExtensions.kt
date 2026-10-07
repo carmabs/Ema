@@ -13,10 +13,7 @@ import androidx.compose.ui.platform.LocalInspectionMode
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
 @Composable
-fun skipForPreview(
-    previewComposable: (@Composable () -> Unit)? = null,
-    skipContent: @Composable () -> Unit
-) {
+fun skipForPreview(previewComposable: (@Composable () -> Unit)? = null, skipContent: @Composable () -> Unit) {
     if (!LocalInspectionMode.current) {
         skipContent.invoke()
     } else {
@@ -28,8 +25,8 @@ fun skipForPreview(
 fun isInPreview() = LocalInspectionMode.current
 
 @Composable
-fun <T> T?.changeForPreview(value: T?) =
-    if (isInPreview()) {
-        value
-    } else
-        this
+fun <T> T?.changeForPreview(value: T?) = if (isInPreview()) {
+    value
+} else {
+    this
+}

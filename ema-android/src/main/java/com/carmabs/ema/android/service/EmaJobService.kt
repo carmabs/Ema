@@ -1,6 +1,5 @@
 package com.carmabs.ema.android.service
 
-
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -11,7 +10,6 @@ import androidx.core.app.JobIntentService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-
 
 /**
  * Created by Carlos Mateo Benito on 18/03/2021.
@@ -35,10 +33,10 @@ abstract class EmaJobService : JobIntentService() {
 
         fun enqueueWork(
             context: Context,
-            applicationId:String,
-            classNamePath:String,
-            jobId:Int,
-            listener:ResultReceiver?=null
+            applicationId: String,
+            classNamePath: String,
+            jobId: Int,
+            listener: ResultReceiver? = null
         ) {
             enqueueWork(
                 context,
@@ -63,7 +61,7 @@ abstract class EmaJobService : JobIntentService() {
         }
     }
 
-    abstract suspend fun executeWork(intent: Intent,resultReceiver: ResultReceiver?)
+    abstract suspend fun executeWork(intent: Intent, resultReceiver: ResultReceiver?)
 
     abstract class EmaJobServiceListener(handler: Handler = Handler(Looper.getMainLooper())) :
         ResultReceiver(handler)

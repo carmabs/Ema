@@ -12,7 +12,6 @@ import com.carmabs.ema.core.dialog.EmaDialogData
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
 
-class ErrorDialogProvider constructor(fragmentManager: FragmentManager) : EmaAndroidDialogProvider(fragmentManager)
-{
-    override fun generateDialog(dialogData: EmaDialogData?): EmaDialog<*,*> =  ErrorDialog()
+class ErrorDialogProvider constructor(fragmentManager: FragmentManager) : EmaAndroidDialogProvider(fragmentManager) {
+    override fun generateDialog(dialogData: EmaDialogData?): EmaDialog<*, *> = ErrorDialog()
 }

@@ -10,7 +10,7 @@ package com.carmabs.ema.core.model
  * It has some methods to handle the result and map the values.
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-sealed class EmaResult<T, E> private constructor(){
+sealed class EmaResult<T, E> private constructor() {
     class Success<T, E> internal constructor(val data: T) : EmaResult<T, E>()
     class Failure<T, E> internal constructor(val failure: E) : EmaResult<T, E>()
 
@@ -19,35 +19,29 @@ sealed class EmaResult<T, E> private constructor(){
         fun <T, E> success(data: T): EmaResult<T, E> = Success(data)
     }
 
-
-    fun getFailureOrNull(): E? {
-        return if (this is Failure) {
-            failure
-        } else
-            null
+    fun getFailureOrNull(): E? = if (this is Failure) {
+        failure
+    } else {
+        null
     }
 
-
-    fun getOrNull(): T? {
-        return if (this is Success) {
-            data
-        } else
-            null
+    fun getOrNull(): T? = if (this is Success) {
+        data
+    } else {
+        null
     }
 
-    fun getOrThrow(): T {
-        return when (this) {
-            is Failure -> throw (failure as? Throwable)
-                ?: IllegalArgumentException(failure.toString())
-            is Success -> data
-        }
+    fun getOrThrow(): T = when (this) {
+        is Failure -> throw (failure as? Throwable)
+            ?: IllegalArgumentException(failure.toString())
+
+        is Success -> data
     }
 
-    fun getOrDefault(default: T): T {
-        return if (this is Success) {
-            data
-        } else
-            default
+    fun getOrDefault(default: T): T = if (this is Success) {
+        data
+    } else {
+        default
     }
 
     val isFailure: Boolean
@@ -59,44 +53,35 @@ sealed class EmaResult<T, E> private constructor(){
         get() {
             return this is Success<*, *>
         }
-
-
 }
 
-inline fun <T, E, R> EmaResult<T, E>.map(successMap: (T) -> R): EmaResult<R, E> {
-    return when (this) {
-        is EmaResult.Failure -> EmaResult.failure(this.failure)
-        is EmaResult.Success -> EmaResult.success(successMap.invoke(data))
+inline fun <T, E, R> EmaResult<T, E>.map(successMap: (T) -> R): EmaResult<R, E> = when (this) {
+    is EmaResult.Failure -> EmaResult.failure(this.failure)
+    is EmaResult.Success -> EmaResult.success(successMap.invoke(data))
+}
+
+inline fun <T, E, R> EmaResult<T, E>.flatMap(successMap: (T) -> EmaResult<R, E>): EmaResult<R, E> = when (this) {
+    is EmaResult.Failure -> {
+        EmaResult.failure(this.failure)
     }
 
-}
-
-inline fun <T, E, R> EmaResult<T, E>.flatMap(successMap: (T) -> EmaResult<R, E>): EmaResult<R, E> {
-    return when (this) {
-        is EmaResult.Failure -> {
-            EmaResult.failure(this.failure)
-        }
-        is EmaResult.Success -> {
-            successMap.invoke(this.data)
-        }
+    is EmaResult.Success -> {
+        successMap.invoke(this.data)
     }
 }
 
-inline fun <T, E, R, ER> EmaResult<T, E>.mapResult(resultMap: (EmaResult<T, E>) -> EmaResult<R, ER>): EmaResult<R, ER> {
-    return resultMap.invoke(this)
-}
+inline fun <T, E, R, ER> EmaResult<T, E>.mapResult(resultMap: (EmaResult<T, E>) -> EmaResult<R, ER>): EmaResult<R, ER> =
+    resultMap.invoke(this)
 
-inline fun <T, E, ER> EmaResult<T, E>.flatMapError(errorMap: (E) -> EmaResult<T, ER>): EmaResult<T, ER> {
-    return when (this) {
-        is EmaResult.Failure -> {
-            errorMap.invoke(this.failure)
-        }
-        is EmaResult.Success -> {
-            EmaResult.success(this.data)
-        }
+inline fun <T, E, ER> EmaResult<T, E>.flatMapError(errorMap: (E) -> EmaResult<T, ER>): EmaResult<T, ER> = when (this) {
+    is EmaResult.Failure -> {
+        errorMap.invoke(this.failure)
+    }
+
+    is EmaResult.Success -> {
+        EmaResult.success(this.data)
     }
 }
-
 
 inline fun <T, E> EmaResult<T, E>.onSuccess(success: (T) -> Unit): EmaResult<T, E> {
     if (this is EmaResult.Success) {
@@ -112,10 +97,7 @@ inline fun <T, E> EmaResult<T, E>.onFailure(error: (E) -> Unit): EmaResult<T, E>
     return this
 }
 
-inline fun <T, E, R> EmaResult<T, E>.mapError(errorMap: (E) -> R): EmaResult<T, R> {
-    return when (this) {
-        is EmaResult.Failure -> EmaResult.failure(errorMap.invoke(failure))
-        is EmaResult.Success -> EmaResult.success(data)
-    }
-
+inline fun <T, E, R> EmaResult<T, E>.mapError(errorMap: (E) -> R): EmaResult<T, R> = when (this) {
+    is EmaResult.Failure -> EmaResult.failure(errorMap.invoke(failure))
+    is EmaResult.Success -> EmaResult.success(data)
 }

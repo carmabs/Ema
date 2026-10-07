@@ -14,9 +14,9 @@ import com.carmabs.ema.core.model.EmaBackHandlerStrategy
 import com.carmabs.ema.core.state.EmaEvent
 import com.carmabs.ema.core.state.EmaState
 import com.carmabs.ema.core.viewmodel.EmaViewModelBasic
-import org.robolectric.Shadows.shadowOf
 import java.io.Serializable
 import kotlin.test.fail
+import org.robolectric.Shadows.shadowOf
 
 data class ViewState(val count: Int = 0, val name: String = "") : EmaState
 
@@ -24,7 +24,9 @@ sealed interface ViewEvent : EmaEvent {
     data object Done : ViewEvent
 }
 
-data class NameInitializer(val name: String) : EmaInitializer, Serializable
+data class NameInitializer(val name: String) :
+    EmaInitializer,
+    Serializable
 
 class ViewTestViewModel : EmaViewModelBasic<ViewState, ViewEvent>(ViewState()) {
     val hooks = mutableListOf<String>()
@@ -85,7 +87,9 @@ open class HostActivity : AppCompatActivity() {
     }
 }
 
-class DelegateOwnerActivity : HostActivity(), EmaActivityBackDelegate {
+class DelegateOwnerActivity :
+    HostActivity(),
+    EmaActivityBackDelegate {
     var delegated = false
     override val ownsBackDelegate = true
     override fun onBackDelegate(): EmaBackHandlerStrategy {
@@ -94,7 +98,9 @@ class DelegateOwnerActivity : HostActivity(), EmaActivityBackDelegate {
     }
 }
 
-class DelegateNotOwnerActivity : HostActivity(), EmaActivityBackDelegate {
+class DelegateNotOwnerActivity :
+    HostActivity(),
+    EmaActivityBackDelegate {
     override val ownsBackDelegate = false
     override fun onBackDelegate(): EmaBackHandlerStrategy = EmaBackHandlerStrategy.Cancelled
 }

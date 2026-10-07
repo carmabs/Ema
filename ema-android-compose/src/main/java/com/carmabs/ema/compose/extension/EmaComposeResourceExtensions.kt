@@ -22,29 +22,20 @@ import androidx.compose.ui.res.vectorResource
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  * */
 @Composable
-fun @receiver:StringRes Int.toComposeString(): String {
-    return stringResource(this)
+fun @receiver:StringRes Int.toComposeString(): String = stringResource(this)
+
+@Composable
+fun @receiver:StringRes Int.toComposeString(vararg args: Any): String = if (args.isNotEmpty()) {
+    String.format(stringResource(this), *args)
+} else {
+    stringResource(this)
 }
 
 @Composable
-fun @receiver:StringRes Int.toComposeString(vararg args: Any): String {
-    return if (args.isNotEmpty())
-        String.format(stringResource(this), *args)
-    else
-        stringResource(this)
-}
+fun @receiver:DrawableRes Int.toComposePainter(): Painter = painterResource(id = this)
 
 @Composable
-fun @receiver:DrawableRes Int.toComposePainter(): Painter {
-    return painterResource(id = this)
-}
+fun @receiver:DrawableRes Int.toComposeImageVector(): ImageVector = ImageVector.vectorResource(id = this)
 
 @Composable
-fun @receiver:DrawableRes Int.toComposeImageVector(): ImageVector {
-    return ImageVector.vectorResource(id = this)
-}
-
-@Composable
-fun @receiver:ColorRes Int.toComposeColor(): Color {
-    return colorResource(id = this)
-}
+fun @receiver:ColorRes Int.toComposeColor(): Color = colorResource(id = this)

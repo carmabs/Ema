@@ -10,7 +10,4 @@ package com.carmabs.ema.core.model.reflection
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
 @ConsistentCopyVisibility
-data class EmaReflectionException internal constructor(
-    val reflection: EmaReflection,
-    val exception:Throwable
-)
+data class EmaReflectionException internal constructor(val reflection: EmaReflection, val exception: Throwable)

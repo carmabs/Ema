@@ -23,20 +23,14 @@ import com.carmabs.ema.sample.ema.R
 import com.carmabs.ema.sample.ema.databinding.HomeFragmentBinding
 import org.koin.android.ext.android.get
 
-
-class HomeFragment :
-    EmaFragment<HomeFragmentBinding, HomeState, HomeViewModel, HomeEvent>() {
+class HomeFragment : EmaFragment<HomeFragmentBinding, HomeState, HomeViewModel, HomeEvent>() {
 
     private var adapter: EmaBaseRecyclerAdapter<User>? = null
     override val initializerStrategy: BundleSerializerStrategy
         get() = BundleSerializerStrategy.kSerialization(HomeInitializer.serializer())
 
-    override fun createViewBinding(
-        inflater: LayoutInflater,
-        container: ViewGroup?
-    ): HomeFragmentBinding {
-        return HomeFragmentBinding.inflate(inflater, container, false)
-    }
+    override fun createViewBinding(inflater: LayoutInflater, container: ViewGroup?): HomeFragmentBinding =
+        HomeFragmentBinding.inflate(inflater, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -51,10 +45,7 @@ class HomeFragment :
         }
     }
 
-
-    override fun provideViewModel(): HomeViewModel {
-        return get()
-    }
+    override fun provideViewModel(): HomeViewModel = get()
 
     override fun HomeFragmentBinding.onState(state: HomeState) {
         state.userData?.also { onUserData(it) }

@@ -8,7 +8,7 @@ package com.carmabs.ema.core.dialog
  */
 interface EmaDialogListener {
 
-    fun onOutsidePressed(){
+    fun onOutsidePressed() {
         onBackPressed()
     }
     fun onBackPressed()

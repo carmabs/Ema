@@ -12,8 +12,7 @@ import com.carmabs.ema.android.navigation.EmaNavigationBackHandler
 import com.carmabs.ema.core.model.EmaBackHandlerStrategy
 import com.google.gson.Gson
 
-
-/**
+/*
  * Extensions for fragment
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
@@ -25,20 +24,17 @@ import com.google.gson.Gson
  * back behaviour.
  */
 @SuppressLint("UnsafeOptInUsageError")
-fun Fragment.addOnBackPressedListener(listener: () -> EmaBackHandlerStrategy): EmaNavigationBackHandler {
-    return requireActivity().addOnBackPressedListener(viewLifecycleOwner,listener)
-}
+fun Fragment.addOnBackPressedListener(listener: () -> EmaBackHandlerStrategy): EmaNavigationBackHandler =
+    requireActivity().addOnBackPressedListener(viewLifecycleOwner, listener)
 
-inline fun <reified T>Fragment.setEmaResultListener(crossinline listener: (result:T) -> Unit) {
-    setFragmentResultListener(EMA_RESULT_KEY) { key,bundle->
+inline fun <reified T> Fragment.setEmaResultListener(crossinline listener: (result: T) -> Unit) {
+    setFragmentResultListener(EMA_RESULT_KEY) { key, bundle ->
         val dataJson = bundle.getString(EMA_RESULT_KEY)
         val data = kotlin.runCatching {
             dataJson?.let {
-                Gson().fromJson(it,T::class.java)
+                Gson().fromJson(it, T::class.java)
             }
         }.getOrNull()
         data?.also(listener)
     }
 }
-
-

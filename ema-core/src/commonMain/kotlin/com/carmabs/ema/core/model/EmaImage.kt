@@ -11,16 +11,12 @@ import com.carmabs.ema.core.value.EmaUriRes
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-sealed class EmaImage(
-    open val width: Int? = null,
-    open val height: Int? = null,
-    open val colorTint: Int? = null
-) {
+sealed class EmaImage(open val width: Int? = null, open val height: Int? = null, open val colorTint: Int? = null) {
 
     data class ByteArray(
         val bytes: kotlin.ByteArray,
         override val width: Int? = null,
-        override val height: Int? = null ,
+        override val height: Int? = null,
         override val colorTint: Int? = null
     ) : EmaImage() {
         override fun equals(other: Any?): Boolean {
@@ -34,19 +30,20 @@ sealed class EmaImage(
             return true
         }
 
-        override fun hashCode(): Int {
-            return bytes.contentHashCode()
-        }
+        override fun hashCode(): Int = bytes.contentHashCode()
     }
 
-    data class Uri(val uri: EmaUriRes,
-                  override val width: Int? = null,
-                  override val height: Int? = null ,
-                  override val colorTint: Int? = null) : EmaImage()
+    data class Uri(
+        val uri: EmaUriRes,
+        override val width: Int? = null,
+        override val height: Int? = null,
+        override val colorTint: Int? = null
+    ) : EmaImage()
 
-    data class Id(val id: Int,
-                  override val width: Int? = null,
-                  override val height: Int? = null ,
-                  override val colorTint: Int? = null) : EmaImage()
-
+    data class Id(
+        val id: Int,
+        override val width: Int? = null,
+        override val height: Int? = null,
+        override val colorTint: Int? = null
+    ) : EmaImage()
 }

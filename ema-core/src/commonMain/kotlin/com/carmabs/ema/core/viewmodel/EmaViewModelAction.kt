@@ -18,10 +18,11 @@ import kotlinx.coroutines.CoroutineScope
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-abstract class EmaViewModelAction<S : EmaState, A : EmaAction.Screen, E: EmaEvent>(
+abstract class EmaViewModelAction<S : EmaState, A : EmaAction.Screen, E : EmaEvent>(
     initialDataState: S,
     scope: CoroutineScope = EmaMainScope()
-) : EmaViewModelBasic<S,E>(initialDataState, scope), EmaActionDispatcher<A> {
+) : EmaViewModelBasic<S, E>(initialDataState, scope),
+    EmaActionDispatcher<A> {
 
     final override fun dispatch(action: A) {
         onAction(action)

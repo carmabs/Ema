@@ -31,13 +31,6 @@ import com.carmabs.ema.core.initializer.EmaInitializerSerializer
 import com.carmabs.ema.core.navigator.EmaNavigator
 import com.carmabs.ema.core.view.EmaViewModelTrigger
 import com.google.android.material.appbar.AppBarLayout
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.MainScope
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.Robolectric
-import org.robolectric.RobolectricTestRunner
-import org.robolectric.Shadows.shadowOf
 import java.time.Duration
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -45,6 +38,13 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.MainScope
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.Robolectric
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.Shadows.shadowOf
 
 class TestActivity : EmaActivity<TestBinding, ViewState, ViewTestViewModel, ViewEvent>() {
     val states = mutableListOf<ViewState>()
@@ -163,7 +163,8 @@ class OrphanEmaView(override val viewModel: ViewTestViewModel) :
     override fun onBack(result: Any?) = false
 }
 
-class LayoutEmaView(context: Context, override val viewModel: ViewTestViewModel) : FrameLayout(context),
+class LayoutEmaView(context: Context, override val viewModel: ViewTestViewModel) :
+    FrameLayout(context),
     EmaAndroidView<ViewState, ViewTestViewModel, ViewEvent> {
     override val coroutineScope: CoroutineScope = MainScope()
     override val navigator: EmaNavigator<ViewEvent>? = null
@@ -285,8 +286,7 @@ class EmaActivityTest {
 @RunWith(RobolectricTestRunner::class)
 class EmaToolbarActivityTest {
 
-    private fun launch() =
-        Robolectric.buildActivity(TestToolbarActivity::class.java).setup().get().also { idleMain() }
+    private fun launch() = Robolectric.buildActivity(TestToolbarActivity::class.java).setup().get().also { idleMain() }
 
     @Test
     fun `the toolbar title follows the destination label`() {

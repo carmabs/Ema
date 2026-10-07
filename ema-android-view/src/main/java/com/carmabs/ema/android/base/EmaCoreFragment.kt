@@ -30,15 +30,15 @@ import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 
-
 /**
  *
  * Abstract base class to implement Fragment with binding to ViewModel
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
-abstract class EmaCoreFragment<S : EmaState, VM : EmaViewModel<S,E>, E : EmaEvent> :
-    Fragment(), EmaAndroidView<S, VM, E> {
+abstract class EmaCoreFragment<S : EmaState, VM : EmaViewModel<S, E>, E : EmaEvent> :
+    Fragment(),
+    EmaAndroidView<S, VM, E> {
 
     open val handleBackPressedManually = false
 
@@ -46,7 +46,6 @@ abstract class EmaCoreFragment<S : EmaState, VM : EmaViewModel<S,E>, E : EmaEven
         get() = viewLifecycleOwner.lifecycleScope
 
     private var viewJob: MutableList<Job>? = null
-
 
     @Suppress("UNCHECKED_CAST")
     override val viewModel: VM by lazy {
@@ -57,7 +56,6 @@ abstract class EmaCoreFragment<S : EmaState, VM : EmaViewModel<S,E>, E : EmaEven
      * Trigger to start viewmodel only when startViewModel is launched
      */
     override val startTrigger: EmaViewModelTrigger? = null
-
 
     protected open fun provideToolbarTitle(): String? = null
 
@@ -70,30 +68,25 @@ abstract class EmaCoreFragment<S : EmaState, VM : EmaViewModel<S,E>, E : EmaEven
 
     abstract fun provideViewModel(): VM
     final override val initializerSerializer: EmaInitializerSerializer?
-        get() = arguments?.let {bundle->
-            BundleSerializer(bundle,initializerStrategy)
+        get() = arguments?.let { bundle ->
+            BundleSerializer(bundle, initializerStrategy)
         }
 
-    abstract val initializerStrategy:BundleSerializerStrategy
+    abstract val initializerStrategy: BundleSerializerStrategy
     override val coroutineScope: CoroutineScope
         get() = lifecycleScope
 
     /**
      * Get the scope of the fragment depending the viewModelScopeSelected
      */
-    protected fun getScope(): CoroutineScope {
-        return if (fragmentViewModelScope)
-            coroutineScope
-        else
-            requireActivity().lifecycleScope
+    protected fun getScope(): CoroutineScope = if (fragmentViewModelScope) {
+        coroutineScope
+    } else {
+        requireActivity().lifecycleScope
     }
 
     @CallSuper
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         previousState = null
         return super.onCreateView(inflater, container, savedInstanceState)
     }
@@ -101,30 +94,27 @@ abstract class EmaCoreFragment<S : EmaState, VM : EmaViewModel<S,E>, E : EmaEven
     @CallSuper
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if (!handleBackPressedManually)
+        if (!handleBackPressedManually) {
             addOnBackPressedListener {
                 val parentActivity = requireActivity()
-                if( parentActivity is EmaActivityBackDelegate){
-                    if(parentActivity.ownsBackDelegate){
+                if (parentActivity is EmaActivityBackDelegate) {
+                    if (parentActivity.ownsBackDelegate) {
                         parentActivity.onBackDelegate()
-                    }else{
+                    } else {
                         navigateBack()
-                        //Cancel because we are handling manually the navigation with navigateBack()
+                        // Cancel because we are handling manually the navigation with navigateBack()
                         EmaBackHandlerStrategy.Cancelled
                     }
-
-                }
-                else{
+                } else {
                     navigateBack()
-                    //Cancel because we are handling manually the navigation with navigateBack()
+                    // Cancel because we are handling manually the navigation with navigateBack()
                     EmaBackHandlerStrategy.Cancelled
                 }
-
             }
+        }
 
         onCreate(viewModel)
     }
-
 
     /**
      * The view model is instantiated on fragment resume.
@@ -140,13 +130,13 @@ abstract class EmaCoreFragment<S : EmaState, VM : EmaViewModel<S,E>, E : EmaEven
      */
     @CallSuper
     override fun onResume() {
-        //It will set the last value of normalContentData, and avoid to delivered the last value of flow if it has not be updated due to
-        //updateToDataState
-        //We call this and not in onStart, because is some cases, the view that receives the state could be use a
-        //dialog, that needs to be restored after onRestoreInstance state is called. Otherwise, java.lang.IllegalStateException: Can not perform this action after onSaveInstanceState
-        //could be launched.
-        //On restoreInstanceState is called between onStart and onResume, on re-initialization, so binding the views here, guarantees the state of
-        //savedInstances has been restored
+        // It will set the last value of normalContentData, and avoid to delivered the last value of flow if it has not be updated due to
+        // updateToDataState
+        // We call this and not in onStart, because is some cases, the view that receives the state could be use a
+        // dialog, that needs to be restored after onRestoreInstance state is called. Otherwise, java.lang.IllegalStateException: Can not perform this action after onSaveInstanceState
+        // could be launched.
+        // On restoreInstanceState is called between onStart and onResume, on re-initialization, so binding the views here, guarantees the state of
+        // savedInstances has been restored
         if (viewJob == null) {
             viewJob = onBindView(getScope(), viewModel)
         }
@@ -181,7 +171,6 @@ abstract class EmaCoreFragment<S : EmaState, VM : EmaViewModel<S,E>, E : EmaEven
         super.onDestroyView()
     }
 
-
     final override fun onBack(result: Any?): Boolean {
         val gson = Gson()
         val hasMoreFragments = kotlin.runCatching {
@@ -189,12 +178,16 @@ abstract class EmaCoreFragment<S : EmaState, VM : EmaViewModel<S,E>, E : EmaEven
         }.getOrNull() ?: let {
             val hasMoreFragments = parentFragmentManager.backStackEntryCount > INT_ZERO
             result?.also {
-                setFragmentResult(EMA_RESULT_KEY, Bundle().apply {
-                    putString(EMA_RESULT_KEY, gson.toJson(it))
-                })
+                setFragmentResult(
+                    EMA_RESULT_KEY,
+                    Bundle().apply {
+                        putString(EMA_RESULT_KEY, gson.toJson(it))
+                    }
+                )
             }
-            if (hasMoreFragments)
+            if (hasMoreFragments) {
                 parentFragmentManager.popBackStack()
+            }
             hasMoreFragments
         }
 

@@ -11,6 +11,6 @@ import com.carmabs.ema.core.state.EmaEvent
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-sealed interface ProfileCreationEvent: EmaEvent {
+sealed interface ProfileCreationEvent : EmaEvent {
     data object DialogConfirmationAccepted : ProfileCreationEvent
 }

@@ -15,17 +15,13 @@ import com.carmabs.ema.ui.dialog.error.ErrorDialogData
  */
 class ErrorDialog : EmaDialog<DialogErrorBinding, ErrorDialogData>() {
 
-    override fun createViewBinding(
-        inflater: LayoutInflater,
-        container: ViewGroup?
-    ): DialogErrorBinding {
-        return DialogErrorBinding.inflate(inflater,container,false)
-    }
+    override fun createViewBinding(inflater: LayoutInflater, container: ViewGroup?): DialogErrorBinding =
+        DialogErrorBinding.inflate(inflater, container, false)
 
     override fun DialogErrorBinding.setup(data: ErrorDialogData) {
         tvDialogErrorTitle.text = data.title.string(requireContext())
         tvDialogErrorMessage.text = data.message.string(requireContext())
-        (dialogListener as? ErrorDialogListener)?.also { listener->
+        (dialogListener as? ErrorDialogListener)?.also { listener ->
             tvDialogErrorAccept.setOnClickListener {
                 listener.onConfirmClicked()
             }
@@ -33,7 +29,5 @@ class ErrorDialog : EmaDialog<DialogErrorBinding, ErrorDialogData>() {
         isCancelable = !data.isModal
     }
 
-    override fun createInitialState(): ErrorDialogData {
-        return ErrorDialogData()
-    }
+    override fun createInitialState(): ErrorDialogData = ErrorDialogData()
 }

@@ -10,8 +10,4 @@ import com.carmabs.ema.core.EmaInternalApi
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
 @EmaInternalApi
- class EmaReceiverModel internal constructor(
-    val resultKey: String,
-    val ownerId: String,
-    val function: (Any?) -> Unit,
-)
+class EmaReceiverModel internal constructor(val resultKey: String, val ownerId: String, val function: (Any?) -> Unit)

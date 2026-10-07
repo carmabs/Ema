@@ -4,9 +4,10 @@ import com.carmabs.ema.core.initializer.EmaInitializer
 import kotlinx.serialization.Serializable
 
 @Serializable
-sealed class ProfileCreationInitializer: EmaInitializer {
+sealed class ProfileCreationInitializer : EmaInitializer {
     @Serializable
     data object UserBasic : ProfileCreationInitializer()
+
     @Serializable
-    data object Admin: ProfileCreationInitializer()
+    data object Admin : ProfileCreationInitializer()
 }

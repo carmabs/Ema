@@ -1,9 +1,9 @@
 package com.carmabs.ema.core.extension
 
 import com.carmabs.ema.core.constants.LONG_ZERO
-import kotlinx.coroutines.delay
 import kotlin.time.Duration
 import kotlin.time.TimeSource
+import kotlinx.coroutines.delay
 
 /**
  * Execute the action with a minimum delay of the min time provided.If the action lasts less than min

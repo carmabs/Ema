@@ -4,8 +4,8 @@ import android.os.Bundle
 import android.os.Parcelable
 import com.carmabs.ema.core.constants.STRING_EMPTY
 import com.carmabs.ema.core.initializer.EmaInitializer
-import kotlinx.serialization.KSerializer
 import java.io.Serializable
+import kotlinx.serialization.KSerializer
 
 /**
  * Created by Carlos Mateo Benito on 19/3/24.

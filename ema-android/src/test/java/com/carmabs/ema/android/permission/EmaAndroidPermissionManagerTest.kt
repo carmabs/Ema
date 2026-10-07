@@ -12,6 +12,10 @@ import androidx.test.core.app.ApplicationProvider
 import com.carmabs.ema.core.manager.PermissionState
 import com.carmabs.ema.core.model.EmaMultiplePermissionRequest
 import com.carmabs.ema.core.model.EmaPermissionRequest
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
@@ -27,10 +31,6 @@ import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.shadows.ShadowAlertDialog
-import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 
 /**
  * Launcher that answers synchronously, like the system does when it cancels a request.
@@ -64,21 +64,20 @@ class EmaAndroidPermissionManagerTest {
     private lateinit var singleLauncher: FakeLauncher<String>
     private lateinit var multipleLauncher: FakeLauncher<Array<String>>
 
-    private fun TestScope.createManager(context: android.content.Context = application) =
-        EmaAndroidPermissionManager(
-            contextProvider = { context },
-            shouldShowRequestPermissionRationale = { rationale(it) },
-            registerSinglePermission = { contract ->
-                FakeLauncher<String> { permission ->
-                    contract.contract(systemAnswer(permission))
-                }.also { singleLauncher = it }
-            },
-            registerMultiplePermission = { contract ->
-                FakeLauncher<Array<String>> { permissions ->
-                    contract.contract(permissions.associateWith(systemAnswer))
-                }.also { multipleLauncher = it }
-            }
-        )
+    private fun TestScope.createManager(context: android.content.Context = application) = EmaAndroidPermissionManager(
+        contextProvider = { context },
+        shouldShowRequestPermissionRationale = { rationale(it) },
+        registerSinglePermission = { contract ->
+            FakeLauncher<String> { permission ->
+                contract.contract(systemAnswer(permission))
+            }.also { singleLauncher = it }
+        },
+        registerMultiplePermission = { contract ->
+            FakeLauncher<Array<String>> { permissions ->
+                contract.contract(permissions.associateWith(systemAnswer))
+            }.also { multipleLauncher = it }
+        }
+    )
 
     @Before
     fun declarePermissionsInManifest() {
@@ -210,7 +209,10 @@ class EmaAndroidPermissionManagerTest {
     fun `background location is granted directly when it does not need an explanation`() = runTest {
         grant(coarse, fine, background)
         val manager = createManager()
-        assertEquals(PermissionState.GRANTED, manager.requestBackgroundLocationPermission(InfoDialogType.Default("t", "m")))
+        assertEquals(
+            PermissionState.GRANTED,
+            manager.requestBackgroundLocationPermission(InfoDialogType.Default("t", "m"))
+        )
     }
 
     @Test
@@ -280,7 +282,10 @@ class EmaAndroidPermissionManagerTest {
     @Test
     fun `background location is not requested without fine location`() = runTest {
         val manager = createManager()
-        assertEquals(PermissionState.NOT_GRANTED, manager.requestBackgroundLocationPermission(InfoDialogType.Default("t", "m")))
+        assertEquals(
+            PermissionState.NOT_GRANTED,
+            manager.requestBackgroundLocationPermission(InfoDialogType.Default("t", "m"))
+        )
     }
 
     @Test
@@ -303,7 +308,14 @@ class EmaAndroidPermissionManagerTest {
         val scope = CoroutineScope(coroutineContext)
 
         manager.handleRequest(EmaPermissionRequest.createRequest { single = it }, scope, camera)
-        manager.handleRequestMultiple(EmaMultiplePermissionRequest.createRequest { multiple = it }, scope, camera, Manifest.permission.RECORD_AUDIO)
+        manager.handleRequestMultiple(
+            EmaMultiplePermissionRequest.createRequest {
+                multiple = it
+            },
+            scope,
+            camera,
+            Manifest.permission.RECORD_AUDIO
+        )
         advanceUntilIdle()
 
         assertEquals(PermissionState.GRANTED, single)
@@ -327,7 +339,12 @@ class EmaAndroidPermissionManagerTest {
         var single: PermissionState? = null
         var multiple: Map<String, PermissionState>? = null
         manager.responseRequest(EmaPermissionRequest.createRequest { single = it }, PermissionState.NOT_GRANTED)
-        manager.responseRequest(EmaMultiplePermissionRequest.createRequest { multiple = it }, mapOf(camera to PermissionState.GRANTED))
+        manager.responseRequest(
+            EmaMultiplePermissionRequest.createRequest {
+                multiple = it
+            },
+            mapOf(camera to PermissionState.GRANTED)
+        )
         assertEquals(PermissionState.NOT_GRANTED, single)
         assertEquals(mapOf(camera to PermissionState.GRANTED), multiple)
     }
@@ -340,7 +357,9 @@ class EmaAndroidPermissionManagerTest {
         val manager = EmaAndroidPermissionManager(
             activity,
             FakeLauncher<String> { launch { single.contract(true) } },
-            FakeLauncher<Array<String>> { permissions -> launch { multiple.contract(permissions.associateWith { true }) } },
+            FakeLauncher<Array<String>> { permissions ->
+                launch { multiple.contract(permissions.associateWith { true }) }
+            },
             single,
             multiple
         )

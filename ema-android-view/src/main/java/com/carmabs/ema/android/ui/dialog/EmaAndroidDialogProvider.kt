@@ -15,8 +15,7 @@ import com.carmabs.ema.core.dialog.EmaDialogProvider
 abstract class EmaAndroidDialogProvider(
     private val fragmentManager: FragmentManager,
     private val dialogTag: String? = null
-) :
-    EmaDialogProvider {
+) : EmaDialogProvider {
 
     private val dialog: EmaDialog<*, EmaDialogData>?
         get() = fragmentManager.findFragmentByTag(tag) as? EmaDialog<*, EmaDialogData>
@@ -24,9 +23,8 @@ abstract class EmaAndroidDialogProvider(
     abstract fun generateDialog(dialogData: EmaDialogData?): EmaDialog<*, *>
 
     override fun show(dialogData: EmaDialogData?) {
-
-        //We use this to avoid fragment duplication due to internal fragment save state. It guarantees that on rotation
-        //the same fragment is updated and not generate a new one
+        // We use this to avoid fragment duplication due to internal fragment save state. It guarantees that on rotation
+        // the same fragment is updated and not generate a new one
         dialog?.also {
             updateDialogData(it, dialogData)
         } ?: also {
@@ -38,10 +36,7 @@ abstract class EmaAndroidDialogProvider(
         }
     }
 
-    private fun updateDialogData(
-        dialog: EmaDialog<*, EmaDialogData>,
-        dialogData: EmaDialogData?
-    ) {
+    private fun updateDialogData(dialog: EmaDialog<*, EmaDialogData>, dialogData: EmaDialogData?) {
         dialog.dialogListener = dialogListener
         dialogData?.also {
             dialog.updateData {
@@ -51,8 +46,8 @@ abstract class EmaAndroidDialogProvider(
     }
 
     override fun hide() {
-        //It guarantees that fragment is totally destroyed when it is hidden. Otherwise, the fragment could be saved
-        //internally and create duplications on fragment recreations.
+        // It guarantees that fragment is totally destroyed when it is hidden. Otherwise, the fragment could be saved
+        // internally and create duplications on fragment recreations.
         dialog?.let {
             if (!it.isHidden) {
                 Log.d(tag, "Alternative dialog totally hidden")
@@ -61,7 +56,6 @@ abstract class EmaAndroidDialogProvider(
             fragmentManager.beginTransaction().remove(it).commitNowAllowingStateLoss()
         }
     }
-
 
     override val isVisible: Boolean
         get() = fragmentManager.findFragmentByTag(tag)?.isVisible ?: false
@@ -75,6 +69,4 @@ abstract class EmaAndroidDialogProvider(
     private val tag by lazy {
         dialogTag ?: javaClass.name.toString()
     }
-
-
 }

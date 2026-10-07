@@ -31,8 +31,7 @@ import com.carmabs.ema.core.extension.emaRegexGetFloatValue
 import java.text.NumberFormat
 import java.util.*
 
-
-/**
+/*
  * Extensions for views
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
@@ -57,11 +56,7 @@ inline fun <T : View> T.afterMeasured(crossinline f: T.() -> Unit) {
     }
 }
 
-fun TextView.setIncrementAnimated(
-    endValue: Int,
-    formatter: String?,
-    duration: Long = ANIMATION_DURATION
-) {
+fun TextView.setIncrementAnimated(endValue: Int, formatter: String?, duration: Long = ANIMATION_DURATION) {
     val integerString = text.toString().replace(emaRegexGetCharacterValue, STRING_EMPTY)
     val currentValue = integerString.toIntOrNull() ?: INT_ZERO
     val animator = ValueAnimator.ofInt(currentValue, endValue)
@@ -73,13 +68,9 @@ fun TextView.setIncrementAnimated(
     animator.start()
 }
 
-fun TextView.setIncrementAnimated(
-    endValue: Float,
-    formatter: String?,
-    duration: Long = ANIMATION_DURATION
-) {
+fun TextView.setIncrementAnimated(endValue: Float, formatter: String?, duration: Long = ANIMATION_DURATION) {
     val floatString = emaRegexGetFloatValue.find(text)?.value
-    val format = NumberFormat.getInstance(Locale.getDefault());
+    val format = NumberFormat.getInstance(Locale.getDefault())
     val currentValue =
         floatString?.let { (format.parse(it) as? Number)?.toFloat() ?: FLOAT_ZERO } ?: FLOAT_ZERO
     val animator = ValueAnimator.ofFloat(currentValue, endValue)
@@ -91,7 +82,7 @@ fun TextView.setIncrementAnimated(
     animator.start()
 }
 
-fun EditText.setTextWithCursorAtEnd(text:String){
+fun EditText.setTextWithCursorAtEnd(text: String) {
     setText(text)
     setSelection((text.length).coerceAtLeast(INT_ZERO))
 }
@@ -110,20 +101,14 @@ fun View.hideKeyboard() {
     clearFocus()
 }
 
-
-fun ImageView.setImageDrawableWithTransition(
-    drawable: Drawable,
-    durationMillis: Int = ANIMATION_DURATION.toInt()
-) {
+fun ImageView.setImageDrawableWithTransition(drawable: Drawable, durationMillis: Int = ANIMATION_DURATION.toInt()) {
     getDrawable()?.also {
         val crossFadeTransition = TransitionDrawable(arrayOf(it, drawable))
         crossFadeTransition.isCrossFadeEnabled = true
         setImageDrawable(crossFadeTransition)
         crossFadeTransition.startTransition(durationMillis)
     }
-
 }
-
 
 fun ImageView.setImageWithOvershot(
     drawable: Drawable,
@@ -140,7 +125,6 @@ fun ImageView.setImageWithOvershot(
     animation.duration = durationMillis.toLong()
     animation.setListener(object : Animator.AnimatorListener {
         override fun onAnimationStart(animation: Animator) {
-
         }
 
         override fun onAnimationEnd(animation: Animator) {
@@ -148,17 +132,13 @@ fun ImageView.setImageWithOvershot(
         }
 
         override fun onAnimationCancel(animation: Animator) {
-
         }
 
         override fun onAnimationRepeat(animation: Animator) {
-
         }
-
     })
     animation.start()
 }
-
 
 /**
  * Returns View visibility based on boolean
@@ -166,12 +146,10 @@ fun ImageView.setImageWithOvershot(
  * @param gone Put this value true if visibility is false and you want to return GONE
  *
  */
-fun checkVisibility(visibility: Boolean, gone: Boolean = true): Int {
-    return when {
-        visibility -> View.VISIBLE
-        gone -> View.GONE
-        else -> View.INVISIBLE
-    }
+fun checkVisibility(visibility: Boolean, gone: Boolean = true): Int = when {
+    visibility -> View.VISIBLE
+    gone -> View.GONE
+    else -> View.INVISIBLE
 }
 
 /**
@@ -182,8 +160,9 @@ fun checkVisibility(visibility: Boolean, gone: Boolean = true): Int {
  * @param action Function to execute with new value if it has changed
  */
 fun <T> checkUpdate(oldValue: T, newValue: T, action: (T) -> Unit) {
-    if (oldValue != newValue)
+    if (oldValue != newValue) {
         action(newValue)
+    }
 }
 
 /**
@@ -216,11 +195,7 @@ fun ProgressBar.setProgressGradientTintCompat(@ColorInt color: Int) {
     }
 }
 
-fun getColorFromGradient(
-    colors: IntArray,
-    positions: FloatArray,
-    v: Float
-): Int {
+fun getColorFromGradient(colors: IntArray, positions: FloatArray, v: Float): Int {
     require(!(colors.size == 0 || colors.size != positions.size))
     if (colors.size == 1) {
         return colors[0]

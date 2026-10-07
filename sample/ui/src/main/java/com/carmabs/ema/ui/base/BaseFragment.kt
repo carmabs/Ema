@@ -17,7 +17,6 @@ import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 
-
 /**
  *  *<p>
  * Copyright (c) 2020, Carmabs. All rights reserved.
@@ -29,14 +28,11 @@ import org.koin.core.parameter.parametersOf
 abstract class BaseFragment<B : ViewBinding, S : EmaState, VM : EmaViewModel<S, E>, E : EmaEvent> :
     EmaFragment<B, S, VM, E>() {
 
-
     private val appDialogProvider: AppDialogProvider by inject {
         parametersOf(childFragmentManager)
     }
 
-    protected fun showLoading(
-        data: LoadingDialogData? = null
-    ) {
+    protected fun showLoading(data: LoadingDialogData? = null) {
         val loadingData = data ?: LoadingDialogData(
             EmaText.id(R.string.dialog_loading_title),
             EmaText.id(R.string.dialog_loading_message)
@@ -45,20 +41,14 @@ abstract class BaseFragment<B : ViewBinding, S : EmaState, VM : EmaViewModel<S, 
         appDialogProvider.show(loadingData)
     }
 
-    protected fun showSimpleDialog(
-        dialogData: SimpleDialogData,
-        dialogListener: SimpleDialogListener
-    ) {
-        //Listener must be set before showing the dialog, otherwise it is not attached to the new dialog
+    protected fun showSimpleDialog(dialogData: SimpleDialogData, dialogListener: SimpleDialogListener) {
+        // Listener must be set before showing the dialog, otherwise it is not attached to the new dialog
         appDialogProvider.dialogListener = dialogListener
         appDialogProvider.show(dialogData)
     }
 
-    protected fun showError(
-        errorDialogData: ErrorDialogData,
-        dialogListener: ErrorDialogListener
-    ) {
-        //Listener must be set before showing the dialog, otherwise it is not attached to the new dialog
+    protected fun showError(errorDialogData: ErrorDialogData, dialogListener: ErrorDialogListener) {
+        // Listener must be set before showing the dialog, otherwise it is not attached to the new dialog
         appDialogProvider.dialogListener = dialogListener
         appDialogProvider.show(errorDialogData)
     }
@@ -74,5 +64,4 @@ abstract class BaseFragment<B : ViewBinding, S : EmaState, VM : EmaViewModel<S, 
     protected fun hideDialog() {
         appDialogProvider.hide()
     }
-
 }

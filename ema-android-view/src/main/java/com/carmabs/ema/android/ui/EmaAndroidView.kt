@@ -10,7 +10,6 @@ import com.carmabs.ema.core.state.EmaState
 import com.carmabs.ema.core.view.EmaView
 import com.carmabs.ema.core.viewmodel.EmaViewModel
 
-
 /**
  * View to handle VM view logic states through [EmaState].
  * The user must provide in the constructor by template:
@@ -19,13 +18,9 @@ import com.carmabs.ema.core.viewmodel.EmaViewModel
  *
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
-interface EmaAndroidView<S : EmaState, VM : EmaViewModel<S, E>, E : EmaEvent> :
-    EmaView<S, VM, E> {
+interface EmaAndroidView<S : EmaState, VM : EmaViewModel<S, E>, E : EmaEvent> : EmaView<S, VM, E> {
 
-    fun initializeViewModel(
-        activity: ComponentActivity,
-        viewModelSeed: VM
-    ): EmaAndroidViewModel<S, E> {
+    fun initializeViewModel(activity: ComponentActivity, viewModelSeed: VM): EmaAndroidViewModel<S, E> {
         val emaFactory = EmaViewModelFactory(viewModelSeed)
         val vm = ViewModelProvider(
             activity,
@@ -34,10 +29,7 @@ interface EmaAndroidView<S : EmaState, VM : EmaViewModel<S, E>, E : EmaEvent> :
         return vm as EmaAndroidViewModel<S, E>
     }
 
-    fun initializeViewModel(
-        fragment: Fragment,
-        viewModelSeed: VM
-    ): EmaAndroidViewModel<S, E> {
+    fun initializeViewModel(fragment: Fragment, viewModelSeed: VM): EmaAndroidViewModel<S, E> {
         val emaFactory = EmaViewModelFactory(viewModelSeed)
         val vm = ViewModelProvider(
             fragment,

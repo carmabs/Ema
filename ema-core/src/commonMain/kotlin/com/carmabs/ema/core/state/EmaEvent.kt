@@ -5,6 +5,6 @@ package com.carmabs.ema.core.state
  *
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
-interface EmaEvent{
+interface EmaEvent {
     object EMPTY : EmaEvent
 }

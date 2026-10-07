@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.pluralStringResource
 import com.carmabs.ema.core.model.EmaText
 
-/**
+/*
  * Created by Carlos Mateo Benito on 25/12/21.
  *
  * <p>
@@ -25,21 +25,22 @@ private val EmaText.formatArgs: Array<out Any>?
  * Transform ema text to string value.
  */
 @Composable
-fun EmaText.stringResource(): String {
-    return when (this) {
-        is EmaText.Id -> formatArgs?.let { androidx.compose.ui.res.stringResource(id, *it) }
-            ?: androidx.compose.ui.res.stringResource(id)
-        is EmaText.Plural -> {
-            formatArgs?.let {
-                pluralStringResource(id, quantity, *it)
-            } ?: pluralStringResource(
-                id,
-                quantity
-            )
-        }
-        is EmaText.Text -> formatArgs?.let { String.format(text, *it) } ?: text
-        is EmaText.Composition -> texts.map { it.stringResource() }.reduce { acc, string ->
-            acc + string
-        }
+fun EmaText.stringResource(): String = when (this) {
+    is EmaText.Id -> formatArgs?.let { androidx.compose.ui.res.stringResource(id, *it) }
+        ?: androidx.compose.ui.res.stringResource(id)
+
+    is EmaText.Plural -> {
+        formatArgs?.let {
+            pluralStringResource(id, quantity, *it)
+        } ?: pluralStringResource(
+            id,
+            quantity
+        )
+    }
+
+    is EmaText.Text -> formatArgs?.let { String.format(text, *it) } ?: text
+
+    is EmaText.Composition -> texts.map { it.stringResource() }.reduce { acc, string ->
+        acc + string
     }
 }

@@ -8,6 +8,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.viewbinding.ViewBinding
 import com.carmabs.ema.android.extension.checkVisibility
 import com.carmabs.ema.android.initializer.bundle.strategy.BundleSerializerStrategy
+import com.carmabs.ema.android.navigation.EmaNavControllerNavigator
 import com.carmabs.ema.core.constants.FLOAT_ONE
 import com.carmabs.ema.core.constants.FLOAT_ZERO
 import com.carmabs.ema.core.state.EmaEvent
@@ -21,7 +22,7 @@ import com.google.android.material.appbar.AppBarLayout
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
-abstract class EmaToolbarActivity<B : ViewBinding, S : EmaState, VM : EmaViewModel<S,E>, E : EmaEvent> :
+abstract class EmaToolbarActivity<B : ViewBinding, S : EmaState, VM : EmaViewModel<S, E>, E : EmaEvent> :
     EmaActivity<B, S, VM, E>() {
 
     override val initializerStrategy: BundleSerializerStrategy
@@ -56,7 +57,6 @@ abstract class EmaToolbarActivity<B : ViewBinding, S : EmaState, VM : EmaViewMod
         binding.provideToolbarLayout()
     }
 
-
     /**
      * Request the action bar setup
      */
@@ -73,21 +73,19 @@ abstract class EmaToolbarActivity<B : ViewBinding, S : EmaState, VM : EmaViewMod
      * id=@+id/emaToolbar. The toolbar contaienr [AppBarLayout] must have the id=@+ìd/emaAppBarLayout
      */
     private fun setupToolbar(toolbar: Toolbar) {
-
         setSupportActionBar(toolbar)
-        (navigator as? com.carmabs.ema.android.navigation.EmaNavControllerNavigator<*>)?.navController?.also {
+        (navigator as? EmaNavControllerNavigator<*>)?.navController?.also {
             setupActionBarWithNavController(it)
             it.addOnDestinationChangedListener { _, destination, _ ->
                 setToolbarTitle(provideFixedToolbarTitle())
             }
         }
-
     }
 
     protected fun setToolbarTitle(title: String?) {
         supportActionBar?.title =
             title ?: provideFixedToolbarTitle()
-                    ?: (navigator as? com.carmabs.ema.android.navigation.EmaNavControllerNavigator<*>)?.navController?.currentDestination?.label
+                ?: (navigator as? EmaNavControllerNavigator<*>)?.navController?.currentDestination?.label
     }
 
     /**
@@ -104,17 +102,13 @@ abstract class EmaToolbarActivity<B : ViewBinding, S : EmaState, VM : EmaViewMod
                     }
 
                     override fun onAnimationStart(p0: Animator) {
-
                     }
 
                     override fun onAnimationRepeat(p0: Animator) {
-
                     }
 
                     override fun onAnimationCancel(p0: Animator) {
-
                     }
-
                 })
             }
         } else {
@@ -136,15 +130,12 @@ abstract class EmaToolbarActivity<B : ViewBinding, S : EmaState, VM : EmaViewMod
                     }
 
                     override fun onAnimationEnd(p0: Animator) {
-
                     }
 
                     override fun onAnimationCancel(p0: Animator) {
-
                     }
 
                     override fun onAnimationRepeat(p0: Animator) {
-
                     }
                 })
             }

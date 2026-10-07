@@ -11,9 +11,5 @@ import com.carmabs.ema.core.model.EmaText
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-fun String.toEmaText(): EmaText {
-    return EmaText.text(this)
-}
-fun String.toEmaText(vararg data:Any): EmaText {
-    return EmaText.text(this, *data)
-}
+fun String.toEmaText(): EmaText = EmaText.text(this)
+fun String.toEmaText(vararg data: Any): EmaText = EmaText.text(this, *data)

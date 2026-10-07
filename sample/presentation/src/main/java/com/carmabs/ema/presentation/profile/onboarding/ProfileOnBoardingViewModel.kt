@@ -5,9 +5,10 @@ import com.carmabs.domain.model.User
 import com.carmabs.ema.core.initializer.EmaInitializer
 import com.carmabs.ema.presentation.base.BaseViewModel
 
-class ProfileOnBoardingViewModel(initialDataState: ProfileOnBoardingState) : BaseViewModel<ProfileOnBoardingState, ProfileOnBoardingActions, ProfileOnBoardingEvent>(
+class ProfileOnBoardingViewModel(initialDataState: ProfileOnBoardingState) :
+    BaseViewModel<ProfileOnBoardingState, ProfileOnBoardingActions, ProfileOnBoardingEvent>(
         initialDataState
-    ){
+    ) {
 
     override fun onStateCreated(initializer: EmaInitializer?) {
         when (val onBoardingInitializer = initializer as ProfileOnBoardingInitializer) {

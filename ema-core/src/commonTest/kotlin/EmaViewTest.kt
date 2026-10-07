@@ -3,16 +3,16 @@ import com.carmabs.ema.core.initializer.EmaInitializerSerializer
 import com.carmabs.ema.core.navigator.EmaNavigator
 import com.carmabs.ema.core.view.EmaView
 import com.carmabs.ema.core.view.EmaViewModelTrigger
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
-import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.runTest
 
 class FakeNavigator : EmaNavigator<CounterEvent> {
     val navigated = mutableListOf<CounterEvent>()

@@ -3,13 +3,13 @@
 package com.carmabs.ema.core.model
 
 import com.carmabs.ema.core.delegate.emaSyncDelegate
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 import kotlin.concurrent.atomics.AtomicBoolean
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.coroutines.CoroutineContext
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 /**
  * Created by Carlos Mateo Benito on 16/8/22.
@@ -32,11 +32,12 @@ class EmaFunctionResultHandler<T> internal constructor(
     scope: CoroutineScope,
     dispatcher: CoroutineContext,
     onAction: suspend CoroutineScope.() -> T,
-    throwExceptions:Boolean,
+    throwExceptions: Boolean,
     successDefaultAction: ((T) -> Unit)? = null,
     errorDefaultAction: ((Throwable) -> Unit)? = null,
     finishDefaultAction: (() -> Unit)? = null
-) : EmaOnSuccessFinish<T>, EmaOnErrorFinish {
+) : EmaOnSuccessFinish<T>,
+    EmaOnErrorFinish {
 
     private var result: EmaResult<T, Throwable>? by emaSyncDelegate(null)
 
@@ -52,15 +53,14 @@ class EmaFunctionResultHandler<T> internal constructor(
             val data = onAction.invoke(this)
             successDefaultAction?.invoke(data)
             result = EmaResult.success(data)
-
         } catch (e: Throwable) {
             // A cancellation is not an error: it must be propagated to keep the coroutine cancellable
-            if (e is CancellationException || throwExceptions)
+            if (e is CancellationException || throwExceptions) {
                 throw e
+            }
 
             errorDefaultAction?.invoke(e)
             result = EmaResult.failure(e)
-
         } finally {
             finishDefaultAction?.invoke()
             result?.apply {
@@ -78,11 +78,10 @@ class EmaFunctionResultHandler<T> internal constructor(
         }
     }
 
-
     override fun onFinish(finishAction: () -> Unit): Job {
-        if (finished.load())
+        if (finished.load()) {
             finishAction.invoke()
-        else {
+        } else {
             finishListener = finishAction
         }
         return job
@@ -115,11 +114,14 @@ interface EmaOnFinish : EmaOnJob {
     fun onFinish(finishAction: () -> Unit): Job
 }
 
-interface EmaOnErrorFinish : EmaOnFinish, EmaOnJob {
+interface EmaOnErrorFinish :
+    EmaOnFinish,
+    EmaOnJob {
     fun onError(errorAction: (Throwable) -> Unit): EmaOnFinish
 }
 
-interface EmaOnSuccessFinish<T> : EmaOnFinish, EmaOnJob {
+interface EmaOnSuccessFinish<T> :
+    EmaOnFinish,
+    EmaOnJob {
     fun onSuccess(successAction: (T) -> Unit): EmaOnFinish
 }
-

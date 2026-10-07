@@ -13,7 +13,6 @@ import com.carmabs.ema.ui.dialog.error.ErrorDialog
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
 
-class LoadingDialogProvider constructor(fragmentManager: FragmentManager) : EmaAndroidDialogProvider(fragmentManager)
-{
-    override fun generateDialog(dialogData: EmaDialogData?): EmaDialog<*,*> =  LoadingDialog()
+class LoadingDialogProvider constructor(fragmentManager: FragmentManager) : EmaAndroidDialogProvider(fragmentManager) {
+    override fun generateDialog(dialogData: EmaDialogData?): EmaDialog<*, *> = LoadingDialog()
 }

@@ -14,15 +14,11 @@ import com.carmabs.ema.core.initializer.EmaInitializerSerializer
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-class BundleSerializer(
-    private val bundle: Bundle,
-    private val strategy: BundleSerializerStrategy
-) : EmaInitializerSerializer {
+class BundleSerializer(private val bundle: Bundle, private val strategy: BundleSerializerStrategy) :
+    EmaInitializerSerializer {
     override fun save(initializer: EmaInitializer) {
         strategy.save(initializer, bundle)
     }
 
-    override fun restore(): EmaInitializer? {
-        return strategy.restore(bundle)
-    }
+    override fun restore(): EmaInitializer? = strategy.restore(bundle)
 }

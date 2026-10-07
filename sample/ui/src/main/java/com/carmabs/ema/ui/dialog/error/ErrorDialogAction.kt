@@ -10,6 +10,6 @@ package com.carmabs.ema.ui.dialog.error
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
 sealed interface ErrorDialogAction {
-    data object Accept: ErrorDialogAction
-    data object BackPressed: ErrorDialogAction
+    data object Accept : ErrorDialogAction
+    data object BackPressed : ErrorDialogAction
 }

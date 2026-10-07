@@ -1,6 +1,11 @@
 package com.carmabs.ema.core.extension
 
-import com.carmabs.ema.core.constants.*
+import com.carmabs.ema.core.constants.DOUBLE_ZERO
+import com.carmabs.ema.core.constants.FLOAT_ZERO
+import com.carmabs.ema.core.constants.INT_ONE
+import com.carmabs.ema.core.constants.INT_ZERO
+import com.carmabs.ema.core.constants.LONG_ZERO
+import com.carmabs.ema.core.constants.SHORT_ZERO
 import kotlin.math.ceil
 
 /**
@@ -13,141 +18,113 @@ import kotlin.math.ceil
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
 
-fun Int?.checkNull(defaultValue: Int = INT_ZERO): Int {
-    return this ?: defaultValue
-}
+fun Int?.checkNull(defaultValue: Int = INT_ZERO): Int = this ?: defaultValue
 
 /**
  * Check if value is greater or equal than min or return null
  */
-fun Int.minOrNull(min: Int): Int? {
-    return if(this>=min)
-        this
-    else
-        null
+fun Int.minOrNull(min: Int): Int? = if (this >= min) {
+    this
+} else {
+    null
 }
 
 /**
  * Check if value is smaller or equal than max or return null
  */
-fun Int.maxOrNull(max: Int): Int? {
-    return if(this<=max)
-        this
-    else
-        null
+fun Int.maxOrNull(max: Int): Int? = if (this <= max) {
+    this
+} else {
+    null
 }
 
-fun Float?.checkNull(defaultValue: Float = FLOAT_ZERO): Float {
-    return this ?: defaultValue
-}
+fun Float?.checkNull(defaultValue: Float = FLOAT_ZERO): Float = this ?: defaultValue
 
 /**
  * Check if value is greater or equal than min or return null
  */
-fun Float.minOrNull(min: Float): Float? {
-    return if(this>=min)
-        this
-    else
-        null
+fun Float.minOrNull(min: Float): Float? = if (this >= min) {
+    this
+} else {
+    null
 }
 
 /**
  * Check if value is smaller or equal than max or return null
  */
-fun Float.maxOrNull(max: Float): Float? {
-    return if(this<=max)
-        this
-    else
-        null
+fun Float.maxOrNull(max: Float): Float? = if (this <= max) {
+    this
+} else {
+    null
 }
 
-fun Float.hasDecimals(): Boolean {
-    return this != ceil(this)
-}
+fun Float.hasDecimals(): Boolean = this != ceil(this)
 
-fun Short?.checkNull(defaultValue: Short = SHORT_ZERO): Short {
-    return this ?: defaultValue
-}
+fun Short?.checkNull(defaultValue: Short = SHORT_ZERO): Short = this ?: defaultValue
 
 /**
  * Check if value is greater or equal than min or return null
  */
-fun Short.minOrNull(min: Short): Short? {
-    return if(this>=min)
-        this
-    else
-        null
+fun Short.minOrNull(min: Short): Short? = if (this >= min) {
+    this
+} else {
+    null
 }
 
 /**
  * Check if value is smaller or equal than max or return null
  */
-fun Short.maxOrNull(max: Short): Short? {
-    return if(this<=max)
-        this
-    else
-        null
+fun Short.maxOrNull(max: Short): Short? = if (this <= max) {
+    this
+} else {
+    null
 }
 
-fun Long?.checkNull(defaultValue: Long = LONG_ZERO): Long {
-    return this ?: defaultValue
-}
+fun Long?.checkNull(defaultValue: Long = LONG_ZERO): Long = this ?: defaultValue
 
 /**
  * Check if value is greater or equal than min or return null
  */
-fun Long.minOrNull(min: Long): Long? {
-    return if(this>=min)
-        this
-    else
-        null
+fun Long.minOrNull(min: Long): Long? = if (this >= min) {
+    this
+} else {
+    null
 }
 
 /**
  * Check if value is smaller or equal than max or return null
  */
-fun Long.maxOrNull(max: Long): Long? {
-    return if(this<=max)
-        this
-    else
-        null
+fun Long.maxOrNull(max: Long): Long? = if (this <= max) {
+    this
+} else {
+    null
 }
 
-fun Double?.checkNull(defaultValue: Double = DOUBLE_ZERO): Double {
-    return this ?: defaultValue
-}
+fun Double?.checkNull(defaultValue: Double = DOUBLE_ZERO): Double = this ?: defaultValue
 
 /**
  * Check if value is greater or equal than min or return null
  */
-fun Double.minOrNull(min: Double): Double? {
-    return if(this>=min)
-        this
-    else
-        null
+fun Double.minOrNull(min: Double): Double? = if (this >= min) {
+    this
+} else {
+    null
 }
 
 /**
  * Check if value is smaller or equal than max or return null
  */
-fun Double.maxOrNull(max: Double): Double? {
-    return if(this<=max)
-        this
-    else
-        null
+fun Double.maxOrNull(max: Double): Double? = if (this <= max) {
+    this
+} else {
+    null
 }
 
-fun Boolean?.checkNull(defaultValue: Boolean = false): Boolean {
-    return this ?: defaultValue
-}
+fun Boolean?.checkNull(defaultValue: Boolean = false): Boolean = this ?: defaultValue
 
-fun Float.constraintValue(minLimit: Float, maxLimit: Float): Float {
-    return coerceAtLeast(minLimit).coerceAtMost(maxLimit)
-}
+fun Float.constraintValue(minLimit: Float, maxLimit: Float): Float = coerceAtLeast(minLimit).coerceAtMost(maxLimit)
 
-fun Int.constraintValue(minLimit: Int, maxLimit: Int): Int {
-    return coerceAtLeast(minLimit).coerceAtMost(maxLimit)
-}
+fun Int.constraintValue(minLimit: Int, maxLimit: Int): Int = coerceAtLeast(minLimit).coerceAtMost(maxLimit)
 
 /**
  * Method to get index interpolating from center to alternatives vector ends
@@ -158,14 +135,17 @@ fun iteratePositionFromCenter(index: Int, length: Int, startRight: Boolean = tru
         index <= INT_ZERO -> {
             centerPosition
         }
+
         index >= length -> {
             centerPosition
         }
+
         else -> {
             val directionFactor = if (index % 2 == INT_ZERO) {
                 if (startRight) INT_ONE else -INT_ONE
-            } else
+            } else {
                 if (startRight) -INT_ONE else INT_ONE
+            }
 
             val coefficient = ((index + INT_ONE) / 2) * directionFactor
             centerPosition + coefficient
@@ -183,22 +163,25 @@ fun iteratePositionFromEnd(index: Int, length: Int, startRight: Boolean = true):
         index < INT_ZERO -> {
             centerPosition
         }
+
         index >= length -> {
             centerPosition
         }
+
         else -> {
-            val right = if ((index+ INT_ONE) % 2 != INT_ZERO) {
+            val right = if ((index + INT_ONE) % 2 != INT_ZERO) {
                 startRight
-            } else
+            } else {
                 !startRight
+            }
 
             val coefficient = (index / 2)
 
             if (right) {
                 length - coefficient - INT_ONE
-            } else
+            } else {
                 coefficient
-
+            }
         }
     }
     return position

@@ -10,9 +10,9 @@ package com.carmabs.ema.core.value
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
 
-data class EmaUriRes(val value: String, val type:EmaUriType)
+data class EmaUriRes(val value: String, val type: EmaUriType)
 
-enum class EmaUriType{
+enum class EmaUriType {
     Color,
     Drawable,
     String,
@@ -20,4 +20,4 @@ enum class EmaUriType{
     Asset,
     Raw
 }
-fun String.toUriRes(type:EmaUriType) = EmaUriRes(this,type)
+fun String.toUriRes(type: EmaUriType) = EmaUriRes(this, type)

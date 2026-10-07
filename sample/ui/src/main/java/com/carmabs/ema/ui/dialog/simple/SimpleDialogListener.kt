@@ -10,8 +10,8 @@ import com.carmabs.ema.core.dialog.EmaDialogListener
  */
 interface SimpleDialogListener : EmaDialogListener {
 
-    companion object{
-        val EMPTY = object : SimpleDialogListener{
+    companion object {
+        val EMPTY = object : SimpleDialogListener {
             override fun onCancelClicked() = Unit
             override fun onConfirmClicked() = Unit
             override fun onBackPressed() = Unit
@@ -19,5 +19,4 @@ interface SimpleDialogListener : EmaDialogListener {
     }
     fun onCancelClicked()
     fun onConfirmClicked()
-
 }

@@ -12,6 +12,7 @@ import kotlin.reflect.KProperty
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
+@Suppress("ClassName")
 class emaSyncDelegate<T>(defaultValue: T) : ReadWriteProperty<Any, T> {
 
     private val backingField = AtomicReference(defaultValue)

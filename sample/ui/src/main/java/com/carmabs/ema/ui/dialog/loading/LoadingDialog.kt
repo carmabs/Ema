@@ -14,12 +14,8 @@ import com.carmabs.ema.sample.ema.databinding.DialogLoadingBinding
  */
 class LoadingDialog : EmaDialog<DialogLoadingBinding, LoadingDialogData>() {
 
-    override fun createViewBinding(
-        inflater: LayoutInflater,
-        container: ViewGroup?
-    ): DialogLoadingBinding {
-        return DialogLoadingBinding.inflate(inflater,container,false)
-    }
+    override fun createViewBinding(inflater: LayoutInflater, container: ViewGroup?): DialogLoadingBinding =
+        DialogLoadingBinding.inflate(inflater, container, false)
 
     override fun DialogLoadingBinding.setup(data: LoadingDialogData) {
         tvDialogLoadingTitle.text = data.title.string(requireContext())
@@ -28,7 +24,5 @@ class LoadingDialog : EmaDialog<DialogLoadingBinding, LoadingDialogData>() {
         isCancelable = !data.isModal
     }
 
-    override fun createInitialState(): LoadingDialogData {
-        return LoadingDialogData()
-    }
+    override fun createInitialState(): LoadingDialogData = LoadingDialogData()
 }

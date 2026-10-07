@@ -64,20 +64,27 @@ fun <S : EmaState, A : EmaAction.Screen, E : EmaEvent> NavGraphBuilder.createCom
     onViewModelInstance: (@Composable (EmaViewModel<S, E>) -> Unit)? = null,
     fullScreenDialogMode: Boolean = false,
     transitionAnimation: EmaComposableTransitions = EmaComposableTransitions(),
-    decoration: @Composable ((content: @Composable () -> Unit, dispatcher: EmaImmutableActionDispatcher<A>) -> Unit)? = null,
+    decoration: @Composable (
+        (
+            content: @Composable () -> Unit,
+            dispatcher: EmaImmutableActionDispatcher<A>
+        ) -> Unit
+    )? = null,
     previewRenderState: S? = null,
     onEvent: (E) -> Unit
 ) {
-
     val content: @Composable (NavGraphBuilder.(NavBackStackEntry) -> Unit) =
         @Composable { backEntry ->
 
-            //We use savedStateHandle of backEntry due to SavedStateHandled of viewmodel is attached to
-            //navController and is restarted on kill process.
-            //With backEntry.savedStateHandle data is rightly persisted
-            val androidVm = EmaScreenProvider.provideComposableViewModel(viewModel = remember {
-                viewModel.invoke()
-            }, backEntry.savedStateHandle)
+            // We use savedStateHandle of backEntry due to SavedStateHandled of viewmodel is attached to
+            // navController and is restarted on kill process.
+            // With backEntry.savedStateHandle data is rightly persisted
+            val androidVm = EmaScreenProvider.provideComposableViewModel(
+                viewModel = remember {
+                    viewModel.invoke()
+                },
+                backEntry.savedStateHandle
+            )
 
             val vm = androidVm.emaViewModel
 
@@ -120,12 +127,14 @@ fun <S : EmaState, A : EmaAction.Screen, E : EmaEvent> NavGraphBuilder.createCom
     } else {
         composable(
             route = parseRouteWithInitializerSupport(routeId),
-            arguments = listOf(navArgument(EmaInitializer.KEY) {
-                initializerSupport?.also {
-                    type = EmaInitializerNavType(it.serializerStrategy)
+            arguments = listOf(
+                navArgument(EmaInitializer.KEY) {
+                    initializerSupport?.also {
+                        type = EmaInitializerNavType(it.serializerStrategy)
+                    }
+                    nullable = true
                 }
-                nullable = true
-            }),
+            ),
             enterTransition = transitionAnimation.enterTransition,
             exitTransition = transitionAnimation.exitTransition,
             popEnterTransition = transitionAnimation.popEnterTransition,
@@ -136,37 +145,28 @@ fun <S : EmaState, A : EmaAction.Screen, E : EmaEvent> NavGraphBuilder.createCom
     }
 }
 
-fun routeWithInitializer(
-    route: String,
-    initializerBundle: EmaInitializerBundle?,
-) = initializerBundle?.let {
+fun routeWithInitializer(route: String, initializerBundle: EmaInitializerBundle?) = initializerBundle?.let {
     routeWithInitializer(route, it.initializer, it.serializer)
 } ?: route
 
-private fun parseRouteWithInitializerSupport(routeId: String): String {
-    return "$routeId?${EmaInitializer.KEY}={${EmaInitializer.KEY}}"
-}
+private fun parseRouteWithInitializerSupport(routeId: String): String =
+    "$routeId?${EmaInitializer.KEY}={${EmaInitializer.KEY}}"
 
-fun routeWithInitializer(
-    routeId: String,
-    initializer: EmaInitializer,
-    serializer: BundleSerializerStrategy
-): String {
+fun routeWithInitializer(routeId: String, initializer: EmaInitializer, serializer: BundleSerializerStrategy): String {
     // Encoded, because the serialized initializer can contain characters with meaning in a route, like & or #
     return "$routeId?${EmaInitializer.KEY}=${Uri.encode(serializer.toStringValue(initializer))}"
 }
 
 fun NavController.navigateBack(closeActivityWhenBackstackIsEmpty: Boolean = true): Boolean {
     val hasMoreBackScreens = popBackStack()
-    if (!hasMoreBackScreens && closeActivityWhenBackstackIsEmpty)
+    if (!hasMoreBackScreens && closeActivityWhenBackstackIsEmpty) {
         this.context.findComponentActivity().finish()
+    }
 
     return hasMoreBackScreens
 }
 
-fun NavController.navigateToExternalLink(url: String): Boolean {
-    return kotlin.runCatching {
-        val intent = Intent(Intent.ACTION_VIEW, url.toUri())
-        context.findComponentActivity().startActivity(intent)
-    }.map { true }.getOrElse { false }
-}
+fun NavController.navigateToExternalLink(url: String): Boolean = kotlin.runCatching {
+    val intent = Intent(Intent.ACTION_VIEW, url.toUri())
+    context.findComponentActivity().startActivity(intent)
+}.map { true }.getOrElse { false }

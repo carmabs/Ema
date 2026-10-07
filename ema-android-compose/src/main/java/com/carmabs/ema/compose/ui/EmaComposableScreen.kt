@@ -48,7 +48,6 @@ fun <S : EmaState, A : EmaAction.Screen, E : EmaEvent> EmaComposableScreen(
             }
         }
     ) {
-
         val immutableActions = remember {
             actions.toImmutable()
         }
@@ -80,12 +79,14 @@ fun <A : EmaAction.Screen, S : EmaState, E : EmaEvent> EmaComposableScreen(
                     actions = EmaImmutableActionDispatcherEmpty()
                 )
             }
-
         }
     ) {
-        val androidVm = EmaScreenProvider.provideComposableViewModel(viewModel = remember {
-            vm.invoke()
-        }, saveStateSupport?.savedStateHandle)
+        val androidVm = EmaScreenProvider.provideComposableViewModel(
+            viewModel = remember {
+                vm.invoke()
+            },
+            saveStateSupport?.savedStateHandle
+        )
 
         val emaVm = androidVm.emaViewModel
 
@@ -122,39 +123,39 @@ private fun <S : EmaState, A : EmaAction.Screen, E : EmaEvent> RenderScreen(
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     DisposableEffect(lifecycle) {
         val observer = LifecycleEventObserver { _, event ->
-            val TAG = "LIFECYCLE"
+            val tag = "LIFECYCLE"
             when (event) {
                 Lifecycle.Event.ON_CREATE -> {
-                    Log.d(TAG, "On create")
+                    Log.d(tag, "On create")
                     vm.onCreated(initializer)
                 }
 
                 Lifecycle.Event.ON_START -> {
-                    Log.d(TAG, "On start")
+                    Log.d(tag, "On start")
                     vm.onStartView()
                 }
 
                 Lifecycle.Event.ON_RESUME -> {
-                    Log.d(TAG, "On resume")
+                    Log.d(tag, "On resume")
                     vm.onResumeView()
                 }
 
                 Lifecycle.Event.ON_PAUSE -> {
-                    Log.d(TAG, "On pause")
+                    Log.d(tag, "On pause")
                     vm.onPauseView()
                 }
 
                 Lifecycle.Event.ON_STOP -> {
-                    Log.d(TAG, "On stop")
+                    Log.d(tag, "On stop")
                     vm.onStopView()
                 }
 
                 Lifecycle.Event.ON_DESTROY -> {
-                    Log.d(TAG, "On destroy")
+                    Log.d(tag, "On destroy")
                 }
 
                 Lifecycle.Event.ON_ANY -> {
-                    Log.d(TAG, "On any")
+                    Log.d(tag, "On any")
                 }
             }
         }
@@ -192,5 +193,3 @@ private fun <S : EmaState, A : EmaAction.Screen, E : EmaEvent> RenderScreen(
         screenContent.onState(state, immutableActions)
     }
 }
-
-

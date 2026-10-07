@@ -15,20 +15,17 @@ import androidx.recyclerview.widget.RecyclerView
  */
 class EmaVerticalSpaceDecoration(
     private val verticalSpaceHeight: Int,
-    private val addSpaceBelowLastItem:Boolean = false) : RecyclerView.ItemDecoration() {
+    private val addSpaceBelowLastItem: Boolean = false
+) : RecyclerView.ItemDecoration() {
 
-    override fun getItemOffsets(
-        outRect: Rect,
-        view: View,
-        parent: RecyclerView,
-        state: RecyclerView.State
-    ) {
+    override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
         super.getItemOffsets(outRect, view, parent, state)
-        when{
+        when {
             addSpaceBelowLastItem -> {
                 outRect.bottom = verticalSpaceHeight
             }
-            (parent.getChildAdapterPosition(view) != parent.adapter?.itemCount?.minus(1) ) -> {
+
+            (parent.getChildAdapterPosition(view) != parent.adapter?.itemCount?.minus(1)) -> {
                 outRect.bottom = verticalSpaceHeight
             }
         }

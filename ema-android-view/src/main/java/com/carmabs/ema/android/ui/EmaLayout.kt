@@ -9,7 +9,6 @@ import android.widget.FrameLayout
 import androidx.viewbinding.ViewBinding
 import com.carmabs.ema.android.delegates.emaStateDelegate
 
-
 /**
  *
  * Abstract base class to implement custom layouts.
@@ -80,7 +79,7 @@ abstract class EmaLayout<B : ViewBinding, T : Any> : FrameLayout {
      * Called once the view has been created
      */
     protected open fun onViewCreated() {
-        //IMPLEMENT BY CHILD CLASSES IF IT IS NECESSARY
+        // IMPLEMENT BY CHILD CLASSES IF IT IS NECESSARY
     }
 
     /**
@@ -100,14 +99,10 @@ abstract class EmaLayout<B : ViewBinding, T : Any> : FrameLayout {
      */
     abstract fun B.setup(data: T)
 
-
     /**
      * @return the layout of the fragment to be inflated in the [EmaLayout.onCreateView]
      */
-    abstract fun createViewBinding(
-        inflater: LayoutInflater,
-        container: ViewGroup?
-    ): B
+    abstract fun createViewBinding(inflater: LayoutInflater, container: ViewGroup?): B
 
     /**
      * Handle the custom attributes of the view

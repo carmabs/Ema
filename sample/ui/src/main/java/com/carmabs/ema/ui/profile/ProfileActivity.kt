@@ -28,9 +28,7 @@ import com.carmabs.ema.ui.theme.EmaSampleTheme
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.get
 
-
 class ProfileActivity : ComponentActivity() {
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
@@ -52,8 +50,9 @@ class ProfileActivity : ComponentActivity() {
                             getInitializer(
                                 BundleSerializerStrategy.kSerialization(
                                     ProfileOnBoardingInitializer.serializer()
-                                ), savedInstanceState
-                            ),
+                                ),
+                                savedInstanceState
+                            )
                         ),
                         screenContent = ProfileOnBoardingScreenContent(),
                         onEvent = {
@@ -70,10 +69,14 @@ class ProfileActivity : ComponentActivity() {
                         initializerSupport = EmaInitializerSupport.kSerialization(
                             ProfileCreationInitializer.serializer()
                         ),
-                        saveStateManager = EmaSaveStateManager<ProfileCreationState, ProfileCreationEvent> { coroutineScope, savedStateHandle, emaViewModel ->
+                        saveStateManager = EmaSaveStateManager<ProfileCreationState, ProfileCreationEvent> {
+                                coroutineScope,
+                                savedStateHandle,
+                                emaViewModel
+                            ->
 
-                            //SAMPLE TO RETAIN STATE THROUGH SAVED STATE HANDLE WHEN PROCESS IS KILLED BY SYSTEM, FOR EXAMPLE,
-                            //DENYING A PERMISSION IN SETTINGS
+                            // SAMPLE TO RETAIN STATE THROUGH SAVED STATE HANDLE WHEN PROCESS IS KILLED BY SYSTEM, FOR EXAMPLE,
+                            // DENYING A PERMISSION IN SETTINGS
 
                             val keyName = "USERNAME"
                             val keySurname = "SURNAME"

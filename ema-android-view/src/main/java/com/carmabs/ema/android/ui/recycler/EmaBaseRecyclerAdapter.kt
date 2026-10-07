@@ -1,6 +1,5 @@
 package com.carmabs.ema.android.ui.recycler
 
-
 import android.annotation.SuppressLint
 import androidx.annotation.CallSuper
 import androidx.recyclerview.widget.DiffUtil
@@ -15,7 +14,7 @@ import java.util.*
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
 
-abstract class EmaBaseRecyclerAdapter<I:Any>(diffCallback: DiffUtil.ItemCallback<I> = getDefaultDiffCallback()) :
+abstract class EmaBaseRecyclerAdapter<I : Any>(diffCallback: DiffUtil.ItemCallback<I> = getDefaultDiffCallback()) :
     ListAdapter<I, EmaViewHolder<I>>(diffCallback) {
 
     /**
@@ -30,15 +29,10 @@ abstract class EmaBaseRecyclerAdapter<I:Any>(diffCallback: DiffUtil.ItemCallback
      */
     final override fun onBindViewHolder(holder: EmaViewHolder<I>, position: Int) {}
 
-    override fun onBindViewHolder(
-        holder: EmaViewHolder<I>,
-        position: Int,
-        payloads: MutableList<Any>
-    ) {
+    override fun onBindViewHolder(holder: EmaViewHolder<I>, position: Int, payloads: MutableList<Any>) {
         super.onBindViewHolder(holder, position, payloads)
-        holder.bind(getItem(position), holder,payloads)
+        holder.bind(getItem(position), holder, payloads)
     }
-
 
     /**
      * Update the adapter with a new list
@@ -88,31 +82,22 @@ abstract class EmaBaseRecyclerAdapter<I:Any>(diffCallback: DiffUtil.ItemCallback
     }
 
     protected open fun onItemClicked(item: I, position: Int, size: Int) {
-        //Override to add internal logic when item is clicked
+        // Override to add internal logic when item is clicked
     }
 
     companion object {
         fun <I : Any> getDefaultDiffCallback() = object : DiffUtil.ItemCallback<I>() {
-            override fun areItemsTheSame(oldItem: I, newItem: I): Boolean {
-                return oldItem == newItem
-            }
+            override fun areItemsTheSame(oldItem: I, newItem: I): Boolean = oldItem == newItem
 
             @SuppressLint("DiffUtilEquals")
-            override fun areContentsTheSame(oldItem: I, newItem: I): Boolean {
-                return (oldItem == newItem)
-            }
+            override fun areContentsTheSame(oldItem: I, newItem: I): Boolean = (oldItem == newItem)
         }
 
         fun <I : Any> getAlwaysUpdateCallback() = object : DiffUtil.ItemCallback<I>() {
-            override fun areItemsTheSame(oldItem: I, newItem: I): Boolean {
-                return false
-            }
+            override fun areItemsTheSame(oldItem: I, newItem: I): Boolean = false
 
             @SuppressLint("DiffUtilEquals")
-            override fun areContentsTheSame(oldItem: I, newItem: I): Boolean {
-                return false
-            }
+            override fun areContentsTheSame(oldItem: I, newItem: I): Boolean = false
         }
     }
-
 }

@@ -10,7 +10,7 @@ package com.carmabs.ema.ui.dialog.simple
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
 sealed interface SimpleDialogAction {
-    data object Cancel: SimpleDialogAction
-    data object Accept: SimpleDialogAction
-    data object BackPressed: SimpleDialogAction
+    data object Cancel : SimpleDialogAction
+    data object Accept : SimpleDialogAction
+    data object BackPressed : SimpleDialogAction
 }

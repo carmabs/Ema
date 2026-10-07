@@ -25,7 +25,6 @@ interface EmaNavControllerNavigator<E : EmaEvent> : EmaNavigator<E> {
 
     val activity: Activity
 
-
     /**
      * Navigate with android architecture components within action ID
      * @param actionID
@@ -41,12 +40,9 @@ interface EmaNavControllerNavigator<E : EmaEvent> : EmaNavigator<E> {
         navController.navigate(actionID, data, navOptions, extras)
     }
 
-
     /**
      * Navigates back
      * @return true if a destination was popped, false otherwise
      */
-    override fun navigateBack(result: Any?): Boolean {
-        return navController.popBackStack()
-    }
+    override fun navigateBack(result: Any?): Boolean = navController.popBackStack()
 }

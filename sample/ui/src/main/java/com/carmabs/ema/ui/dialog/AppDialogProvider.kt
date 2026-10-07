@@ -19,7 +19,7 @@ class AppDialogProvider(
 ) : EmaAndroidDialogProvider(fragmentManager) {
 
     override fun generateDialog(dialogData: EmaDialogData?): EmaDialog<*, *> {
-        val provider =  when (dialogData) {
+        val provider = when (dialogData) {
             is SimpleDialogData -> simpleDialogProvider.generateDialog(dialogData)
             is LoadingDialogData -> loadingDialogProvider.generateDialog(dialogData)
             is ErrorDialogData -> errorDialogProvider.generateDialog(dialogData)

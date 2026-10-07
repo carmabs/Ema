@@ -22,13 +22,12 @@ import com.carmabs.ema.core.manager.PermissionState
 import com.carmabs.ema.core.manager.areAllPermissionsStateGranted
 import com.carmabs.ema.core.model.EmaMultiplePermissionRequest
 import com.carmabs.ema.core.model.EmaPermissionRequest
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 import kotlin.coroutines.coroutineContext
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
-
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 /**
  * Created by Carlos Mateo Benito on 2020-05-07.
@@ -51,16 +50,13 @@ class EmaAndroidPermissionManager : EmaPermissionManager {
     private val requestMap = HashMap<String, Job>()
 
     companion object {
-        fun isPermissionGranted(context: Context, permission: String): Boolean {
-            return ContextCompat.checkSelfPermission(context, permission) == PERMISSION_GRANTED
-        }
+        fun isPermissionGranted(context: Context, permission: String): Boolean =
+            ContextCompat.checkSelfPermission(context, permission) == PERMISSION_GRANTED
 
-        fun isLocationCoarseGranted(context: Context): Boolean {
-            return ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) == PERMISSION_GRANTED
-        }
+        fun isLocationCoarseGranted(context: Context): Boolean = ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        ) == PERMISSION_GRANTED
 
         fun isLocationFineGranted(context: Context): Boolean {
             val finePermission = ContextCompat.checkSelfPermission(
@@ -128,45 +124,40 @@ class EmaAndroidPermissionManager : EmaPermissionManager {
             this.contractMultiplePermission.contract
         )
         permissionSingleRequest = activity.registerForActivityResult(
-            ActivityResultContracts.RequestPermission(), this.contractSinglePermission.contract
+            ActivityResultContracts.RequestPermission(),
+            this.contractSinglePermission.contract
         )
     }
 
-    override suspend fun requestCoarseLocationPermission(): PermissionState {
-        return requestAndroidPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
-    }
+    override suspend fun requestCoarseLocationPermission(): PermissionState =
+        requestAndroidPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
 
-    override suspend fun requestFineLocationPermission(): PermissionState {
-        return when {  //ANDROID 12
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-                requestFineLocationPermissionApi31()
-            }
+    override suspend fun requestFineLocationPermission(): PermissionState = when { // ANDROID 12
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+            requestFineLocationPermissionApi31()
+        }
 
-            else -> {
-                requestFineLocationPermissionApi30()
-            }
-
+        else -> {
+            requestFineLocationPermissionApi30()
         }
     }
 
     private suspend fun requestFineLocationPermissionApi31(): PermissionState {
         val map = requestAndroidMultiplePermission(
             Manifest.permission.ACCESS_COARSE_LOCATION,
-            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_FINE_LOCATION
         )
         return map.areAllPermissionsStateGranted().toState()
     }
 
-    private suspend fun requestFineLocationPermissionApi30(): PermissionState {
-        return requestAndroidPermission(
-            Manifest.permission.ACCESS_FINE_LOCATION
-        )
-    }
+    private suspend fun requestFineLocationPermissionApi30(): PermissionState = requestAndroidPermission(
+        Manifest.permission.ACCESS_FINE_LOCATION
+    )
 
     private fun getFineLocationPermission(): MutableList<String> {
         val listPermissions = mutableListOf<String>()
         when {
-            //Android 12
+            // Android 12
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
                 listPermissions.addAll(getFineLocationPermissionApi31())
             }
@@ -178,36 +169,28 @@ class EmaAndroidPermissionManager : EmaPermissionManager {
         return listPermissions
     }
 
-    private fun getFineLocationPermissionApi31(): List<String> {
-        return listOf(
-            Manifest.permission.ACCESS_COARSE_LOCATION,
-            Manifest.permission.ACCESS_FINE_LOCATION
-        )
-    }
+    private fun getFineLocationPermissionApi31(): List<String> = listOf(
+        Manifest.permission.ACCESS_COARSE_LOCATION,
+        Manifest.permission.ACCESS_FINE_LOCATION
+    )
 
-    private fun getFineLocationPermissionApi30(): String {
-        return Manifest.permission.ACCESS_FINE_LOCATION
-    }
+    private fun getFineLocationPermissionApi30(): String = Manifest.permission.ACCESS_FINE_LOCATION
 
-    suspend fun requestBackgroundLocationPermission(
-        infoDialog: InfoDialogType
-    ): PermissionState {
-        return when {
-            //ANDROID 11
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
-                requestBackgroundLocationPermissionApi30(infoDialog)
-            }
-            //ANDROID 10
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> {
-                requestBackgroundLocationPermissionApi29()
-            }
+    suspend fun requestBackgroundLocationPermission(infoDialog: InfoDialogType): PermissionState = when {
+        // ANDROID 11
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
+            requestBackgroundLocationPermissionApi30(infoDialog)
+        }
 
-            else -> {
-                requestBackgroundLocationPermissionApi28()
-            }
+        // ANDROID 10
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> {
+            requestBackgroundLocationPermissionApi29()
+        }
+
+        else -> {
+            requestBackgroundLocationPermissionApi28()
         }
     }
-
 
     private suspend fun requestBackgroundLocationPermissionApi28(): PermissionState {
         val map = requestAndroidMultiplePermission(
@@ -230,9 +213,7 @@ class EmaAndroidPermissionManager : EmaPermissionManager {
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
-    private suspend fun requestBackgroundLocationPermissionApi30(
-        dialog: InfoDialogType,
-    ): PermissionState {
+    private suspend fun requestBackgroundLocationPermissionApi30(dialog: InfoDialogType): PermissionState {
         val scope = coroutineContext.toScope()
         val state = requestFineLocationPermission()
         return if (state == PermissionState.GRANTED) {
@@ -257,7 +238,6 @@ class EmaAndroidPermissionManager : EmaPermissionManager {
                                         }
                                     }
                                 }
-
                             }
                         }
 
@@ -298,34 +278,24 @@ class EmaAndroidPermissionManager : EmaPermissionManager {
         }
     }
 
-    override suspend fun requestPermission(
-        permission: String
-    ): PermissionState {
-        return requestPermissionWithLocationCheck(permission)
-    }
+    override suspend fun requestPermission(permission: String): PermissionState =
+        requestPermissionWithLocationCheck(permission)
 
-    override suspend fun requestMultiplePermission(
-        vararg permission: String
-    ): Map<String, PermissionState> {
-        return requestMultiplePermissionWithLocationCheck(
+    override suspend fun requestMultiplePermission(vararg permission: String): Map<String, PermissionState> =
+        requestMultiplePermissionWithLocationCheck(
             *permission
         )
-    }
 
-    private suspend fun requestAndroidPermission(
-        permission: String
-    ): PermissionState {
+    private suspend fun requestAndroidPermission(permission: String): PermissionState {
         checkPermissionInManifest(permission)
-        return if (isPermissionGranted(permission) == PermissionState.GRANTED)
+        return if (isPermissionGranted(permission) == PermissionState.GRANTED) {
             PermissionState.GRANTED
-        else {
+        } else {
             contractSinglePermission.launch(permission, permissionSingleRequest)
         }
     }
 
-    private suspend fun requestAndroidMultiplePermission(
-        vararg permission: String
-    ): Map<String, PermissionState> {
+    private suspend fun requestAndroidMultiplePermission(vararg permission: String): Map<String, PermissionState> {
         checkPermissionInManifest(*permission)
         return if (areAllPermissionsGranted(*permission)) {
             val map = hashMapOf<String, PermissionState>()
@@ -341,74 +311,65 @@ class EmaAndroidPermissionManager : EmaPermissionManager {
         }
     }
 
-    private suspend fun requestPermissionWithLocationCheck(
-        permission: String,
-    ): PermissionState {
-        return when (val check = checkLocationPermission(permission)) {
+    private suspend fun requestPermissionWithLocationCheck(permission: String): PermissionState =
+        when (val check = checkLocationPermission(permission)) {
             is LocationPermissionCheck.CallRequestBackground ->
                 throw RuntimeException(check.message)
 
             is LocationPermissionCheck.CallRequestFineLocation -> requestFineLocationPermission()
 
             LocationPermissionCheck.Continue -> requestAndroidPermission(permission)
-
         }
-    }
 
     private suspend fun requestMultiplePermissionWithLocationCheck(
         vararg permission: String
-    ): Map<String, PermissionState> {
-        return when (val check = checkLocationPermission(*permission)) {
-            is LocationPermissionCheck.CallRequestBackground -> {
-                throw RuntimeException(check.message)
-            }
+    ): Map<String, PermissionState> = when (val check = checkLocationPermission(*permission)) {
+        is LocationPermissionCheck.CallRequestBackground -> {
+            throw RuntimeException(check.message)
+        }
 
-            is LocationPermissionCheck.CallRequestFineLocation -> {
-                val fineState = requestFineLocationPermission()
-                val mapResultsForNotLocationFine = requestAndroidMultiplePermission(
-                    *permission.filterNot {
-                        val permissionsFine = getFineLocationPermission()
-                        permissionsFine.contains(it)
-                    }.toTypedArray()
-                )
+        is LocationPermissionCheck.CallRequestFineLocation -> {
+            val fineState = requestFineLocationPermission()
+            val mapResultsForNotLocationFine = requestAndroidMultiplePermission(
+                *permission.filterNot {
+                    val permissionsFine = getFineLocationPermission()
+                    permissionsFine.contains(it)
+                }.toTypedArray()
+            )
 
-                val resultMap = hashMapOf<String, PermissionState>()
-                resultMap.putAll(mapResultsForNotLocationFine)
-                resultMap[Manifest.permission.ACCESS_FINE_LOCATION] = fineState
-                resultMap
+            val resultMap = hashMapOf<String, PermissionState>()
+            resultMap.putAll(mapResultsForNotLocationFine)
+            resultMap[Manifest.permission.ACCESS_FINE_LOCATION] = fineState
+            resultMap
+        }
 
-            }
-
-            LocationPermissionCheck.Continue -> {
-                requestAndroidMultiplePermission(*permission)
-            }
+        LocationPermissionCheck.Continue -> {
+            requestAndroidMultiplePermission(*permission)
         }
     }
 
-    private fun checkLocationPermission(
-        vararg permission: String,
-    ): LocationPermissionCheck {
+    private fun checkLocationPermission(vararg permission: String): LocationPermissionCheck {
         val check: LocationPermissionCheck = when {
-            //Different behaviour dependent of OS Version
+            // Different behaviour dependent of OS Version
             permission.contains(Manifest.permission.ACCESS_BACKGROUND_LOCATION) -> {
                 LocationPermissionCheck.CallRequestBackground(this.javaClass.name)
             }
-            //Ok, assure fine location in all devices
+
+            // Ok, assure fine location in all devices
             permission.contains(Manifest.permission.ACCESS_FINE_LOCATION) && permission.contains(
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) -> {
                 LocationPermissionCheck.Continue
             }
-            //Different behaviour dependent of OS Version
-            isPermissionGranted(Manifest.permission.ACCESS_COARSE_LOCATION) != PermissionState.GRANTED && permission.contains(
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) -> {
+
+            // Different behaviour dependent of OS Version
+            isPermissionGranted(Manifest.permission.ACCESS_COARSE_LOCATION) != PermissionState.GRANTED &&
+                permission.contains(Manifest.permission.ACCESS_FINE_LOCATION) -> {
                 LocationPermissionCheck.CallRequestFineLocation(this.javaClass.name)
             }
 
             else ->
                 LocationPermissionCheck.Continue
-
         }
 
         return check
@@ -417,14 +378,16 @@ class EmaAndroidPermissionManager : EmaPermissionManager {
     private sealed interface LocationPermissionCheck {
         data class CallRequestFineLocation(
             private val classContainerName: String,
-            val message: String = "Please, use the requestFineLocationPermission method of the $classContainerName class to handle this permission " +
-                    "properly with all android versions "
+            val message: String =
+                "Please, use the requestFineLocationPermission method of the $classContainerName " +
+                    "class to handle this permission properly with all android versions "
         ) : LocationPermissionCheck
 
         data class CallRequestBackground(
             private val classContainerName: String,
-            val message: String = "Please, use the requestBackgroundLocationPermission method of the $classContainerName class to handle this permission " +
-                    "properly with all android versions "
+            val message: String =
+                "Please, use the requestBackgroundLocationPermission method of the $classContainerName " +
+                    "class to handle this permission properly with all android versions "
         ) : LocationPermissionCheck
 
         object Continue : LocationPermissionCheck
@@ -436,75 +399,66 @@ class EmaAndroidPermissionManager : EmaPermissionManager {
         return granted.toState(shouldShowRequestPermissionRationale(permission))
     }
 
-    override fun isLocationCoarseGranted(): PermissionState {
-        return isLocationCoarseGranted(context()).toState(
-            shouldShowRequestPermissionRationale(
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            )
+    override fun isLocationCoarseGranted(): PermissionState = isLocationCoarseGranted(context()).toState(
+        shouldShowRequestPermissionRationale(
+            Manifest.permission.ACCESS_COARSE_LOCATION
         )
-    }
+    )
 
-    override fun isLocationFineGranted(): PermissionState {
-        return if (Companion.isLocationFineGranted(context())) {
-            PermissionState.GRANTED
+    override fun isLocationFineGranted(): PermissionState = if (Companion.isLocationFineGranted(context())) {
+        PermissionState.GRANTED
+    } else {
+        if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) ||
+            shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION)
+        ) {
+            PermissionState.NOT_GRANTED_SHOULD_EXPLAIN
         } else {
-            if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) || shouldShowRequestPermissionRationale(
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                )
-            )
-                PermissionState.NOT_GRANTED_SHOULD_EXPLAIN
-            else
-                PermissionState.NOT_GRANTED
+            PermissionState.NOT_GRANTED
         }
     }
 
-    override fun isLocationBackgroundGranted(): PermissionState {
-        return when {
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> {
-                isLocationBackgroundGrantedApi29()
-            }
+    override fun isLocationBackgroundGranted(): PermissionState = when {
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> {
+            isLocationBackgroundGrantedApi29()
+        }
 
-            else -> {
-                isLocationBackgroundGrantedApi28()
-            }
+        else -> {
+            isLocationBackgroundGrantedApi28()
         }
     }
 
-    private fun isLocationBackgroundGrantedApi28(): PermissionState {
-        return isLocationFineGranted()
-    }
+    private fun isLocationBackgroundGrantedApi28(): PermissionState = isLocationFineGranted()
 
     @RequiresApi(Build.VERSION_CODES.Q)
     private fun isLocationBackgroundGrantedApi29(): PermissionState {
         val locationGranted = isLocationFineGranted()
-        return if (locationGranted != PermissionState.GRANTED)
+        return if (locationGranted != PermissionState.GRANTED) {
             locationGranted
-        else {
+        } else {
             val backgroundGranted = ContextCompat.checkSelfPermission(
                 context(),
                 Manifest.permission.ACCESS_BACKGROUND_LOCATION
             ) == PERMISSION_GRANTED
 
-            backgroundGranted.toState(shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_BACKGROUND_LOCATION))
+            backgroundGranted.toState(
+                shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+            )
         }
     }
-
 
     override fun areAllPermissionsGranted(vararg permission: String): Boolean {
         var permissionsGranted = true
         permission.forEach {
             permissionsGranted = isPermissionGranted(it) == PermissionState.GRANTED
-            if (!permissionsGranted)
+            if (!permissionsGranted) {
                 return false
+            }
         }
         return permissionsGranted
     }
 
-    override fun shouldShowRequestPermissionRationale(
-        permission: String
-    ): Boolean {
-        return shouldShowRequestPermissionRationaleFunction.invoke(permission)
-    }
+    override fun shouldShowRequestPermissionRationale(permission: String): Boolean =
+        shouldShowRequestPermissionRationaleFunction.invoke(permission)
 
     private fun checkPermissionInManifest(vararg permissions: String) {
         val manifestPermissions = context().packageManager.getPackageInfo(
@@ -512,17 +466,13 @@ class EmaAndroidPermissionManager : EmaPermissionManager {
             PackageManager.GET_PERMISSIONS
         ).requestedPermissions
         permissions.forEach {
-            if (manifestPermissions?.contains(it) == false)
+            if (manifestPermissions?.contains(it) == false) {
                 throw RuntimeException("You must set <uses-permission android:name=\"$it\" /> in the manifest file")
+            }
         }
-
     }
 
-    override fun handleRequest(
-        request: EmaPermissionRequest,
-        scope: CoroutineScope,
-        permission: String
-    ) {
+    override fun handleRequest(request: EmaPermissionRequest, scope: CoroutineScope, permission: String) {
         if (request.shouldRequest) {
             requestMap[permission]?.cancel()
             requestMap[permission] = scope.launch {
@@ -538,7 +488,7 @@ class EmaAndroidPermissionManager : EmaPermissionManager {
     override fun handleRequestMultiple(
         request: EmaMultiplePermissionRequest,
         scope: CoroutineScope,
-        vararg permission: String,
+        vararg permission: String
     ) {
         val permissionKey = permission.reduce { acc, s -> "$acc,$s" }
         if (request.shouldRequest) {
@@ -553,17 +503,11 @@ class EmaAndroidPermissionManager : EmaPermissionManager {
         }
     }
 
-    override fun responseRequest(
-        request: EmaPermissionRequest,
-        permissionState: PermissionState
-    ) {
+    override fun responseRequest(request: EmaPermissionRequest, permissionState: PermissionState) {
         request.onPermissionResponse.invoke(permissionState)
     }
 
-    override fun responseRequest(
-        request: EmaMultiplePermissionRequest,
-        permissionMap: Map<String, PermissionState>
-    ) {
+    override fun responseRequest(request: EmaMultiplePermissionRequest, permissionMap: Map<String, PermissionState>) {
         request.onPermissionResponse.invoke(permissionMap)
     }
 }

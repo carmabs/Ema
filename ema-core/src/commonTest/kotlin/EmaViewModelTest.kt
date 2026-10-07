@@ -10,6 +10,13 @@ import com.carmabs.ema.core.state.EmaEvent
 import com.carmabs.ema.core.state.EmaState
 import com.carmabs.ema.core.viewmodel.EmaViewModelAction
 import com.carmabs.ema.core.viewmodel.EmaViewModelBasic
+import kotlin.test.AfterTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertIs
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -22,13 +29,6 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeoutOrNull
-import kotlin.test.AfterTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertIs
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
 
 data class CounterState(val count: Int = 0, val text: String = "") : EmaState
 
@@ -44,10 +44,8 @@ sealed interface CounterEvent : EmaEvent {
 
 data class CounterInitializer(val start: Int) : EmaInitializer
 
-class CounterViewModel(
-    scope: CoroutineScope,
-    private val renderOnInitialization: Boolean = true
-) : EmaViewModelAction<CounterState, CounterAction, CounterEvent>(CounterState(), scope) {
+class CounterViewModel(scope: CoroutineScope, private val renderOnInitialization: Boolean = true) :
+    EmaViewModelAction<CounterState, CounterAction, CounterEvent>(CounterState(), scope) {
 
     val hooks = mutableListOf<String>()
 
@@ -99,8 +97,7 @@ class CounterViewModel(
     fun <T> launch(logName: String? = null, block: suspend CoroutineScope.() -> T) =
         sideEffect(logName = logName, action = block)
 
-    fun <T> launchSingle(id: String, block: suspend CoroutineScope.() -> T) =
-        singleSideEffect(id, action = block)
+    fun <T> launchSingle(id: String, block: suspend CoroutineScope.() -> T) = singleSideEffect(id, action = block)
 
     fun currentScope() = scope
 
@@ -216,9 +213,15 @@ class EmaViewModelTest {
         var success: Int? = null
         var failure: Throwable? = null
         var finished = false
-        val handler = viewModel.launch { delay(100); 1 }
+        val handler = viewModel.launch {
+            delay(100)
+            1
+        }
         handler.onSuccess { success = it }.onFinish { finished = true }
-        viewModel.launch<Int> { delay(100); error("boom") }.onError { failure = it }
+        viewModel.launch<Int> {
+            delay(100)
+            error("boom")
+        }.onError { failure = it }
         assertNull(success)
         advanceUntilIdle()
         assertEquals(1, success)
@@ -231,9 +234,15 @@ class EmaViewModelTest {
         val viewModel = CounterViewModel(CoroutineScope(StandardTestDispatcher(testScheduler)))
         val results = mutableListOf<String>()
         var errors = 0
-        viewModel.launchSingle("search") { delay(100); "first" }
+        viewModel.launchSingle("search") {
+            delay(100)
+            "first"
+        }
             .onSuccess { results.add(it) }.onError { errors++ }
-        viewModel.launchSingle("search") { delay(100); "second" }
+        viewModel.launchSingle("search") {
+            delay(100)
+            "second"
+        }
             .onSuccess { results.add(it) }.onError { errors++ }
         advanceUntilIdle()
         assertEquals(listOf("second"), results)
@@ -293,17 +302,31 @@ class EmaViewModelTest {
     @Test
     fun `the default method name names the container`() = runTest {
         var methodName: String? = null
-        Ema.init(EmaConfiguration(sideEffectConfig = EmaSideEffectConfig(defaultFinishAction = { methodName = it.methodName })))
+        Ema.init(
+            EmaConfiguration(
+                sideEffectConfig = EmaSideEffectConfig(defaultFinishAction = {
+                    methodName =
+                        it.methodName
+                })
+            )
+        )
         createViewModel().launch { 1 }
         assertEquals("Method in CounterViewModel", methodName)
     }
 
     @Test
     fun `exceptions are rethrown with the ThrowExceptions policy`() = runTest {
-        Ema.init(EmaConfiguration(sideEffectConfig = EmaSideEffectConfig(exceptionPolicy = EmaSideEffectConfig.ExceptionPolicy.ThrowExceptions)))
+        Ema.init(
+            EmaConfiguration(
+                sideEffectConfig = EmaSideEffectConfig(
+                    exceptionPolicy = EmaSideEffectConfig.ExceptionPolicy.ThrowExceptions
+                )
+            )
+        )
         var uncaught: Throwable? = null
         val scope = CoroutineScope(
-            SupervisorJob() + UnconfinedTestDispatcher(testScheduler) + CoroutineExceptionHandler { _, e -> uncaught = e }
+            SupervisorJob() + UnconfinedTestDispatcher(testScheduler) +
+                CoroutineExceptionHandler { _, e -> uncaught = e }
         )
         CounterViewModel(scope).launch<Int> { error("boom") }
         assertIs<IllegalStateException>(uncaught)

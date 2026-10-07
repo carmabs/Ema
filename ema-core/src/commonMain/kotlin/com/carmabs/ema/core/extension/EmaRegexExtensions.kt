@@ -1,6 +1,6 @@
 package com.carmabs.ema.core.extension
 
-/**
+/*
  * Created by Carlos Mateo Benito on 18/9/22.
  *
  * <p>

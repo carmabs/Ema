@@ -4,7 +4,6 @@ import com.carmabs.domain.model.User
 import com.carmabs.ema.core.initializer.EmaInitializer
 import kotlinx.serialization.Serializable
 
-
 @Serializable
 sealed interface HomeInitializer : EmaInitializer {
     @Serializable

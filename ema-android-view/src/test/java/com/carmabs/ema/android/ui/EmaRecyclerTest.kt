@@ -28,22 +28,27 @@ import com.carmabs.ema.android.ui.recycler.EmaViewHolder
 import com.carmabs.ema.android.ui.recycler.decorator.EmaGridSpacingItemDecoration
 import com.carmabs.ema.android.ui.recycler.decorator.EmaVerticalSpaceDecoration
 import com.carmabs.ema.android.waitUntil
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.GraphicsMode
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
 
 class TextAdapter : EmaRecyclerAdapter<TextBinding, String>() {
     val clicked = mutableListOf<Pair<String, Int>>()
 
     override fun createViewBinding(inflater: LayoutInflater, container: ViewGroup?) = TextBinding(inflater.context)
 
-    override fun TextBinding.bind(item: String, viewType: Int, holder: EmaViewHolder<String>, payloads: MutableList<Any>) {
+    override fun TextBinding.bind(
+        item: String,
+        viewType: Int,
+        holder: EmaViewHolder<String>,
+        payloads: MutableList<Any>
+    ) {
         text.text = item
     }
 
@@ -54,7 +59,12 @@ class TextAdapter : EmaRecyclerAdapter<TextBinding, String>() {
 
 class DefaultClickAdapter : EmaRecyclerAdapter<TextBinding, String>(getAlwaysUpdateCallback()) {
     override fun createViewBinding(inflater: LayoutInflater, container: ViewGroup?) = TextBinding(inflater.context)
-    override fun TextBinding.bind(item: String, viewType: Int, holder: EmaViewHolder<String>, payloads: MutableList<Any>) {
+    override fun TextBinding.bind(
+        item: String,
+        viewType: Int,
+        holder: EmaViewHolder<String>,
+        payloads: MutableList<Any>
+    ) {
         text.text = item
     }
 }
@@ -67,7 +77,12 @@ class MultiAdapter : EmaMultiRecyclerAdapter<String>() {
     override fun createMultiViewHolder(view: ViewGroup, viewType: Int) =
         EmaAdapterMultiViewHolder(TextBinding(view.context), viewType)
 
-    override fun ViewBinding.bind(item: String, viewType: Int, holder: EmaViewHolder<String>, payloads: MutableList<Any>) {
+    override fun ViewBinding.bind(
+        item: String,
+        viewType: Int,
+        holder: EmaViewHolder<String>,
+        payloads: MutableList<Any>
+    ) {
         (this as TextBinding).text.text = "$viewType:$item"
     }
 
@@ -82,12 +97,14 @@ class EmaRecyclerTest {
 
     private val activity = Robolectric.buildActivity(HostActivity::class.java).setup().get()
 
-    private fun recycler(adapter: RecyclerView.Adapter<*>, layoutManager: RecyclerView.LayoutManager = LinearLayoutManager(activity)) =
-        RecyclerView(activity).apply {
-            this.layoutManager = layoutManager
-            this.adapter = adapter
-            activity.setContentView(this)
-        }
+    private fun recycler(
+        adapter: RecyclerView.Adapter<*>,
+        layoutManager: RecyclerView.LayoutManager = LinearLayoutManager(activity)
+    ) = RecyclerView(activity).apply {
+        this.layoutManager = layoutManager
+        this.adapter = adapter
+        activity.setContentView(this)
+    }
 
     private fun RecyclerView.layoutItems() {
         idleMain()

@@ -9,9 +9,7 @@ import com.carmabs.ema.presentation.home.HomeInitializer
 import com.carmabs.ema.presentation.login.LoginEvent
 import com.carmabs.ema.sample.ema.R
 
-class LoginNavigator(
-    fragment: Fragment
-) : EmaFragmentNavControllerNavigator<LoginEvent>(fragment) {
+class LoginNavigator(fragment: Fragment) : EmaFragmentNavControllerNavigator<LoginEvent>(fragment) {
 
     override fun navigate(event: LoginEvent) {
         when (event) {
@@ -30,9 +28,8 @@ class LoginNavigator(
         }
     }
 
-    private fun mapToHomeInitializer(navigationEvent: LoginEvent.LoginSuccess): HomeInitializer {
-        return navigationEvent.user.let {
+    private fun mapToHomeInitializer(navigationEvent: LoginEvent.LoginSuccess): HomeInitializer =
+        navigationEvent.user.let {
             HomeInitializer.HomeUser(it)
         }
-    }
 }

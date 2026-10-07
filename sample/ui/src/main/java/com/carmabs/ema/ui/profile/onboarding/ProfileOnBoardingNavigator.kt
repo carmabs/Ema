@@ -14,13 +14,11 @@ import com.carmabs.ema.presentation.profile.creation.ProfileCreationInitializer
 import com.carmabs.ema.presentation.profile.onboarding.ProfileOnBoardingEvent
 import com.carmabs.ema.ui.profile.creation.ProfileCreationScreenContent
 
-class ProfileOnBoardingNavigator(
-    activity: ComponentActivity,
-    navController: NavController
-) : EmaComposableNavigator(
-    context = activity,
-    navController = navController
-) {
+class ProfileOnBoardingNavigator(activity: ComponentActivity, navController: NavController) :
+    EmaComposableNavigator(
+        context = activity,
+        navController = navController
+    ) {
     fun handleProfileOnBoardingEvent(event: ProfileOnBoardingEvent) {
         when (event) {
             is ProfileOnBoardingEvent.UserTypeSelected -> {
@@ -35,7 +33,6 @@ class ProfileOnBoardingNavigator(
 
             ProfileOnBoardingEvent.OnBoardingCancelled -> navigateBack()
         }
-
     }
 
     private fun mapToCreationInitializer(role: Role) = when (role) {

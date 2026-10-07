@@ -7,7 +7,6 @@ import com.carmabs.domain.repository.Repository
 import com.carmabs.ema.core.model.EmaResult
 import com.carmabs.ema.core.usecase.EmaUseCase
 
-
 /**
  * Login
  *
@@ -18,12 +17,8 @@ import com.carmabs.ema.core.usecase.EmaUseCase
 class LoginUseCase(private val repository: Repository) :
     EmaUseCase<LoginUseCase.Input, EmaResult<User, LoginException>>() {
 
-    override suspend fun useCaseFunction(input: Input): EmaResult<User, LoginException> {
-        return repository.login(LoginRequest(input.username, input.password))
-    }
+    override suspend fun useCaseFunction(input: Input): EmaResult<User, LoginException> =
+        repository.login(LoginRequest(input.username, input.password))
 
-    data class Input(
-        val username: String,
-        val password: String
-    )
+    data class Input(val username: String, val password: String)
 }

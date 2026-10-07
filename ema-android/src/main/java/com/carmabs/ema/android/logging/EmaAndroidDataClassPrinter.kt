@@ -6,7 +6,7 @@ import java.lang.reflect.Modifier
 import java.text.BreakIterator
 import java.util.UUID
 
-/**
+/*
  * Created by Carlos Mateo Benito on 5/10/23.
  *
  * <p>
@@ -22,13 +22,10 @@ import java.util.UUID
  * @param indent number of spaces used to indent each nesting level
  * @param wrappedLineWidth how many characters of a string should be on a line
  */
-class EmaAndroidDataClassPrinter(
-    private val indent: Int = 2,
-    private val wrappedLineWidth: Int = 80
-) : EmaDataClassPrinter {
+class EmaAndroidDataClassPrinter(private val indent: Int = 2, private val wrappedLineWidth: Int = 80) :
+    EmaDataClassPrinter {
 
-    override fun print(value: Any?): String =
-        PrettyPrinter(indent, wrappedLineWidth).serializeToStringPretty(value)
+    override fun print(value: Any?): String = PrettyPrinter(indent, wrappedLineWidth).serializeToStringPretty(value)
 }
 
 /**
@@ -39,10 +36,7 @@ class EmaAndroidDataClassPrinter(
  * @param [writeTo] Where to write a pretty printed object.
  * @param [wrappedLineWidth] How long a String needs to be before it gets transformed into a multiline String.
  */
-private class PrettyPrinter(
-    private val tabSize: Int,
-    private val wrappedLineWidth: Int
-) {
+private class PrettyPrinter(private val tabSize: Int, private val wrappedLineWidth: Int) {
     private val lineInstance = BreakIterator.getLineInstance()
 
     //    private val logger = KotlinLogging.logger {}
@@ -92,11 +86,17 @@ private class PrettyPrinter(
         visited.add(id)
         resultString += when {
             obj is Iterable<*> -> ppIterable(obj, collectionElementPad)
+
             obj is Map<*, *> -> ppMap(obj, collectionElementPad)
+
             obj is String -> ppString(obj, collectionElementPad)
+
             obj is Enum<*> -> ppEnum(obj)
+
             obj.isAtomic() -> ppAtomic(obj)
+
             obj is Any -> ppPlainObject(obj, objectFieldPad)
+
             else -> {
                 ""
             }
@@ -116,11 +116,7 @@ private class PrettyPrinter(
      * of an application to each element is on its own line, separated by a separator. `currentDepth` specifies the
      * indentation level of any closing bracket.
      */
-    private fun <T> Iterable<T>.ppContents(
-        currentDepth: String,
-        separator: String = "",
-        f: (T) -> String
-    ): String {
+    private fun <T> Iterable<T>.ppContents(currentDepth: String, separator: String = "", f: (T) -> String): String {
         val list = this.toList()
         var resultString = ""
         if (!list.isEmpty()) {
@@ -210,27 +206,19 @@ private class PrettyPrinter(
         return resultString
     }
 
-    private fun ppEnum(enum: Enum<*>): String {
-        return write("${enum.javaClass.simpleName}.$enum")
-    }
+    private fun ppEnum(enum: Enum<*>): String = write("${enum.javaClass.simpleName}.$enum")
 
-    private fun ppAtomic(obj: Any?): String {
-        return write(obj.toString())
-    }
+    private fun ppAtomic(obj: Any?): String = write(obj.toString())
 
     /**
      * Writes to the writeTo with a new line and adds logging
      */
-    private fun writeLine(str: Any? = ""): String {
-        return str.toString() + "\n"
-    }
+    private fun writeLine(str: Any? = ""): String = str.toString() + "\n"
 
     /**
      * Writes to the writeTo and adds logging
      */
-    private fun write(str: Any?): String {
-        return str.toString()
-    }
+    private fun write(str: Any?): String = str.toString()
 
     private fun wordWrap(text: String, padding: String): String {
         lineInstance.setText(text)
@@ -259,23 +247,18 @@ private class PrettyPrinter(
             .joinToString("\n")
     }
 
-    private fun deepen(currentDepth: String, size: Int = tabSize): String =
-        " ".repeat(size) + currentDepth
+    private fun deepen(currentDepth: String, size: Int = tabSize): String = " ".repeat(size) + currentDepth
 }
 
 /**
  * Determines if this object should not be broken down further for pretty printing.
  */
-private fun Any?.isAtomic(): Boolean =
-    this == null
-            || this is Char || this is Number || this is Boolean || this is UUID
+private fun Any?.isAtomic(): Boolean = this == null ||
+    this is Char || this is Number || this is Boolean || this is UUID
 
-private fun Any?.isClassInside(): Boolean =
-    this?.javaClass?.isMemberClass == true
+private fun Any?.isClassInside(): Boolean = this?.javaClass?.isMemberClass == true
 
-private fun Field.isStatic(): Boolean =
-    Modifier.isStatic(modifiers)
-
+private fun Field.isStatic(): Boolean = Modifier.isStatic(modifiers)
 
 // For syntactic sugar
 private operator fun <T> Set<T>.get(x: T): Boolean = this.contains(x)

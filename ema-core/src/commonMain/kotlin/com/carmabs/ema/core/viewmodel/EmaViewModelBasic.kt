@@ -57,7 +57,6 @@ abstract class EmaViewModelBasic<S : EmaState, E : EmaEvent>(
     protected var scope: CoroutineScope = defaultScope
         private set
 
-
     /**
      * To determine if the view must be updated when view model is created automatically
      */
@@ -88,8 +87,7 @@ abstract class EmaViewModelBasic<S : EmaState, E : EmaEvent>(
 
     final override val eventFlow: Flow<List<E>> = emaEventDispatcher.eventFlow
 
-    final override fun consumeEvent(event: E) =  emaEventDispatcher.consumeEvent(event)
-
+    final override fun consumeEvent(event: E) = emaEventDispatcher.consumeEvent(event)
 
     private var firstTimeResumed = true
 
@@ -103,8 +101,9 @@ abstract class EmaViewModelBasic<S : EmaState, E : EmaEvent>(
     override fun onCreated(initializer: EmaInitializer?) {
         if (!hasBeenInitialized) {
             hasBeenInitialized = true
-            if (updateOnInitialization)
+            if (updateOnInitialization) {
                 mStateFlow.tryEmit(state)
+            }
             onStateCreated(initializer)
             onBroadcastListenerSetup()
         }
@@ -138,7 +137,6 @@ abstract class EmaViewModelBasic<S : EmaState, E : EmaEvent>(
      */
     abstract fun onStateCreated(initializer: EmaInitializer? = null)
 
-
     /**
      * Called always the view goes to the foreground
      */
@@ -161,7 +159,6 @@ abstract class EmaViewModelBasic<S : EmaState, E : EmaEvent>(
 
     final override val stateFlow: StateFlow<S> = mStateFlow.asStateFlow()
 
-
     /**
      * When a background task must be executed for data retrieving or other background job, it must
      * be called through this method with [action] function
@@ -180,9 +177,7 @@ abstract class EmaViewModelBasic<S : EmaState, E : EmaEvent>(
         throwException: Boolean = shouldThrowException(),
         logName: String? = null,
         action: suspend CoroutineScope.() -> T
-    ): EmaFunctionResultHandler<T> {
-        return generateResultHandler(dispatcher, throwException, logName, action)
-    }
+    ): EmaFunctionResultHandler<T> = generateResultHandler(dispatcher, throwException, logName, action)
 
     private fun <T> generateResultHandler(
         dispatcher: CoroutineContext,
@@ -207,7 +202,8 @@ abstract class EmaViewModelBasic<S : EmaState, E : EmaEvent>(
                             generateEmaReflection(
                                 action,
                                 logName
-                            ), it
+                            ),
+                            it
                         )
                     )
                 }
@@ -222,16 +218,12 @@ abstract class EmaViewModelBasic<S : EmaState, E : EmaEvent>(
         }
     )
 
-    private fun <T> generateEmaReflection(
-        action: suspend CoroutineScope.() -> T,
-        logName: String?
-    ): EmaReflection {
-        return EmaReflection(
+    private fun <T> generateEmaReflection(action: suspend CoroutineScope.() -> T, logName: String?): EmaReflection =
+        EmaReflection(
             containerClassName = this::class.simpleName.checkNull(),
             containerClassQualifiedName = this::class.emaName,
             methodName = logName ?: sideEffectConfig.methodNameResolver.resolve(this, action)
         )
-    }
 
     protected fun <T> singleSideEffect(
         id: String,
@@ -266,7 +258,6 @@ abstract class EmaViewModelBasic<S : EmaState, E : EmaEvent>(
         private set
 
     private val emaResultHandler: EmaResultHandler = EmaResultHandler.getInstance()
-
 
     /**
      * Here should implement the listener for result data from other views through [registerBackBroadcastListener] method
@@ -309,10 +300,7 @@ abstract class EmaViewModelBasic<S : EmaState, E : EmaEvent>(
      * Set the listener for back data when the result view is destroyed. To select the resultId use the EmaViewModel::class.resultId() method
      * of the selected implementation of EmaViewModel whose result is required. Example SampleEmaViewModel::class.resultId()
      */
-    protected fun registerBackBroadcastListener(
-        backBroadcastId: BackBroadcastId,
-        receiver: (Any?) -> Unit
-    ) {
+    protected fun registerBackBroadcastListener(backBroadcastId: BackBroadcastId, receiver: (Any?) -> Unit) {
         emaResultHandler.addResultReceiver(
             EmaReceiverModel(
                 resultKey = backBroadcastId.id,

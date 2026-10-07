@@ -11,12 +11,8 @@ import com.carmabs.ema.sample.ema.databinding.HomeLayoutItemUserBinding
 
 class HomeSingleAdapter : EmaRecyclerAdapter<HomeLayoutItemUserBinding, User>() {
 
-    override fun createViewBinding(
-        inflater: LayoutInflater,
-        container: ViewGroup?
-    ): HomeLayoutItemUserBinding {
-        return HomeLayoutItemUserBinding.inflate(inflater, container, false)
-    }
+    override fun createViewBinding(inflater: LayoutInflater, container: ViewGroup?): HomeLayoutItemUserBinding =
+        HomeLayoutItemUserBinding.inflate(inflater, container, false)
 
     override fun HomeLayoutItemUserBinding.bind(
         item: User,

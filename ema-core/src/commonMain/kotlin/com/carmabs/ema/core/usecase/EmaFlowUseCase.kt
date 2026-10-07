@@ -12,23 +12,20 @@ import kotlinx.coroutines.withContext
  *
  * All the logic associated to data retrieving must be done inside an use case.
  *
- * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
- */
-
-/**
  * @param I Input. Must be the model object that the use case can use to make the request
  * @param O Output.Must be the model object that the use case must return
+ * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
-
-abstract class EmaFlowUseCase<I, O>  {
+abstract class EmaFlowUseCase<I, O> {
 
     /**
      * Executes a function inside a background thread provided by dispatcher
      * @return the object with the return value
      */
-    operator fun invoke(input: I, dispatcher: CoroutineDispatcher = Ema.configuration.useCaseBackgroundDispatcher): Flow<O> {
-        return useCaseFunction(input).flowOn(dispatcher)
-    }
+    operator fun invoke(
+        input: I,
+        dispatcher: CoroutineDispatcher = Ema.configuration.useCaseBackgroundDispatcher
+    ): Flow<O> = useCaseFunction(input).flowOn(dispatcher)
 
     /**
      * Function to implement by child classes to execute the code associated to data retrieving.

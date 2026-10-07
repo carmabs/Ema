@@ -20,13 +20,13 @@ import com.carmabs.ema.compose.CounterState
 import com.carmabs.ema.compose.CounterViewModel
 import com.carmabs.ema.compose.RouteInitializer
 import com.carmabs.ema.compose.SilentScreen
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
 class EmaComposableScreenTest {
@@ -69,7 +69,9 @@ class EmaComposableScreenTest {
     fun `the lifecycle of the host reaches the ViewModel`() {
         lateinit var viewModel: CounterViewModel
         composeRule.setContent {
-            EmaComposableScreen(vm = { CounterViewModel().also { viewModel = it } }, screenContent = CounterScreen(), onEvent = {})
+            EmaComposableScreen(vm = {
+                CounterViewModel().also { viewModel = it }
+            }, screenContent = CounterScreen(), onEvent = {})
         }
         composeRule.waitForIdle()
 
@@ -84,7 +86,9 @@ class EmaComposableScreenTest {
         val show = mutableStateOf(true)
         composeRule.setContent {
             if (show.value) {
-                EmaComposableScreen(vm = { CounterViewModel().also { viewModel = it } }, screenContent = CounterScreen(), onEvent = {})
+                EmaComposableScreen(vm = {
+                    CounterViewModel().also { viewModel = it }
+                }, screenContent = CounterScreen(), onEvent = {})
             }
         }
         composeRule.waitForIdle()
@@ -99,7 +103,9 @@ class EmaComposableScreenTest {
     fun `the back action of the screen is dispatched to the ViewModel`() {
         lateinit var viewModel: CounterViewModel
         composeRule.setContent {
-            EmaComposableScreen(vm = { CounterViewModel().also { viewModel = it } }, screenContent = CounterScreen(), onEvent = {})
+            EmaComposableScreen(vm = {
+                CounterViewModel().also { viewModel = it }
+            }, screenContent = CounterScreen(), onEvent = {})
         }
         composeRule.waitForIdle()
 
@@ -112,7 +118,9 @@ class EmaComposableScreenTest {
     @Test
     fun `without back action the system handles the back press`() {
         composeRule.setContent {
-            EmaComposableScreen(vm = { CounterViewModel() }, screenContent = CounterScreen(backEnabled = false), onEvent = {})
+            EmaComposableScreen(vm = {
+                CounterViewModel()
+            }, screenContent = CounterScreen(backEnabled = false), onEvent = {})
         }
         composeRule.waitForIdle()
 
@@ -181,7 +189,12 @@ class EmaComposableScreenTest {
                     previewRenderState = CounterState(7)
                 )
                 EmaComposableScreen(vm = { CounterViewModel() }, screenContent = SilentScreen(), onEvent = {})
-                EmaComposableScreen(vm = BasicViewModel(), actions = CounterViewModel(), screenContent = SilentScreen(), onEvent = {})
+                EmaComposableScreen(
+                    vm = BasicViewModel(),
+                    actions = CounterViewModel(),
+                    screenContent = SilentScreen(),
+                    onEvent = {}
+                )
             }
         }
 

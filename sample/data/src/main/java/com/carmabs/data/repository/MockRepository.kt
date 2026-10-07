@@ -9,7 +9,6 @@ import com.carmabs.ema.core.model.EmaResult
 import com.carmabs.ema.core.model.onSuccess
 import kotlinx.coroutines.delay
 
-
 /**
  *  *<p>
  * Copyright (c) 2020, Carmabs. All rights reserved.
@@ -38,10 +37,11 @@ class MockRepository : Repository {
 
     override suspend fun getFriendsList(user: User): List<User> {
         val userList = mutableListOf<User>()
-        if (user.role == Role.BASIC)
+        if (user.role == Role.BASIC) {
             repeat(10) {
                 userList.add(User("User$it", "Surname$it", Role.BASIC))
             }
+        }
         return userList
     }
 }

@@ -17,43 +17,33 @@ import com.carmabs.ema.sample.ema.R
 import com.carmabs.ema.sample.ema.databinding.SplashActivityBinding
 import com.google.android.material.appbar.AppBarLayout
 
-
 class SplashActivity :
-    EmaToolbarActivity<SplashActivityBinding,EmaState.EMPTY, EmaViewModel.EMPTY, EmaEvent.EMPTY>() {
+    EmaToolbarActivity<SplashActivityBinding, EmaState.EMPTY, EmaViewModel.EMPTY, EmaEvent.EMPTY>() {
 
-    override fun createViewBinding(inflater: LayoutInflater): SplashActivityBinding {
-        return SplashActivityBinding.inflate(inflater)
-    }
+    override fun createViewBinding(inflater: LayoutInflater): SplashActivityBinding =
+        SplashActivityBinding.inflate(inflater)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         hideToolbar(animate = false)
         applyWindowInsets()
-
     }
 
-    override fun SplashActivityBinding.provideToolbar(): Toolbar {
-       return tbSplash
-    }
+    override fun SplashActivityBinding.provideToolbar(): Toolbar = tbSplash
 
-    override fun SplashActivityBinding.provideToolbarLayout(): AppBarLayout {
-       return ablSplash
-    }
+    override fun SplashActivityBinding.provideToolbarLayout(): AppBarLayout = ablSplash
 
-    override fun provideViewModel(): EmaViewModel.EMPTY {
-        return EmaViewModel.EMPTY
-    }
+    override fun provideViewModel(): EmaViewModel.EMPTY = EmaViewModel.EMPTY
 
-    override fun SplashActivityBinding.onState(data: EmaState.EMPTY){
-    
+    override fun SplashActivityBinding.onState(data: EmaState.EMPTY) {
     }
 
     override val navigator: EmaNavigator<EmaEvent.EMPTY> = EmaActivityNavControllerHost(
-       this,
-       R.id.navHostFragment,
-       R.navigation.main_graph
-   )
+        this,
+        R.id.navHostFragment,
+        R.navigation.main_graph
+    )
 
     /**
      * The app is drawn edge to edge, so the fragments container is padded with the system bars

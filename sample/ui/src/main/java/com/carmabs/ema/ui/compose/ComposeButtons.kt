@@ -35,7 +35,6 @@ fun AppButton(
 fun AppButtonPreview() {
     EmaSampleTheme {
         AppButton(text = "Test") {
-
         }
     }
 }

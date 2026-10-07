@@ -15,6 +15,6 @@ import kotlinx.coroutines.flow.emptyFlow
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-class EmaActionDispatcherEmpty<A : EmaAction>: EmaActionDispatcher<A> {
+class EmaActionDispatcherEmpty<A : EmaAction> : EmaActionDispatcher<A> {
     override fun dispatch(action: A) = Unit
 }

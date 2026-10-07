@@ -6,7 +6,11 @@ import android.graphics.Color
 import android.graphics.Point
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.view.*
+import android.view.KeyEvent
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.Window
 import androidx.annotation.CallSuper
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
@@ -17,13 +21,13 @@ import com.carmabs.ema.android.extension.getSerializableCompat
 import com.carmabs.ema.core.dialog.EmaDialogData
 import com.carmabs.ema.core.dialog.EmaDialogListener
 
-
 /**
  * Base dialog class to implement dialogs
  *
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
-abstract class EmaDialog<B : ViewBinding, T : EmaDialogData> : DialogFragment(),
+abstract class EmaDialog<B : ViewBinding, T : EmaDialogData> :
+    DialogFragment(),
     DialogInterface.OnShowListener {
 
     private var _binding: B? = null
@@ -45,7 +49,6 @@ abstract class EmaDialog<B : ViewBinding, T : EmaDialogData> : DialogFragment(),
 
     protected open val disableBackButton
         get() = !isCancelable
-
 
     /**
      * Specify the ViewBinding to be inflated in the [EmaDialog.onCreateView].
@@ -88,11 +91,7 @@ abstract class EmaDialog<B : ViewBinding, T : EmaDialogData> : DialogFragment(),
     }
 
     @CallSuper
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = createViewBinding(inflater, container)
         dialog?.window?.apply {
             setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -105,8 +104,6 @@ abstract class EmaDialog<B : ViewBinding, T : EmaDialogData> : DialogFragment(),
     override fun onResume() {
         super.onResume()
         updateDialogSizeAndBehaviour()
-
-
     }
 
     private fun updateDialogSizeAndBehaviour() {
@@ -133,10 +130,10 @@ abstract class EmaDialog<B : ViewBinding, T : EmaDialogData> : DialogFragment(),
 
     @CallSuper
     override fun onShow(p0: DialogInterface?) {
-        if (isDismissed)
+        if (isDismissed) {
             dismissAllowingStateLoss()
+        }
     }
-
 
     protected abstract fun createInitialState(): T
 
@@ -145,7 +142,6 @@ abstract class EmaDialog<B : ViewBinding, T : EmaDialogData> : DialogFragment(),
         _binding = null
         super.onDestroyView()
     }
-
 
     @CallSuper
     override fun onDestroy() {

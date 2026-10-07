@@ -1,12 +1,11 @@
 package com.carmabs.ema.core.extension
 
+import kotlin.coroutines.CoroutineContext
+import kotlin.time.Duration
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withTimeout
-import kotlin.coroutines.CoroutineContext
-import kotlin.time.Duration
-
 
 suspend inline fun <T> suspendCoroutineWithTimeout(
     duration: Duration,

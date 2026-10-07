@@ -1,6 +1,5 @@
 package com.carmabs.app.di
 
-
 import com.carmabs.data.repository.MockRepository
 import com.carmabs.domain.repository.Repository
 import org.koin.dsl.module
@@ -17,7 +16,7 @@ import org.koin.dsl.module
 
 val dataModule = module {
 
-   single<Repository> {
-      MockRepository()
-   }
+    single<Repository> {
+        MockRepository()
+    }
 }

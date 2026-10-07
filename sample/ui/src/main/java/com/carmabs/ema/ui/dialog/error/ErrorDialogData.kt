@@ -13,7 +13,7 @@ import com.carmabs.ema.core.model.EmaText
  */
 
 data class ErrorDialogData(
-    val title: EmaText =  EmaText.empty(),
+    val title: EmaText = EmaText.empty(),
     val message: EmaText = EmaText.empty(),
     override val proportionWidth: Float? = 0.85f,
     override val proportionHeight: Float? = null,

@@ -10,15 +10,15 @@ import com.carmabs.ema.android.constants.EMA_RESULT_CODE
 import com.carmabs.ema.android.constants.EMA_RESULT_KEY
 import com.carmabs.ema.android.idleMain
 import com.carmabs.ema.core.state.EmaEvent
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertSame
+import kotlin.test.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertSame
-import kotlin.test.assertTrue
 
 class FirstFragment : Fragment()
 class SecondFragment : Fragment()

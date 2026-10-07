@@ -13,8 +13,4 @@ import kotlinx.serialization.Serializable
  */
 
 @Serializable
-data class User(
-    val name: String = STRING_EMPTY,
-    val surname: String = STRING_EMPTY,
-    val role: Role = Role.BASIC
-)
+data class User(val name: String = STRING_EMPTY, val surname: String = STRING_EMPTY, val role: Role = Role.BASIC)

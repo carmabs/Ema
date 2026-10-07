@@ -18,14 +18,14 @@ import com.carmabs.ema.android.initializer.bundle.strategy.BundleSerializerStrat
 import com.carmabs.ema.android.navigation.EmaActivityNavControllerNavigator
 import com.carmabs.ema.android.view.test.R
 import com.carmabs.ema.core.initializer.EmaInitializer
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 import org.junit.After
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 
 class GraphActivity : EmaActivity<ToolbarBinding, ViewState, ViewTestViewModel, ViewEvent>() {
 

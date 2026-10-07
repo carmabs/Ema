@@ -5,7 +5,7 @@ import com.carmabs.ema.core.view.EmaView
 import kotlin.jvm.internal.PropertyReference0
 import kotlin.reflect.KProperty
 
-/**
+/*
  * Extensions to render only the fields of the state that have changed. They read the previous value of the
  * field with Java reflection, so they are available only on Android/JVM.
  *
@@ -35,7 +35,7 @@ fun <S : EmaState, T> EmaView<S, *, *>.bindForUpdate(
                 previousField.isAccessible = true
                 val previousValue = previousField.get(previousState) as T
                 if (areEqualComparator?.invoke(previousValue, currentValue)?.not()
-                        ?: (previousValue != currentValue)
+                    ?: (previousValue != currentValue)
                 ) {
                     updated = true
                     action.invoke(currentValue)
@@ -71,7 +71,7 @@ fun <S : EmaState, T> EmaView<S, *, *>.bindForUpdateWithPrevious(
                 previousField.isAccessible = true
                 val previousValue = previousField.get(previousState) as T
                 if (areEqualComparator?.invoke(previousValue, currentValue)?.not()
-                        ?: (previousValue != currentValue)
+                    ?: (previousValue != currentValue)
                 ) {
                     updated = true
                     action.invoke(previousValue, currentValue)

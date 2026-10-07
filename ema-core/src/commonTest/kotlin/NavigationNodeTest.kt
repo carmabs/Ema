@@ -1,6 +1,6 @@
 import com.carmabs.ema.core.navigator.EmaNavigationNode
-import kotlin.test.assertEquals
 import kotlin.test.Test
+import kotlin.test.assertEquals
 
 /**
  * Created by Carlos Mateo Benito on 9/7/23.
@@ -26,8 +26,8 @@ class NavigationNodeTest {
             .next(TestPages.PAGE_C)
             .next(TestPages.PAGE_A)
             .next(TestPages.PAGE_B)
-        val nodeSkipped = node.next(TestPages.PAGE_A,true)
-        assertEquals(false,nodeSkipped.hasPreviousNodeValue(TestPages.PAGE_A))
+        val nodeSkipped = node.next(TestPages.PAGE_A, true)
+        assertEquals(false, nodeSkipped.hasPreviousNodeValue(TestPages.PAGE_A))
     }
 }
 class NavigationNodeIdTest {

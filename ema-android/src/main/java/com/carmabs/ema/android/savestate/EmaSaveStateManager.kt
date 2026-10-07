@@ -16,9 +16,5 @@ import kotlinx.coroutines.CoroutineScope
  * @author <a href=“mailto:apps.carmabs@gmail.comm”>Carlos Mateo Benito</a>
  */
 fun interface EmaSaveStateManager<S : EmaState, E : EmaEvent> {
-    fun onSaveStateHandling(
-        scope: CoroutineScope,
-        saveStateHandle: SavedStateHandle,
-        viewModel: EmaViewModel<S, E>
-    )
+    fun onSaveStateHandling(scope: CoroutineScope, saveStateHandle: SavedStateHandle, viewModel: EmaViewModel<S, E>)
 }

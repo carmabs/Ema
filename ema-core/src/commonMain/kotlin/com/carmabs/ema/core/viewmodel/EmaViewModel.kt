@@ -1,7 +1,7 @@
 package com.carmabs.ema.core.viewmodel
 
-import com.carmabs.ema.core.extension.emaName
 import com.carmabs.ema.core.action.EmaEventDispatcher
+import com.carmabs.ema.core.extension.emaName
 import com.carmabs.ema.core.initializer.EmaInitializer
 import com.carmabs.ema.core.state.EmaEvent
 import com.carmabs.ema.core.state.EmaState
@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.emptyFlow
  *
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
-interface EmaViewModel<S : EmaState, E : EmaEvent>: EmaEventDispatcher<E> {
+interface EmaViewModel<S : EmaState, E : EmaEvent> : EmaEventDispatcher<E> {
 
     val id: String
         get() {

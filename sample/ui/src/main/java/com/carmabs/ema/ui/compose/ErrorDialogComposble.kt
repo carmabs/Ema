@@ -19,9 +19,7 @@ import com.carmabs.ema.ui.dialog.error.ErrorDialogListener
 import com.carmabs.ema.ui.theme.EmaSampleTheme
 
 @Composable
-fun ErrorDialogComposable(
-    dialogData: ErrorDialogData, dialogListener: ErrorDialogListener
-) {
+fun ErrorDialogComposable(dialogData: ErrorDialogData, dialogListener: ErrorDialogListener) {
     AlertDialog(
         onDismissRequest = {
             dialogListener.onBackPressed()
@@ -57,12 +55,13 @@ fun OnErrorPreview() {
         ErrorDialogComposable(
             ErrorDialogData(
                 title = EmaText.text("Error"),
-                message = EmaText.text("Preview message sample"),
+                message = EmaText.text("Preview message sample")
             ),
             object : ErrorDialogListener {
                 override fun onConfirmClicked() = Unit
                 override fun onBackPressed() = Unit
-            })
+            }
+        )
     }
 }
 

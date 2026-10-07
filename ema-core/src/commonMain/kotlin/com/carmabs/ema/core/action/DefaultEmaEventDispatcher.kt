@@ -3,14 +3,14 @@
 package com.carmabs.ema.core.action
 
 import com.carmabs.ema.core.state.EmaEvent
+import kotlin.concurrent.atomics.AtomicLong
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
-import kotlin.concurrent.atomics.AtomicLong
-import kotlin.concurrent.atomics.ExperimentalAtomicApi
 
 /**
  * Created by Carlos Mateo Benito on 03/08/2026.
@@ -47,10 +47,11 @@ class DefaultEmaEventDispatcher<E : EmaEvent> : EmaEventDispatcher<E> {
     fun postEvent(event: E, allowDuplicated: Boolean) {
         val id = nextId.addAndFetch(1)
         pendingEvents.update { pending ->
-            if (!allowDuplicated && pending.any { it.event == event })
+            if (!allowDuplicated && pending.any { it.event == event }) {
                 pending
-            else
+            } else {
                 pending + PendingEvent(id, event)
+            }
         }
     }
 

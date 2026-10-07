@@ -48,9 +48,8 @@ import com.carmabs.ema.ui.theme.EmaSampleTheme
 class ProfileOnBoardingScreenContent :
     BaseScreenComposable<ProfileOnBoardingState, ProfileOnBoardingActions, ProfileOnBoardingEvent>() {
 
-    //System back follows the same flow as the back arrow
-    override fun onBack(state: ProfileOnBoardingState): ProfileOnBoardingActions =
-        ProfileOnBoardingActions.BackClicked
+    // System back follows the same flow as the back arrow
+    override fun onBack(state: ProfileOnBoardingState): ProfileOnBoardingActions = ProfileOnBoardingActions.BackClicked
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
@@ -177,7 +176,6 @@ class ProfileOnBoardingScreenContent :
             }
         }
     }
-
 
     @Preview
     @Composable

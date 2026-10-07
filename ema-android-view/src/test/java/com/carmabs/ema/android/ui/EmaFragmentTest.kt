@@ -31,6 +31,12 @@ import com.carmabs.ema.android.initializer.bundle.strategy.BundleSerializerStrat
 import com.carmabs.ema.android.permission.EmaAndroidPermissionManager
 import com.carmabs.ema.core.manager.PermissionState
 import com.carmabs.ema.core.navigator.EmaNavigator
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNotSame
+import kotlin.test.assertNull
+import kotlin.test.assertSame
+import kotlin.test.assertTrue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -40,12 +46,6 @@ import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertNotSame
-import kotlin.test.assertNull
-import kotlin.test.assertSame
-import kotlin.test.assertTrue
 
 class TestFragment : EmaFragment<TestBinding, ViewState, ViewTestViewModel, ViewEvent>() {
     val states = mutableListOf<ViewState>()
@@ -68,8 +68,7 @@ class TestFragment : EmaFragment<TestBinding, ViewState, ViewTestViewModel, View
         if (listenResults) setEmaResultListener<String> { results += it }
     }
 
-    override fun createViewBinding(inflater: LayoutInflater, container: ViewGroup?) =
-        TestBinding(inflater.context)
+    override fun createViewBinding(inflater: LayoutInflater, container: ViewGroup?) = TestBinding(inflater.context)
 
     override fun provideViewModel() = ViewTestViewModel()
 
@@ -223,9 +222,12 @@ class EmaFragmentTest {
         val previous = TestFragment().apply { listenResults = true }
         activity.add(previous)
 
-        activity.supportFragmentManager.setFragmentResult(EMA_RESULT_KEY, Bundle().apply {
-            putString(EMA_RESULT_KEY, "{not json")
-        })
+        activity.supportFragmentManager.setFragmentResult(
+            EMA_RESULT_KEY,
+            Bundle().apply {
+                putString(EMA_RESULT_KEY, "{not json")
+            }
+        )
         activity.supportFragmentManager.setFragmentResult(EMA_RESULT_KEY, Bundle())
         idleMain()
 

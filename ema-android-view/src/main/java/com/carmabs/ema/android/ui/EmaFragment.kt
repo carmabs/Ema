@@ -12,7 +12,6 @@ import com.carmabs.ema.core.state.EmaEvent
 import com.carmabs.ema.core.state.EmaState
 import com.carmabs.ema.core.viewmodel.EmaViewModel
 
-
 /**
  *
  * Abstract base class to implement ViewBinding in fragment
@@ -39,19 +38,13 @@ abstract class EmaFragment<B : ViewBinding, S : EmaState, VM : EmaViewModel<S, E
      */
     abstract fun createViewBinding(inflater: LayoutInflater, container: ViewGroup?): B
 
-
     @CallSuper
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
         isFirstNormalExecution = true
         _binding = createViewBinding(inflater, container)
         return binding.root
     }
-
 
     @CallSuper
     override fun onDestroyView() {
@@ -59,12 +52,10 @@ abstract class EmaFragment<B : ViewBinding, S : EmaState, VM : EmaViewModel<S, E
         super.onDestroyView()
     }
 
-
     final override fun onState(state: S) {
         binding.onState(state)
         isFirstNormalExecution = false
     }
-
 
     final override suspend fun onEvent(event: E) {
         binding.onEvent(event)
@@ -72,5 +63,4 @@ abstract class EmaFragment<B : ViewBinding, S : EmaState, VM : EmaViewModel<S, E
 
     abstract fun B.onState(state: S)
     protected open suspend fun B.onEvent(event: E) = Unit
-
 }

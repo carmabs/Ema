@@ -27,9 +27,10 @@ class EmaViewModelTrigger {
      * Runs the action now if the ViewModel has been started, or when [startViewModel] is called otherwise.
      */
     internal fun runWhenStarted(action: () -> Unit) {
-        if (hasBeenStarted)
+        if (hasBeenStarted) {
             action.invoke()
-        else
+        } else {
             pendingActions.add(action)
+        }
     }
 }

@@ -50,16 +50,13 @@ import com.carmabs.ema.ui.theme.EmaSampleTheme
 class ProfileCreationScreenContent :
     BaseScreenComposable<ProfileCreationState, ProfileCreationAction, ProfileCreationEvent>() {
 
-    //When a dialog is shown, it handles the back press itself
+    // When a dialog is shown, it handles the back press itself
     override fun onBack(state: ProfileCreationState): ProfileCreationAction? =
         if (state.overlap == null) ProfileCreationAction.OnBack else null
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    override fun onState(
-        state: ProfileCreationState,
-        actions: EmaImmutableActionDispatcher<ProfileCreationAction>
-    ) {
+    override fun onState(state: ProfileCreationState, actions: EmaImmutableActionDispatcher<ProfileCreationAction>) {
         Scaffold(
             containerColor = MaterialTheme.colorScheme.background,
             topBar = {
@@ -177,10 +174,7 @@ class ProfileCreationScreenContent :
     }
 
     @Composable
-    private fun Overlap(
-        overlap: ProfileCreationOverlap,
-        actions: EmaImmutableActionDispatcher<ProfileCreationAction>
-    ) {
+    private fun Overlap(overlap: ProfileCreationOverlap, actions: EmaImmutableActionDispatcher<ProfileCreationAction>) {
         when (overlap) {
             ProfileCreationOverlap.DialogBackConfirmation -> {
                 ShowDialog(
@@ -230,8 +224,8 @@ class ProfileCreationScreenContent :
                         override fun onBackPressed() {
                             actions.dispatch(ProfileCreationAction.DialogCancelClicked)
                         }
-
-                    })
+                    }
+                )
             }
         }
     }

@@ -9,36 +9,35 @@ package com.carmabs.ema.core.manager
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-fun Map<String,Boolean>.isPermissionGranted(permission:String):Boolean{
-    return this[permission]?:false
-}
+fun Map<String, Boolean>.isPermissionGranted(permission: String): Boolean = this[permission] ?: false
 
-fun Map<String, PermissionState>.isPermissionStateGranted(permission:String):Boolean{
-    return this[permission] == PermissionState.GRANTED
-}
+fun Map<String, PermissionState>.isPermissionStateGranted(permission: String): Boolean =
+    this[permission] == PermissionState.GRANTED
 
-fun Map<String,Boolean>.areAllPermissionsGranted():Boolean{
+fun Map<String, Boolean>.areAllPermissionsGranted(): Boolean {
     val permissions = this
     var granted = true
-    if (permissions.isEmpty())
+    if (permissions.isEmpty()) {
         granted = false
-    else
+    } else {
         permissions.iterator().forEach { entry ->
             granted = granted && entry.value
         }
+    }
 
     return granted
 }
 
-fun Map<String, PermissionState>.areAllPermissionsStateGranted():Boolean{
+fun Map<String, PermissionState>.areAllPermissionsStateGranted(): Boolean {
     val permissions = this
     var granted = true
-    if (permissions.isEmpty())
+    if (permissions.isEmpty()) {
         granted = false
-    else
-        permissions.iterator().forEach { entry->
+    } else {
+        permissions.iterator().forEach { entry ->
             granted = granted && entry.value == PermissionState.GRANTED
         }
+    }
 
     return granted
 }

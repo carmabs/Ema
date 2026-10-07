@@ -20,11 +20,8 @@ import com.google.gson.Gson
  * It acts like a fragment host that navigates only through its child fragments.
  * Created by: Carlos Mateo Benito on 29/07/22.
  */
-class EmaActivityNavControllerHost(
-    activity: Activity,
-    navHostId: Int,
-    graphId: Int
-) : EmaActivityNavControllerNavigator<EmaEvent.EMPTY>(activity, navHostId, graphId) {
+class EmaActivityNavControllerHost(activity: Activity, navHostId: Int, graphId: Int) :
+    EmaActivityNavControllerNavigator<EmaEvent.EMPTY>(activity, navHostId, graphId) {
 
     private val gson by lazy {
         Gson()

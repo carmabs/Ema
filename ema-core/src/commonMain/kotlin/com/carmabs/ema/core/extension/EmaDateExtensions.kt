@@ -4,6 +4,7 @@ package com.carmabs.ema.core.extension
 
 import com.carmabs.ema.core.constants.LONG_ZERO
 import com.carmabs.ema.core.constants.STRING_EMPTY
+import kotlin.time.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
@@ -15,7 +16,6 @@ import kotlinx.datetime.format.format
 import kotlinx.datetime.offsetAt
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
-import kotlin.time.Instant
 
 /**
  * Date extensions based on kotlinx-datetime, available on every platform.
@@ -38,10 +38,7 @@ const val HOUR_FORMAT_HHMMSS = "HH:mm:ss"
  * Parses the date and returns its epoch milliseconds, or 0 if it cannot be parsed. When the text has no
  * time it is considered the start of the day, and when it has no offset, [timeZone] is used.
  */
-fun String.toTimeStamp(
-    dateFormat: String,
-    timeZone: TimeZone = TimeZone.currentSystemDefault()
-): Long = try {
+fun String.toTimeStamp(dateFormat: String, timeZone: TimeZone = TimeZone.currentSystemDefault()): Long = try {
     val components = DateTimeComponents.Format { byUnicodePattern(dateFormat) }.parse(this)
     val date = components.toLocalDate()
     val time = runCatching { components.toLocalTime() }.getOrDefault(LocalTime(0, 0))
@@ -64,10 +61,7 @@ fun Long.toISO8601(timeZone: TimeZone = TimeZone.currentSystemDefault()): String
 /**
  * Formats the epoch milliseconds, or returns an empty string if the format is not valid.
  */
-fun Long.toDateFormat(
-    dateFormat: String,
-    timeZone: TimeZone = TimeZone.currentSystemDefault()
-): String = try {
+fun Long.toDateFormat(dateFormat: String, timeZone: TimeZone = TimeZone.currentSystemDefault()): String = try {
     val instant = Instant.fromEpochMilliseconds(this)
     DateTimeComponents.Format { byUnicodePattern(dateFormat) }.format {
         setDateTimeOffset(instant, timeZone.offsetAt(instant))

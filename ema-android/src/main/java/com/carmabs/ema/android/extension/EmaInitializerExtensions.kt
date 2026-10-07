@@ -8,76 +8,65 @@ import com.carmabs.ema.android.initializer.bundle.BundleSerializer
 import com.carmabs.ema.android.initializer.bundle.strategy.BundleSerializerStrategy
 import com.carmabs.ema.core.initializer.EmaInitializer
 
-
 /**
  * Set a initializer for current bundle
  */
-inline fun <reified I : EmaInitializer> Bundle.setInitializer(
-    initializer: I,
-    strategy: BundleSerializerStrategy
-) {
+inline fun <reified I : EmaInitializer> Bundle.setInitializer(initializer: I, strategy: BundleSerializerStrategy) {
     BundleSerializer(this, strategy).save(initializer)
 }
 
-fun EmaInitializer?.toBundle(serializerStrategy: BundleSerializerStrategy):Bundle?{
-    return  this?.let {
-        val bundle = Bundle()
-        bundle.setInitializer(it,serializerStrategy)
-        bundle
-    }
+fun EmaInitializer?.toBundle(serializerStrategy: BundleSerializerStrategy): Bundle? = this?.let {
+    val bundle = Bundle()
+    bundle.setInitializer(it, serializerStrategy)
+    bundle
 }
 
-fun EmaInitializerBundle?.toBundle():Bundle?{
-    return  this?.let {
-        val bundle = Bundle()
-        bundle.setInitializer(it.initializer,it.serializer)
-        bundle
-    }
+fun EmaInitializerBundle?.toBundle(): Bundle? = this?.let {
+    val bundle = Bundle()
+    bundle.setInitializer(it.initializer, it.serializer)
+    bundle
 }
 
 /**
  * Get a initializer for current bundle
  */
-inline fun <reified I : EmaInitializer> Bundle.getInitializer(strategy: BundleSerializerStrategy): I? {
-    return BundleSerializer(this, strategy).restore() as? I
-}
-
+inline fun <reified I : EmaInitializer> Bundle.getInitializer(strategy: BundleSerializerStrategy): I? =
+    BundleSerializer(this, strategy).restore() as? I
 
 /**
  * Get the incoming initializer from another activity by the initializer provided
  */
-inline fun <reified I : EmaInitializer> Activity.getInitializer(strategy: BundleSerializerStrategy,savedInstanceState:Bundle?): I? {
-    return intent?.let {
-        (it.extras?:savedInstanceState)?.let { bundle ->
-            BundleSerializer(bundle, strategy).restore() as? I
-        }
+inline fun <reified I : EmaInitializer> Activity.getInitializer(
+    strategy: BundleSerializerStrategy,
+    savedInstanceState: Bundle?
+): I? = intent?.let {
+    (it.extras ?: savedInstanceState)?.let { bundle ->
+        BundleSerializer(bundle, strategy).restore() as? I
     }
 }
 
 /**
  * Set the initializer for the current activity intent
  */
-inline fun <reified I : EmaInitializer> Activity.setInitializer(initializer: I,strategy: BundleSerializerStrategy) {
-    intent = Intent().setInitializer(initializer,strategy)
+inline fun <reified I : EmaInitializer> Activity.setInitializer(initializer: I, strategy: BundleSerializerStrategy) {
+    intent = Intent().setInitializer(initializer, strategy)
 }
 
 /**
  * Set the initializer for the current activity intent
  */
-inline fun <reified I : EmaInitializer> Intent.setInitializer(initializer: I,strategy: BundleSerializerStrategy):Intent {
+inline fun <reified I : EmaInitializer> Intent.setInitializer(
+    initializer: I,
+    strategy: BundleSerializerStrategy
+): Intent {
     val bundle = Bundle()
-    bundle.setInitializer(initializer,strategy)
+    bundle.setInitializer(initializer, strategy)
     putExtras(bundle)
     return this
 }
 
 /**
- * Set the initializer for the current activity intent
+ * Get the initializer of the activity intent
  */
-inline fun <reified I : EmaInitializer> Intent.getInitializer(strategy: BundleSerializerStrategy): I? {
-    return extras?.getInitializer(strategy)
-}
-
-/**
- * Set the initializer for the current fragment
- */
+inline fun <reified I : EmaInitializer> Intent.getInitializer(strategy: BundleSerializerStrategy): I? =
+    extras?.getInitializer(strategy)

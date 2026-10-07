@@ -1,8 +1,7 @@
 package com.carmabs.ema.core.broadcast
 
-import kotlin.reflect.KClass
-
 import com.carmabs.ema.core.model.emaFlowSingleEvent
+import kotlin.reflect.KClass
 import kotlinx.coroutines.flow.MutableSharedFlow
 
 /**
@@ -18,11 +17,9 @@ class EmaFlowBroadcastManager : EmaBroadcastManager {
 
     private val sharedFlowsMap = hashMapOf<KClass<*>, MutableSharedFlow<EmaBroadcastEvent<*>>>()
 
-    private fun addFlow(id: KClass<*>): MutableSharedFlow<EmaBroadcastEvent<*>> {
-        return sharedFlowsMap[id] ?:let {
-            emaFlowSingleEvent<EmaBroadcastEvent<*>>().apply{
-                sharedFlowsMap[id] = this
-            }
+    private fun addFlow(id: KClass<*>): MutableSharedFlow<EmaBroadcastEvent<*>> = sharedFlowsMap[id] ?: let {
+        emaFlowSingleEvent<EmaBroadcastEvent<*>>().apply {
+            sharedFlowsMap[id] = this
         }
     }
 
@@ -36,7 +33,7 @@ class EmaFlowBroadcastManager : EmaBroadcastManager {
         clazz: KClass<out EmaBroadcastEvent<T&Any>>,
         listener: suspend (T&Any) -> Unit
     ) {
-        addFlow(clazz).collect{
+        addFlow(clazz).collect {
             listener.invoke(it.data as (T & Any))
         }
     }

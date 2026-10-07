@@ -19,7 +19,7 @@ import com.carmabs.ema.core.constants.INT_ZERO
 @Composable
 fun EmaMeasureViewWidth(
     viewToMeasure: @Composable () -> Unit,
-    content: @Composable (measuredWidth: Dp, viewMeasured: @Composable () -> Unit) -> Unit,
+    content: @Composable (measuredWidth: Dp, viewMeasured: @Composable () -> Unit) -> Unit
 ) {
     SubcomposeLayout { constraints ->
         val measuredWidth = subcompose("viewToMeasure", viewToMeasure)[INT_ZERO]
@@ -32,7 +32,6 @@ fun EmaMeasureViewWidth(
         }
     }
 }
-
 
 val Dp.inSp
     @Composable

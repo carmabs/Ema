@@ -34,7 +34,6 @@ class EmaTextWatcher(private val editText: EditText, private val action: (String
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-
             }
         }
     }

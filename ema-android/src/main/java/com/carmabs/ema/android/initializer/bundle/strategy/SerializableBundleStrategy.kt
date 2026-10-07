@@ -21,12 +21,12 @@ class SerializableBundleStrategy<I> constructor(private val initializerClass: Cl
     }
 
     override fun toStringValue(initializer: EmaInitializer): String {
-        //TODO Check if should be recommendable pass string parser as argument
+        // TODO Check if should be recommendable pass string parser as argument
         return initializer.toString()
     }
 
     override fun fromStringValue(value: String): EmaInitializer {
-        //TODO Check if should be recommendable pass string parser as argument
+        // TODO Check if should be recommendable pass string parser as argument
         return EmaInitializer.EMPTY
     }
 
@@ -35,7 +35,6 @@ class SerializableBundleStrategy<I> constructor(private val initializerClass: Cl
             bundle.getSerializable(EmaInitializer.KEY, initializerClass)
         } else {
             bundle.getSerializable(EmaInitializer.KEY) as? I
-
         }
         return initializer
     }

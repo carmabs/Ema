@@ -10,10 +10,8 @@ import com.carmabs.ema.core.model.onSuccess
 import com.carmabs.ema.presentation.base.BaseViewModel
 import com.carmabs.ema.presentation.home.HomeViewModel
 
-class LoginViewModel(
-    private val loginUseCase: LoginUseCase,
-    initialDataState: LoginState
-) : BaseViewModel<LoginState, LoginAction, LoginEvent>(initialDataState) {
+class LoginViewModel(private val loginUseCase: LoginUseCase, initialDataState: LoginState) :
+    BaseViewModel<LoginState, LoginAction, LoginEvent>(initialDataState) {
     override fun onStateCreated(initializer: EmaInitializer?) = Unit
     override fun onAction(action: LoginAction) {
         when (action) {
@@ -34,6 +32,7 @@ class LoginViewModel(
             }
 
             LoginAction.Error.BadCredentialsAccepted -> onActionBadCredentialsAccepted()
+
             LoginAction.Error.BackPressed -> onActionErrorBackPressed()
         }
     }
@@ -63,7 +62,6 @@ class LoginViewModel(
     override fun onBroadcastListenerSetup() {
         registerBackBroadcastListener(HomeViewModel::class.backBroadcastId) {
             pendingUser = it as User
-
         }
     }
 
@@ -85,19 +83,19 @@ class LoginViewModel(
             updateState {
                 copy(isLoading = false)
             }
-            userLogged.onSuccess {user->
+            userLogged.onSuccess { user ->
                 postEvent(LoginEvent.Message(user.name))
                 postEvent(LoginEvent.LoginSuccess(user))
             }.onFailure {
                 showOverlap(LoginOverlap.ErrorBadCredentials)
             }
-
         }
     }
 
     private fun onActionLogin() {
-        if (state.isLoading)
+        if (state.isLoading) {
             return
+        }
         val userNameError = state.userName.isBlank()
         val passwordError = state.userPassword.isBlank()
         if (userNameError || passwordError) {
@@ -120,10 +118,9 @@ class LoginViewModel(
         }
     }
 
-
     private fun onActionUserWrite(user: String) {
-        //The text is kept in the state so it is restored if, for example, there is a device rotation
-        //and the view is recreated
+        // The text is kept in the state so it is restored if, for example, there is a device rotation
+        // and the view is recreated
         updateState {
             copy(userName = user, userNameError = false)
         }
@@ -134,5 +131,4 @@ class LoginViewModel(
             copy(userPassword = password, passwordError = false)
         }
     }
-
 }

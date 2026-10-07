@@ -19,10 +19,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
 
+class DefaultEmaActionDispatcher<A : EmaAction>(private val dispatchAction: (A) -> Unit) : EmaActionDispatcher<A> {
 
-class DefaultEmaActionDispatcher<A : EmaAction>(private val dispatchAction:(A)->Unit) : EmaActionDispatcher<A>  {
-
-    override fun dispatch(action: A){
+    override fun dispatch(action: A) {
         dispatchAction(action)
     }
 }

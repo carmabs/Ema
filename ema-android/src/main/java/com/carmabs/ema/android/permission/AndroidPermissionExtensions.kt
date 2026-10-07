@@ -11,13 +11,12 @@ import com.carmabs.ema.core.manager.PermissionState
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-internal fun Boolean.toState(falseIsDenied:Boolean = false): PermissionState {
-    return if(this)
-        PermissionState.GRANTED
-    else{
-        if(falseIsDenied)
-            PermissionState.NOT_GRANTED_SHOULD_EXPLAIN
-        else
-            PermissionState.NOT_GRANTED
+internal fun Boolean.toState(falseIsDenied: Boolean = false): PermissionState = if (this) {
+    PermissionState.GRANTED
+} else {
+    if (falseIsDenied) {
+        PermissionState.NOT_GRANTED_SHOULD_EXPLAIN
+    } else {
+        PermissionState.NOT_GRANTED
     }
 }

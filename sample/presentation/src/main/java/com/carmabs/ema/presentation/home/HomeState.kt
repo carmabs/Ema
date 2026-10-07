@@ -4,10 +4,7 @@ import com.carmabs.domain.model.Role
 import com.carmabs.domain.model.User
 import com.carmabs.ema.core.state.EmaState
 
-data class HomeState(
-    val userData: UserData?,
-    val userList: List<User>
-) : EmaState {
+data class HomeState(val userData: UserData?, val userList: List<User>) : EmaState {
 
     companion object {
         val DEFAULT = HomeState(
@@ -16,11 +13,7 @@ data class HomeState(
         )
     }
 
-    data class UserData(
-        val name: String,
-        val surname: String,
-        val role: Role
-    )
+    data class UserData(val name: String, val surname: String, val role: Role)
 
     val showCreateButton
         get() = userData?.role == Role.ADMIN

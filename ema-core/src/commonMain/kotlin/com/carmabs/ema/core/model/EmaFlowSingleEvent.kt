@@ -14,4 +14,5 @@ import kotlinx.coroutines.flow.MutableSharedFlow
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-fun <T>emaFlowSingleEvent():MutableSharedFlow<T> = MutableSharedFlow(replay = INT_ZERO, extraBufferCapacity = INT_ONE,BufferOverflow.DROP_OLDEST)
+fun <T> emaFlowSingleEvent(): MutableSharedFlow<T> =
+    MutableSharedFlow(replay = INT_ZERO, extraBufferCapacity = INT_ONE, BufferOverflow.DROP_OLDEST)

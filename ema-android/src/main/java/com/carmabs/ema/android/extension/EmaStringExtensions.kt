@@ -6,6 +6,4 @@ package com.carmabs.ema.android.extension
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
 
-fun String.getFormattedString(vararg data: Any?): String {
-    return String.format(this, *data)
-}
+fun String.getFormattedString(vararg data: Any?): String = String.format(this, *data)

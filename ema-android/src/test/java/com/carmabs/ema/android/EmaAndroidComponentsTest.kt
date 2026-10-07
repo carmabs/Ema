@@ -46,6 +46,15 @@ import com.carmabs.ema.core.model.EmaConfiguration
 import com.carmabs.ema.core.state.EmaEvent
 import com.carmabs.ema.core.state.EmaState
 import com.carmabs.ema.core.viewmodel.EmaViewModelBasic
+import java.util.UUID
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertIs
+import kotlin.test.assertNotSame
+import kotlin.test.assertSame
+import kotlin.test.assertTrue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.isActive
@@ -57,15 +66,6 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.GraphicsMode
 import org.robolectric.shadows.ShadowToast
-import java.util.UUID
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertIs
-import kotlin.test.assertNotSame
-import kotlin.test.assertSame
-import kotlin.test.assertTrue
 
 data class TestState(val value: Int = 0) : EmaState
 
@@ -248,9 +248,17 @@ class EmaAndroidViewModelTest {
     @Test
     fun `save state support keeps the handle and the manager`() {
         val handle = SavedStateHandle()
-        val manager = EmaSaveStateManager<TestState, EmaEvent.EMPTY> { _, saveStateHandle, _ -> saveStateHandle["saved"] = true }
+        val manager =
+            EmaSaveStateManager<TestState, EmaEvent.EMPTY> { _, saveStateHandle, _ ->
+                saveStateHandle["saved"] =
+                    true
+            }
         val support = SavedStateSupport(handle, manager)
-        support.saveStateManager.onSaveStateHandling(CoroutineScope(Dispatchers.Unconfined), support.savedStateHandle, TestViewModel())
+        support.saveStateManager.onSaveStateHandling(
+            CoroutineScope(Dispatchers.Unconfined),
+            support.savedStateHandle,
+            TestViewModel()
+        )
         assertEquals(true, handle.get<Boolean>("saved"))
     }
 }
@@ -285,7 +293,14 @@ class EmaAndroidDataClassPrinterTest {
 
     private enum class Role { ADMIN }
     private data class Address(val street: String)
-    private data class User(val name: String, val role: Role, val tags: List<String>, val extra: Map<String, Int>, val address: Address?, val id: UUID)
+    private data class User(
+        val name: String,
+        val role: Role,
+        val tags: List<String>,
+        val extra: Map<String, Int>,
+        val address: Address?,
+        val id: UUID
+    )
     private class Node(val name: String) {
         var next: Node? = null
     }

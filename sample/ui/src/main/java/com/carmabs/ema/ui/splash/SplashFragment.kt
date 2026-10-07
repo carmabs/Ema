@@ -12,18 +12,10 @@ import com.carmabs.ema.presentation.splash.SplashViewModel
 import com.carmabs.ema.sample.ema.databinding.SplashFragmentBinding
 import org.koin.android.ext.android.get
 
+class SplashFragment : EmaFragment<SplashFragmentBinding, EmaState.EMPTY, SplashViewModel, SplashEvent>() {
 
-class SplashFragment :
-    EmaFragment<SplashFragmentBinding,EmaState.EMPTY, SplashViewModel, SplashEvent>() {
-
-    override fun createViewBinding(
-        inflater: LayoutInflater,
-        container: ViewGroup?
-    ): SplashFragmentBinding {
-        return SplashFragmentBinding.inflate(inflater,container,false)
-    }
-
-
+    override fun createViewBinding(inflater: LayoutInflater, container: ViewGroup?): SplashFragmentBinding =
+        SplashFragmentBinding.inflate(inflater, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -42,12 +34,9 @@ class SplashFragment :
         }
     }
 
-    override fun provideViewModel(): SplashViewModel {
-        return get()
-    }
+    override fun provideViewModel(): SplashViewModel = get()
 
-    override fun SplashFragmentBinding.onState(state: EmaState.EMPTY){
-    
+    override fun SplashFragmentBinding.onState(state: EmaState.EMPTY) {
     }
 
     override suspend fun SplashFragmentBinding.onEvent(event: SplashEvent) {

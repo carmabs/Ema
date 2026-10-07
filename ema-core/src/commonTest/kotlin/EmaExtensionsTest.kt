@@ -1,4 +1,3 @@
-import com.carmabs.ema.core.manager.areAllPermissionsGranted
 import com.carmabs.ema.core.extension.checkNull
 import com.carmabs.ema.core.extension.checkNullOrEmpty
 import com.carmabs.ema.core.extension.constraintValue
@@ -22,6 +21,7 @@ import com.carmabs.ema.core.extension.toEmaText
 import com.carmabs.ema.core.extension.toScope
 import com.carmabs.ema.core.extension.update
 import com.carmabs.ema.core.manager.PermissionState
+import com.carmabs.ema.core.manager.areAllPermissionsGranted
 import com.carmabs.ema.core.manager.areAllPermissionsStateGranted
 import com.carmabs.ema.core.manager.isPermissionGranted
 import com.carmabs.ema.core.manager.isPermissionStateGranted
@@ -29,12 +29,12 @@ import com.carmabs.ema.core.model.EmaText
 import com.carmabs.ema.core.value.EmaUriRes
 import com.carmabs.ema.core.value.EmaUriType
 import com.carmabs.ema.core.value.toUriRes
-import kotlinx.coroutines.Dispatchers
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlinx.coroutines.Dispatchers
 
 class EmaNumberExtensionsTest {
 
@@ -244,6 +244,9 @@ class EmaResultExtensionsTest {
 
     @Test
     fun `coroutine context to scope`() {
-        assertEquals(Dispatchers.Default, Dispatchers.Default.toScope().coroutineContext[kotlin.coroutines.ContinuationInterceptor])
+        assertEquals(
+            Dispatchers.Default,
+            Dispatchers.Default.toScope().coroutineContext[kotlin.coroutines.ContinuationInterceptor]
+        )
     }
 }

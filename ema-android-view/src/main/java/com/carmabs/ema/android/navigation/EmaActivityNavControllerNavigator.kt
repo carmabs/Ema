@@ -36,9 +36,12 @@ abstract class EmaActivityNavControllerNavigator<E : EmaEvent>(
     }
 
     internal fun setup(initializer: EmaInitializer?, serializerStrategy: BundleSerializerStrategy) {
-        navController.setGraph(graphId, initializer?.let {
-            it.toBundle(serializerStrategy)
-        } ?: activity.intent.extras)
+        navController.setGraph(
+            graphId,
+            initializer?.let {
+                it.toBundle(serializerStrategy)
+            } ?: activity.intent.extras
+        )
     }
 
     final override val navController: NavController

@@ -29,6 +29,14 @@ import com.carmabs.ema.core.initializer.EmaInitializerSerializer
 import com.carmabs.ema.core.navigator.EmaNavigator
 import com.carmabs.ema.core.view.EmaView
 import com.carmabs.ema.core.view.EmaViewModelTrigger
+import java.time.Duration
+import java.util.Locale
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
+import kotlin.test.assertIs
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import org.junit.After
@@ -38,14 +46,6 @@ import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
-import java.time.Duration
-import java.util.Locale
-import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
-import kotlin.test.assertFalse
-import kotlin.test.assertIs
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
 
 class BindView : EmaView<ViewState, ViewTestViewModel, ViewEvent> {
     override val coroutineScope: CoroutineScope = MainScope()
@@ -314,7 +314,10 @@ class EmaViewExtensionsTest {
     @Test
     fun `the state delegate creates the initial value lazily`() {
         var creations = 0
-        var value: String by emaStateDelegate { creations++; "initial" }
+        var value: String by emaStateDelegate {
+            creations++
+            "initial"
+        }
         assertEquals(0, creations)
         assertEquals("initial", value)
         assertEquals("initial", value)

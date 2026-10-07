@@ -10,6 +10,6 @@ package com.carmabs.ema.core.model
  * @author <a href=“mailto:apps.carmabs@gmail.com.com”>Carlos Mateo Benito</a>
  */
 sealed interface EmaBackHandlerStrategy {
-    class ContinueOnBackPressed(val removeBackHandler:Boolean = true): EmaBackHandlerStrategy
-    data object Cancelled: EmaBackHandlerStrategy
+    class ContinueOnBackPressed(val removeBackHandler: Boolean = true) : EmaBackHandlerStrategy
+    data object Cancelled : EmaBackHandlerStrategy
 }

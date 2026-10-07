@@ -19,18 +19,15 @@ class EmaMultiplePermissionRequest private constructor(
     val onPermissionResponse: ((Map<String, PermissionState>) -> Unit)
 ) {
     companion object {
-        fun createRequest(onPermissionResponse: (Map<String, PermissionState>) -> Unit): EmaMultiplePermissionRequest {
-            return EmaMultiplePermissionRequest(
+        fun createRequest(onPermissionResponse: (Map<String, PermissionState>) -> Unit): EmaMultiplePermissionRequest =
+            EmaMultiplePermissionRequest(
                 shouldRequest = true,
                 onPermissionResponse = onPermissionResponse
             )
-        }
 
-        fun cancelRequest(): EmaMultiplePermissionRequest {
-            return EmaMultiplePermissionRequest(
-                shouldRequest = false,
-                onPermissionResponse = { }
-            )
-        }
+        fun cancelRequest(): EmaMultiplePermissionRequest = EmaMultiplePermissionRequest(
+            shouldRequest = false,
+            onPermissionResponse = { }
+        )
     }
 }

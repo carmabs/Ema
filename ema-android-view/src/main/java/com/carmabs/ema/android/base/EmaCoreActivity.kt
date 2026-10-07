@@ -35,7 +35,9 @@ import kotlinx.coroutines.Job
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
 abstract class EmaCoreActivity<S : EmaState, VM : EmaViewModel<S, E>, E : EmaEvent> :
-    AppCompatActivity(), EmaAndroidView<S, VM, E>, EmaActivityBackDelegate {
+    AppCompatActivity(),
+    EmaAndroidView<S, VM, E>,
+    EmaActivityBackDelegate {
 
     override val ownsBackDelegate = false
 
@@ -58,7 +60,7 @@ abstract class EmaCoreActivity<S : EmaState, VM : EmaViewModel<S, E>, E : EmaEve
 
     final override fun onBackDelegate(): EmaBackHandlerStrategy {
         navigateBack()
-        //Cancel because we are handling manually the navigation with navigateBack()
+        // Cancel because we are handling manually the navigation with navigateBack()
         return EmaBackHandlerStrategy.Cancelled
     }
 
@@ -83,7 +85,6 @@ abstract class EmaCoreActivity<S : EmaState, VM : EmaViewModel<S, E>, E : EmaEve
 
     override val coroutineScope: CoroutineScope
         get() = lifecycleScope
-
 
     @Suppress("UNCHECKED_CAST")
     override val viewModel: VM by lazy {
@@ -124,12 +125,11 @@ abstract class EmaCoreActivity<S : EmaState, VM : EmaViewModel<S, E>, E : EmaEve
      */
     @CallSuper
     override fun onResume() {
-
-        //We call this and not in onStart, because is some cases, the view that receives the state could be use a
-        //dialog, that needs to be restored after onRestoreInstance state is called. Otherwise, java.lang.IllegalStateException: Can not perform this action after onSaveInstanceState
-        //could be launched.
-        //On restoreInstanceState is called between onStart and onResume, on re-initialization, so binding the views here, guarantees the state of
-        //savedInstances has been restored
+        // We call this and not in onStart, because is some cases, the view that receives the state could be use a
+        // dialog, that needs to be restored after onRestoreInstance state is called. Otherwise, java.lang.IllegalStateException: Can not perform this action after onSaveInstanceState
+        // could be launched.
+        // On restoreInstanceState is called between onStart and onResume, on re-initialization, so binding the views here, guarantees the state of
+        // savedInstances has been restored
         if (viewJob == null) {
             viewJob = onBindView(this.lifecycleScope, viewModel)
         }
@@ -151,7 +151,6 @@ abstract class EmaCoreActivity<S : EmaState, VM : EmaViewModel<S, E>, E : EmaEve
      */
     final override var previousState: S? = null
 
-
     /**
      * Destroy the activity and unbind the observers from view model
      */
@@ -161,7 +160,6 @@ abstract class EmaCoreActivity<S : EmaState, VM : EmaViewModel<S, E>, E : EmaEve
         viewJob = null
         super.onStop()
     }
-
 
     @CallSuper
     override fun finish() {
@@ -179,7 +177,7 @@ abstract class EmaCoreActivity<S : EmaState, VM : EmaViewModel<S, E>, E : EmaEve
         return false
     }
 
-    //Override it to make it final to avoid deprecated implementation
+    // Override it to make it final to avoid deprecated implementation
     @Suppress("DEPRECATION")
     @Deprecated(
         "Overrides deprecated member in 'androidx.core.app.ComponentActivity'. Deprecated in Java",
@@ -193,7 +191,6 @@ abstract class EmaCoreActivity<S : EmaState, VM : EmaViewModel<S, E>, E : EmaEve
     }
 
     protected open fun overridePopTransitionAnimations(): EmaPopActivityTransitionAnimations? = null
-
 
     protected data class EmaPopActivityTransitionAnimations(
         @AnimRes val enterTransition: Int?,

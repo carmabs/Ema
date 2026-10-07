@@ -10,8 +10,4 @@ import com.carmabs.ema.core.EmaInternalApi
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
 @EmaInternalApi
-class EmaResultModel internal constructor(
-    val key: String,
-    val data: Any?,
-    val ownerId: String
-)
+class EmaResultModel internal constructor(val key: String, val data: Any?, val ownerId: String)

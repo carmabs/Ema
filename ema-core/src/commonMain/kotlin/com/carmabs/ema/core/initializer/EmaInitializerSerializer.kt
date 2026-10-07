@@ -9,7 +9,7 @@ package com.carmabs.ema.core.initializer
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-interface EmaInitializerSerializer{
-    fun save(initializer:EmaInitializer)
-    fun restore():EmaInitializer?
+interface EmaInitializerSerializer {
+    fun save(initializer: EmaInitializer)
+    fun restore(): EmaInitializer?
 }

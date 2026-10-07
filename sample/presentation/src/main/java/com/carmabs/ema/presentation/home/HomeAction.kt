@@ -12,5 +12,5 @@ import com.carmabs.ema.core.action.EmaAction
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
 sealed interface HomeAction : EmaAction.Screen {
-    data object ProfileClicked: HomeAction
+    data object ProfileClicked : HomeAction
 }

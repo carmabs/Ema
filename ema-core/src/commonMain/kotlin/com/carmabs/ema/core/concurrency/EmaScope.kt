@@ -4,9 +4,8 @@ import com.carmabs.ema.core.Ema
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 
-
 /**
  * Scope used by ViewModels by default. It runs on [com.carmabs.ema.core.model.EmaConfiguration.mainDispatcher].
  */
-fun EmaMainScope(): CoroutineScope =
-    CoroutineScope(SupervisorJob() + Ema.configuration.mainDispatcher)
+@Suppress("FunctionName") // Factory named like the MainScope() of coroutines
+fun EmaMainScope(): CoroutineScope = CoroutineScope(SupervisorJob() + Ema.configuration.mainDispatcher)

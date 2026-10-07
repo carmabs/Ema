@@ -16,7 +16,7 @@ import com.carmabs.ema.core.viewmodel.EmaViewModel
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
-abstract class EmaActivity<B : ViewBinding, S : EmaState, VM : EmaViewModel<S,E>, E : EmaEvent> :
+abstract class EmaActivity<B : ViewBinding, S : EmaState, VM : EmaViewModel<S, E>, E : EmaEvent> :
     EmaCoreActivity<S, VM, E>() {
 
     protected lateinit var binding: B
@@ -25,7 +25,6 @@ abstract class EmaActivity<B : ViewBinding, S : EmaState, VM : EmaViewModel<S,E>
      * Method to provide the activity ViewBinding class to represent the layout.
      */
     abstract fun createViewBinding(inflater: LayoutInflater): B
-
 
     /**
      * The onCreate base will set the view specified in [.getLayout] and will
@@ -45,12 +44,10 @@ abstract class EmaActivity<B : ViewBinding, S : EmaState, VM : EmaViewModel<S,E>
     protected var isFirstNormalExecution: Boolean = true
         private set
 
-
     final override fun onState(state: S) {
         binding.onState(state)
         isFirstNormalExecution = false
     }
-
 
     final override suspend fun onEvent(event: E) {
         binding.onEvent(event)

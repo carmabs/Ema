@@ -23,9 +23,7 @@ import com.carmabs.ema.ui.dialog.loading.LoadingDialogData
 import com.carmabs.ema.ui.theme.EmaSampleTheme
 
 @Composable
-fun LoadingDialogComposable(
-    dialogData: LoadingDialogData
-) {
+fun LoadingDialogComposable(dialogData: LoadingDialogData) {
     Dialog(onDismissRequest = {}) {
         Surface(
             modifier = Modifier.fillMaxWidth(),

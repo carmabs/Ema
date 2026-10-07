@@ -13,13 +13,9 @@ import com.carmabs.ema.core.model.EmaText
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
 
-fun String?.checkNull(defaultValue: String = STRING_EMPTY): String {
-    return this ?: defaultValue
-}
+fun String?.checkNull(defaultValue: String = STRING_EMPTY): String = this ?: defaultValue
 
-fun String?.checkNullOrEmpty(defaultValue: String = STRING_EMPTY): String {
-    return if(isNullOrEmpty())defaultValue else this
-}
+fun String?.checkNullOrEmpty(defaultValue: String = STRING_EMPTY): String = if (isNullOrEmpty()) defaultValue else this
 
 fun String.replaceLast(delimiter: Char, newString: String): String {
     val startString = substringBeforeLast(delimiter).trim()

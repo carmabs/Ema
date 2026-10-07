@@ -19,9 +19,8 @@ import com.google.gson.Gson
  *  Navigator to handle navigation through navController in a Fragment
  * Created by: Carlos Mateo Benito on 29/07/22.
  */
-abstract class EmaFragmentNavControllerNavigator<E : EmaEvent>(
-    private val fragment: Fragment
-) : EmaNavControllerNavigator<E> {
+abstract class EmaFragmentNavControllerNavigator<E : EmaEvent>(private val fragment: Fragment) :
+    EmaNavControllerNavigator<E> {
 
     private val gson by lazy {
         Gson()

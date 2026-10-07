@@ -1,6 +1,5 @@
 package com.carmabs.ema.android.ui.recycler
 
-
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.viewbinding.ViewBinding
@@ -13,7 +12,7 @@ import androidx.viewbinding.ViewBinding
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
 
-abstract class EmaMultiRecyclerAdapter<I:Any>(diffCallback: DiffUtil.ItemCallback<I> = getDefaultDiffCallback()) :
+abstract class EmaMultiRecyclerAdapter<I : Any>(diffCallback: DiffUtil.ItemCallback<I> = getDefaultDiffCallback()) :
     EmaBaseRecyclerAdapter<I>(diffCallback) {
 
     /**
@@ -21,9 +20,8 @@ abstract class EmaMultiRecyclerAdapter<I:Any>(diffCallback: DiffUtil.ItemCallbac
      * @param parent holder where view components are implemented
      * @param viewType of the item
      */
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EmaViewHolder<I> {
-        return createMultiViewHolder(parent, viewType)
-    }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EmaViewHolder<I> =
+        createMultiViewHolder(parent, viewType)
 
     /**
      * Method to set the view parameters from each item
@@ -38,12 +36,14 @@ abstract class EmaMultiRecyclerAdapter<I:Any>(diffCallback: DiffUtil.ItemCallbac
     /**
      * Function to implement different viewHolders depending the viewType provided.
      */
-    protected abstract fun createMultiViewHolder(view: ViewGroup, viewType: Int) : EmaAdapterMultiViewHolder
+    protected abstract fun createMultiViewHolder(view: ViewGroup, viewType: Int): EmaAdapterMultiViewHolder
 
-    protected open inner class EmaAdapterMultiViewHolder(private val viewBinding: ViewBinding, private val viewType: Int) :
-        EmaViewHolder<I>(viewBinding.root) {
+    protected open inner class EmaAdapterMultiViewHolder(
+        private val viewBinding: ViewBinding,
+        private val viewType: Int
+    ) : EmaViewHolder<I>(viewBinding.root) {
         override fun bind(item: I, holder: EmaViewHolder<I>, payloads: MutableList<Any>) {
-            viewBinding.bind(item, viewType, holder,payloads)
+            viewBinding.bind(item, viewType, holder, payloads)
             itemView.setOnClickListener {
                 onItemClicked(item, adapterPosition, itemCount)
                 itemClickListener?.invoke(adapterPosition, item)

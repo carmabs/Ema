@@ -12,17 +12,15 @@ import kotlin.reflect.KProperty
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
 @Suppress("ClassName")
-class emaStateDelegate<T>(private val initialStateCreation:()->T) {
+class emaStateDelegate<T>(private val initialStateCreation: () -> T) {
 
     private var state: T? = null
 
-    operator fun getValue(thisRef: Any?, property: KProperty<*>): T {
-         return state?:initialStateCreation.invoke().apply {
-             state = this
-         }
+    operator fun getValue(thisRef: Any?, property: KProperty<*>): T = state ?: initialStateCreation.invoke().apply {
+        state = this
     }
 
     operator fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
-       state = value
+        state = value
     }
 }

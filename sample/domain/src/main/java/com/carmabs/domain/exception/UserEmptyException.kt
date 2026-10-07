@@ -9,4 +9,4 @@ package com.carmabs.domain.exception
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
 
-data class UserEmptyException(override val message:String= "User cannot be empty") : Exception()
+data class UserEmptyException(override val message: String = "User cannot be empty") : Exception()

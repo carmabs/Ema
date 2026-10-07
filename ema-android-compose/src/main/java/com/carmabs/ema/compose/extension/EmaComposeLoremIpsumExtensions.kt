@@ -11,8 +11,6 @@ import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-fun LoremIpsum.generate():String{
-    return this.values.reduce{acc,s->
-        "$acc $s"
-    }
+fun LoremIpsum.generate(): String = this.values.reduce { acc, s ->
+    "$acc $s"
 }

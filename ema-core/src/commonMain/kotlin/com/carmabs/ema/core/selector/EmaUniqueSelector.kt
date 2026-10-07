@@ -10,19 +10,19 @@ package com.carmabs.ema.core.selector
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-class EmaUniqueSelector<T>(private val listOptions : List<T>,private val selectionListener: OnSelectionListener<T>) {
+class EmaUniqueSelector<T>(private val listOptions: List<T>, private val selectionListener: OnSelectionListener<T>) {
 
-    fun select(option:T){
+    fun select(option: T) {
         listOptions.forEach {
-            if(option!=it){
+            if (option != it) {
                 selectionListener.onUnselected(it)
             }
         }
         selectionListener.onSelected(option)
     }
 
-    interface OnSelectionListener<T>{
-        fun onSelected(option:T)
-        fun onUnselected(option:T)
+    interface OnSelectionListener<T> {
+        fun onSelected(option: T)
+        fun onUnselected(option: T)
     }
 }

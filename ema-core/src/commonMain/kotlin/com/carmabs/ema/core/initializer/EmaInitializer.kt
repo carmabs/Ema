@@ -13,10 +13,9 @@ import kotlinx.serialization.Serializable
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-interface EmaInitializer : EmaAction.Initializer{
+interface EmaInitializer : EmaAction.Initializer {
     companion object {
         const val KEY = "EmaInitializer"
     }
     data object EMPTY : EmaInitializer
 }
-

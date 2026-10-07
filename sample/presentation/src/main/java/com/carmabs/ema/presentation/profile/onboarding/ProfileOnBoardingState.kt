@@ -5,9 +5,7 @@ import com.carmabs.ema.core.constants.STRING_EMPTY
 import com.carmabs.ema.core.state.EmaState
 import com.carmabs.ema.presentation.extension.fullName
 
-data class ProfileOnBoardingState(
-    val user: User?
-) : EmaState {
+data class ProfileOnBoardingState(val user: User?) : EmaState {
 
     companion object {
         val DEFAULT = ProfileOnBoardingState(
@@ -18,4 +16,3 @@ data class ProfileOnBoardingState(
     val userName
         get() = user?.fullName ?: STRING_EMPTY
 }
-

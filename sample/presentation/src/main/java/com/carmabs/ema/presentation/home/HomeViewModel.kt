@@ -7,17 +7,15 @@ import com.carmabs.ema.core.initializer.EmaInitializer
 import com.carmabs.ema.presentation.base.BaseViewModel
 import com.carmabs.ema.presentation.profile.creation.ProfileCreationViewModel
 
-class HomeViewModel(
-    private val getUserFriendsUseCase: GetUserFriendsUseCase,
-    initialDataState: HomeState
-) : BaseViewModel<HomeState, HomeAction, HomeEvent>(initialDataState) {
+class HomeViewModel(private val getUserFriendsUseCase: GetUserFriendsUseCase, initialDataState: HomeState) :
+    BaseViewModel<HomeState, HomeAction, HomeEvent>(initialDataState) {
 
     private lateinit var user: User
     override fun onStateCreated(initializer: EmaInitializer?) {
         sideEffect {
             when (val homeInitializer = initializer as HomeInitializer) {
                 is HomeInitializer.HomeUser -> {
-                    user  = homeInitializer.user
+                    user = homeInitializer.user
                     val friends = getUserFriendsUseCase(GetUserFriendsUseCase.Input(homeInitializer.user))
                     updateState {
                         copy(
@@ -52,9 +50,11 @@ class HomeViewModel(
             val user = it as User
             dispatchBroadcast(user)
             updateState {
-                copy(userList = userList.toMutableList().apply {
-                    add(user)
-                })
+                copy(
+                    userList = userList.toMutableList().apply {
+                        add(user)
+                    }
+                )
             }
         }
     }

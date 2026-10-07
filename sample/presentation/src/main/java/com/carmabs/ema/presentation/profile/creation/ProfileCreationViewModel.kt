@@ -5,11 +5,10 @@ import com.carmabs.domain.model.User
 import com.carmabs.ema.core.initializer.EmaInitializer
 import com.carmabs.ema.presentation.base.BaseViewModel
 
-class ProfileCreationViewModel(
-    initialDataState: ProfileCreationState
-) : BaseViewModel<ProfileCreationState, ProfileCreationAction, ProfileCreationEvent>(
-    initialDataState
-) {
+class ProfileCreationViewModel(initialDataState: ProfileCreationState) :
+    BaseViewModel<ProfileCreationState, ProfileCreationAction, ProfileCreationEvent>(
+        initialDataState
+    ) {
     override fun onStateCreated(initializer: EmaInitializer?) {
         when (initializer as ProfileCreationInitializer) {
             ProfileCreationInitializer.Admin -> updateState {
@@ -69,8 +68,9 @@ class ProfileCreationViewModel(
     }
 
     private fun onActionCreateClicked() {
-        if (!state.canCreate)
+        if (!state.canCreate) {
             return
+        }
         showOverlap(ProfileCreationOverlap.DialogUserCreated(state.role))
     }
 
@@ -83,7 +83,6 @@ class ProfileCreationViewModel(
     private fun onActionDialogCancelClicked() {
         hideOverlap()
     }
-
 
     private fun onActionBack() {
         showOverlap(ProfileCreationOverlap.DialogBackConfirmation)

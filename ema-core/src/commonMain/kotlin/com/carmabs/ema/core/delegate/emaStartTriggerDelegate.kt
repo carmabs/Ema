@@ -12,11 +12,10 @@ import kotlin.reflect.KProperty
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-class emaStartTriggerDelegate  {
+@Suppress("ClassName")
+class emaStartTriggerDelegate {
 
     val startTrigger: EmaViewModelTrigger = EmaViewModelTrigger()
 
-    operator fun getValue(thisRef: Any?, property: KProperty<*>): EmaViewModelTrigger {
-        return startTrigger
-    }
+    operator fun getValue(thisRef: Any?, property: KProperty<*>): EmaViewModelTrigger = startTrigger
 }

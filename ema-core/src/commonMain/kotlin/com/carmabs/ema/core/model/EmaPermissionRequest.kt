@@ -19,18 +19,14 @@ class EmaPermissionRequest private constructor(
     val onPermissionResponse: ((PermissionState) -> Unit)
 ) {
     companion object {
-        fun createRequest(onPermissionResponse: (PermissionState) -> Unit): EmaPermissionRequest {
-            return EmaPermissionRequest(
-                shouldRequest = true,
-                onPermissionResponse = onPermissionResponse
-            )
-        }
+        fun createRequest(onPermissionResponse: (PermissionState) -> Unit): EmaPermissionRequest = EmaPermissionRequest(
+            shouldRequest = true,
+            onPermissionResponse = onPermissionResponse
+        )
 
-        fun cancelRequest(): EmaPermissionRequest {
-            return EmaPermissionRequest(
-                shouldRequest = false,
-                onPermissionResponse = { }
-            )
-        }
+        fun cancelRequest(): EmaPermissionRequest = EmaPermissionRequest(
+            shouldRequest = false,
+            onPermissionResponse = { }
+        )
     }
 }

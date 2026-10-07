@@ -12,6 +12,6 @@ import androidx.compose.runtime.Immutable
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
 @Immutable
-class EmaImmutableList<T>(val list:List<T>) :List<T> by list
+class EmaImmutableList<T>(val list: List<T>) : List<T> by list
 
-fun <T>List<T>.toImmutable() = EmaImmutableList(this)
+fun <T> List<T>.toImmutable() = EmaImmutableList(this)

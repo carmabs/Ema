@@ -12,7 +12,4 @@ import com.carmabs.ema.core.initializer.EmaInitializer
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-data class EmaInitializerBundle(
-    val initializer: EmaInitializer,
-    val serializer: BundleSerializerStrategy
-)
+data class EmaInitializerBundle(val initializer: EmaInitializer, val serializer: BundleSerializerStrategy)

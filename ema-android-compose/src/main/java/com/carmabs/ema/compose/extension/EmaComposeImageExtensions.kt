@@ -40,7 +40,7 @@ fun EmaImage.toComposableImage(
 ) {
     val painter = toComposePainter()
     Image(
-        painter =  painter,
+        painter = painter,
         contentDescription = contentDescription,
         modifier = modifier,
         alignment = alignment,
@@ -51,23 +51,21 @@ fun EmaImage.toComposableImage(
 }
 
 @Composable
-fun EmaImage.toComposePainter(): Painter {
-    return  when (this) {
-        is EmaImage.Id -> {
-            painterResource(id = id)
-        }
+fun EmaImage.toComposePainter(): Painter = when (this) {
+    is EmaImage.Id -> {
+        painterResource(id = id)
+    }
 
-        is EmaImage.Uri -> {
-            painterResource(id = uri.getResourceId(LocalContext.current))
-        }
+    is EmaImage.Uri -> {
+        painterResource(id = uri.getResourceId(LocalContext.current))
+    }
 
-        is EmaImage.ByteArray -> {
-            remember {
-                val bitmap = runBlocking {
-                    bytes.toBitmap(width,height,colorTint)
-                }
-                BitmapPainter(bitmap.asImageBitmap())
+    is EmaImage.ByteArray -> {
+        remember {
+            val bitmap = runBlocking {
+                bytes.toBitmap(width, height, colorTint)
             }
+            BitmapPainter(bitmap.asImageBitmap())
         }
     }
 }

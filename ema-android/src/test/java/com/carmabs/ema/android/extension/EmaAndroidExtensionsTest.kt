@@ -18,6 +18,12 @@ import com.carmabs.ema.android.initializer.bundle.strategy.BundleSerializerStrat
 import com.carmabs.ema.core.initializer.EmaInitializer
 import com.carmabs.ema.core.model.EmaText
 import com.carmabs.ema.core.value.EmaUriType
+import java.io.Serializable
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertNull
+import kotlin.test.assertSame
+import kotlin.test.assertTrue
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
@@ -29,12 +35,6 @@ import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.GraphicsMode
-import java.io.Serializable
-import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
-import kotlin.test.assertNull
-import kotlin.test.assertSame
-import kotlin.test.assertTrue
 
 data class NameInitializer(val name: String) : EmaInitializer
 
@@ -44,9 +44,13 @@ object NameInitializerSerializer : KSerializer<NameInitializer> {
     override fun deserialize(decoder: Decoder) = NameInitializer(decoder.decodeString())
 }
 
-data class SerializableInitializer(val id: Int) : EmaInitializer, Serializable
+data class SerializableInitializer(val id: Int) :
+    EmaInitializer,
+    Serializable
 
-data class ParcelableInitializer(val id: Int) : EmaInitializer, Parcelable {
+data class ParcelableInitializer(val id: Int) :
+    EmaInitializer,
+    Parcelable {
     override fun describeContents() = 0
     override fun writeToParcel(dest: Parcel, flags: Int) = dest.writeInt(id)
 
@@ -196,7 +200,12 @@ class EmaResourceExtensionsTest {
             .onRaw(context) { calls.add("raw") }
 
         assertEquals(
-            listOf("drawable", "bitmap 10x10", "color ${Color.BLACK}", "string ${context.getString(android.R.string.ok)}"),
+            listOf(
+                "drawable",
+                "bitmap 10x10",
+                "color ${Color.BLACK}",
+                "string ${context.getString(android.R.string.ok)}"
+            ),
             calls
         )
         assertEquals(10, drawable.requireBitmap(context, 10, 10).width)
@@ -267,6 +276,9 @@ class EmaContextExtensionsTest {
         assertEquals(50 to 100, fitInTargetMaxSizeProportionally(100, 200, 100, 100))
         assertEquals(100 to 50, fitInTargetMaxSizeProportionally(200, 100, 100, 100))
         val drawable = android.R.drawable.ic_delete.getDrawable(ApplicationProvider.getApplicationContext())
-        assertEquals(drawable.intrinsicWidth to drawable.intrinsicHeight, drawable.fitInTargetMaxSizeProportionally(null, null))
+        assertEquals(
+            drawable.intrinsicWidth to drawable.intrinsicHeight,
+            drawable.fitInTargetMaxSizeProportionally(null, null)
+        )
     }
 }

@@ -11,12 +11,10 @@ import com.carmabs.ema.core.model.EmaResult
  *
  * Created by: Carlos Mateo Benito on 03/05/23.
  */
-fun <S,F>Result<S>.toEmaResult(failureParser:(Throwable)->F):EmaResult<S,F>{
-    return try {
-        getOrThrow().let {
-            EmaResult.success(it)
-        }
-    }catch (exception:Throwable){
-        EmaResult.failure(failureParser.invoke(exception))
+fun <S, F> Result<S>.toEmaResult(failureParser: (Throwable) -> F): EmaResult<S, F> = try {
+    getOrThrow().let {
+        EmaResult.success(it)
     }
+} catch (exception: Throwable) {
+    EmaResult.failure(failureParser.invoke(exception))
 }

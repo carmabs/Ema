@@ -16,16 +16,16 @@ import com.carmabs.ema.android.ui.dialog.EmaAndroidDialogProvider
 import com.carmabs.ema.android.ui.dialog.EmaDialog
 import com.carmabs.ema.core.dialog.EmaDialogData
 import com.carmabs.ema.core.dialog.EmaDialogListener
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.Robolectric
-import org.robolectric.RobolectricTestRunner
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.Robolectric
+import org.robolectric.RobolectricTestRunner
 
 data class TestDialogData(
     val title: String = "",
@@ -221,8 +221,7 @@ class EmaLayoutTest {
 
     private val activity = Robolectric.buildActivity(HostActivity::class.java).setup().get()
 
-    private fun attributes() =
-        Robolectric.buildAttributeSet().addAttribute(android.R.attr.text, "hello").build()
+    private fun attributes() = Robolectric.buildAttributeSet().addAttribute(android.R.attr.text, "hello").build()
 
     @Test
     fun `the layout is set up with its data when it is attached`() {

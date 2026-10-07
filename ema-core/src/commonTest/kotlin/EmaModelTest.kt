@@ -42,6 +42,17 @@ import com.carmabs.ema.core.usecase.EmaUseCase
 import com.carmabs.ema.core.value.EmaUriRes
 import com.carmabs.ema.core.value.EmaUriType
 import com.carmabs.ema.core.viewmodel.EmaViewModel
+import kotlin.coroutines.resume
+import kotlin.test.AfterTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
+import kotlin.test.assertNotEquals
+import kotlin.test.assertNull
+import kotlin.test.assertSame
+import kotlin.test.assertTrue
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -54,17 +65,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.yield
-import kotlin.coroutines.resume
-import kotlin.test.AfterTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
-import kotlin.test.assertFalse
-import kotlin.test.assertNotEquals
-import kotlin.test.assertNull
-import kotlin.test.assertSame
-import kotlin.test.assertTrue
-import kotlin.time.Duration.Companion.milliseconds
 
 class EmaResultTest {
 
@@ -100,7 +100,12 @@ class EmaResultTest {
         assertEquals(2, success.mapError { it.length }.getOrNull())
         assertEquals(1, failure.flatMapError { EmaResult.success<Int, Int>(1) }.getOrNull())
         assertEquals(2, success.flatMapError { EmaResult.failure<Int, Int>(1) }.getOrNull())
-        assertEquals("2", success.mapResult { EmaResult.success<String, String>(it.getOrNull().toString()) }.getOrNull())
+        assertEquals(
+            "2",
+            success.mapResult {
+                EmaResult.success<String, String>(it.getOrNull().toString())
+            }.getOrNull()
+        )
     }
 
     @Test
@@ -231,15 +236,18 @@ class EmaModelTest {
     fun `unique selector selects one option and deselects the rest`() {
         val selected = mutableListOf<String>()
         val unselected = mutableListOf<String>()
-        EmaUniqueSelector(listOf("a", "b", "c"), object : EmaUniqueSelector.OnSelectionListener<String> {
-            override fun onSelected(option: String) {
-                selected.add(option)
-            }
+        EmaUniqueSelector(
+            listOf("a", "b", "c"),
+            object : EmaUniqueSelector.OnSelectionListener<String> {
+                override fun onSelected(option: String) {
+                    selected.add(option)
+                }
 
-            override fun onUnselected(option: String) {
-                unselected.add(option)
+                override fun onUnselected(option: String) {
+                    unselected.add(option)
+                }
             }
-        }).select("b")
+        ).select("b")
         assertEquals(listOf("b"), selected)
         assertEquals(listOf("a", "c"), unselected)
     }

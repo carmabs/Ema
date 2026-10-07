@@ -24,27 +24,27 @@ import com.carmabs.ema.compose.CounterViewModel
 import com.carmabs.ema.compose.RouteInitializer
 import com.carmabs.ema.compose.RouteInitializerSerializer
 import com.carmabs.ema.compose.SilentScreen
+import com.carmabs.ema.compose.extension.createComposableScreen
 import com.carmabs.ema.compose.extension.navigate
 import com.carmabs.ema.compose.extension.navigateBack
 import com.carmabs.ema.compose.extension.navigateToExternalLink
 import com.carmabs.ema.compose.extension.routeId
 import com.carmabs.ema.compose.extension.routeWithInitializer
-import com.carmabs.ema.compose.extension.createComposableScreen
 import com.carmabs.ema.compose.initializer.EmaInitializerSupport
 import com.carmabs.ema.core.navigator.EmaNavigationNode
 import com.carmabs.ema.core.state.EmaEvent
 import com.carmabs.ema.core.viewmodel.EmaViewModel
-import org.junit.Rule
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
-import org.robolectric.Shadows.shadowOf
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
+import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.Shadows.shadowOf
 
 sealed interface Destination : EmaEvent {
     data object Home : Destination
@@ -137,7 +137,12 @@ class EmaComposeNavigationTest {
     fun `the initializer support can override the initializer of the route`() {
         setNavHost(EmaInitializerSupport.kSerialization(RouteInitializerSerializer, RouteInitializer("override")))
 
-        onMain { navController.navigate(CounterScreen::class.routeId, EmaInitializerBundle(RouteInitializer("route"), strategy)) }
+        onMain {
+            navController.navigate(
+                CounterScreen::class.routeId,
+                EmaInitializerBundle(RouteInitializer("route"), strategy)
+            )
+        }
 
         assertEquals(RouteInitializer("override"), viewModel?.initializer)
     }

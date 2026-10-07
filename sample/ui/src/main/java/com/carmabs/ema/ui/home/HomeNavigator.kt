@@ -9,9 +9,7 @@ import com.carmabs.ema.presentation.home.HomeEvent
 import com.carmabs.ema.presentation.profile.onboarding.ProfileOnBoardingInitializer
 import com.carmabs.ema.sample.ema.R
 
-class HomeNavigator(
-    fragment: Fragment
-) : EmaFragmentNavControllerNavigator<HomeEvent>(fragment) {
+class HomeNavigator(fragment: Fragment) : EmaFragmentNavControllerNavigator<HomeEvent>(fragment) {
 
     override fun navigate(event: HomeEvent) {
         when (event) {

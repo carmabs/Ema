@@ -15,38 +15,32 @@ import com.carmabs.ema.sample.ema.databinding.HomeLayoutItemUserBinding
 
 class HomeMultiAdapter : EmaMultiRecyclerAdapter<User>() {
 
-    override fun ViewBinding.bind(
-        item: User,
-        viewType: Int,
-        holder: EmaViewHolder<User>,
-        payloads: MutableList<Any>
-    ) {
-       when(Role.entries[viewType]){
-           Role.ADMIN -> {
-               (this as HomeLayoutItemAdminBinding).apply {
-                   tvHomeItemAdminAvatar.text = item.initials
-                   tvHomeItemAdmin.text = item.fullName
-               }
-           }
-           Role.BASIC -> {
-               (this as HomeLayoutItemUserBinding).apply {
-                   tvHomeItemUserAvatar.text = item.initials
-                   tvHomeItemUser.text = item.fullName
-               }
-           }
-       }
+    override fun ViewBinding.bind(item: User, viewType: Int, holder: EmaViewHolder<User>, payloads: MutableList<Any>) {
+        when (Role.entries[viewType]) {
+            Role.ADMIN -> {
+                (this as HomeLayoutItemAdminBinding).apply {
+                    tvHomeItemAdminAvatar.text = item.initials
+                    tvHomeItemAdmin.text = item.fullName
+                }
+            }
+
+            Role.BASIC -> {
+                (this as HomeLayoutItemUserBinding).apply {
+                    tvHomeItemUserAvatar.text = item.initials
+                    tvHomeItemUser.text = item.fullName
+                }
+            }
+        }
     }
 
     override fun createMultiViewHolder(view: ViewGroup, viewType: Int): EmaAdapterMultiViewHolder {
-       val viewBinding =  when(Role.entries[viewType]){
-            Role.ADMIN -> HomeLayoutItemAdminBinding.inflate(LayoutInflater.from(view.context),view,false)
-            Role.BASIC -> HomeLayoutItemUserBinding.inflate(LayoutInflater.from(view.context),view,false)
+        val viewBinding = when (Role.entries[viewType]) {
+            Role.ADMIN -> HomeLayoutItemAdminBinding.inflate(LayoutInflater.from(view.context), view, false)
+            Role.BASIC -> HomeLayoutItemUserBinding.inflate(LayoutInflater.from(view.context), view, false)
         }
 
-        return EmaAdapterMultiViewHolder(viewBinding,viewType)
+        return EmaAdapterMultiViewHolder(viewBinding, viewType)
     }
 
-    override fun getItemViewType(position: Int): Int {
-        return currentList[position].role.ordinal
-    }
+    override fun getItemViewType(position: Int): Int = currentList[position].role.ordinal
 }

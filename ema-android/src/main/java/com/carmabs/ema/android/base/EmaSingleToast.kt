@@ -9,7 +9,6 @@ import android.text.style.AlignmentSpan
 import android.widget.Toast
 import com.carmabs.ema.core.constants.INT_ZERO
 
-
 /**
  * Created by Carlos Mateo Benito on 5/11/21.
  *
@@ -39,7 +38,8 @@ class EmaSingleToast {
             val alignedMessage: Spannable = SpannableString(message)
             alignedMessage.setSpan(
                 AlignmentSpan.Standard(textAlignment),
-                INT_ZERO, message.length,
+                INT_ZERO,
+                message.length,
                 Spannable.SPAN_INCLUSIVE_INCLUSIVE
             )
             if (message != previousText) {

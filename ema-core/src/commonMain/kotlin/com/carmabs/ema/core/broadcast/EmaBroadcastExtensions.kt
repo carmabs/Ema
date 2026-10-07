@@ -1,9 +1,8 @@
 package com.carmabs.ema.core.broadcast
 
 import com.carmabs.ema.core.extension.emaName
-import kotlin.jvm.JvmInline
-
 import com.carmabs.ema.core.viewmodel.EmaViewModel
+import kotlin.jvm.JvmInline
 import kotlin.reflect.KClass
 
 /**

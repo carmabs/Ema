@@ -14,5 +14,5 @@ interface EmaNavigator<E : EmaEvent> {
 
     fun navigate(event: E)
 
-    fun navigateBack(result:Any?=null): Boolean
+    fun navigateBack(result: Any? = null): Boolean
 }

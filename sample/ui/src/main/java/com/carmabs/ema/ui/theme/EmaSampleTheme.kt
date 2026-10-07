@@ -59,7 +59,7 @@ private fun paletteColorScheme(darkTheme: Boolean): ColorScheme {
         error = colorResource(R.color.palette_error),
         onError = colorResource(R.color.palette_onError),
         errorContainer = colorResource(R.color.palette_errorContainer),
-        onErrorContainer = colorResource(R.color.palette_onErrorContainer),
+        onErrorContainer = colorResource(R.color.palette_onErrorContainer)
     )
 }
 
@@ -69,7 +69,7 @@ private fun sampleTypography(): Typography {
         headlineMedium = base.headlineMedium.copy(fontWeight = FontWeight.Bold),
         headlineSmall = base.headlineSmall.copy(fontWeight = FontWeight.SemiBold),
         titleLarge = base.titleLarge.copy(fontWeight = FontWeight.SemiBold),
-        titleMedium = base.titleMedium.copy(fontWeight = FontWeight.SemiBold),
+        titleMedium = base.titleMedium.copy(fontWeight = FontWeight.SemiBold)
     )
 }
 

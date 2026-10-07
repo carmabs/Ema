@@ -15,7 +15,6 @@ import com.carmabs.ema.core.broadcast.BackBroadcastId
 @EmaInternalApi
 class EmaResultHandler private constructor() {
 
-
     companion object {
         private val emaResultHandler = EmaResultHandler()
 
@@ -25,7 +24,7 @@ class EmaResultHandler private constructor() {
     private val resultMap: HashMap<String, EmaResultModel> = HashMap()
     private val receiverMap: HashMap<String, EmaReceiverModel> = HashMap()
     private val pendingResultMap by lazy {
-        HashMap<String,EmaResultModel>()
+        HashMap<String, EmaResultModel>()
     }
 
     /**
@@ -51,11 +50,11 @@ class EmaResultHandler private constructor() {
                 receiver?.also {
                     if (ownerId != receiver.ownerId) {
                         receiver.function.invoke(result.data)
-                        //If a receiver is attached we remove the result. Otherwise we keep it due to if process is killed and
-                        //is restarted it must be retained to be delivered when previous screen is shown due to it is created on demand
+                        // If a receiver is attached we remove the result. Otherwise we keep it due to if process is killed and
+                        // is restarted it must be retained to be delivered when previous screen is shown due to it is created on demand
                         keysToRemove.add(result.key)
                     }
-                }?:also {
+                } ?: also {
                     pendingResultMap[resultKey] = result
                 }
             }
@@ -71,8 +70,11 @@ class EmaResultHandler private constructor() {
      * Add listener when result is notified
      */
     fun addResultReceiver(receiverModel: EmaReceiverModel) {
-        if (receiverMap.containsKey(receiverModel.resultKey))
-            throw IllegalStateException("The key receiver has already been registered. Each receiver should have a unique key")
+        if (receiverMap.containsKey(receiverModel.resultKey)) {
+            throw IllegalStateException(
+                "The key receiver has already been registered. Each receiver should have a unique key"
+            )
+        }
         receiverMap[receiverModel.resultKey] = receiverModel
     }
 
@@ -87,18 +89,17 @@ class EmaResultHandler private constructor() {
             it.key
         }.forEach {
             receiverMap.remove(it)
-            //We remove the result due to only one receiver is allowed, so the result wouldn't be needed
+            // We remove the result due to only one receiver is allowed, so the result wouldn't be needed
             resultMap.remove(it)
         }
     }
 
-    fun notifyPendingResults(ownerId: String,backBroadcastId: BackBroadcastId) {
+    fun notifyPendingResults(ownerId: String, backBroadcastId: BackBroadcastId) {
         pendingResultMap[backBroadcastId.id]?.also {
-            if(ownerId!=it.ownerId) {
+            if (ownerId != it.ownerId) {
                 receiverMap[backBroadcastId.id]?.function?.invoke(it.data)
                 pendingResultMap.remove(backBroadcastId.id)
             }
         }
-
     }
 }

@@ -11,7 +11,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-
 /**
  * View to handle VM view logic states through [EmaState].
  * The user must provide in the constructor by template:
@@ -46,7 +45,6 @@ interface EmaView<S : EmaState, VM : EmaViewModel<S, E>, E : EmaEvent> {
      */
     var previousState: S?
 
-
     /**
      * Trigger to start viewmodel only when startViewModel is launched
      */
@@ -77,17 +75,14 @@ interface EmaView<S : EmaState, VM : EmaViewModel<S, E>, E : EmaEvent> {
         navigator?.navigate(navigationEvent) ?: throwNavigationException()
     }
 
-    private fun throwNavigationException() {
+    private fun throwNavigationException(): Unit =
         throw RuntimeException("You must provide an EmaNavigator as navigator to handle the navigation")
-    }
 
     /**
      * Called when view model trigger a navigation back event
      * @return True
      */
-    fun navigateBack(result: Any? = null): Boolean {
-        return navigator?.navigateBack(result) ?: onBack(result)
-    }
+    fun navigateBack(result: Any? = null): Boolean = navigator?.navigateBack(result) ?: onBack(result)
 
     fun onBack(result: Any?): Boolean
 
@@ -106,7 +101,6 @@ interface EmaView<S : EmaState, VM : EmaViewModel<S, E>, E : EmaEvent> {
         } ?: viewModel.onStartView()
     }
 
-
     /**
      * Called when view state is bound to viewmodel
      */
@@ -121,21 +115,17 @@ interface EmaView<S : EmaState, VM : EmaViewModel<S, E>, E : EmaEvent> {
      * Called when view state is bound to viewmodel
      */
 
-    fun onBindState(coroutineScope: CoroutineScope, viewModel: VM): Job {
-        return coroutineScope.launch {
-            viewModel.stateFlow.collectLatest {
-                onStateUpdated(it)
-            }
+    fun onBindState(coroutineScope: CoroutineScope, viewModel: VM): Job = coroutineScope.launch {
+        viewModel.stateFlow.collectLatest {
+            onStateUpdated(it)
         }
     }
 
-    fun onBindEvents(coroutineScope: CoroutineScope, viewModel: VM): Job {
-        return coroutineScope.launch {
-            viewModel.eventFlow.collectLatest {
-                it.forEach { event ->
-                    onEvent(event)
-                    (viewModel as? EmaEventDispatcher<E>)?.consumeEvent(event)
-                }
+    fun onBindEvents(coroutineScope: CoroutineScope, viewModel: VM): Job = coroutineScope.launch {
+        viewModel.eventFlow.collectLatest {
+            it.forEach { event ->
+                onEvent(event)
+                (viewModel as? EmaEventDispatcher<E>)?.consumeEvent(event)
             }
         }
     }
@@ -145,24 +135,24 @@ interface EmaView<S : EmaState, VM : EmaViewModel<S, E>, E : EmaEvent> {
      */
     fun onResumeView(viewModel: VM) {
         startTrigger?.also {
-            if (it.hasBeenStarted)
+            if (it.hasBeenStarted) {
                 viewModel.onResumeView()
+            }
         } ?: also {
             viewModel.onResumeView()
         }
     }
 
-
     fun onPauseView(viewModel: VM) {
         viewModel.onPauseView()
     }
 
-
     fun onUnbindView(viewJob: MutableList<Job>?, viewModel: VM) {
         viewJob?.forEach {
             try {
-                if (!it.isCancelled && !it.isCompleted)
+                if (!it.isCancelled && !it.isCompleted) {
                     it.cancel()
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
             }

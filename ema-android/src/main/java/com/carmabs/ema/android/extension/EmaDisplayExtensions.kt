@@ -14,13 +14,11 @@ import com.carmabs.ema.core.constants.INT_ONE
 import com.carmabs.ema.core.constants.INT_ZERO
 import kotlin.math.roundToInt
 
-
-/**
+/*
  * Extension methods for display feature
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
-
 
 /**
  * Return the Int dp into its equivalent px
@@ -41,7 +39,6 @@ val Float.dp
         this,
         Resources.getSystem().displayMetrics
     )
-
 
 /**
  * Return the Int sp into its equivalent px
@@ -66,7 +63,7 @@ val Float.sp
 /**
  * Get display metrics
  */
-fun getScreenMetrics(context: Context, includeInsets:Boolean = false): DisplayMetrics {
+fun getScreenMetrics(context: Context, includeInsets: Boolean = false): DisplayMetrics {
     val displayMetrics = context.resources.displayMetrics
     val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
 
@@ -76,12 +73,11 @@ fun getScreenMetrics(context: Context, includeInsets:Boolean = false): DisplayMe
         val windowInsets = metrics.windowInsets
         val insets: Insets = windowInsets.getInsetsIgnoringVisibility(
             WindowInsets.Type.navigationBars()
-                    or WindowInsets.Type.displayCutout()
+                or WindowInsets.Type.displayCutout()
         )
 
         val insetsWidth: Int = insets.right + insets.left
         val insetsHeight: Int = insets.top + insets.bottom
-
 
         // Legacy size that Display#getSize reports
         val bounds = metrics.bounds
@@ -93,19 +89,14 @@ fun getScreenMetrics(context: Context, includeInsets:Boolean = false): DisplayMe
             heightPixels = legacySize.height
             widthPixels = legacySize.width
         }
-        /**
-         * Get the application size including decoration
-         *
-         *
-        */
-        if(includeInsets) {
+        // Get the application size including decoration
+        if (includeInsets) {
             val boundsActivity = windowManager.currentWindowMetrics.bounds
             displayMetrics.apply {
                 heightPixels = boundsActivity.height()
                 widthPixels = boundsActivity.width()
             }
         }
-
     } else {
         windowManager.defaultDisplay.getMetrics(displayMetrics)
     }
@@ -118,24 +109,32 @@ fun Context.getStatusBarHeight(): Int {
 
     return if (resourceId > 0) {
         resources.getDimensionPixelSize(resourceId)
-    } else
+    } else {
         INT_ZERO
+    }
 }
 
 val Configuration.screenHeightPx
     get() = run { screenHeightDp.toFloat() * densityDpi / 160f }
 
-fun fitInTargetMaxSizeProportionally(currentWidth:Int, currentHeight:Int, targetWidth: Int, targetHeight: Int): Pair<Int, Int> {
+fun fitInTargetMaxSizeProportionally(
+    currentWidth: Int,
+    currentHeight: Int,
+    targetWidth: Int,
+    targetHeight: Int
+): Pair<Int, Int> {
     val whRation = currentWidth / currentHeight.toFloat()
-    val endWidth = if (whRation < INT_ONE)
+    val endWidth = if (whRation < INT_ONE) {
         targetHeight * whRation
-    else
+    } else {
         targetWidth
+    }
 
-    val endHeight = if (whRation < INT_ONE)
+    val endHeight = if (whRation < INT_ONE) {
         targetHeight
-    else
+    } else {
         targetWidth / whRation
+    }
 
     return Pair(endWidth.toInt(), endHeight.toInt())
 }

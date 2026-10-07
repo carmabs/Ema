@@ -12,7 +12,8 @@ import kotlin.reflect.KProperty
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-class emaBooleanDelegate<T>(initialValue:Boolean) : ReadWriteProperty<T,Boolean> {
+@Suppress("ClassName")
+class emaBooleanDelegate<T>(initialValue: Boolean) : ReadWriteProperty<T, Boolean> {
 
     private var booleanValue: Boolean = initialValue
 
@@ -20,9 +21,5 @@ class emaBooleanDelegate<T>(initialValue:Boolean) : ReadWriteProperty<T,Boolean>
         booleanValue = value
     }
 
-    override fun getValue(thisRef: T, property: KProperty<*>): Boolean {
-        return booleanValue
-    }
-
-
+    override fun getValue(thisRef: T, property: KProperty<*>): Boolean = booleanValue
 }

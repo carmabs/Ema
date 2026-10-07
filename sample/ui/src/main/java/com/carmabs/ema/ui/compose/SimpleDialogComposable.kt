@@ -19,9 +19,7 @@ import com.carmabs.ema.ui.dialog.simple.SimpleDialogListener
 import com.carmabs.ema.ui.theme.EmaSampleTheme
 
 @Composable
-fun SimpleDialogComposable(
-    dialogData: SimpleDialogData, dialogListener: SimpleDialogListener
-) {
+fun SimpleDialogComposable(dialogData: SimpleDialogData, dialogListener: SimpleDialogListener) {
     AlertDialog(
         onDismissRequest = {
             dialogListener.onBackPressed()
@@ -53,7 +51,9 @@ fun SimpleDialogComposable(
                     Text(text = stringResource(id = R.string.dialog_cancel))
                 }
             }
-        } else null
+        } else {
+            null
+        }
     )
 }
 
@@ -68,8 +68,9 @@ fun OnDialogPreview() {
                 title = EmaText.text("Preview title sample"),
                 message = EmaText.text("Preview message sample"),
                 image = R.drawable.ic_exit,
-                showCancel = true,
-            ), SimpleDialogListener.EMPTY
+                showCancel = true
+            ),
+            SimpleDialogListener.EMPTY
         )
     }
 }

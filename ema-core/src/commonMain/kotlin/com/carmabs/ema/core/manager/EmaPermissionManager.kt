@@ -17,9 +17,7 @@ interface EmaPermissionManager {
 
     suspend fun requestPermission(permission: String): PermissionState
 
-    suspend fun requestMultiplePermission(
-        vararg permission: String
-    ): (Map<String, PermissionState>)
+    suspend fun requestMultiplePermission(vararg permission: String): (Map<String, PermissionState>)
 
     fun isPermissionGranted(permission: String): PermissionState
 
@@ -39,14 +37,9 @@ interface EmaPermissionManager {
 
     fun handleRequest(request: EmaPermissionRequest, scope: CoroutineScope, permission: String)
 
-    fun handleRequestMultiple(
-        request: EmaMultiplePermissionRequest,
-        scope: CoroutineScope,
-        vararg permission: String
-    )
+    fun handleRequestMultiple(request: EmaMultiplePermissionRequest, scope: CoroutineScope, vararg permission: String)
 
     fun responseRequest(request: EmaPermissionRequest, permissionState: PermissionState)
 
-    fun responseRequest(request: EmaMultiplePermissionRequest, permissionMap: Map<String,PermissionState>)
-
+    fun responseRequest(request: EmaMultiplePermissionRequest, permissionMap: Map<String, PermissionState>)
 }

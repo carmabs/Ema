@@ -16,7 +16,6 @@ interface EmaAction {
         data object EMPTY : EmaAction
     }
 
-
     val type: String
         get() = EmaAction.type
 
@@ -35,10 +34,7 @@ interface EmaAction {
 
         override val type: String
             get() = "Lifecycle"
-
-
     }
-
 
     interface Screen : EmaAction {
         override val type: String
@@ -47,6 +43,3 @@ interface EmaAction {
         object EMPTY : Screen
     }
 }
-
-
-

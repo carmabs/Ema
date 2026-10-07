@@ -9,5 +9,5 @@ package com.carmabs.ema.core.dialog
 interface EmaDialogData {
     val proportionWidth: Float?
     val proportionHeight: Float?
-    val isModal:Boolean
+    val isModal: Boolean
 }

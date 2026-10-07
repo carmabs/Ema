@@ -20,7 +20,7 @@ abstract class BaseScreenComposable<S : EmaState, A : EmaAction.Screen, E : EmaE
     EmaComposableScreenContent<S, A, E> {
 
     @Composable
-    protected fun ShowDialog(data: SimpleDialogData,listener: SimpleDialogListener) {
+    protected fun ShowDialog(data: SimpleDialogData, listener: SimpleDialogListener) {
         SimpleDialogComposable(dialogData = data, listener)
     }
 
@@ -30,7 +30,7 @@ abstract class BaseScreenComposable<S : EmaState, A : EmaAction.Screen, E : EmaE
     }
 
     @Composable
-    protected fun ShowLoading(loadingDialogData: LoadingDialogData?=null) {
+    protected fun ShowLoading(loadingDialogData: LoadingDialogData? = null) {
         LoadingDialogComposable(
             dialogData = loadingDialogData ?: LoadingDialogData(
                 title = EmaText.id(id = R.string.dialog_loading_title),

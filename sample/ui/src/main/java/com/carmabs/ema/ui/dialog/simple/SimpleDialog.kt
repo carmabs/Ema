@@ -9,21 +9,16 @@ import com.carmabs.ema.core.model.EmaText
 import com.carmabs.ema.sample.ema.R
 import com.carmabs.ema.sample.ema.databinding.DialogSimpleBinding
 
-
 /**
  * Simple dialog
  *
  *
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
-class SimpleDialog : EmaDialog<DialogSimpleBinding,SimpleDialogData>() {
+class SimpleDialog : EmaDialog<DialogSimpleBinding, SimpleDialogData>() {
 
-    override fun createViewBinding(
-        inflater: LayoutInflater,
-        container: ViewGroup?
-    ): DialogSimpleBinding {
-        return DialogSimpleBinding.inflate(inflater,container,false)
-    }
+    override fun createViewBinding(inflater: LayoutInflater, container: ViewGroup?): DialogSimpleBinding =
+        DialogSimpleBinding.inflate(inflater, container, false)
 
     override fun DialogSimpleBinding.setup(data: SimpleDialogData) {
         with(data) {

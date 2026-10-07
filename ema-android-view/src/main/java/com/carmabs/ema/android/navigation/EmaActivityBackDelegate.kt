@@ -13,6 +13,6 @@ import com.carmabs.ema.core.model.EmaBackHandlerStrategy
  */
 interface EmaActivityBackDelegate {
 
-    val ownsBackDelegate:Boolean
-    fun onBackDelegate():EmaBackHandlerStrategy
+    val ownsBackDelegate: Boolean
+    fun onBackDelegate(): EmaBackHandlerStrategy
 }

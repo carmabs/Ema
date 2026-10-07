@@ -15,11 +15,7 @@ class EmaViewModelFactory<VM : EmaViewModel<*, *>>(
     /**
      * @return View model instance
      */
-    override fun createViewModel(): VM {
-        return viewModel
-    }
+    override fun createViewModel(): VM = viewModel
 
-    override fun provideSavedStateHandle(): SavedStateHandle? {
-        return savedStateHandle
-    }
+    override fun provideSavedStateHandle(): SavedStateHandle? = savedStateHandle
 }

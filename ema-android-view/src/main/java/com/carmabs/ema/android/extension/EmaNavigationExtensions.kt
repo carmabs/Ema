@@ -13,4 +13,3 @@ fun NavController.navigate(
 ) {
     navigate(id, initializerBundle.toBundle(), navOptions, navExtras)
 }
-

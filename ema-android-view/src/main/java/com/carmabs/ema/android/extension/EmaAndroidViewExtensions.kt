@@ -23,7 +23,6 @@ import com.carmabs.ema.core.viewmodel.EmaViewModel
 internal fun <S : EmaState, VM : EmaViewModel<S, E>, E : EmaEvent> EmaAndroidView<S, VM, E>.generateViewModel(
     vm: VM
 ): EmaAndroidViewModel<S, E> {
-
     val fragmentScope =
         (this as? EmaCoreFragment<*, *, *>)?.fragmentViewModelScope ?: false
 

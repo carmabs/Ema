@@ -12,6 +12,6 @@ import kotlin.reflect.KClass
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
 interface EmaBroadcastManager {
-   fun <T>sendBroadcastEvent(event:EmaBroadcastEvent<T>)
-   suspend fun <T>registerBroadcast(clazz: KClass<out EmaBroadcastEvent<T&Any>>, listener: suspend (T&Any) -> Unit)
+    fun <T> sendBroadcastEvent(event: EmaBroadcastEvent<T>)
+    suspend fun <T> registerBroadcast(clazz: KClass<out EmaBroadcastEvent<T&Any>>, listener: suspend (T&Any) -> Unit)
 }

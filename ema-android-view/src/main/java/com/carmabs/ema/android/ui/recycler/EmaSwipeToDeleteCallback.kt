@@ -49,15 +49,12 @@ class EmaSwipeToDeleteCallback(
         recyclerView: RecyclerView,
         viewHolder: RecyclerView.ViewHolder,
         target: RecyclerView.ViewHolder
-    ): Boolean {
-        return true
-    }
+    ): Boolean = true
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
         dx = FLOAT_ZERO
         onSwipeAction.invoke(direction, viewHolder.adapterPosition)
     }
-
 
     override fun onChildDraw(
         c: Canvas,
@@ -73,40 +70,39 @@ class EmaSwipeToDeleteCallback(
         drawBackground(itemView, dX, c)
         when (type) {
             is Type.Icon -> drawIcon(type, itemView, dX, c)
+
             is Type.Text -> drawText(type, itemView, dX, c)
+
             null -> {
-                //DO NOTHING
+                // DO NOTHING
             }
         }
         this.dx = dX
     }
 
-
-    private fun drawBackground(
-        itemView: View,
-        dX: Float,
-        canvas: Canvas
-    ) {
+    private fun drawBackground(itemView: View, dX: Float, canvas: Canvas) {
         background?.also {
             when {
                 dX > INT_ZERO -> { // Swiping to the right
                     it.setBounds(
                         itemView.left + paddingLeft,
                         itemView.top + paddingTop,
-                        //itemView.left + dX.toInt() + backgroundCornerOffset, Dynamic
-                        itemView.right + backgroundCornerOffset - paddingRight, //Static
+                        // itemView.left + dX.toInt() + backgroundCornerOffset, Dynamic
+                        itemView.right + backgroundCornerOffset - paddingRight, // Static
                         itemView.bottom - paddingBottom
                     )
                 }
+
                 dX < INT_ZERO -> { // Swiping to the left
                     background.setBounds(
-                        //itemView.right + dX.toInt() - backgroundCornerOffset, Dynamic
+                        // itemView.right + dX.toInt() - backgroundCornerOffset, Dynamic
                         itemView.left - backgroundCornerOffset + paddingLeft,
                         itemView.top + paddingTop,
                         itemView.right - paddingRight,
                         itemView.bottom - paddingBottom
                     )
                 }
+
                 else -> { // view is unSwiped
                     background.setBounds(
                         INT_ZERO + paddingLeft,
@@ -132,6 +128,7 @@ class EmaSwipeToDeleteCallback(
                 val iconRight: Int = itemView.left + iconMargin + icon.intrinsicWidth
                 icon.setBounds(iconLeft, iconTop, iconRight, iconBottom)
             }
+
             dX < INT_ZERO -> { // Swiping to the left
                 val iconLeft: Int = itemView.right - iconMargin - icon.intrinsicWidth
                 val iconRight: Int = itemView.right - iconMargin
@@ -141,12 +138,7 @@ class EmaSwipeToDeleteCallback(
         icon.draw(canvas)
     }
 
-    private fun drawText(
-        typeText: Type.Text,
-        itemView: View,
-        dX: Float,
-        canvas: Canvas
-    ) {
+    private fun drawText(typeText: Type.Text, itemView: View, dX: Float, canvas: Canvas) {
         val textMargin: Int = (itemView.height) / 4
         val textCenter: Int = itemView.top + (itemView.height) / 2
         paintText.color = typeText.color
@@ -158,6 +150,7 @@ class EmaSwipeToDeleteCallback(
                 paintText.textAlign = Paint.Align.LEFT
                 itemView.left + textMargin
             }
+
             else -> { // Swiping to the left
                 paintText.textAlign = Paint.Align.RIGHT
                 itemView.right - textMargin

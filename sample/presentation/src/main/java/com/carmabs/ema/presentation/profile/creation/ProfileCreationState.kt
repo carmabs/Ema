@@ -22,4 +22,3 @@ data class ProfileCreationState(
     val canCreate
         get() = name.isNotBlank()
 }
-

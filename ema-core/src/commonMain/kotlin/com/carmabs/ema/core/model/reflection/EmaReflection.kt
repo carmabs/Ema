@@ -11,7 +11,7 @@ package com.carmabs.ema.core.model.reflection
  */
 @ConsistentCopyVisibility
 data class EmaReflection internal constructor(
-    val containerClassName:String,
-    val containerClassQualifiedName:String,
-    val methodName:String
+    val containerClassName: String,
+    val containerClassQualifiedName: String,
+    val methodName: String
 )

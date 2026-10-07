@@ -11,8 +11,4 @@ import android.content.Intent
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-data class EmaActivityResult(
-        val requestCode: Int,
-        val resultCode: Int,
-        val data: Intent?
-)
+data class EmaActivityResult(val requestCode: Int, val resultCode: Int, val data: Intent?)
