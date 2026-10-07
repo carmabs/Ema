@@ -4,6 +4,7 @@ package com.carmabs.ema.core.model
 
 import com.carmabs.ema.core.delegate.emaSyncDelegate
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlin.concurrent.atomics.AtomicBoolean
@@ -53,8 +54,8 @@ class EmaFunctionResultHandler<T> internal constructor(
             result = EmaResult.success(data)
 
         } catch (e: Throwable) {
-
-            if(throwExceptions)
+            // A cancellation is not an error: it must be propagated to keep the coroutine cancellable
+            if (e is CancellationException || throwExceptions)
                 throw e
 
             errorDefaultAction?.invoke(e)

@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.library)
     id 'maven-publish'
+    alias(libs.plugins.kover)
 }
 
 android {
@@ -44,6 +45,17 @@ android {
         viewBinding = true
     }
 
+    testOptions {
+        unitTests {
+            // Robolectric runs the Android code of the tests on the JVM with the module resources
+            includeAndroidResources = true
+            all {
+                // Robolectric accesses JDK internals
+                jvmArgs '--add-opens=java.base/java.io=ALL-UNNAMED', '--add-opens=java.base/java.lang=ALL-UNNAMED', '--add-exports=java.base/jdk.internal.access=ALL-UNNAMED'
+            }
+        }
+    }
+
     publishing {
         singleVariant("release")
     }
@@ -65,6 +77,12 @@ dependencies {
     //UI
     api libs.androidx.constraintlayout
     api libs.material
+
+    testImplementation libs.junit
+    testImplementation libs.kotlin.test.junit
+    testImplementation libs.robolectric
+    testImplementation libs.androidx.test.core
+    testImplementation libs.kotlinx.coroutines.test
 }
 
 afterEvaluate {

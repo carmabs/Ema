@@ -11,12 +11,25 @@ package com.carmabs.ema.core.view
  */
 class EmaViewModelTrigger {
 
-    fun startViewModel() {
-        triggerAction?.invoke()
-        hasBeenStarted = true
-    }
+    private val pendingActions = mutableListOf<() -> Unit>()
 
     var hasBeenStarted = false
         private set
-    internal var triggerAction: (() -> Unit)? = null
+
+    fun startViewModel() {
+        hasBeenStarted = true
+        val actions = pendingActions.toList()
+        pendingActions.clear()
+        actions.forEach { it.invoke() }
+    }
+
+    /**
+     * Runs the action now if the ViewModel has been started, or when [startViewModel] is called otherwise.
+     */
+    internal fun runWhenStarted(action: () -> Unit) {
+        if (hasBeenStarted)
+            action.invoke()
+        else
+            pendingActions.add(action)
+    }
 }

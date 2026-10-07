@@ -167,7 +167,7 @@ fun iteratePositionFromCenter(index: Int, length: Int, startRight: Boolean = tru
             } else
                 if (startRight) -INT_ONE else INT_ONE
 
-            val coefficient = ((index / 3) + INT_ONE) * directionFactor
+            val coefficient = ((index + INT_ONE) / 2) * directionFactor
             centerPosition + coefficient
         }
     }

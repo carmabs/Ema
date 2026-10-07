@@ -34,4 +34,11 @@ object Ema {
         check(initializedConfiguration == null) { "Ema can be initialized only once" }
         initializedConfiguration = configuration
     }
+
+    /**
+     * Removes the configuration so [init] can be called again. Only for tests.
+     */
+    internal fun reset() {
+        initializedConfiguration = null
+    }
 }

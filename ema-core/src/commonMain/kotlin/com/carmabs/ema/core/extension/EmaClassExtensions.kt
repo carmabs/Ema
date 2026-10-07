@@ -7,4 +7,5 @@ import kotlin.reflect.KClass
  * qualified names are not available, the simple name.
  */
 internal val KClass<*>.emaName: String
-    get() = toString().removePrefix("class ").removePrefix("interface ")
+    // Without kotlin-reflect, the JVM appends " (Kotlin reflection is not available)" to the name
+    get() = toString().removePrefix("class ").removePrefix("interface ").substringBefore(" (")

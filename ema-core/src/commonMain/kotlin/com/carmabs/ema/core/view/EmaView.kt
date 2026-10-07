@@ -92,26 +92,18 @@ interface EmaView<S : EmaState, VM : EmaViewModel<S, E>, E : EmaEvent> {
     fun onBack(result: Any?): Boolean
 
     fun onCreate(viewModel: VM) {
-        startTrigger?.also {
-            it.triggerAction = {
-                viewModel.onCreated(initializerSerializer?.restore())
-            }
-        } ?: also {
+        startTrigger?.runWhenStarted {
             viewModel.onCreated(initializerSerializer?.restore())
-        }
+        } ?: viewModel.onCreated(initializerSerializer?.restore())
     }
 
     /**
      * Called when view model is started
      */
     fun onStartView(viewModel: VM) {
-        startTrigger?.also {
-            it.triggerAction = {
-                viewModel.onStartView()
-            }
-        } ?: also {
+        startTrigger?.runWhenStarted {
             viewModel.onStartView()
-        }
+        } ?: viewModel.onStartView()
     }
 
 

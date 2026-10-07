@@ -1,14 +1,16 @@
+@file:OptIn(ExperimentalAtomicApi::class)
+
 package com.carmabs.ema.core.action
 
 import com.carmabs.ema.core.state.EmaEvent
-import com.carmabs.ema.core.viewmodel.EmaViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
-import kotlin.collections.plus
+import kotlin.concurrent.atomics.AtomicLong
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
 
 /**
  * Created by Carlos Mateo Benito on 03/08/2026.
@@ -19,10 +21,22 @@ import kotlin.collections.plus
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-class DefaultEmaEventDispatcher<E : EmaEvent>(private val mEventFlow: MutableStateFlow<List<E>> = MutableStateFlow(emptyList())) : EmaEventDispatcher<E>{
+class DefaultEmaEventDispatcher<E : EmaEvent> : EmaEventDispatcher<E> {
+
+    /**
+     * Every posted event gets a unique id, so an event equal to one already delivered is still a new event
+     */
+    private data class PendingEvent<E>(val id: Long, val event: E)
+
+    private val nextId = AtomicLong(0)
+
+    private val pendingEvents = MutableStateFlow<List<PendingEvent<E>>>(emptyList())
 
     override fun consumeEvent(event: E) {
-        mEventFlow.update { it - event }
+        pendingEvents.update { pending ->
+            val index = pending.indexOfFirst { it.event == event }
+            if (index < 0) pending else pending.toMutableList().apply { removeAt(index) }
+        }
     }
 
     /**
@@ -31,18 +45,19 @@ class DefaultEmaEventDispatcher<E : EmaEvent>(private val mEventFlow: MutableSta
      * @param allowDuplicated If true, allows the same event to be dispatched multiple times before being consumed.
      */
     fun postEvent(event: E, allowDuplicated: Boolean) {
-        mEventFlow.update {
-            if (allowDuplicated)
-                it + event
+        val id = nextId.addAndFetch(1)
+        pendingEvents.update { pending ->
+            if (!allowDuplicated && pending.any { it.event == event })
+                pending
             else
-                if (it.contains(event)) it else it + event
+                pending + PendingEvent(id, event)
         }
     }
 
+    // Emits only when new events are posted, not when pending ones are consumed
     override val eventFlow: Flow<List<E>> =
-        mEventFlow.asStateFlow()
-            .distinctUntilChanged { old, new ->
-                new.all { old.contains(it) } && old.size >= new.size
-            }
+        pendingEvents
+            .distinctUntilChanged { old, new -> old.containsAll(new) }
             .filter { it.isNotEmpty() }
+            .map { pending -> pending.map { it.event } }
 }

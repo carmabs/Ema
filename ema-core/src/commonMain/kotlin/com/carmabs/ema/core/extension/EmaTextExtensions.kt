@@ -15,5 +15,5 @@ fun String.toEmaText(): EmaText {
     return EmaText.text(this)
 }
 fun String.toEmaText(vararg data:Any): EmaText {
-    return EmaText.text(this)
+    return EmaText.text(this, *data)
 }
