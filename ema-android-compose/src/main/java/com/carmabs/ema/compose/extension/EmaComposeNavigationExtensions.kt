@@ -1,6 +1,7 @@
 package com.carmabs.ema.compose.extension
 
 import android.content.Intent
+import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -151,7 +152,8 @@ fun routeWithInitializer(
     initializer: EmaInitializer,
     serializer: BundleSerializerStrategy
 ): String {
-    return "$routeId?${EmaInitializer.KEY}=${serializer.toStringValue(initializer)}"
+    // Encoded, because the serialized initializer can contain characters with meaning in a route, like & or #
+    return "$routeId?${EmaInitializer.KEY}=${Uri.encode(serializer.toStringValue(initializer))}"
 }
 
 fun NavController.navigateBack(closeActivityWhenBackstackIsEmpty: Boolean = true): Boolean {

@@ -10,7 +10,6 @@ import com.carmabs.ema.android.permission.EmaContractMultiplePermission
 import com.carmabs.ema.android.permission.EmaContractSinglePermission
 import com.carmabs.ema.compose.extension.activity
 import com.carmabs.ema.compose.extension.isInPreview
-import com.carmabs.ema.core.constants.INT_ZERO
 import com.carmabs.ema.core.manager.EmaPermissionManager
 import com.carmabs.ema.core.manager.PermissionState
 import com.carmabs.ema.core.model.EmaMultiplePermissionRequest
@@ -75,7 +74,7 @@ private object EmaPreviewPermissionManager : EmaPermissionManager {
     }
 
     override suspend fun requestMultiplePermission(vararg permission: String): Map<String, PermissionState> {
-        return mapOf(Pair(permission[INT_ZERO], PermissionState.GRANTED))
+        return permission.associateWith { PermissionState.GRANTED }
     }
 
     override fun isPermissionGranted(permission: String): PermissionState {

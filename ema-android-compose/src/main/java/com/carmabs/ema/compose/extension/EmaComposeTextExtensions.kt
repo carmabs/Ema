@@ -15,22 +15,29 @@ import com.carmabs.ema.core.model.EmaText
  */
 
 /**
+ * Arguments to format the text. The factories of [EmaText] always provide an array, so an empty one means that the
+ * text has no arguments and must not be formatted, like a text that contains a % sign.
+ */
+private val EmaText.formatArgs: Array<out Any>?
+    get() = data?.takeIf { it.isNotEmpty() }
+
+/**
  * Transform ema text to string value.
  */
 @Composable
 fun EmaText.stringResource(): String {
     return when (this) {
-        is EmaText.Id -> data?.let { androidx.compose.ui.res.stringResource(id, *it) }
+        is EmaText.Id -> formatArgs?.let { androidx.compose.ui.res.stringResource(id, *it) }
             ?: androidx.compose.ui.res.stringResource(id)
         is EmaText.Plural -> {
-            data?.let {
+            formatArgs?.let {
                 pluralStringResource(id, quantity, *it)
             } ?: pluralStringResource(
                 id,
                 quantity
             )
         }
-        is EmaText.Text -> data?.let { String.format(text, *it) } ?: text
+        is EmaText.Text -> formatArgs?.let { String.format(text, *it) } ?: text
         is EmaText.Composition -> texts.map { it.stringResource() }.reduce { acc, string ->
             acc + string
         }

@@ -26,7 +26,7 @@ val ProvidableCompositionLocal<Context>.activity: ComponentActivity
             var contextSearch = context
             while (contextSearch is ContextWrapper) {
                 if (contextSearch is ComponentActivity) {
-                    return@remember context as ComponentActivity
+                    return@remember contextSearch
                 }
                 contextSearch = contextSearch.baseContext
             }

@@ -93,11 +93,13 @@ fun <A : EmaAction.Screen, S : EmaState, E : EmaEvent> EmaComposableScreen(
             emaVm.asActionDispatcher<A>().toImmutable()
         }
 
-        saveStateSupport?.saveStateManager?.onSaveStateHandling(
-            androidVm.viewModelScope,
-            androidVm.savedStateHandle,
-            androidVm.emaViewModel
-        )
+        LaunchedEffect(androidVm) {
+            saveStateSupport?.saveStateManager?.onSaveStateHandling(
+                androidVm.viewModelScope,
+                androidVm.savedStateHandle,
+                androidVm.emaViewModel
+            )
+        }
 
         RenderScreen(
             initializer,
