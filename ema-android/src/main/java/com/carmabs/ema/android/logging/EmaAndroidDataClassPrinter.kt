@@ -176,7 +176,7 @@ private class PrettyPrinter(
             fString += ppAny(it, increasedDepth)
             fString
         }
-        resultString = write(']')
+        resultString += write(']')
         return resultString
     }
 

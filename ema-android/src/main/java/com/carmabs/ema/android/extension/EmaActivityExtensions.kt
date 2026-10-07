@@ -37,21 +37,22 @@ fun ComponentActivity.addOnBackPressedListener(
     //Added this due to bug https://issuetracker.google.com/issues/199631325
     //This guarantees that listener are restored in same order
     var added = false
+    val owner = lifecycleOwner ?: this
     val backHandler = EmaNavigationBackHandler(
         activity = this,
-        lifecycleOwner = lifecycleOwner ?: this,
+        lifecycleOwner = owner,
         listener = listener
     )
-    lifecycleOwner?.lifecycleScope?.launch {
-        lifecycleOwner.withStateAtLeast(Lifecycle.State.CREATED){
+    owner.lifecycleScope.launch {
+        owner.withStateAtLeast(Lifecycle.State.CREATED){
             if(added) {
                 backHandler.remove()
                 added = false
             }
         }
     }
-    lifecycleOwner?.lifecycleScope?.launch {
-        lifecycleOwner.withStateAtLeast(Lifecycle.State.STARTED){
+    owner.lifecycleScope.launch {
+        owner.withStateAtLeast(Lifecycle.State.STARTED){
             if(!added) {
                 backHandler.add()
                 added = true

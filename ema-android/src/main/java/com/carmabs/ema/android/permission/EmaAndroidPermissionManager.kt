@@ -279,6 +279,11 @@ class EmaAndroidPermissionManager : EmaPermissionManager {
                                 .setMessage(message)
                                 .setNegativeButton(R.string.ema_permission_manager_cancel) { dialog, _ ->
                                     dialog.dismiss()
+                                    emitter.resume(permissionBackground)
+                                }
+                                // If the explanation is dismissed the request ends with the current state
+                                .setOnCancelListener {
+                                    emitter.resume(permissionBackground)
                                 }
                                 .create()
                         }
@@ -412,13 +417,13 @@ class EmaAndroidPermissionManager : EmaPermissionManager {
     private sealed interface LocationPermissionCheck {
         data class CallRequestFineLocation(
             private val classContainerName: String,
-            val message: String = "Please, use the requestBackgroundLocationPermission method of the $classContainerName to handle this permission " +
+            val message: String = "Please, use the requestFineLocationPermission method of the $classContainerName class to handle this permission " +
                     "properly with all android versions "
         ) : LocationPermissionCheck
 
         data class CallRequestBackground(
             private val classContainerName: String,
-            val message: String = "Please, use the requestFineLocationPermission of the $classContainerName class to handle this permission " +
+            val message: String = "Please, use the requestBackgroundLocationPermission method of the $classContainerName class to handle this permission " +
                     "properly with all android versions "
         ) : LocationPermissionCheck
 

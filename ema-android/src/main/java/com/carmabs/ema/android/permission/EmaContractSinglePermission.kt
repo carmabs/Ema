@@ -3,6 +3,9 @@ package com.carmabs.ema.android.permission
 import androidx.activity.result.ActivityResultLauncher
 import com.carmabs.ema.core.manager.PermissionState
 import com.carmabs.ema.core.model.emaFlowSingleEvent
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.first
 
 /**
@@ -31,9 +34,11 @@ class EmaContractSinglePermission(shouldShowRequestPermissionRationaleFunction: 
     suspend fun launch(
         permission: String,
         permissionRequest: ActivityResultLauncher<String>,
-    ): PermissionState {
+    ): PermissionState = coroutineScope {
+        // Subscribe before launching: the result can arrive synchronously, like when the system cancels the request
+        val result = async(start = CoroutineStart.UNDISPATCHED) { flow.first() }
         permissionId = permission
         permissionRequest.launch(permission)
-        return flow.first()
+        result.await()
     }
 }
