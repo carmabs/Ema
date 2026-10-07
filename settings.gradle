@@ -38,6 +38,4 @@ rootProject.name = "Ema"
 include ':ema-core',
         ':ema-android',
         ':ema-android-view',
-        ':ema-android-compose',
-        ':ema-testing-core',
-        ':ema-testing-android'
+        ':ema-android-compose'

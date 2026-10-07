@@ -39,11 +39,3 @@ project(':ema-android-view').projectDir = new File("../ema-android-view")
 
 include(':ema-android-compose')
 project(':ema-android-compose').projectDir = new File("../ema-android-compose")
-
-include(':ema-testing-android')
-project(':ema-testing-android').projectDir = new File("../ema-testing-android")
-
-include(':ema-testing-core')
-project(':ema-testing-core').projectDir = new File("../ema-testing-core")
-
-

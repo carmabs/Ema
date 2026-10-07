@@ -18,7 +18,6 @@ rootProject.ext {
             resourceExclusions     : ['META-INF/kotlinx-io.kotlin_module', 'META-INF/ema-android_debug.kotlin_module'],
             namespaceAndroid       : 'com.carmabs.ema.android',
             namespaceCompose       : 'com.carmabs.ema.compose',
-            namespaceAndroidView   : 'com.carmabs.ema.android.view',
-            namespaceTestingAndroid: 'com.carmabs.ema.testing.android'
+            namespaceAndroidView   : 'com.carmabs.ema.android.view'
     ]
 }
