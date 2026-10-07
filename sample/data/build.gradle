@@ -40,7 +40,7 @@ android {
 
 dependencies {
     implementation project(path: ':domain')
-    implementation project(path: ':common')
+    implementation project(path: ':android-utils')
 
     //Kotlin
     implementation libs.kotlin.stdlib

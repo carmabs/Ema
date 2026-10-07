@@ -21,10 +21,11 @@ dependencyResolutionManagement {
 }
 rootProject.name = "Ema"
 include ':app',
+        ':ui',
         ':presentation',
         ':data',
         ':domain',
-        ':common'
+        ':android-utils'
 
 
 include(':ema-core')

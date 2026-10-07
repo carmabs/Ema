@@ -5,9 +5,8 @@ import androidx.annotation.CallSuper
 import com.carmabs.ema.core.model.EmaApplicationConfig
 
 /**
- *
- * Abstract base class to implement Kodein framework in applicacion context
- * to handle dependency injection
+ * Base [Application] that initializes Ema with [emaConfiguration]. If your application already extends
+ * another class, implement [EmaApplicationAware] instead.
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */

@@ -1,19 +1,19 @@
 package com.carmabs.app.di
 
 import androidx.fragment.app.FragmentManager
-import com.carmabs.ema.presentation.dialog.AppDialogProvider
-import com.carmabs.ema.presentation.dialog.error.ErrorDialogProvider
-import com.carmabs.ema.presentation.dialog.loading.LoadingDialogProvider
-import com.carmabs.ema.presentation.dialog.simple.SimpleDialogProvider
-import com.carmabs.ema.presentation.ui.home.HomeState
-import com.carmabs.ema.presentation.ui.home.HomeViewModel
-import com.carmabs.ema.presentation.ui.login.LoginState
-import com.carmabs.ema.presentation.ui.login.LoginViewModel
-import com.carmabs.ema.presentation.ui.profile.creation.ProfileCreationState
-import com.carmabs.ema.presentation.ui.profile.creation.ProfileCreationViewModel
-import com.carmabs.ema.presentation.ui.profile.onboarding.ProfileOnBoardingState
-import com.carmabs.ema.presentation.ui.profile.onboarding.ProfileOnBoardingViewModel
-import com.carmabs.ema.presentation.ui.splash.SplashViewModel
+import com.carmabs.ema.presentation.home.HomeState
+import com.carmabs.ema.presentation.home.HomeViewModel
+import com.carmabs.ema.presentation.login.LoginState
+import com.carmabs.ema.presentation.login.LoginViewModel
+import com.carmabs.ema.presentation.profile.creation.ProfileCreationState
+import com.carmabs.ema.presentation.profile.creation.ProfileCreationViewModel
+import com.carmabs.ema.presentation.profile.onboarding.ProfileOnBoardingState
+import com.carmabs.ema.presentation.profile.onboarding.ProfileOnBoardingViewModel
+import com.carmabs.ema.presentation.splash.SplashViewModel
+import com.carmabs.ema.ui.dialog.AppDialogProvider
+import com.carmabs.ema.ui.dialog.error.ErrorDialogProvider
+import com.carmabs.ema.ui.dialog.loading.LoadingDialogProvider
+import com.carmabs.ema.ui.dialog.simple.SimpleDialogProvider
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 

@@ -1,16 +1,16 @@
 plugins {
-    alias(libs.plugins.android.application)
+    alias(libs.plugins.android.library)
 }
+
 android {
     compileSdk = rootProject.emaVersioning.compileSdk
 
     defaultConfig {
-        applicationId = "com.carmabs.ema"
         minSdk = rootProject.emaVersioning.minSdk
         targetSdk = rootProject.emaVersioning.targetSdk
-        versionCode = rootProject.emaVersioning.versionCode
-        versionName = rootProject.emaVersioning.versionName
-        testInstrumentationRunner = "android.support.test.runner.AndroidJUnitRunner"
+
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles 'consumer-rules.pro'
     }
 
     buildTypes {
@@ -33,17 +33,11 @@ android {
         }
     }
 
-    namespace = 'com.carmabs.ema.sample.injection'
+    namespace = 'com.carmabs.ema.sample.androidutils'
 
 }
 
 dependencies {
-    implementation project(path: ':data')
-    implementation project(path: ':presentation')
-    implementation project(path: ':ui')
-    implementation project(path: ':android-utils')
     implementation project(path: ':domain')
-
-    implementation project(rootProject.emaLibraries.emaAndroid)
-    implementation libs.koin.android
+    implementation libs.material
 }

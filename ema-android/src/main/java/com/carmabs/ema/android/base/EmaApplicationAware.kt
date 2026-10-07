@@ -14,9 +14,9 @@ import kotlin.reflect.full.functions
 import kotlin.reflect.jvm.javaMethod
 
 /**
- *
- * Abstract base class to implement Kodein framework in applicacion context
- * to handle dependency injection
+ * Initializes Ema without extending [EmaApplication]. Implement it in your own [Application] and call
+ * [initializeEma] from [Application.onCreate]. It starts Koin with the Ema module and the modules
+ * returned by [injectAppModules].
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
