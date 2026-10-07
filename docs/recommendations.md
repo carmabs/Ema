@@ -4,30 +4,46 @@ None of this is required by Ema, but it is how the `sample/` app is organised an
 
 ## Split the app into modules
 
-| Module         | Contains                                                                  | Depends on            |
-|----------------|---------------------------------------------------------------------------|-----------------------|
-| `app`          | The `Application`, the Koin modules and the manifest.                     | Everything            |
-| `presentation` | Screens: state, actions, events, ViewModels, fragments, composables, navigators. | `domain`, `ema-android`, `ema-compose` |
-| `domain`       | Models, use cases and repository interfaces. Pure Kotlin.                 | `ema-core`            |
-| `data`         | Repository implementations, network and storage.                          | `domain`              |
-| `common`       | Code shared by several modules.                                           |                       |
+| Module          | Contains                                                                         | Type          | Depends on                         |
+|-----------------|----------------------------------------------------------------------------------|---------------|------------------------------------|
+| `app`           | The `Application`, the Koin modules and the manifest.                            | Android app   | Everything                         |
+| `ui`            | Fragments, activities, composables, navigators, adapters, dialogs, theme and resources. | Android library | `presentation`, `android-utils`, `ema-android`, `ema-compose` |
+| `presentation`  | State, actions, events, initializers and ViewModels.                             | **Pure Kotlin** | `domain`                         |
+| `domain`        | Models, use cases and repository interfaces.                                     | **Pure Kotlin** | `ema-core`                       |
+| `data`          | Repository implementations, network and storage.                                 | Android library | `domain`, `android-utils`        |
+| `android-utils` | Android helpers shared by several modules.                                       | Android library |                                  |
 
-`domain` only needs `ema-core` (for `EmaUseCase` and `EmaResult`), so it stays free of Android.
+```mermaid
+flowchart TB
+    app --> ui
+    app --> data
+    ui --> presentation
+    ui --> android-utils
+    data --> domain
+    data --> android-utils
+    presentation --> domain
+    domain --> ema-core
+```
+
+Keeping `presentation` free of Android has two benefits:
+
+- **The compiler enforces the architecture.** A ViewModel cannot use `Context`, resources or views by mistake, because the module
+  does not have them.
+- **It is a step towards Kotlin Multiplatform.** The ViewModels could be shared with other platforms in the future.
+  Today `ema-core` is a JVM library, so a full KMP setup would also need a multiplatform version of it.
 
 ## Organise by feature
 
-Each screen is a package with the same files:
+Each screen is a package in `presentation` and another one in `ui`, with the same name:
 
 ```
-ui/login/
-├── LoginState.kt         data class LoginState(...) : EmaState
-├── LoginAction.kt        sealed interface LoginAction : EmaAction.Screen
-├── LoginEvent.kt         sealed interface LoginEvent : EmaEvent
-├── LoginOverlap.kt       what dialogs the screen can show
+presentation/…/presentation/login/        ui/…/ui/login/
+├── LoginState.kt                          ├── LoginFragment.kt      (or LoginScreenContent.kt)
+├── LoginAction.kt                         └── LoginNavigator.kt
+├── LoginEvent.kt
+├── LoginOverlap.kt
 ├── LoginViewModel.kt
-├── LoginFragment.kt      or LoginScreenContent.kt for Compose
-├── LoginNavigator.kt
-└── LoginInitializer.kt   only if the screen receives data
+└── LoginInitializer.kt   (only if the screen receives data)
 ```
 
 ## Naming
@@ -46,7 +62,7 @@ ui/login/
 
 ## Create base classes
 
-The sample defines the behaviour that every screen shares once:
+The sample defines the behaviour that every screen shares once: `BaseFragment` in `ui` and `BaseViewModel` in `presentation`.
 
 ```kotlin
 abstract class BaseFragment<B : ViewBinding, S : EmaState, VM : EmaViewModel<S, E>, E : EmaEvent> :

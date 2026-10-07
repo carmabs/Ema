@@ -54,11 +54,28 @@ class MyApplication : EmaApplication() {
 ```
 
 Register the application in `AndroidManifest.xml` (`android:name=".MyApplication"`).
+
+If your application already extends another class, implement `EmaApplicationAware` instead and call `initializeEma` from `onCreate`:
+
+```kotlin
+class MyApplication : SomeOtherApplication(), EmaApplicationAware {
+
+    override fun onCreate() {
+        super.onCreate()
+        initializeEma(EmaApplicationConfig())
+    }
+
+    override fun KoinApplication.injectAppModules(): List<Module> =
+        listOf(dataModule, useCaseModule, uiModule)
+}
+```
+
+`EmaApplication` is just a convenience that implements `EmaApplicationAware` for you.
 `EmaApplicationConfig` lets you customise how errors inside `sideEffect` are handled;
 see [Async work and errors](guides/async-and-errors.md).
 
 > **Warning:** `EmaApplicationConfig` can only be initialized once per process. Ema reads it when a ViewModel is created,
-> so a ViewModel created before `EmaApplication.onCreate()` will fail.
+> so a ViewModel created before `initializeEma` runs will fail.
 
 ## Your first screen
 

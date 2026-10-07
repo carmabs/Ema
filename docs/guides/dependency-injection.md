@@ -1,7 +1,7 @@
 # Dependency injection
 
-Ema uses [Koin](https://insert-koin.io/). `EmaApplication` starts it for you and registers its own module;
-you only list yours:
+Ema uses [Koin](https://insert-koin.io/). `EmaApplication` (or `initializeEma` from `EmaApplicationAware`) starts it for you
+and registers its own module; you only list yours:
 
 ```kotlin
 override fun KoinApplication.injectAppModules(): List<Module> =
