@@ -2,6 +2,7 @@ rootProject.ext {
 
     emaLibraries = [
             emaAndroid       : ':ema-android',
+            emaAndroidView   : ':ema-android-view',
             emaAndroidCompose: ':ema-android-compose',
             emaCore          : ':ema-core',
             emaTestingCore   : ':ema-testing-core',

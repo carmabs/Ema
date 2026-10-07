@@ -39,27 +39,32 @@ android {
         }
     }
 
+
+    buildFeatures {
+        viewBinding = true
+    }
+
     publishing {
         singleVariant("release")
     }
 
-    namespace = rootProject.emaVersioning.namespaceAndroid
+    namespace = rootProject.emaVersioning.namespaceAndroidView
 }
 
 dependencies {
 
-    // Activity, results and back handling
-    api libs.androidx.activity.ktx
+    api project(path: ':ema-android')
 
-    //Architecture components
-    api libs.androidx.lifecycle.runtime.ktx
-    api libs.androidx.lifecycle.viewmodel.ktx
-    api libs.androidx.lifecycle.viewmodel.savedstate
+    implementation libs.gson
 
-    implementation libs.androidx.vectordrawable
+    // Fragments and navigation
+    api libs.androidx.fragment.ktx
+    api libs.androidx.navigation.fragment.ktx
+    api libs.androidx.navigation.ui.ktx
 
-    api project(path: ':ema-core')
-    api libs.kotlinx.coroutines.android
+    //UI
+    api libs.androidx.constraintlayout
+    api libs.material
 }
 
 afterEvaluate {
@@ -68,7 +73,7 @@ afterEvaluate {
             release(MavenPublication) {
                 from components.release
                 groupId = rootProject.emaVersioning.groupId
-                artifactId = rootProject.emaVersioning.artifactAndroidId
+                artifactId = rootProject.emaVersioning.artifactAndroidViewId
                 version = rootProject.emaVersioning.versionName
             }
         }

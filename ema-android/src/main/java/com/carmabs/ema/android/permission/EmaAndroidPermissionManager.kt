@@ -12,9 +12,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
-import androidx.fragment.app.Fragment
 import com.carmabs.ema.android.R
 import com.carmabs.ema.android.extension.findActivity
+import com.carmabs.ema.core.EmaInternalApi
 import com.carmabs.ema.core.extension.ifTrueLet
 import com.carmabs.ema.core.extension.toScope
 import com.carmabs.ema.core.manager.EmaPermissionManager
@@ -77,24 +77,23 @@ class EmaAndroidPermissionManager : EmaPermissionManager {
         }
     }
 
+    /**
+     * Creates the manager from the functions of its host. Used by the hosts of other modules, like
+     * the Fragment factory of ema-android-view.
+     */
+    @EmaInternalApi
     constructor(
-        fragment: Fragment
+        contextProvider: () -> Context,
+        shouldShowRequestPermissionRationale: (String) -> Boolean,
+        registerSinglePermission: (EmaContractSinglePermission) -> ActivityResultLauncher<String>,
+        registerMultiplePermission: (EmaContractMultiplePermission) -> ActivityResultLauncher<Array<String>>
     ) {
-        this.context = { fragment.requireContext() }
-        this.shouldShowRequestPermissionRationaleFunction =
-            { fragment.shouldShowRequestPermissionRationale(it) }
-        this.contractSinglePermission =
-            EmaContractSinglePermission(shouldShowRequestPermissionRationaleFunction)
-        this.contractMultiplePermission =
-            EmaContractMultiplePermission(shouldShowRequestPermissionRationaleFunction)
-        permissionMultipleRequest = fragment.registerForActivityResult(
-            ActivityResultContracts.RequestMultiplePermissions(),
-            contractMultiplePermission.contract
-        )
-
-        permissionSingleRequest = fragment.registerForActivityResult(
-            ActivityResultContracts.RequestPermission(), contractSinglePermission.contract
-        )
+        this.context = contextProvider
+        this.shouldShowRequestPermissionRationaleFunction = shouldShowRequestPermissionRationale
+        this.contractSinglePermission = EmaContractSinglePermission(shouldShowRequestPermissionRationale)
+        this.contractMultiplePermission = EmaContractMultiplePermission(shouldShowRequestPermissionRationale)
+        permissionMultipleRequest = registerMultiplePermission(contractMultiplePermission)
+        permissionSingleRequest = registerSinglePermission(contractSinglePermission)
     }
 
     constructor(

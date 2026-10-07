@@ -34,6 +34,9 @@ project(':ema-core').projectDir = new File("../ema-core")
 include(':ema-android')
 project(':ema-android').projectDir = new File("../ema-android")
 
+include(':ema-android-view')
+project(':ema-android-view').projectDir = new File("../ema-android-view")
+
 include(':ema-android-compose')
 project(':ema-android-compose').projectDir = new File("../ema-android-compose")
 
