@@ -29,6 +29,7 @@ android {
     kotlin {
         compilerOptions {
             jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.fromTarget(rootProject.emaVersioning.kotlinJvmTarget)
+            optIn.add("com.carmabs.ema.core.EmaInternalApi")
         }
     }
 
@@ -72,6 +73,7 @@ dependencies {
     api libs.material
 
     api project(path: ':ema-core')
+    api libs.kotlinx.coroutines.android
 }
 
 afterEvaluate {
