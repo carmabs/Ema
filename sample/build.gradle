@@ -7,8 +7,23 @@ plugins {
     alias(libs.plugins.kotlin.compose) apply false
     alias(libs.plugins.kotlin.serialization) apply false
     alias(libs.plugins.kover) apply false
+    alias(libs.plugins.spotless)
     alias(libs.plugins.navigation.safeargs) apply false
 }
 
 apply from: '../build-system/config.gradle'
 apply from: 'build-system/dependencies.gradle'
+
+// Code format of the sample: ./gradlew spotlessApply (the rules are in the .editorconfig of the repository)
+spotless {
+    kotlin {
+        target '*/src/**/*.kt'
+        ktlint(libs.versions.ktlint.get())
+    }
+    format 'misc', {
+        target '*.gradle', '*/*.gradle', 'build-system/*.gradle'
+        trimTrailingWhitespace()
+        leadingTabsToSpaces()
+        endWithNewline()
+    }
+}

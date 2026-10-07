@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.kotlin.compose) apply false
     alias(libs.plugins.kotlin.serialization) apply false
     alias(libs.plugins.kover)
+    alias(libs.plugins.spotless)
 }
 
 apply from: 'build-system/config.gradle'
@@ -27,5 +28,19 @@ kover {
                 classes('*.databinding.*', '*.BuildConfig')
             }
         }
+    }
+}
+
+// Code format of the library: ./gradlew spotlessApply (the rules are in .editorconfig)
+spotless {
+    kotlin {
+        target 'ema-*/src/**/*.kt'
+        ktlint(libs.versions.ktlint.get())
+    }
+    format 'misc', {
+        target '*.gradle', 'ema-*/*.gradle', 'build-system/*.gradle', 'gradle/*.toml', '*.md', '.editorconfig', '.gitignore'
+        trimTrailingWhitespace()
+        leadingTabsToSpaces()
+        endWithNewline()
     }
 }
