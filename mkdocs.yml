@@ -1,0 +1,66 @@
+site_name: Ema
+site_description: A small Android library for MVI-style screens with Views and Jetpack Compose
+repo_url: https://github.com/carmabs/Ema
+repo_name: carmabs/Ema
+
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: teal
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: teal
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  features:
+    - navigation.sections
+    - navigation.top
+    - navigation.footer
+    - search.highlight
+    - content.code.copy
+
+markdown_extensions:
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.highlight
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
+nav:
+  - Home: index.md
+  - Getting started: getting-started.md
+  - Concepts:
+      - Architecture: concepts/architecture.md
+      - State: concepts/state.md
+      - Actions: concepts/actions.md
+      - Events: concepts/events.md
+      - ViewModel: concepts/viewmodel.md
+  - Guides:
+      - Views with XML: guides/xml-views.md
+      - Compose: guides/compose.md
+      - Navigation: guides/navigation.md
+      - Back handling: guides/back-handling.md
+      - Initializers: guides/initializers.md
+      - Results between screens: guides/results-between-screens.md
+      - Dialogs: guides/dialogs.md
+      - Async work and errors: guides/async-and-errors.md
+      - Dependency injection: guides/dependency-injection.md
+      - Saving state: guides/save-state.md
+      - Permissions: guides/permissions.md
+      - Lists: guides/lists.md
+      - Testing: guides/testing.md
+      - Utilities: guides/utilities.md
+  - Recommendations: recommendations.md
+  - Migrating from 6.x: migration-from-6.md
