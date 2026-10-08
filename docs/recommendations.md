@@ -6,8 +6,8 @@ None of this is required by Ema, but it is how the `sample/` app is organised an
 
 | Module          | Contains                                                                         | Type          | Depends on                         |
 |-----------------|----------------------------------------------------------------------------------|---------------|------------------------------------|
-| `app`           | The `Application`, the Koin modules and the manifest.                            | Android app   | Everything                         |
-| `ui`            | Fragments, activities, composables, navigators, adapters, dialogs, theme and resources. | Android library | `presentation`, `android-utils`, `ema-android`, `ema-compose` |
+| `app`           | The `Application`, the dependency injection setup and the manifest.              | Android app   | Everything                         |
+| `ui`            | Composables, fragments, activities, navigators, adapters, dialogs, theme and resources. | Android library | `presentation`, `android-utils`, `ema-compose`, `ema-android-view` |
 | `presentation`  | State, actions, events, initializers and ViewModels.                             | **Pure Kotlin** | `domain`                         |
 | `domain`        | Models, use cases and repository interfaces.                                     | **Pure Kotlin** | `ema-core`                       |
 | `data`          | Repository implementations, network and storage.                                 | Android library | `domain`, `android-utils`        |
@@ -29,8 +29,8 @@ Keeping `presentation` free of Android has two benefits:
 
 - **The compiler enforces the architecture.** A ViewModel cannot use `Context`, resources or views by mistake, because the module
   does not have them.
-- **It is a step towards Kotlin Multiplatform.** The ViewModels could be shared with other platforms in the future.
-  Today `ema-core` is a JVM library, so a full KMP setup would also need a multiplatform version of it.
+- **It is ready for Kotlin Multiplatform.** `ema-core` is multiplatform, so `presentation` and `domain` can become
+  multiplatform modules and share the ViewModels with other platforms. See [Kotlin Multiplatform](guides/multiplatform.md).
 
 ## Organise by feature
 
@@ -38,7 +38,7 @@ Each screen is a package in `presentation` and another one in `ui`, with the sam
 
 ```
 presentation/…/presentation/login/        ui/…/ui/login/
-├── LoginState.kt                          ├── LoginFragment.kt      (or LoginScreenContent.kt)
+├── LoginState.kt                          ├── LoginScreenContent.kt (or LoginFragment.kt)
 ├── LoginAction.kt                         └── LoginNavigator.kt
 ├── LoginEvent.kt
 ├── LoginOverlap.kt
@@ -62,17 +62,21 @@ presentation/…/presentation/login/        ui/…/ui/login/
 
 ## Create base classes
 
-The sample defines the behaviour that every screen shares once: `BaseFragment` in `ui` and `BaseViewModel` in `presentation`.
+Define the behaviour that every screen shares once. The sample has a `BaseScreenComposable` for its Compose screens,
+which draws the dialogs every screen needs, and a `BaseViewModel` in `presentation`:
 
 ```kotlin
-abstract class BaseFragment<B : ViewBinding, S : EmaState, VM : EmaViewModel<S, E>, E : EmaEvent> :
-    EmaFragment<B, S, VM, E>() {
+abstract class BaseScreenComposable<S : EmaState, A : EmaAction.Screen, E : EmaEvent> :
+    EmaComposableScreenContent<S, A, E> {
 
-    private val appDialogProvider: AppDialogProvider by inject { parametersOf(childFragmentManager) }
+    @Composable
+    protected fun ShowDialog(data: SimpleDialogData, listener: SimpleDialogListener) { /* ... */ }
 
-    protected fun showError(data: ErrorDialogData, listener: ErrorDialogListener) { /* ... */ }
-    protected fun showMessage(message: String) { /* Snackbar */ }
-    protected fun hideDialog() = appDialogProvider.hide()
+    @Composable
+    protected fun ShowError(data: ErrorDialogData, listener: ErrorDialogListener) { /* ... */ }
+
+    @Composable
+    protected fun ShowLoading(loadingDialogData: LoadingDialogData? = null) { /* ... */ }
 }
 ```
 
@@ -81,7 +85,8 @@ abstract class BaseViewModel<S : EmaState, A : EmaAction.Screen, E : EmaEvent>(i
     EmaViewModelAction<S, A, E>(initialDataState)
 ```
 
-An (even empty) `BaseViewModel` and `BaseScreenComposable` give you a single place to add something later.
+An (even empty) `BaseViewModel` gives you a single place to add something later. With Android Views, a `BaseFragment`
+plays the same role as `BaseScreenComposable`, with the dialog providers and the messages.
 
 ## Keep the ViewModel clean
 
@@ -93,7 +98,7 @@ An (even empty) `BaseViewModel` and `BaseScreenComposable` give you a single pla
 
 ## Share one palette
 
-If you use XML and Compose in the same app, define the colours once in resources and read them from both themes.
+While an app has screens in Compose and in Views, define the colours once in resources and read them from both themes.
 The sample's `EmaSampleTheme` builds its Compose `ColorScheme` from the same `palette_*` resources as the XML theme,
 including the dark variant in `values-night`.
 

@@ -1,30 +1,25 @@
 # Testing
 
-Because a ViewModel has no Android dependencies, you test it as plain Kotlin on the JVM: no emulator, no Robolectric.
+Because a ViewModel has no Android dependencies, you test it as plain Kotlin: no emulator, no Robolectric.
+If your ViewModels live in a multiplatform module, the same tests run on every target from `commonTest`.
 The whole state/event contract is observable:
 
 - `dispatch(action)` is the input.
 - `stateFlow.value` is the state.
 - `eventFlow` holds the pending events.
 
+Add `kotlinx-coroutines-test` to your test dependencies:
+
 ```kotlin
-class EmaViewModelTest {
+class CounterViewModelTest {
 
-    companion object {
-        @JvmStatic
-        @BeforeClass
-        fun setupEma() {
-            // Ema configuration can be initialized only once per JVM, so tolerate repeated calls
-            runCatching { EmaApplicationConfigProvider.init(EmaApplicationConfig()) }
+    private fun TestScope.createViewModel() =
+        CounterViewModel(CoroutineScope(UnconfinedTestDispatcher(testScheduler))).apply {
+            onCreated()
         }
-    }
-
-    private fun createViewModel() = CounterViewModel(CoroutineScope(Dispatchers.Unconfined)).apply {
-        onCreated()
-    }
 
     @Test
-    fun `increment action updates the state`() {
+    fun `increment action updates the state`() = runTest {
         val viewModel = createViewModel()
 
         viewModel.dispatch(CounterAction.Increment)
@@ -33,34 +28,41 @@ class EmaViewModelTest {
     }
 
     @Test
-    fun `reaching the limit posts an event`() = runBlocking {
+    fun `reaching the limit posts an event`() = runTest {
         val viewModel = createViewModel()
 
-        repeat(2) { viewModel.dispatch(CounterAction.Increment) }
+        repeat(10) { viewModel.dispatch(CounterAction.Increment) }
 
         assertEquals(
-            listOf<CounterEvent>(CounterEvent.LimitReached(2)),
+            listOf<CounterEvent>(CounterEvent.LimitReached(10)),
             viewModel.eventFlow.first()
         )
     }
 }
 ```
 
-The complete, runnable version is in `ema-core/src/test/kotlin/EmaViewModelTest.kt`.
+The tests of the library itself, in `ema-core/src/commonTest`, have more examples: side effects, events,
+results between screens and the view lifecycle.
 
 ## Things to know
 
-1. **Initialize the configuration.** The ViewModel reads `EmaApplicationConfigProvider` when it is created. Call
-   `EmaApplicationConfigProvider.init(EmaApplicationConfig())` once before creating one. It can only be initialized
-   once per JVM, so wrap it in `runCatching` if several test classes do it.
-2. **Pass your own scope.** The second constructor parameter of `EmaViewModelBasic` / `EmaViewModelAction` is the
-   `CoroutineScope`. The default one uses `Dispatchers.Main`, which does not exist in unit tests. Use
-   `CoroutineScope(Dispatchers.Unconfined)` so the work runs immediately, or a `TestScope` from `kotlinx-coroutines-test`.
+1. **Pass your own scope.** The second constructor parameter of `EmaViewModelBasic` / `EmaViewModelAction` is the
+   `CoroutineScope`. Expose it in the constructor of your ViewModels, with a default value, so tests can replace it.
+   The default scope uses `Dispatchers.Main`, which does not exist in unit tests. With an `UnconfinedTestDispatcher`
+   the work runs immediately; with a `StandardTestDispatcher`, call `advanceUntilIdle()` to run it.
+
+   ```kotlin
+   class CounterViewModel(scope: CoroutineScope = EmaMainScope()) :
+       EmaViewModelAction<CounterState, CounterAction, CounterEvent>(CounterState(), scope)
+   ```
+2. **No configuration is needed.** If `Ema.init` is not called, the default configuration is used. Do not call
+   `Ema.init` in tests: it can be called only once per process.
 3. **Call `onCreated()`** to run `onStateCreated(initializer)`. Pass an initializer if the screen needs one:
    `viewModel.onCreated(MyInitializer.Default("x"))`.
-4. **Mock use cases.** They are ordinary classes: mock them with Mockito or write a fake.
+4. **Fake the use cases.** They are ordinary classes: pass a fake implementation, or mock them with your mocking library.
 5. **Events are consumed by the view.** In a test, read them with `eventFlow.first()` and call `consumeEvent(event)`
    to simulate the view having handled them.
+6. **Time.** `delay` inside a `sideEffect` is skipped by the test dispatcher, so debounces and timeouts run instantly.
 
 ## What to test
 
@@ -74,10 +76,5 @@ The complete, runnable version is in `ema-core/src/test/kotlin/EmaViewModelTest.
 
 ## Testing screens
 
-Screen contents are stateless: `onState(state, actions)` only draws what it receives. You can draw it with any state
-(see [Previews](compose.md#previews)) and verify it with screenshot or UI tests, without a ViewModel.
-
-## Test helpers
-
-The repository contains `ema-testing-core` (an `EmaTest` base class with Mockito and `kotlinx-coroutines-test`) and
-`ema-testing-android`. They are not published; copy what is useful into your own test sources.
+Compose screen contents are stateless: `onState(state, actions)` only draws what it receives. Draw it with any state
+(see [Previews](../compose/screens.md#previews)) and verify it with Compose UI tests or screenshot tests, without a ViewModel.

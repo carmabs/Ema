@@ -6,7 +6,7 @@ Every Ema screen is made of the same five pieces.
 flowchart TB
     subgraph View
         direction TB
-        F[Fragment / Activity / Compose screen]
+        F[Compose screen / Fragment]
         NV[Navigator]
     end
     subgraph Presentation

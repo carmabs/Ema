@@ -1,13 +1,13 @@
 # Saving state across process death
 
 Android can kill your app while it is in the background, for example when the user goes to the system settings to
-grant a permission. Navigation arguments (the [initializer](initializers.md)) are restored automatically, but the state
+grant a permission. Navigation arguments (the [initializer](../guides/initializers.md)) are restored automatically, but the state
 the user has typed is not.
 
 An `EmaSaveStateManager` connects a screen to a `SavedStateHandle`. It runs once for the screen, and gives you:
 
-- the `SavedStateHandle` to read and write,
 - a `CoroutineScope` tied to the screen,
+- the `SavedStateHandle` to read and write,
 - the ViewModel.
 
 Restore by **dispatching actions**, and save by **collecting the state**:
@@ -15,7 +15,7 @@ Restore by **dispatching actions**, and save by **collecting the state**:
 ```kotlin
 createComposableScreen(
     screenContent = ProfileCreationScreenContent(),
-    viewModel = { injectDirect<ProfileCreationViewModel>() },
+    viewModel = { get<ProfileCreationViewModel>() },
     saveStateManager = EmaSaveStateManager<ProfileCreationState, ProfileCreationEvent> { coroutineScope, savedStateHandle, emaViewModel ->
         val keyName = "USERNAME"
 
@@ -37,14 +37,13 @@ createComposableScreen(
 ```
 
 Restoring through actions means the ViewModel validates and applies the data exactly as if the user had typed it again.
+`asActionDispatcher<A>()` gives you the ViewModel as an `EmaActionDispatcher<A>`.
 
-## Where to use it
+## Without a navigation graph
 
-`saveStateManager` is a parameter of `createComposableScreen`. When you use `EmaComposableScreen` directly, pass a
-`SavedStateSupport(savedStateHandle, manager)` as `saveStateSupport`.
+When you use `EmaComposableScreen` directly, pass a `SavedStateSupport(savedStateHandle, manager)` as `saveStateSupport`.
 
 ## Tips
 
 - Save only what the user would be upset to lose: form fields, selected items. A `SavedStateHandle` is for small values.
 - Do not save the whole state. Data you can reload (lists from the network) should be loaded again in `onStateCreated`.
-- Use `asActionDispatcher<A>()` on the ViewModel to get an `EmaActionDispatcher<A>`.

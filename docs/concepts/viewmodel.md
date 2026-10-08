@@ -2,12 +2,20 @@
 
 An Ema ViewModel is a plain Kotlin class with no Android dependencies. There are two flavours:
 
-| Class                                  | Use it when                                         |
-|----------------------------------------|-----------------------------------------------------|
-| `EmaViewModelAction<S, A, E>`          | The screen receives user actions. **The usual choice.** |
-| `EmaViewModelBasic<S, E>`              | The screen only shows state and emits events.       |
+| Class                                  | Use it when                                                              |
+|----------------------------------------|--------------------------------------------------------------------------|
+| `EmaViewModelAction<S, A, E>`          | The view reports what the user did with actions. **Recommended.**        |
+| `EmaViewModelBasic<S, E>`              | You prefer not to declare actions: the view calls public functions of the ViewModel, as in classic MVVM. |
 
-Both receive the initial state in the constructor. `EmaViewModelAction` adds `dispatch(action)` and the abstract `onAction`.
+`EmaViewModelAction` is the recommended choice. Every input of the screen is an action of a `sealed` type, so the
+compiler checks that all of them are handled, the ViewModel has a single entry point (`dispatch`), and the actions
+describe what the user did, which makes the code easier to follow and to debug: logging or setting a breakpoint in
+`onAction` shows every input. With `EmaViewModelBasic` the view can call any public function, and that structure
+depends only on discipline.
+
+Both receive the initial state in the constructor and, optionally, the `CoroutineScope` where their work runs
+(by default one on the main dispatcher of the [configuration](../guides/configuration.md)).
+`EmaViewModelAction` adds `dispatch(action)` and the abstract `onAction`.
 
 ```kotlin
 class LoginViewModel(
@@ -60,24 +68,31 @@ override fun onStateCreated(initializer: EmaInitializer?) {
 
 ## How the ViewModel is kept alive
 
-Ema wraps your ViewModel in an Android `ViewModel` (`EmaAndroidViewModel`) so it survives configuration
-changes. The instance created by Koin is only used the first time; later calls return the retained one.
-This is why ViewModels are declared as `factory` in Koin: see [Dependency injection](../guides/dependency-injection.md).
+On Android, Ema keeps your ViewModel inside an Android `ViewModel` (`EmaAndroidViewModel`), so it lives as long as its
+screen and survives configuration changes:
 
-The ViewModel is identified by its class name (`id`). The `scope` is replaced by the `viewModelScope` of the
+1. The first time a screen is opened, Ema calls the function you gave it (`viewModel` in Compose, `provideViewModel()`
+   in Views) and keeps that instance.
+2. While the screen exists, after rotations or when coming back from the back stack, Ema reuses the instance it keeps.
+   Your function is not called again.
+3. When the screen is closed, the ViewModel is cleared. Opening the screen again creates a new one.
+
+Each screen therefore has its own ViewModel, created once. See [Dependency injection](../guides/dependency-injection.md).
+
+The ViewModel is identified by its class name (`id`). Its `scope` is replaced by the `viewModelScope` of the
 Android ViewModel, so work is cancelled automatically when the ViewModel is cleared.
-
-### Sharing a ViewModel between fragments
-
-By default a Fragment's ViewModel belongs to the Fragment. Override `fragmentViewModelScope` to attach it to the Activity:
-
-```kotlin
-override val fragmentViewModelScope = false
-```
-
-Fragments of the same Activity that use the same ViewModel class then get the same instance.
 
 ## Rendering before the first update
 
 `updateOnInitialization` (protected, `true` by default) controls whether a Compose screen draws the initial state
-straight away. Override it with `false` to render only after the first call to `updateState`. It is only honoured by Compose screens.
+straight away. Override it with `false` to render only after the first call to `updateState`.
+
+## Pretty printing
+
+`toStringPretty()` prints any object, for example a state, with the `EmaDataClassPrinter` of the
+[configuration](../guides/configuration.md#printing-objects). With `EmaConfiguration.Android` it prints every field,
+nested objects and collections, indented:
+
+```kotlin
+Log.d("Login", state.toStringPretty())
+```

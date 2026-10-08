@@ -24,19 +24,33 @@ userLogged.onSuccess { user ->
 
 ## Handling events
 
-Implement `onEvent` in the view. It is called once per event, in the order they were posted.
+The view handles each event once, in the order they were posted. A Compose screen handles them in two places:
+the `onEvent` lambda of the navigation graph, for navigation, and `onEvent` of the screen content, for the rest.
 
 ```kotlin
-override suspend fun LoginFragmentBinding.onEvent(event: LoginEvent) {
+// Navigation graph: the events that navigate
+createComposableScreen(
+    screenContent = LoginScreenContent(),
+    viewModel = { LoginViewModel(loginUseCase, LoginState.DEFAULT) },
+    onEvent = { event -> if (event is LoginEvent.LoginSuccess) navigator.goToHome(event.user) }
+)
+
+// Screen content: the rest
+override suspend fun onEvent(
+    context: Context,
+    event: LoginEvent,
+    actions: EmaImmutableActionDispatcher<LoginAction>
+) {
     when (event) {
-        is LoginEvent.LoginSuccess -> navigate(event)
-        is LoginEvent.LastUserAdded -> showMessage(getString(R.string.login_last_user_added, event.user.fullName))
-        is LoginEvent.Message -> showMessage(getString(R.string.login_welcome, event.userName))
+        is LoginEvent.Message -> showMessage(context.getString(R.string.login_welcome, event.userName))
+        is LoginEvent.LastUserAdded -> showMessage(context.getString(R.string.login_last_user_added, event.user.fullName))
+        is LoginEvent.LoginSuccess -> Unit
     }
 }
 ```
 
-In Compose, events can be handled in two places, see [Compose](../guides/compose.md).
+See [Compose screens](../compose/screens.md#two-places-to-handle-events). With Android Views, events are handled in
+`onEvent` of the Fragment or Activity, see [Android Views](../android-view/screens.md).
 
 ## Naming
 
@@ -62,7 +76,10 @@ A good test: the name still makes sense if you replace the screen's UI completel
 postEvent(LoginEvent.Message("Ana"), allowDuplicated = true)
 ```
 
-- **Only while the screen is visible.** Views receive events from `onResume` until `onStop`; Compose screens while the lifecycle is `STARTED`.
+- **Only while the screen is visible.** Compose screens receive events while the lifecycle is `STARTED`;
+  Fragments and Activities from `onResume` until `onStop`.
+- **An equal event is delivered again after the previous one was consumed.** Posting `Message("Ana")` twice, one after
+  the other has been handled, shows the message twice.
 - **Not persisted.** Events live in the ViewModel, so they survive configuration changes but not process death.
 
 > **Keep `onEvent` short.** If a new event arrives while a previous `onEvent` is suspended,
@@ -76,8 +93,5 @@ See the table in [Architecture](architecture.md#state-or-event).
 
 ## Screens with no events
 
-Use `EmaEvent.EMPTY` as the event type:
-
-```kotlin
-class SplashActivity : EmaToolbarActivity<SplashActivityBinding, EmaState.EMPTY, EmaViewModel.EMPTY, EmaEvent.EMPTY>()
-```
+Use `EmaEvent.EMPTY` as the event type, and `EmaViewModel.EMPTY` for a screen with no state, actions or events,
+like an activity that only hosts other screens.

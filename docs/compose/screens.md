@@ -1,13 +1,13 @@
-# Compose
+# Compose screens
 
-Compose screens are described by an `EmaComposableScreenContent` and registered in your navigation graph with
-`createComposableScreen`.
+Compose screens are described by an `EmaComposableScreenContent` and registered in a navigation graph with
+`createComposableScreen`. They need the `ema-android` and `ema-compose` artifacts.
 
 ## Screen content
 
 ```kotlin
 class ProfileOnBoardingScreenContent :
-    BaseScreenComposable<ProfileOnBoardingState, ProfileOnBoardingActions, ProfileOnBoardingEvent>() {
+    EmaComposableScreenContent<ProfileOnBoardingState, ProfileOnBoardingActions, ProfileOnBoardingEvent> {
 
     @Composable
     override fun onState(
@@ -28,6 +28,7 @@ class ProfileOnBoardingScreenContent :
 | `onBack(state): A?`                         | The action to send when back is pressed, or `null`. See [Back handling](back-handling.md). Optional. |
 
 Keep the screen content free of state: it is a stateless description, created once per screen.
+Anything that must survive belongs in the [state](../concepts/state.md) of the ViewModel.
 
 ## Registering the screen
 
@@ -38,14 +39,7 @@ NavHost(
 ) {
     createComposableScreen(
         screenContent = ProfileOnBoardingScreenContent(),
-        viewModel = { injectDirect<ProfileOnBoardingViewModel>() },
-        initializerSupport = EmaInitializerSupport.kSerialization(
-            ProfileOnBoardingInitializer.serializer(),
-            getInitializer(
-                BundleSerializerStrategy.kSerialization(ProfileOnBoardingInitializer.serializer()),
-                savedInstanceState
-            )
-        ),
+        viewModel = { get<ProfileOnBoardingViewModel>() },
         onEvent = { navigator.handleProfileOnBoardingEvent(it) }
     )
 }
@@ -54,12 +48,12 @@ NavHost(
 | Parameter              | Purpose                                                                                        |
 |------------------------|------------------------------------------------------------------------------------------------|
 | `screenContent`        | The screen content.                                                                            |
-| `viewModel`            | A lambda that creates the ViewModel (usually from Koin).                                       |
+| `viewModel`            | A lambda that creates the ViewModel. It is called once, when the screen is opened. See [Dependency injection](../guides/dependency-injection.md). |
 | `onEvent`              | Receives every event. Put **navigation** here, where the `NavController` is available.         |
 | `routeId`              | The route. By default `ScreenContent::class.routeId`, which is unique per class.               |
-| `initializerSupport`   | How to read the [initializer](initializers.md) from the route arguments.                       |
+| `initializerSupport`   | How to read the [initializer](../guides/initializers.md) from the route. See [Navigation](navigation.md#passing-an-initializer). |
 | `saveStateManager`     | See [Saving state across process death](save-state.md).                                        |
-| `transitionAnimation`  | `EmaComposableTransitions(enterTransition, exitTransition, popEnterTransition, popExitTransition)`. |
+| `transitionAnimation`  | `EmaComposableTransitions(enterTransition, exitTransition, popEnterTransition, popExitTransition)`. The pop transitions default to the enter and exit ones. |
 | `fullScreenDialogMode` | Registers the destination as a `dialog` instead of a `composable`.                             |
 | `decoration`           | Wraps the screen, for example in a `Scaffold`. Receives the content and the action dispatcher. |
 | `previewRenderState`   | State to draw in the IDE preview.                                                              |
@@ -74,31 +68,20 @@ Each event reaches **both** handlers, in this order:
 
 Then the event is consumed. A simple rule: navigation in the graph, everything else in the screen content.
 
-## Navigating
+## Lifecycle
 
-Routes are strings. Navigate with the extension that also carries an initializer:
+The screen connects the ViewModel to the lifecycle of its destination:
 
-```kotlin
-navController.navigate(
-    route = ProfileCreationScreenContent::class.routeId,
-    initializerBundle = EmaInitializerBundle(
-        ProfileCreationInitializer.Admin,
-        BundleSerializerStrategy.kSerialization(ProfileCreationInitializer.serializer())
-    )
-)
-```
+| Lifecycle event                | ViewModel                       |
+|--------------------------------|---------------------------------|
+| `ON_CREATE`                    | `onCreated(initializer)`        |
+| `ON_START`                     | `onStartView()`                 |
+| `ON_RESUME`                    | `onResumeView()`                |
+| `ON_PAUSE`                     | `onPauseView()`                 |
+| `ON_STOP`                      | `onStopView()`                  |
+| The screen leaves the composition | `onPauseView()` and `onStopView()` |
 
-More in [Navigation](navigation.md).
-
-## Dialogs
-
-Dialogs are drawn from the state. Emit the dialog composable when the state says so:
-
-```kotlin
-state.overlap?.also { Overlap(it, actions) }
-```
-
-See [Dialogs](dialogs.md).
+The state is collected with `collectAsStateWithLifecycle` and the events while the lifecycle is `STARTED`.
 
 ## Previews
 
@@ -109,7 +92,7 @@ Inside the IDE preview there is no ViewModel, so call `onState` directly with a 
 @Composable
 private fun NormalPreview() {
     EmaSampleTheme {
-        onState(
+        ProfileCreationScreenContent().onState(
             state = ProfileCreationState(Role.ADMIN, "Carlos", "Mateo"),
             actions = EmaImmutableActionDispatcherEmpty()
         )
@@ -117,14 +100,9 @@ private fun NormalPreview() {
 }
 ```
 
-`previewRenderState` in `createComposableScreen` does the same for the whole screen. `isInPreview()` and
-`skipForPreview { }` help you skip code that cannot run in a preview.
-
-## Lifecycle
-
-`createComposableScreen` connects the ViewModel to the lifecycle of the destination: `onCreated`, `onStartView`,
-`onResumeView`, `onPauseView` and `onStopView` are called from the matching lifecycle events. The state is collected
-with `collectAsStateWithLifecycle` and the events while the lifecycle is `STARTED`.
+`previewRenderState` in `createComposableScreen` does the same for the whole screen: in a preview, the ViewModel is not
+created and the screen draws that state. `isInPreview()` and `skipForPreview { }` help you skip code that cannot run in
+a preview. See [Utilities](utilities.md#previews).
 
 ## Using a screen without a navigation graph
 
@@ -132,34 +110,16 @@ with `collectAsStateWithLifecycle` and the events while the lifecycle is `STARTE
 
 ```kotlin
 EmaComposableScreen(
-    vm = { injectDirect<CounterViewModel>() },
+    vm = { CounterViewModel() },
     screenContent = CounterScreenContent(),
     onEvent = { /* ... */ }
 )
 ```
 
-## Hosting Compose in a Fragment or Activity
-
-If you prefer to stay in the Fragment/Activity world, extend `EmaComposableFragment` or `EmaComposableActivity`.
-They behave like [`EmaFragment` and `EmaActivity`](xml-views.md) but draw a composable:
-
-```kotlin
-class HomeComposeFragment : EmaComposableFragment<HomeState, HomeViewModel, HomeEvent>() {
-
-    @Composable
-    override fun onRenderState(state: HomeState) { /* ... */ }
-
-    override suspend fun onEvent(event: HomeEvent) { /* ... */ }
-
-    override fun provideViewModel() = injectDirect<HomeViewModel>()
-
-    override val navigator: EmaNavigator<HomeEvent>? = null
-
-    override val initializerStrategy = BundleSerializerStrategy.EMPTY
-}
-```
+It accepts the `initializer`, a `saveStateSupport` (see [Saving state](save-state.md#without-a-navigation-graph)) and
+a `previewRenderState`. Another overload receives a ViewModel instance and its action dispatcher, for ViewModels
+created and kept by you.
 
 ## Theme
 
-Wrap the `NavHost` (or your content) in your Material theme. The sample uses `EmaSampleTheme`, which reads the same
-palette resources as its XML theme so both worlds look the same.
+Wrap the `NavHost` (or your content) in your Material theme. The sample uses `EmaSampleTheme`.

@@ -70,8 +70,15 @@ adapter.setOnItemClickListener { index, item ->
 }
 ```
 
-Send the click as an action. Do not change the list in the adapter: change the state and submit the new list.
+Send the click as an action. Change the list in the state and submit the new one: `updateList`, `addItem`, `removeItem`
+and `updateItem` are also available, but then the adapter and the state no longer show the same list.
 
 ## Decorations
 
-`EmaVerticalSpaceDecoration`, `EmaGridSpacingItemDecoration` and `EmaSwipeToDeleteCallback` are available for spacing and swipe-to-delete.
+| Class                           | Use it for                                                                          |
+|---------------------------------|-------------------------------------------------------------------------------------|
+| `EmaVerticalSpaceDecoration`    | Space between the items of a vertical list, optionally after the last one too.     |
+| `EmaGridSpacingItemDecoration`  | Space between the columns and rows of a grid, optionally on the edges.             |
+| `EmaSwipeToDeleteCallback`      | Swipe to delete with `ItemTouchHelper`: draws a background and an icon or a text under the item. |
+
+`RecyclerView.clearAdapters()` removes the adapter, to avoid leaks when the view is destroyed.

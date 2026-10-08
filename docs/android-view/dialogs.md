@@ -20,7 +20,7 @@ private fun onActionBadCredentialsAccepted() = updateState { copy(overlap = null
 
 Because it is state, the dialog is restored after a rotation and the ViewModel knows whether it is open.
 
-## Views (XML)
+## Creating a dialog
 
 Ema provides the machinery to show dialogs as `DialogFragment`s without duplicates after rotations. You provide three things.
 
@@ -69,7 +69,7 @@ class ErrorDialogProvider(fragmentManager: FragmentManager) : EmaAndroidDialogPr
 
 If your app has several kinds of dialogs, combine the providers in one, as the sample does with `AppDialogProvider`.
 
-### Showing it from the view
+## Showing it from the view
 
 The listener reports back to the ViewModel **as actions**. Set it **before** calling `show`:
 
@@ -98,32 +98,7 @@ bindForUpdate(state::overlap) {
 `EmaDialogListener` has `onBackPressed()`, `onOutsidePressed()` (which calls `onBackPressed()` by default) and `onDestroyed()`.
 `EmaDialogProvider` offers `show`, `hide`, `isVisible` and `dialogListener`.
 
-## Compose
-
-There is nothing special to learn: emit a dialog composable while the state says so.
-
-```kotlin
-state.overlap?.also { overlap ->
-    when (overlap) {
-        ProfileCreationOverlap.DialogBackConfirmation -> SimpleDialogComposable(
-            dialogData = SimpleDialogData(
-                title = EmaText.id(R.string.profile_creation_user_exit_title),
-                message = EmaText.id(R.string.profile_creation_user_exit_message),
-                showCancel = true
-            ),
-            dialogListener = object : SimpleDialogListener {
-                override fun onCancelClicked() = actions.dispatch(ProfileCreationAction.DialogBackCancel)
-                override fun onConfirmClicked() = actions.dispatch(ProfileCreationAction.DialogBackConfirm)
-                override fun onBackPressed() = actions.dispatch(ProfileCreationAction.DialogBackCancel)
-            }
-        )
-        // ...
-    }
-}
-```
-
-The sample builds its dialogs on Material 3's `AlertDialog`. It reuses the same `...DialogData` and `...DialogListener`
-types as the XML dialogs, so a dialog is described once and drawn by either technology.
+`hide()` removes the dialog completely, so it is not restored as a duplicate after a rotation.
 
 ## Loading
 

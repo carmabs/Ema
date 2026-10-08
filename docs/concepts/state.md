@@ -27,8 +27,8 @@ data class LoginState(
 
 ## Rules
 
-- **It must be a `data class`.** Ema checks it when the ViewModel is created and throws
-  `IllegalStateException` otherwise. `EmaState.EMPTY` is the only exception, for screens with no state.
+- **Make it a `data class`.** `copy` is how the next state is created, and its `equals` lets the view skip
+  states that did not change. Use `EmaState.EMPTY` for screens with no state.
 - **Make it immutable.** Use `val` and read-only collections. Change it with `copy`.
 - **Give it a `DEFAULT`.** It becomes the initial state and is handy for previews and tests.
 - **Add derived properties instead of duplicating data.** They keep the view free of logic:
@@ -94,8 +94,9 @@ private fun onActionUserWrite(user: String) {
 
 ## Rendering the state
 
-On Views, use `bindForUpdate` to run each piece of UI code only when its field changed.
-See [Views with XML](../guides/xml-views.md). On Compose you simply draw the state: recomposition does the diffing.
+In Compose you simply draw the state: recomposition does the diffing. See [Compose screens](../compose/screens.md).
+With Android Views, `bindForUpdate` runs each piece of UI code only when its field changed: see
+[Android Views](../android-view/screens.md#rendering-with-bindforupdate).
 
 ## What does *not* belong in the state
 

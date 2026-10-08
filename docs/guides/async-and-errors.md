@@ -21,8 +21,9 @@ private fun doLogin() {
 ```
 
 `sideEffect` launches a coroutine in the ViewModel `scope`, so it is cancelled automatically when the ViewModel is cleared.
-By default the block runs on the main dispatcher of the scope; **use cases switch to the IO dispatcher themselves**,
-so you do not need to.
+By default the block runs on the main dispatcher of the scope; **use cases switch to the background dispatcher of the
+[configuration](configuration.md) themselves** (`Dispatchers.IO` on Android), so you do not need to.
+Pass `dispatcher` to run the block somewhere else.
 
 ## Reacting to the outcome
 
@@ -36,6 +37,9 @@ sideEffect { repository.load() }
 ```
 
 `onFinish` runs whether the work succeeded or failed. The handler also exposes the `job`.
+
+Cancellation is not an error: when the ViewModel is cleared, or `singleSideEffect` replaces the work, the coroutine is
+cancelled and `onError` is not called.
 
 ## Cancelling the previous work
 
@@ -52,13 +56,12 @@ singleSideEffect("search") {
 ## Errors
 
 **By default exceptions thrown inside `sideEffect` are caught and ignored** unless you use `onError`
-or configure a default action. Choose a policy in `EmaApplicationConfig`:
+or configure a default action. Choose a policy in the `sideEffectConfig` of the [configuration](configuration.md):
 
 ```kotlin
-class MyApplication : EmaApplication() {
-
-    override val emaConfiguration = EmaApplicationConfig(
-        sideEffectConfig = EmaSideEffectConfig(
+Ema.init(
+    EmaConfiguration.Android.copy(
+        sideEffectConfig = EmaConfiguration.Android.sideEffectConfig.copy(
             exceptionPolicy = EmaSideEffectConfig.ExceptionPolicy.CatchExceptions(
                 defaultAction = { error -> Log.e("Ema", "${error.reflection.methodName} failed", error.exception) }
             ),
@@ -66,7 +69,7 @@ class MyApplication : EmaApplication() {
             defaultFinishAction = { reflection -> /* ... */ }
         )
     )
-}
+)
 ```
 
 | Option                                | Effect                                                                         |
@@ -77,7 +80,9 @@ class MyApplication : EmaApplication() {
 | `defaultFinishAction`                 | Called every time a `sideEffect` ends.                                         |
 
 The callbacks receive an `EmaReflection` (or `EmaReflectionData` / `EmaReflectionException`) with the name of the ViewModel and
-the function that launched the work, useful for logging.
+the function that launched the work, useful for logging. See [Naming the side effects](configuration.md#naming-the-side-effects).
+
+`sideEffect(throwException = true) { }` rethrows the exceptions of a single side effect, whatever the policy.
 
 For recoverable errors, **return a result instead of throwing**. `EmaResult<T, E>` is like `kotlin.Result` but the failure
 can be any type: see [Utilities](utilities.md).

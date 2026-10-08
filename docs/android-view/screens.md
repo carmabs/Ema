@@ -1,24 +1,39 @@
-# Views with XML
+# Fragments and Activities
 
-Ema supports classic Views through `EmaFragment` and `EmaActivity`. Both use **ViewBinding** and are generic over
-the binding, the state, the ViewModel and the event.
+`EmaFragment` and `EmaActivity` use **ViewBinding** and are generic over the binding, the state, the ViewModel and the event.
 
 ```kotlin
-class LoginFragment :
-    BaseFragment<LoginFragmentBinding, LoginState, LoginViewModel, LoginEvent>() {
+class CounterFragment :
+    EmaFragment<CounterFragmentBinding, CounterState, CounterViewModel, CounterEvent>() {
 
     override fun createViewBinding(
         inflater: LayoutInflater,
         container: ViewGroup?
-    ) = LoginFragmentBinding.inflate(inflater, container, false)
+    ) = CounterFragmentBinding.inflate(inflater, container, false)
 
-    override fun provideViewModel(): LoginViewModel = injectDirect()
+    override fun provideViewModel(): CounterViewModel = CounterViewModel()
 
-    override val navigator: EmaNavigator<LoginEvent> = LoginNavigator(this)
+    override val navigator: EmaNavigator<CounterEvent>? = null
 
-    override fun LoginFragmentBinding.onState(state: LoginState) { /* render */ }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding.bIncrement.setOnClickListener {
+            viewModel.dispatch(CounterAction.Increment)
+        }
+    }
 
-    override suspend fun LoginFragmentBinding.onEvent(event: LoginEvent) { /* react */ }
+    override fun CounterFragmentBinding.onState(state: CounterState) {
+        bindForUpdate(state::count) {
+            tvCount.text = it.toString()
+        }
+    }
+
+    override suspend fun CounterFragmentBinding.onEvent(event: CounterEvent) {
+        when (event) {
+            is CounterEvent.LimitReached ->
+                Toast.makeText(requireContext(), "Limit: ${event.limit}", Toast.LENGTH_SHORT).show()
+        }
+    }
 }
 ```
 
@@ -27,14 +42,14 @@ class LoginFragment :
 | Member                          | Fragment | Activity | Notes                                                                 |
 |---------------------------------|:--------:|:--------:|-----------------------------------------------------------------------|
 | `createViewBinding`             | ✔        | ✔        | Inflates the layout.                                                  |
-| `provideViewModel()`            | ✔        | ✔        | Return `injectDirect()`, see [Dependency injection](dependency-injection.md). |
-| `navigator`                     | ✔        | ✔        | `null` if the screen never navigates.                                 |
+| `provideViewModel()`            | ✔        | ✔        | Creates the ViewModel. It is called once, when the screen is opened. See [Dependency injection](../guides/dependency-injection.md). |
+| `navigator`                     | ✔        | ✔        | `null` if the screen never navigates. See [Navigation](navigation.md). |
 | `B.onState(state)`              | ✔        | ✔        | Renders the state.                                                    |
 | `B.onEvent(event)`              | optional | optional | Handles [events](../concepts/events.md). Does nothing by default.     |
-| `initializerStrategy`           | optional | ✔        | Needed only to receive an [initializer](initializers.md). Fragments default to none; `EmaToolbarActivity` does too. |
+| `initializerStrategy`           | optional | ✔        | How to read the [initializer](../guides/initializers.md). `EmaFragment` and `EmaToolbarActivity` default to none. |
 
 `onState` and `onEvent` are extension functions on the binding, so you can use the views directly
-without `binding.`.
+without `binding.`. `isFirstNormalExecution` tells you whether `onState` is rendering the first state of the view.
 
 ## Rendering with `bindForUpdate`
 
@@ -43,9 +58,6 @@ without `binding.`.
 
 ```kotlin
 override fun LoginFragmentBinding.onState(state: LoginState) {
-    bindForUpdate(state::userName) {
-        etUser.setTextWithCursorAtEnd(it)
-    }
     bindForUpdate(state::userNameError) {
         tilLoginUser.error = if (it) getString(R.string.login_error_user_empty) else null
     }
@@ -88,13 +100,14 @@ cursor to the end while the user is editing in the middle of the text:
 
 ```kotlin
 bindForUpdate(state::userName) {
-    if (etUser.text?.toString() != it)
+    if (etUser.text?.toString() != it) {
         etUser.setTextWithCursorAtEnd(it)
+    }
 }
 ```
 
-The check is also what makes `DeleteUser`-style actions work: when the ViewModel clears the text in the state,
-the field is rewritten because it no longer matches.
+The check is also what makes "clear the field" actions work: when the ViewModel clears the text in the state,
+the field is rewritten because it no longer matches. `EmaEditText` does the check for you, see [Utilities](utilities.md).
 
 ## Lifecycle
 
@@ -108,6 +121,27 @@ the field is rewritten because it no longer matches.
 
 The state is collected in `onResume` and not earlier because dialogs and fragments cannot be shown safely
 before the saved state has been restored.
+
+### Starting the ViewModel later
+
+To start the ViewModel only when something is ready, for example after an animation, override `startTrigger` with an
+`EmaViewModelTrigger`. The lifecycle calls wait until `startViewModel()` is called, and then run in order:
+
+```kotlin
+override val startTrigger = EmaViewModelTrigger()
+
+private fun onIntroAnimationEnd() = startTrigger.startViewModel()
+```
+
+## Sharing a ViewModel between fragments
+
+By default a Fragment's ViewModel belongs to the Fragment. Override `fragmentViewModelScope` to attach it to the Activity:
+
+```kotlin
+override val fragmentViewModelScope = false
+```
+
+Fragments of the same Activity that use the same ViewModel class then get the same instance.
 
 ## Activities
 
@@ -134,15 +168,13 @@ class SplashActivity :
 }
 ```
 
-`EmaToolbarActivity` adds a toolbar bound to the navigation graph (title from the destination label, up button).
-It exposes `hideToolbar()`, `showToolbar()` and `setToolbarTitle()`.
+`EmaToolbarActivity` adds a toolbar bound to the navigation graph: the title comes from the label of the destination
+and the up button goes back. It exposes `hideToolbar()`, `showToolbar()` and `setToolbarTitle()`; override
+`provideFixedToolbarTitle()` to use the same title for every destination.
+
+`overridePopTransitionAnimations()` sets the animations used when the activity closes.
 
 ## Base classes
 
 Most apps add a `BaseFragment` that provides the dialogs and messages every screen needs.
 See [Recommendations](../recommendations.md#create-base-classes).
-
-## Hosting Compose in a Fragment or Activity
-
-`EmaComposableFragment` and `EmaComposableActivity` are the same as the classes above but draw a Composable.
-See [Compose](compose.md#hosting-compose-in-a-fragment-or-activity).

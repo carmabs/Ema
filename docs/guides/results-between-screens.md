@@ -58,13 +58,16 @@ calls `dispatchBroadcast(user)` so that `LoginViewModel` receives it when Home i
 
 ## App-wide broadcasts
 
-For events that are not tied to a screen closing, inject `EmaBroadcastManager` (a Koin singleton registered by Ema).
+For events that are not tied to a screen closing, use the app-wide `Ema.broadcastManager`. Pass it to the classes that
+need it as an `EmaBroadcastManager`, so they can receive a fake in tests.
 
 ```kotlin
 class UserCreated(override val data: User) : EmaBroadcastEvent<User>
 
-// Receiver (suspends while it listens)
-broadcastManager.registerBroadcast(UserCreated::class.java) { user -> /* ... */ }
+// Receiver (suspends while it listens, so launch it in a coroutine)
+sideEffect {
+    broadcastManager.registerBroadcast(UserCreated::class) { user -> /* ... */ }
+}
 
 // Sender
 broadcastManager.sendBroadcastEvent(UserCreated(user))

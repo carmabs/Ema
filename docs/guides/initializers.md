@@ -19,54 +19,27 @@ Use `EmaInitializer.EMPTY` when there is nothing to pass.
 
 ## Choose how it is serialized
 
-| Strategy                                         | Requires                                    |
-|--------------------------------------------------|---------------------------------------------|
-| `BundleSerializerStrategy.kSerialization(X.serializer())` | `@Serializable` (kotlinx.serialization). **Recommended.** |
-| `BundleSerializerStrategy.parcelable<X>()`       | `X : Parcelable`                            |
-| `BundleSerializerStrategy.serializable<X>()`     | `X : java.io.Serializable`                  |
-| `BundleSerializerStrategy.EMPTY`                 | Nothing: the screen receives no initializer |
+| Strategy                                                  | Requires                                     | Compose routes |
+|-----------------------------------------------------------|----------------------------------------------|:--------------:|
+| `BundleSerializerStrategy.kSerialization(X.serializer())` | `@Serializable` (kotlinx.serialization). **Recommended.** | ✔ |
+| `BundleSerializerStrategy.parcelable<X>()`                | `X : Parcelable`                             |                |
+| `BundleSerializerStrategy.serializable<X>()`              | `X : java.io.Serializable`                   |                |
+| `BundleSerializerStrategy.EMPTY`                          | Nothing: the screen receives no initializer  | ✔              |
 
-## Send it
+In Compose the initializer travels as text inside the route, and only `kSerialization` can turn it back into an object.
+Any character is allowed in its values: the route encodes them.
 
-```kotlin
-navController.navigate(
-    id = R.id.action_loginFragment_to_homeFragment,
-    initializerBundle = EmaInitializerBundle(
-        HomeInitializer.HomeUser(user),
-        BundleSerializerStrategy.kSerialization(HomeInitializer.serializer())
-    )
-)
-```
+## Send and receive it
 
-In Compose use the `NavController.navigate(route, initializerBundle)` extension. To start an activity yourself:
-`Intent(...).setInitializer(initializer, strategy)`.
+How the initializer travels depends on the UI technology:
 
-## Receive it
+- **Compose**: `NavController.navigate(route, initializerBundle)` and the `initializerSupport` of the destination.
+  See [Compose navigation](../compose/navigation.md#passing-an-initializer).
+- **Android Views**: `NavController.navigate(id, initializerBundle)` and the `initializerStrategy` of the Fragment or
+  Activity. See [Android Views navigation](../android-view/navigation.md#passing-an-initializer).
 
-**Fragment**: tell it how to read the bundle.
-
-```kotlin
-override val initializerStrategy: BundleSerializerStrategy
-    get() = BundleSerializerStrategy.kSerialization(HomeInitializer.serializer())
-```
-
-**Activity**: the same `initializerStrategy` property (the initializer comes from the intent extras).
-
-**Compose destination**: pass `initializerSupport` to `createComposableScreen`. `overrideInitializer` replaces the one
-in the route, which is useful for the first screen of an activity, started from an intent:
-
-```kotlin
-createComposableScreen(
-    initializerSupport = EmaInitializerSupport.kSerialization(
-        ProfileOnBoardingInitializer.serializer(),
-        getInitializer(
-            BundleSerializerStrategy.kSerialization(ProfileOnBoardingInitializer.serializer()),
-            savedInstanceState
-        )
-    ),
-    ...
-)
-```
+To start an activity yourself, put it in the intent with `Intent(...).setInitializer(initializer, strategy)`, and read it
+in the activity with `getInitializer(strategy, savedInstanceState)`. These extensions are in `ema-android`.
 
 ## Use it in the ViewModel
 

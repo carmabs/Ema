@@ -9,17 +9,14 @@ the state/ViewModel flow. The permission result is one of three values:
 | `NOT_GRANTED`                 | Not granted.                                                         |
 | `NOT_GRANTED_SHOULD_EXPLAIN`  | Not granted, and Android recommends showing a rationale.             |
 
-Declare the permission in the manifest as usual.
+Declare the permissions in the manifest as usual.
 
 ## The manager
 
-| Where       | How to get it                                                   |
-|-------------|-----------------------------------------------------------------|
-| Fragment    | `private val permissionManager = EmaAndroidPermissionManager(this)` |
-| Compose     | `val permissionManager = rememberEmaPermissionManager()`        |
+The view creates the manager:
 
-> In a Fragment create it as a **property**, not inside a callback. Registering the activity result launchers
-> must happen before the fragment is started.
+- Compose: `rememberEmaPermissionManager()`. See [Compose permissions](../compose/permissions.md).
+- Fragments: `EmaAndroidPermissionManager(fragment)`. See [Android Views permissions](../android-view/permissions.md).
 
 ```kotlin
 permissionManager.isPermissionGranted(Manifest.permission.CAMERA)   // PermissionState
@@ -29,8 +26,20 @@ permissionManager.requestPermission(permission)                     // suspend â
 permissionManager.requestMultiplePermission(a, b)                   // suspend â†’ Map<String, PermissionState>
 ```
 
+Make one request at a time. Android cancels a request made while another one is on screen: it returns `NOT_GRANTED`
+(an empty map for several permissions) instead of waiting.
+
+### Location
+
 There are shortcuts for location: `requestCoarseLocationPermission()`, `requestFineLocationPermission()`,
 `isLocationCoarseGranted()`, `isLocationFineGranted()` and `isLocationBackgroundGranted()`.
+
+Request the fine location with `requestFineLocationPermission()`, not with `requestPermission`: depending on the Android
+version it must be requested together with the coarse location. `requestBackgroundLocationPermission(infoDialogType)` of
+`EmaAndroidPermissionManager` requests the background location, which needs the fine location first. On recent Android
+versions the user grants it in the system settings, and `infoDialogType` decides the explanation shown before opening
+them: `InfoDialogType.Default(title, message)`, or `InfoDialogType.CustomDialog(alertDialog, onAcceptClickListener)`
+to show your own dialog.
 
 ## Asking for a permission from the ViewModel
 
@@ -62,30 +71,9 @@ private fun onPermissionResponse(permissionState: PermissionState) {
 }
 ```
 
-```kotlin
-// Fragment
-override fun CounterFragmentBinding.onState(state: LocationState) {
-    bindForUpdate(state::permissionRequest) {
-        permissionManager.handleRequest(
-            request = it,
-            scope = viewScope,
-            permission = Manifest.permission.ACCESS_COARSE_LOCATION
-        )
-    }
-}
-```
-
-```kotlin
-// Compose
-val permissionManager = rememberEmaPermissionManager()
-val scope = rememberCoroutineScope()
-LaunchedEffect(state.permissionRequest) {
-    permissionManager.handleRequest(state.permissionRequest, scope, Manifest.permission.ACCESS_COARSE_LOCATION)
-}
-```
-
-`EmaPermissionRequest.cancelRequest()` is the "nothing to do" request. `EmaMultiplePermissionRequest` and
-`handleRequestMultiple` work the same way for several permissions.
+The view calls `permissionManager.handleRequest(request, scope, permission)` every time the request in the state changes.
+`EmaPermissionRequest.cancelRequest()` is the "nothing to do" request, which `handleRequest` ignores.
+`EmaMultiplePermissionRequest` and `handleRequestMultiple` work the same way for several permissions.
 
 If the process is killed while the user is in the system settings, restore the screen with
-[a save state manager](save-state.md).
+[a save state manager](../compose/save-state.md).

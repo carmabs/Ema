@@ -51,22 +51,21 @@ class LoginViewModel(
 `onAction` is `protected`. The public entry point is `dispatch(action)`, so a view can only communicate through
 actions and cannot call arbitrary ViewModel functions.
 
-If a screen has no actions (it only shows state), extend `EmaViewModelBasic<State, Event>` instead.
+If you prefer not to declare actions, `EmaViewModelBasic<State, Event>` lets the view call public functions of the
+ViewModel, as in classic MVVM. Actions are recommended: see [ViewModel](viewmodel.md).
 
 ## Dispatching from the view
 
-```kotlin
-bLoginSign.setOnClickListener { viewModel.dispatch(LoginAction.Login) }
-```
-
-In Compose, the screen content receives an `EmaImmutableActionDispatcher`, a stable wrapper that
-does not cause unnecessary recompositions:
+A Compose screen content receives an `EmaImmutableActionDispatcher`, a stable wrapper that does not cause unnecessary
+recompositions:
 
 ```kotlin
 Button(onClick = { actions.dispatch(LoginAction.Login) }) { ... }
 ```
 
-For previews use `EmaImmutableActionDispatcherEmpty()` (Compose) or `EmaActionDispatcherEmpty()` (generic), which ignore every action.
+For previews use `EmaImmutableActionDispatcherEmpty()`, which ignores every action. Outside Compose,
+`EmaActionDispatcherEmpty()` does the same. With Android Views the actions are sent with `viewModel.dispatch(...)`,
+see [Android Views](../android-view/screens.md#sending-actions).
 
 ## Special action types
 
