@@ -20,7 +20,15 @@ import kotlinx.coroutines.flow.Flow
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
 @Immutable
-interface EmaImmutableActionDispatcher<A : EmaAction> : EmaActionDispatcher<A>
+interface EmaImmutableActionDispatcher<in A : EmaAction> : EmaActionDispatcher<A> {
+
+    /**
+     * Dispatcher that ignores every action, for example in previews. It works with any type of action.
+     */
+    data object EMPTY : EmaImmutableActionDispatcher<EmaAction> {
+        override fun dispatch(action: EmaAction) = Unit
+    }
+}
 
 fun <A : EmaAction> EmaActionDispatcher<A>.toImmutable(): EmaImmutableActionDispatcher<A> =
     object : EmaImmutableActionDispatcher<A> {

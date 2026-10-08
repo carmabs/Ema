@@ -1,7 +1,7 @@
 import com.carmabs.ema.core.Ema
 import com.carmabs.ema.core.action.DefaultEmaActionDispatcher
 import com.carmabs.ema.core.action.EmaAction
-import com.carmabs.ema.core.action.EmaActionDispatcherEmpty
+import com.carmabs.ema.core.action.EmaActionDispatcher
 import com.carmabs.ema.core.broadcast.EmaBroadcastEvent
 import com.carmabs.ema.core.broadcast.EmaFlowBroadcastManager
 import com.carmabs.ema.core.delegate.emaBooleanDelegate
@@ -165,7 +165,7 @@ class EmaModelTest {
     fun `action dispatchers`() {
         val received = mutableListOf<CounterAction>()
         DefaultEmaActionDispatcher<CounterAction> { received.add(it) }.dispatch(CounterAction.Increment)
-        EmaActionDispatcherEmpty<CounterAction>().dispatch(CounterAction.Increment)
+        EmaActionDispatcher.EMPTY.dispatch(CounterAction.Increment)
         assertEquals(listOf<CounterAction>(CounterAction.Increment), received)
     }
 

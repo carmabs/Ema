@@ -34,7 +34,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.carmabs.domain.model.Role
 import com.carmabs.ema.compose.action.EmaImmutableActionDispatcher
-import com.carmabs.ema.compose.action.EmaImmutableActionDispatcherEmpty
 import com.carmabs.ema.core.model.EmaText
 import com.carmabs.ema.presentation.profile.creation.ProfileCreationAction
 import com.carmabs.ema.presentation.profile.creation.ProfileCreationEvent
@@ -252,7 +251,7 @@ class ProfileCreationScreenContent :
                     "Carlos",
                     "Mateo"
                 ),
-                actions = EmaImmutableActionDispatcherEmpty()
+                actions = EmaImmutableActionDispatcher.EMPTY
             )
         }
     }
@@ -268,7 +267,7 @@ class ProfileCreationScreenContent :
                     "Mateo",
                     ProfileCreationOverlap.DialogUserCreated(Role.ADMIN)
                 ),
-                actions = EmaImmutableActionDispatcherEmpty()
+                actions = EmaImmutableActionDispatcher.EMPTY
             )
         }
     }

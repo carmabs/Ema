@@ -15,7 +15,6 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewModelScope
 import com.carmabs.ema.android.savestate.SavedStateSupport
 import com.carmabs.ema.compose.action.EmaImmutableActionDispatcher
-import com.carmabs.ema.compose.action.EmaImmutableActionDispatcherEmpty
 import com.carmabs.ema.compose.action.toImmutable
 import com.carmabs.ema.compose.extension.asActionDispatcher
 import com.carmabs.ema.compose.extension.skipForPreview
@@ -42,7 +41,7 @@ fun <S : EmaState, A : EmaAction, E : EmaEvent> EmaComposableScreen(
             previewRenderState?.also { previewState ->
                 screenContent.onState(
                     state = previewState,
-                    actions = EmaImmutableActionDispatcherEmpty()
+                    actions = EmaImmutableActionDispatcher.EMPTY
                 )
             }
         }
@@ -75,7 +74,7 @@ fun <A : EmaAction, S : EmaState, E : EmaEvent> EmaComposableScreen(
             previewRenderState?.also { previewState ->
                 screenContent.onState(
                     state = previewState,
-                    actions = EmaImmutableActionDispatcherEmpty()
+                    actions = EmaImmutableActionDispatcher.EMPTY
                 )
             }
         }

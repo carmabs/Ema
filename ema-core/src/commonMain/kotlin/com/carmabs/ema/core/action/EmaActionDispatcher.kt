@@ -16,4 +16,11 @@ import kotlinx.coroutines.flow.Flow
 
 interface EmaActionDispatcher<in A : EmaAction> {
     fun dispatch(action: A)
+
+    /**
+     * Dispatcher that ignores every action, for example in previews. It works with any type of action.
+     */
+    data object EMPTY : EmaActionDispatcher<EmaAction> {
+        override fun dispatch(action: EmaAction) = Unit
+    }
 }
