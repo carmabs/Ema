@@ -37,7 +37,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.carmabs.domain.model.User
 import com.carmabs.ema.compose.action.EmaImmutableActionDispatcher
-import com.carmabs.ema.compose.action.EmaImmutableActionDispatcherEmpty
 import com.carmabs.ema.presentation.profile.onboarding.ProfileOnBoardingActions
 import com.carmabs.ema.presentation.profile.onboarding.ProfileOnBoardingEvent
 import com.carmabs.ema.presentation.profile.onboarding.ProfileOnBoardingState
@@ -188,7 +187,7 @@ class ProfileOnBoardingScreenContent :
                         "Mateo"
                     )
                 ),
-                actions = EmaImmutableActionDispatcherEmpty()
+                actions = EmaImmutableActionDispatcher.EMPTY
             )
         }
     }

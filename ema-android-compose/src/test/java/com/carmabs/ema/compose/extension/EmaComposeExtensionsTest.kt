@@ -38,7 +38,7 @@ import com.carmabs.ema.compose.CounterAction
 import com.carmabs.ema.compose.CounterEvent
 import com.carmabs.ema.compose.CounterState
 import com.carmabs.ema.compose.CounterViewModel
-import com.carmabs.ema.compose.action.EmaImmutableActionDispatcherEmpty
+import com.carmabs.ema.compose.action.EmaImmutableActionDispatcher
 import com.carmabs.ema.compose.list.toImmutable
 import com.carmabs.ema.compose.permission.rememberEmaPermissionManager
 import com.carmabs.ema.compose.test.R
@@ -252,7 +252,7 @@ class EmaComposeExtensionsTest {
         val list = listOf(1, 2).toImmutable()
         assertEquals(2, list.size)
         assertEquals(2, list[1])
-        EmaImmutableActionDispatcherEmpty<CounterAction>().dispatch(CounterAction.Increment)
+        EmaImmutableActionDispatcher.EMPTY.dispatch(CounterAction.Increment)
         assertEquals(5, LoremIpsum(5).generate().split(" ").size)
     }
 
