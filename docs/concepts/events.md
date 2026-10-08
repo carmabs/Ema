@@ -70,7 +70,9 @@ A good test: the name still makes sense if you replace the screen's UI completel
 - **Once.** After `onEvent` returns, the event is consumed. It is not replayed when the view is recreated.
 - **Not lost.** Events are queued in the ViewModel until a view is able to receive them. If you post an event while the screen is in the background, or during a rotation, it is delivered afterwards.
 - **In order.** Several pending events are delivered as a batch, in the order they were posted.
-- **Not duplicated by default.** If an equal event is already waiting, `postEvent` ignores the new one. Pass `allowDuplicated = true` to queue it anyway:
+- **Equal events.** While an event is waiting to be delivered, posting an equal one does nothing, so a double tap does
+  not show the same message twice. Once the view has handled it, an equal event is a new one and is delivered again.
+  To queue an equal event while the first one is still waiting, pass `allowDuplicated = true`:
 
 ```kotlin
 postEvent(LoginEvent.Message("Ana"), allowDuplicated = true)
@@ -78,8 +80,6 @@ postEvent(LoginEvent.Message("Ana"), allowDuplicated = true)
 
 - **Only while the screen is visible.** Compose screens receive events while the lifecycle is `STARTED`;
   Fragments and Activities from `onResume` until `onStop`.
-- **An equal event is delivered again after the previous one was consumed.** Posting `Message("Ana")` twice, one after
-  the other has been handled, shows the message twice.
 - **Not persisted.** Events live in the ViewModel, so they survive configuration changes but not process death.
 
 > **Keep `onEvent` short.** If a new event arrives while a previous `onEvent` is suspended,

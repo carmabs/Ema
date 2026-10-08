@@ -71,8 +71,9 @@ Una buena prueba: el nombre sigue teniendo sentido si reemplazas por completo la
 - **No se pierden.** Los eventos se encolan en el ViewModel hasta que una vista puede recibirlos. Si publicas un evento
   mientras la pantalla está en segundo plano, o durante una rotación, se entrega después.
 - **En orden.** Varios eventos pendientes se entregan juntos, en el orden en que se publicaron.
-- **Sin duplicados por defecto.** Si ya hay un evento igual esperando, `postEvent` ignora el nuevo. Pasa
-  `allowDuplicated = true` para encolarlo igualmente:
+- **Eventos iguales.** Mientras un evento espera a ser entregado, publicar otro igual no hace nada, así que una doble
+  pulsación no muestra el mismo mensaje dos veces. Cuando la vista ya lo ha gestionado, un evento igual es uno nuevo y se
+  vuelve a entregar. Para encolar un evento igual mientras el primero sigue esperando, pasa `allowDuplicated = true`:
 
 ```kotlin
 postEvent(LoginEvent.Message("Ana"), allowDuplicated = true)
@@ -80,8 +81,6 @@ postEvent(LoginEvent.Message("Ana"), allowDuplicated = true)
 
 - **Solo mientras la pantalla está visible.** Las pantallas Compose reciben eventos mientras el ciclo de vida está en
   `STARTED`; los Fragments y las Activities, desde `onResume` hasta `onStop`.
-- **Un evento igual se vuelve a entregar después de consumir el anterior.** Publicar `Message("Ana")` dos veces, la
-  segunda después de gestionar la primera, muestra el mensaje dos veces.
 - **No se guardan.** Los eventos viven en el ViewModel, así que sobreviven a los cambios de configuración pero no a la
   muerte del proceso.
 
