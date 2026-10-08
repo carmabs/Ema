@@ -66,11 +66,12 @@ Run them from the `sample` folder too, for the sample app. The commits that only
 
 ## Documentation
 
-The documentation is the `docs/` folder, plain Markdown that renders on GitHub. To preview it as a website with
-[MkDocs](https://www.mkdocs.org/) and the Material theme:
+The documentation is the `docs/` folder, plain Markdown that renders on GitHub. Every page is in English (`page.md`)
+and in Spanish (`page.es.md`): when you change one, update the other too. To preview it as a website with
+[MkDocs](https://www.mkdocs.org/), the Material theme and the language selector:
 
 ```bash
 python3 -m venv .venv
-.venv/bin/pip install mkdocs-material
+.venv/bin/pip install mkdocs-material mkdocs-static-i18n
 .venv/bin/mkdocs serve
 ```

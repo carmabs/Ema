@@ -31,12 +31,64 @@ markdown_extensions:
   - tables
   - toc:
       permalink: true
+      # Anchors like the ones of GitHub, which keep the accents, so the links work in both places
+      slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds:
+          case: lower
   - pymdownx.highlight
   - pymdownx.superfences:
       custom_fences:
         - name: mermaid
           class: mermaid
           format: !!python/name:pymdownx.superfences.fence_code_format
+
+plugins:
+  - search
+  # English pages are page.md and Spanish pages page.es.md
+  - i18n:
+      docs_structure: suffix
+      fallback_to_default: true
+      reconfigure_material: true
+      reconfigure_search: true
+      languages:
+        - locale: en
+          name: English
+          default: true
+          build: true
+        - locale: es
+          name: Español
+          build: true
+          site_description: Una pequeña librería para pantallas con un flujo MVI, con Jetpack Compose, ViewModels Kotlin Multiplatform y vistas de Android
+          nav_translations:
+            Home: Inicio
+            Getting started: Primeros pasos
+            Concepts: Conceptos
+            Architecture: Arquitectura
+            State: Estado
+            Actions: Acciones
+            Events: Eventos
+            Guides: Guías
+            Configuration: Configuración
+            Initializers: Inicializadores
+            Results between screens: Resultados entre pantallas
+            Async work and errors: Trabajo asíncrono y errores
+            Dependency injection: Inyección de dependencias
+            Permissions: Permisos
+            Testing: Testing
+            Kotlin Multiplatform: Kotlin Multiplatform
+            Utilities: Utilidades
+            Screens: Pantallas
+            Navigation: Navegación
+            Back handling: Botón atrás
+            Dialogs: Diálogos
+            Saving state: Guardar el estado
+            Android Views: Vistas de Android
+            Overview: Introducción
+            Fragments and Activities: Fragments y Activities
+            Navigation and back handling: Navegación y botón atrás
+            Lists: Listas
+            Recommendations: Recomendaciones
+            Contributing: Contribuir
 
 nav:
   - Home: index.md

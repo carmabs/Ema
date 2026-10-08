@@ -1,5 +1,7 @@
 # Ema
 
+**English** · [Español](README.es.md)
+
 **Ema** is a small library for building screens with a unidirectional, MVI-style flow:
 a **state** the view renders, **actions** the user performs, and one-shot **events** the view reacts to.
 The ViewModels are pure Kotlin Multiplatform code, the screens are built with Jetpack Compose, and the Android View
