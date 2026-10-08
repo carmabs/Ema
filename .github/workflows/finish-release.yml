@@ -1,0 +1,86 @@
+name: Finish release
+
+# When release/<version> is merged into master: creates the tag and the GitHub release, asks JitPack to build it,
+# publishes the documentation of the version and opens the pull request that syncs develop with the next
+# -SNAPSHOT version. Needs the RELEASE_TOKEN secret (see start-release.yml).
+
+on:
+  pull_request:
+    types: [closed]
+    branches: [master]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release:
+    name: Tag, JitPack and sync
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'release/')
+    env:
+      GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+      VERSION: ${{ github.event.pull_request.head.ref }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: master
+          token: ${{ secrets.RELEASE_TOKEN }}
+          fetch-depth: 0
+
+      - name: Check the version
+        run: |
+          VERSION="${VERSION#release/}"
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+          if ! grep -qE "versionName +: +\"$VERSION\"" build-system/config.gradle; then
+            echo "::error::build-system/config.gradle does not have version $VERSION"; exit 1
+          fi
+
+      - name: Create the tag and the GitHub release
+        run: gh release create "$VERSION" --target "${{ github.event.pull_request.merge_commit_sha }}" --title "$VERSION" --generate-notes
+
+      - name: Ask JitPack to build the version
+        continue-on-error: true
+        run: curl -fsS --retry 3 --max-time 1200 -o /dev/null "https://jitpack.io/com/github/carmabs/Ema/$VERSION/build.log"
+
+      - name: Open the pull request that syncs develop
+        run: |
+          IFS=. read -r major minor _ <<< "$VERSION"
+          next="$major.$((minor + 1)).0-SNAPSHOT"
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
+          git checkout -b "sync/$VERSION"
+          sed -i -E "s/(versionName +: +\")[^\"]+(\")/\1$next\2/" build-system/config.gradle
+          git commit -am "Start $next"
+          git push origin "sync/$VERSION"
+          gh pr create --base develop --head "sync/$VERSION" \
+            --title "Sync develop with release $VERSION" \
+            --body "Brings the release $VERSION into develop and starts $next. Merge it with a merge commit (not squash)."
+
+  docs:
+    name: Publish the documentation
+    runs-on: ubuntu-latest
+    needs: release
+    if: github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'release/')
+    concurrency:
+      group: docs-deploy
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: master
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: docs/requirements.txt
+      - run: pip install -r docs/requirements.txt
+      - name: Publish with mike
+        run: |
+          VERSION="${{ github.event.pull_request.head.ref }}"
+          VERSION="${VERSION#release/}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          mike deploy --push --update-aliases "$VERSION" latest
+          mike set-default --push latest

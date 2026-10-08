@@ -72,6 +72,26 @@ La documentación es la carpeta `docs/`, Markdown normal que se ve bien en GitHu
 
 ```bash
 python3 -m venv .venv
-.venv/bin/pip install mkdocs-material mkdocs-static-i18n
+.venv/bin/pip install -r docs/requirements.txt
 .venv/bin/mkdocs serve
 ```
+
+La web tiene un selector de versión, hecho con [mike](https://github.com/jimporter/mike): `dev` es la documentación
+de `develop` y cada release tiene la suya, con `latest` apuntando a la última. Se publican automáticamente (mira
+abajo). `mkdocs build --strict` se ejecuta en el CI, así que un enlace roto hace fallar la pull request.
+
+## Integración continua y releases
+
+Toda pull request a `develop` o `master` debe pasar los checks `Spotless`, `Tests` y `Docs` antes de poder mergearse.
+
+Las releases siguen git-flow y se automatizan con GitHub Actions:
+
+1. Ejecuta el workflow **Start release** desde `develop` (opcionalmente con la versión; por defecto es la actual sin
+   `-SNAPSHOT`). Crea `release/X.Y.Z`, un commit que quita `-SNAPSHOT` y una pull request a `master`.
+2. Arregla lo que haga falta en la rama `release/X.Y.Z` y mergea la pull request **con merge commit**, no con squash.
+3. El workflow **Finish release** crea el tag y la release de GitHub, pide a [JitPack](https://jitpack.io) que la
+   compile, publica la documentación de la versión y abre una pull request `sync/X.Y.Z` a `develop` que empieza la
+   siguiente `X.(Y+1).0-SNAPSHOT`. Mergéala también con merge commit.
+
+Los workflows que abren pull requests necesitan un secreto `RELEASE_TOKEN`: un token de acceso personal con los
+permisos `repo` y `workflow`. Con el token por defecto GitHub no ejecuta el CI en esas pull requests.
