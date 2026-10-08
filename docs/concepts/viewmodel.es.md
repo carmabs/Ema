@@ -42,17 +42,15 @@ class LoginViewModel(
 
 ## Ganchos del ciclo de vida
 
-Los métodos del ciclo de vida de las clases base son `final`. Sobrescribe en su lugar los ganchos protegidos:
-
-| La vista llama a  | Gancho que sobrescribes   | Cuándo                                                                  |
-|-------------------|---------------------------|-------------------------------------------------------------------------|
-| `onCreated`       | `onStateCreated(initializer)` | **Una vez**, la primera vez que se crea la pantalla. Recibe el [inicializador](../guides/initializers.es.md). |
-| `onCreated`       | `onBroadcastListenerSetup()`  | Justo después, para registrar los [listeners de resultados](../guides/results-between-screens.es.md). |
-| `onStartView`     | `onViewStarted()`         | La pantalla se hace visible.                                            |
-| `onResumeView`    | `onViewResumed()`         | La pantalla está en primer plano.                                       |
-| `onPauseView`     | `onViewPaused()`          | La pantalla deja de estar completamente visible.                        |
-| `onStopView`      | `onViewStopped()`         | La pantalla pasa a segundo plano.                                       |
-| `onCleared`       | `onDestroy()`             | Se destruye el ViewModel. El scope ya está cancelado.                   |
+| Gancho                        | Cuándo                                                                   |
+|-------------------------------|--------------------------------------------------------------------------|
+| `onStateCreated(initializer)` | **Una vez**, la primera vez que se crea la pantalla. Recibe el [inicializador](../guides/initializers.es.md). |
+| `onBroadcastListenerSetup()`  | Justo después, para registrar los [listeners de resultados](../guides/results-between-screens.es.md). |
+| `onViewStarted()`             | La pantalla se hace visible.                                             |
+| `onViewResumed()`             | La pantalla está en primer plano.                                        |
+| `onViewPaused()`              | La pantalla deja de estar completamente visible.                         |
+| `onViewStopped()`             | La pantalla pasa a segundo plano.                                        |
+| `onDestroy()`                 | Se destruye el ViewModel. El scope ya está cancelado.                    |
 
 `onStateCreated` es el sitio adecuado para empezar a cargar datos. Se ejecuta una vez, no en cada rotación:
 

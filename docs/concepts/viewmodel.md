@@ -42,17 +42,15 @@ class LoginViewModel(
 
 ## Lifecycle hooks
 
-The lifecycle methods of the base classes are `final`. Override the protected hooks instead:
-
-| The view calls    | Hook you override         | When                                                                    |
-|-------------------|---------------------------|-------------------------------------------------------------------------|
-| `onCreated`       | `onStateCreated(initializer)` | **Once**, the first time the screen is created. Receives the [initializer](../guides/initializers.md). |
-| `onCreated`       | `onBroadcastListenerSetup()`  | Right after, to register [result listeners](../guides/results-between-screens.md). |
-| `onStartView`     | `onViewStarted()`         | The screen becomes visible.                                             |
-| `onResumeView`    | `onViewResumed()`         | The screen is in the foreground.                                        |
-| `onPauseView`     | `onViewPaused()`          | The screen is no longer fully visible.                                  |
-| `onStopView`      | `onViewStopped()`         | The screen goes to the background.                                      |
-| `onCleared`       | `onDestroy()`             | The ViewModel is destroyed. The scope is already cancelled.             |
+| Hook                          | When                                                                     |
+|-------------------------------|--------------------------------------------------------------------------|
+| `onStateCreated(initializer)` | **Once**, the first time the screen is created. Receives the [initializer](../guides/initializers.md). |
+| `onBroadcastListenerSetup()`  | Right after, to register [result listeners](../guides/results-between-screens.md). |
+| `onViewStarted()`             | The screen becomes visible.                                              |
+| `onViewResumed()`             | The screen is in the foreground.                                         |
+| `onViewPaused()`              | The screen is no longer fully visible.                                   |
+| `onViewStopped()`             | The screen goes to the background.                                       |
+| `onDestroy()`                 | The ViewModel is destroyed. The scope is already cancelled.              |
 
 `onStateCreated` is the right place to start loading data. It runs once, not on every rotation:
 
