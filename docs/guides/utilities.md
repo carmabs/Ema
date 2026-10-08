@@ -65,6 +65,16 @@ result
 
 Implement `useCaseFunction` (the protected function) and call the use case like a function: `loginUseCase(input)`.
 
+## Pretty printing
+
+`toStringPretty()` prints any object, for example a state, with the `EmaDataClassPrinter` of the
+[configuration](configuration.md#printing-objects). With `EmaConfiguration.Android` it prints every field,
+nested objects and collections, indented:
+
+```kotlin
+Log.d("Login", state.toStringPretty())
+```
+
 ## Other helpers
 
 | Helper                    | What it is                                                                      |
@@ -72,7 +82,6 @@ Implement `useCaseFunction` (the protected function) and call the use case like 
 | `EmaImage`                | An image described as `ByteArray`, `Uri` or resource `Id`, with size and tint.  |
 | `EmaUniqueSelector`       | Keeps a single option selected in a group and tells which ones were deselected. |
 | `emaFlowSingleEvent<T>()` | A `MutableSharedFlow` with no replay, for one-shot signals.                     |
-| `toStringPretty()`        | Prints any object with the printer of the [configuration](configuration.md#printing-objects). |
 
 `ema-core` also has extensions for numbers, strings, lists, dates and flows in `com.carmabs.ema.core.extension`.
 

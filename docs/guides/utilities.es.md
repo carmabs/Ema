@@ -66,6 +66,16 @@ result
 
 Implementa `useCaseFunction` (la función protegida) y llama al caso de uso como si fuera una función: `loginUseCase(input)`.
 
+## Imprimir objetos
+
+`toStringPretty()` imprime cualquier objeto, por ejemplo un estado, con el `EmaDataClassPrinter` de la
+[configuración](configuration.es.md#imprimir-objetos). Con `EmaConfiguration.Android` imprime todos los campos,
+los objetos anidados y las colecciones, con sangría:
+
+```kotlin
+Log.d("Login", state.toStringPretty())
+```
+
 ## Otras ayudas
 
 | Ayuda                     | Qué es                                                                          |
@@ -73,7 +83,6 @@ Implementa `useCaseFunction` (la función protegida) y llama al caso de uso como
 | `EmaImage`                | Una imagen descrita como `ByteArray`, `Uri` o `Id` de recurso, con tamaño y tinte. |
 | `EmaUniqueSelector`       | Mantiene una sola opción seleccionada en un grupo e indica cuáles se han deseleccionado. |
 | `emaFlowSingleEvent<T>()` | Un `MutableSharedFlow` sin replay, para señales de un solo uso.                 |
-| `toStringPretty()`        | Imprime cualquier objeto con el printer de la [configuración](configuration.es.md#imprimir-objetos). |
 
 `ema-core` también tiene extensiones para números, strings, listas, fechas y flows en `com.carmabs.ema.core.extension`.
 

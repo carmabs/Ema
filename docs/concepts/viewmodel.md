@@ -95,13 +95,3 @@ Android ViewModel, so work is cancelled automatically when the ViewModel is clea
 
 `updateOnInitialization` (protected, `true` by default) controls whether a Compose screen draws the initial state
 straight away. Override it with `false` to render only after the first call to `updateState`.
-
-## Pretty printing
-
-`toStringPretty()` prints any object, for example a state, with the `EmaDataClassPrinter` of the
-[configuration](../guides/configuration.md#printing-objects). With `EmaConfiguration.Android` it prints every field,
-nested objects and collections, indented:
-
-```kotlin
-Log.d("Login", state.toStringPretty())
-```

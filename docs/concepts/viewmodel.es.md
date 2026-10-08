@@ -96,13 +96,3 @@ El ViewModel se identifica por el nombre de su clase (`id`). Su `scope` se susti
 
 `updateOnInitialization` (protegido, `true` por defecto) decide si una pantalla Compose pinta el estado inicial
 directamente. Sobrescríbelo con `false` para pintar solo después de la primera llamada a `updateState`.
-
-## Imprimir objetos
-
-`toStringPretty()` imprime cualquier objeto, por ejemplo un estado, con el `EmaDataClassPrinter` de la
-[configuración](../guides/configuration.es.md#imprimir-objetos). Con `EmaConfiguration.Android` imprime todos los campos,
-los objetos anidados y las colecciones, con sangría:
-
-```kotlin
-Log.d("Login", state.toStringPretty())
-```
