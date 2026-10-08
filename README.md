@@ -8,7 +8,7 @@ system is supported in its own module.
 ```kotlin
 data class CounterState(val count: Int = 0) : EmaState
 
-sealed interface CounterAction : EmaAction.Screen {
+sealed interface CounterAction : EmaAction {
     data object Increment : CounterAction
 }
 
@@ -19,7 +19,7 @@ sealed interface CounterEvent : EmaEvent {
 class CounterViewModel :
     EmaViewModelAction<CounterState, CounterAction, CounterEvent>(CounterState()) {
 
-    override fun onStateCreated(initializer: EmaInitializer?) = Unit
+    override fun onStateCreated(initializer: EmaAction.Initializer?) = Unit
 
     override fun onAction(action: CounterAction) {
         when (action) {

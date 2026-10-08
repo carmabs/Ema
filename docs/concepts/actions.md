@@ -4,7 +4,7 @@ An action is **something the user did**: "tapped login", "wrote a name", "confir
 Actions go from the view to the ViewModel.
 
 ```kotlin
-sealed interface LoginAction : EmaAction.Screen {
+sealed interface LoginAction : EmaAction {
 
     data object Login : LoginAction
     data object DeleteUser : LoginAction
@@ -71,5 +71,6 @@ see [Android Views](../android-view/screens.md#sending-actions).
 
 | Type                      | Use                                                               |
 |---------------------------|-------------------------------------------------------------------|
-| `EmaAction.Screen`        | The actions a user can perform on a screen. Your actions extend this. |
+| `EmaAction`               | The actions of a screen. Your actions extend this.                |
 | `EmaAction.Initializer`   | The data a screen starts with. See [Initializers](../guides/initializers.md). |
+| `EmaAction.EMPTY`         | The action type of a screen without actions.                      |

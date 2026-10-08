@@ -7,15 +7,14 @@ and ends up in `onStateCreated` of the ViewModel.
 
 ```kotlin
 @Serializable
-sealed class ProfileOnBoardingInitializer : EmaInitializer {
+sealed class ProfileOnBoardingInitializer : EmaAction.Initializer {
 
     @Serializable
     data class Default(val admin: String) : ProfileOnBoardingInitializer()
 }
 ```
 
-`EmaInitializer` is an `EmaAction.Initializer`. A `sealed class` lets one screen start in different ways.
-Use `EmaInitializer.EMPTY` when there is nothing to pass.
+A `sealed` type lets one screen start in different ways. Use `EmaAction.Initializer.EMPTY` when there is nothing to pass.
 
 ## Choose how it is serialized
 
@@ -44,7 +43,7 @@ in the activity with `getInitializer(strategy, savedInstanceState)`. These exten
 ## Use it in the ViewModel
 
 ```kotlin
-override fun onStateCreated(initializer: EmaInitializer?) {
+override fun onStateCreated(initializer: EmaAction.Initializer?) {
     when (val onBoardingInitializer = initializer as ProfileOnBoardingInitializer) {
         is ProfileOnBoardingInitializer.Default -> updateState {
             copy(user = User(onBoardingInitializer.admin))

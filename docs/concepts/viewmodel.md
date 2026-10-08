@@ -23,7 +23,7 @@ class LoginViewModel(
     initialDataState: LoginState
 ) : EmaViewModelAction<LoginState, LoginAction, LoginEvent>(initialDataState) {
 
-    override fun onStateCreated(initializer: EmaInitializer?) = Unit
+    override fun onStateCreated(initializer: EmaAction.Initializer?) = Unit
 
     override fun onAction(action: LoginAction) { /* ... */ }
 }
@@ -58,9 +58,10 @@ The lifecycle methods of the base classes are `final`. Override the protected ho
 `onStateCreated` is the right place to start loading data. It runs once, not on every rotation:
 
 ```kotlin
-override fun onStateCreated(initializer: EmaInitializer?) {
+override fun onStateCreated(initializer: EmaAction.Initializer?) {
+    val homeUser = (initializer as HomeInitializer.HomeUser).user
     sideEffect {
-        val friends = getUserFriendsUseCase(GetUserFriendsUseCase.Input(user))
+        val friends = getUserFriendsUseCase(GetUserFriendsUseCase.Input(homeUser))
         updateState { copy(userList = friends) }
     }
 }

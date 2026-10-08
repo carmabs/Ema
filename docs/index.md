@@ -7,7 +7,7 @@ It gives you three simple building blocks and takes care of everything around th
 | Building block | What it is                                                           | You write                                          |
 |----------------|----------------------------------------------------------------------|----------------------------------------------------|
 | **State**      | An immutable data class with everything the screen shows.            | `data class LoginState(...) : EmaState`            |
-| **Action**     | Something the user did.                                              | `sealed interface LoginAction : EmaAction.Screen`  |
+| **Action**     | Something the user did.                                              | `sealed interface LoginAction : EmaAction`         |
 | **Event**      | Something that happened in the feature, delivered to the view once.  | `sealed interface LoginEvent : EmaEvent`           |
 
 ```mermaid
