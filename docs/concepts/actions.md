@@ -63,8 +63,8 @@ recompositions:
 Button(onClick = { actions.dispatch(LoginAction.Login) }) { ... }
 ```
 
-For previews use `EmaImmutableActionDispatcherEmpty()`, which ignores every action. Outside Compose,
-`EmaActionDispatcherEmpty()` does the same. With Android Views the actions are sent with `viewModel.dispatch(...)`,
+For previews use `EmaImmutableActionDispatcher.EMPTY`, which ignores every action. Outside Compose,
+`EmaActionDispatcher.EMPTY` does the same. With Android Views the actions are sent with `viewModel.dispatch(...)`,
 see [Android Views](../android-view/screens.md#sending-actions).
 
 ## Special action types

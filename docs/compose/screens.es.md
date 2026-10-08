@@ -94,7 +94,7 @@ private fun NormalPreview() {
     EmaSampleTheme {
         ProfileCreationScreenContent().onState(
             state = ProfileCreationState(Role.ADMIN, "Carlos", "Mateo"),
-            actions = EmaImmutableActionDispatcherEmpty()
+            actions = EmaImmutableActionDispatcher.EMPTY
         )
     }
 }

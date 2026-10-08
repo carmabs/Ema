@@ -22,7 +22,7 @@ Un `EmaImage` se pinta con `toComposableImage(contentDescription, modifier, ...)
 | `isInPreview()`                               | `true` dentro de la preview del IDE.                            |
 | `skipForPreview(previewComposable) { }`       | Pinta el contenido, o `previewComposable` dentro de una preview. |
 | `value.changeForPreview(previewValue)`        | Devuelve `previewValue` dentro de una preview y `value` fuera.  |
-| `EmaImmutableActionDispatcherEmpty()`         | Un dispatcher de acciones que las ignora todas.                 |
+| `EmaImmutableActionDispatcher.EMPTY`          | Un dispatcher de acciones que las ignora todas.                 |
 | `LoremIpsum(words).generate()`                | Texto de relleno como un único `String`.                        |
 
 ## Tamaños

@@ -22,7 +22,7 @@ R.color.primary.toComposeColor()        // Color
 | `isInPreview()`                               | `true` inside the IDE preview.                                  |
 | `skipForPreview(previewComposable) { }`       | Draws the content, or `previewComposable` inside a preview.     |
 | `value.changeForPreview(previewValue)`        | Returns `previewValue` inside a preview, `value` otherwise.     |
-| `EmaImmutableActionDispatcherEmpty()`         | An action dispatcher that ignores every action.                 |
+| `EmaImmutableActionDispatcher.EMPTY`          | An action dispatcher that ignores every action.                 |
 | `LoremIpsum(words).generate()`                | Placeholder text as a single `String`.                          |
 
 ## Sizes
