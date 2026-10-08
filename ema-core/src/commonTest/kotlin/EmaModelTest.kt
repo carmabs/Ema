@@ -14,7 +14,6 @@ import com.carmabs.ema.core.extension.suspendCoroutineWithTimeout
 import com.carmabs.ema.core.extension.until
 import com.carmabs.ema.core.extension.untilInstanceOf
 import com.carmabs.ema.core.extension.whileIsInstanceOf
-import com.carmabs.ema.core.initializer.EmaInitializer
 import com.carmabs.ema.core.logging.EmaDataClassPrinter
 import com.carmabs.ema.core.logging.toStringPretty
 import com.carmabs.ema.core.manager.PermissionState
@@ -152,12 +151,12 @@ class EmaModelTest {
     @Test
     fun `action types and empty values`() {
         assertEquals("EmaAction", EmaAction.type)
-        assertEquals("Screen", CounterAction.Increment.type)
+        assertEquals("EmaAction", CounterAction.Increment.type)
         assertEquals("Initializer", CounterInitializer(1).type)
         assertEquals("Lifecycle", EmaAction.Lifecycle.Started.type)
-        assertEquals("EmaAction", EmaAction.Companion.EMPTY.type)
-        assertEquals("Screen", EmaAction.Screen.EMPTY.type)
-        assertEquals("Initializer", EmaInitializer.EMPTY.type)
+        assertEquals("EmaAction", EmaAction.EMPTY.type)
+        assertEquals("EmaInitializer", EmaAction.Initializer.KEY)
+        assertEquals("Initializer", EmaAction.Initializer.EMPTY.type)
         assertTrue(EmaState.EMPTY is EmaState)
         assertTrue(EmaEvent.EMPTY is EmaEvent)
     }

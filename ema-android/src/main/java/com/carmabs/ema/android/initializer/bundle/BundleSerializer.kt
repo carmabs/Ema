@@ -2,7 +2,7 @@ package com.carmabs.ema.android.initializer.bundle
 
 import android.os.Bundle
 import com.carmabs.ema.android.initializer.bundle.strategy.BundleSerializerStrategy
-import com.carmabs.ema.core.initializer.EmaInitializer
+import com.carmabs.ema.core.action.EmaAction
 import com.carmabs.ema.core.initializer.EmaInitializerSerializer
 
 /**
@@ -16,9 +16,9 @@ import com.carmabs.ema.core.initializer.EmaInitializerSerializer
  */
 class BundleSerializer(private val bundle: Bundle, private val strategy: BundleSerializerStrategy) :
     EmaInitializerSerializer {
-    override fun save(initializer: EmaInitializer) {
+    override fun save(initializer: EmaAction.Initializer) {
         strategy.save(initializer, bundle)
     }
 
-    override fun restore(): EmaInitializer? = strategy.restore(bundle)
+    override fun restore(): EmaAction.Initializer? = strategy.restore(bundle)
 }

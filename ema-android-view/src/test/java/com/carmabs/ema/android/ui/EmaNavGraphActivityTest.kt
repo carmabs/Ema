@@ -17,7 +17,7 @@ import com.carmabs.ema.android.idleMain
 import com.carmabs.ema.android.initializer.bundle.strategy.BundleSerializerStrategy
 import com.carmabs.ema.android.navigation.EmaActivityNavControllerNavigator
 import com.carmabs.ema.android.view.test.R
-import com.carmabs.ema.core.initializer.EmaInitializer
+import com.carmabs.ema.core.action.EmaAction
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -30,7 +30,7 @@ import org.robolectric.RobolectricTestRunner
 class GraphActivity : EmaActivity<ToolbarBinding, ViewState, ViewTestViewModel, ViewEvent>() {
 
     companion object {
-        var destinationInitializer: EmaInitializer? = null
+        var destinationInitializer: EmaAction.Initializer? = null
     }
 
     override val initializerStrategy = BundleSerializerStrategy.serializable<NameInitializer>()

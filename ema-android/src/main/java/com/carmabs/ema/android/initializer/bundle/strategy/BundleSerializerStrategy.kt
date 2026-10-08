@@ -2,8 +2,8 @@ package com.carmabs.ema.android.initializer.bundle.strategy
 
 import android.os.Bundle
 import android.os.Parcelable
+import com.carmabs.ema.core.action.EmaAction
 import com.carmabs.ema.core.constants.STRING_EMPTY
-import com.carmabs.ema.core.initializer.EmaInitializer
 import java.io.Serializable
 import kotlinx.serialization.KSerializer
 
@@ -17,29 +17,29 @@ import kotlinx.serialization.KSerializer
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
 interface BundleSerializerStrategy {
-    fun save(initializer: EmaInitializer, bundle: Bundle)
-    fun toStringValue(initializer: EmaInitializer): String
-    fun fromStringValue(value: String): EmaInitializer
-    fun restore(bundle: Bundle): EmaInitializer?
+    fun save(initializer: EmaAction.Initializer, bundle: Bundle)
+    fun toStringValue(initializer: EmaAction.Initializer): String
+    fun fromStringValue(value: String): EmaAction.Initializer
+    fun restore(bundle: Bundle): EmaAction.Initializer?
 
     companion object {
         val EMPTY = object : BundleSerializerStrategy {
-            override fun save(initializer: EmaInitializer, bundle: Bundle) = Unit
+            override fun save(initializer: EmaAction.Initializer, bundle: Bundle) = Unit
 
-            override fun toStringValue(initializer: EmaInitializer): String = STRING_EMPTY
+            override fun toStringValue(initializer: EmaAction.Initializer): String = STRING_EMPTY
 
-            override fun fromStringValue(value: String): EmaInitializer = EmaInitializer.EMPTY
+            override fun fromStringValue(value: String): EmaAction.Initializer = EmaAction.Initializer.EMPTY
 
-            override fun restore(bundle: Bundle): EmaInitializer? = null
+            override fun restore(bundle: Bundle): EmaAction.Initializer? = null
         }
 
-        fun <I : EmaInitializer> kSerialization(serializer: KSerializer<I>) =
+        fun <I : EmaAction.Initializer> kSerialization(serializer: KSerializer<I>) =
             KSerializationBundleStrategy(serializer = serializer)
 
-        inline fun <reified I> serializable() where I : EmaInitializer, I : Serializable =
+        inline fun <reified I> serializable() where I : EmaAction.Initializer, I : Serializable =
             SerializableBundleStrategy(I::class.java)
 
-        inline fun <reified I> parcelable() where I : EmaInitializer, I : Parcelable =
+        inline fun <reified I> parcelable() where I : EmaAction.Initializer, I : Parcelable =
             ParcelableBundleStrategy(I::class.java)
     }
 }

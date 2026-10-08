@@ -1,6 +1,6 @@
 package com.carmabs.ema.core.action
 
-/**
+/*
  * Created by Carlos Mateo Benito on 1/10/23.
  *
  * <p>
@@ -9,19 +9,43 @@ package com.carmabs.ema.core.action
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
+
+/**
+ * Something that reaches the ViewModel: the actions of the user and the data a screen starts with.
+ */
 interface EmaAction {
 
     companion object {
         val type: String = "EmaAction"
-        data object EMPTY : EmaAction
     }
 
     val type: String
         get() = EmaAction.type
 
+    /**
+     * No action.
+     */
+    data object EMPTY : EmaAction
+
+    /**
+     * The data a screen starts with. The ViewModel receives it once, in onStateCreated, the first time the screen
+     * is created.
+     */
     interface Initializer : EmaAction {
+        companion object {
+            /**
+             * Key of the initializer in bundles and routes.
+             */
+            const val KEY = "EmaInitializer"
+        }
+
         override val type: String
             get() = "Initializer"
+
+        /**
+         * No initializer.
+         */
+        data object EMPTY : Initializer
     }
 
     sealed interface Lifecycle : EmaAction {
@@ -34,12 +58,5 @@ interface EmaAction {
 
         override val type: String
             get() = "Lifecycle"
-    }
-
-    interface Screen : EmaAction {
-        override val type: String
-            get() = "Screen"
-
-        object EMPTY : Screen
     }
 }

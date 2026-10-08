@@ -1,8 +1,8 @@
 package com.carmabs.ema.core.viewmodel
 
+import com.carmabs.ema.core.action.EmaAction
 import com.carmabs.ema.core.action.EmaEventDispatcher
 import com.carmabs.ema.core.extension.emaName
-import com.carmabs.ema.core.initializer.EmaInitializer
 import com.carmabs.ema.core.state.EmaEvent
 import com.carmabs.ema.core.state.EmaState
 import kotlinx.coroutines.CoroutineScope
@@ -31,7 +31,7 @@ interface EmaViewModel<S : EmaState, E : EmaEvent> : EmaEventDispatcher<E> {
 
     fun setScope(scope: CoroutineScope)
 
-    fun onCreated(initializer: EmaInitializer? = null)
+    fun onCreated(initializer: EmaAction.Initializer? = null)
 
     fun onStartView()
 
@@ -59,7 +59,7 @@ interface EmaViewModel<S : EmaState, E : EmaEvent> : EmaEventDispatcher<E> {
 
         override fun setScope(scope: CoroutineScope) = Unit
 
-        override fun onCreated(initializer: EmaInitializer?) = Unit
+        override fun onCreated(initializer: EmaAction.Initializer?) = Unit
 
         override fun onStartView() = Unit
 

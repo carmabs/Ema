@@ -1,5 +1,7 @@
 package com.carmabs.ema.core.initializer
 
+import com.carmabs.ema.core.action.EmaAction
+
 /**
  * Created by Carlos Mateo Benito on 19/3/24.
  *
@@ -10,6 +12,6 @@ package com.carmabs.ema.core.initializer
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
 interface EmaInitializerSerializer {
-    fun save(initializer: EmaInitializer)
-    fun restore(): EmaInitializer?
+    fun save(initializer: EmaAction.Initializer)
+    fun restore(): EmaAction.Initializer?
 }

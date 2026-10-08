@@ -16,7 +16,7 @@ import com.carmabs.ema.ui.dialog.loading.LoadingDialogData
 import com.carmabs.ema.ui.dialog.simple.SimpleDialogData
 import com.carmabs.ema.ui.dialog.simple.SimpleDialogListener
 
-abstract class BaseScreenComposable<S : EmaState, A : EmaAction.Screen, E : EmaEvent> :
+abstract class BaseScreenComposable<S : EmaState, A : EmaAction, E : EmaEvent> :
     EmaComposableScreenContent<S, A, E> {
 
     @Composable

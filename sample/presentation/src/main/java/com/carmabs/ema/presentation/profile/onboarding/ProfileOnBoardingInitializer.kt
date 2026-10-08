@@ -1,10 +1,10 @@
 package com.carmabs.ema.presentation.profile.onboarding
 
-import com.carmabs.ema.core.initializer.EmaInitializer
+import com.carmabs.ema.core.action.EmaAction
 import kotlinx.serialization.Serializable
 
 @Serializable
-sealed class ProfileOnBoardingInitializer : EmaInitializer {
+sealed class ProfileOnBoardingInitializer : EmaAction.Initializer {
 
     @Serializable
     data class Default(val admin: String) : ProfileOnBoardingInitializer()

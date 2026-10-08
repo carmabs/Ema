@@ -2,7 +2,7 @@ package com.carmabs.ema.presentation.profile.creation
 
 import com.carmabs.ema.core.action.EmaAction
 
-sealed interface ProfileCreationAction : EmaAction.Screen {
+sealed interface ProfileCreationAction : EmaAction {
 
     data class UserNameWritten(val name: String) : ProfileCreationAction
 

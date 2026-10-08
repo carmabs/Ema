@@ -2,8 +2,8 @@ package com.carmabs.ema.presentation.home
 
 import com.carmabs.domain.model.User
 import com.carmabs.domain.usecase.GetUserFriendsUseCase
+import com.carmabs.ema.core.action.EmaAction
 import com.carmabs.ema.core.broadcast.backBroadcastId
-import com.carmabs.ema.core.initializer.EmaInitializer
 import com.carmabs.ema.presentation.base.BaseViewModel
 import com.carmabs.ema.presentation.profile.creation.ProfileCreationViewModel
 
@@ -11,7 +11,7 @@ class HomeViewModel(private val getUserFriendsUseCase: GetUserFriendsUseCase, in
     BaseViewModel<HomeState, HomeAction, HomeEvent>(initialDataState) {
 
     private lateinit var user: User
-    override fun onStateCreated(initializer: EmaInitializer?) {
+    override fun onStateCreated(initializer: EmaAction.Initializer?) {
         sideEffect {
             when (val homeInitializer = initializer as HomeInitializer) {
                 is HomeInitializer.HomeUser -> {

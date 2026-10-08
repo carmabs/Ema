@@ -9,7 +9,6 @@ import androidx.compose.ui.Modifier
 import com.carmabs.ema.compose.action.EmaImmutableActionDispatcher
 import com.carmabs.ema.compose.ui.EmaComposableScreenContent
 import com.carmabs.ema.core.action.EmaAction
-import com.carmabs.ema.core.initializer.EmaInitializer
 import com.carmabs.ema.core.state.EmaEvent
 import com.carmabs.ema.core.state.EmaState
 import com.carmabs.ema.core.viewmodel.EmaViewModelAction
@@ -22,7 +21,7 @@ import kotlinx.serialization.encoding.Encoder
 
 data class CounterState(val count: Int = 0) : EmaState
 
-sealed interface CounterAction : EmaAction.Screen {
+sealed interface CounterAction : EmaAction {
     data object Increment : CounterAction
     data object Back : CounterAction
     data object Notify : CounterAction
@@ -32,7 +31,7 @@ sealed interface CounterEvent : EmaEvent {
     data object Notified : CounterEvent
 }
 
-data class RouteInitializer(val name: String) : EmaInitializer
+data class RouteInitializer(val name: String) : EmaAction.Initializer
 
 /**
  * Serializer written by hand, so the tests do not need the serialization plugin.
@@ -45,9 +44,9 @@ object RouteInitializerSerializer : KSerializer<RouteInitializer> {
 
 class CounterViewModel : EmaViewModelAction<CounterState, CounterAction, CounterEvent>(CounterState()) {
     val hooks = mutableListOf<String>()
-    var initializer: EmaInitializer? = null
+    var initializer: EmaAction.Initializer? = null
 
-    override fun onStateCreated(initializer: EmaInitializer?) {
+    override fun onStateCreated(initializer: EmaAction.Initializer?) {
         hooks += "created"
         this.initializer = initializer
     }
@@ -81,7 +80,7 @@ class CounterViewModel : EmaViewModelAction<CounterState, CounterAction, Counter
  * ViewModel that does not handle actions.
  */
 class BasicViewModel : EmaViewModelBasic<CounterState, CounterEvent>(CounterState()) {
-    override fun onStateCreated(initializer: EmaInitializer?) = Unit
+    override fun onStateCreated(initializer: EmaAction.Initializer?) = Unit
 }
 
 class CounterScreen(private val backEnabled: Boolean = true) :
