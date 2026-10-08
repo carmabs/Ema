@@ -25,9 +25,8 @@ kotlin {
 }
 ```
 
-The Android app draws them with [Compose](../compose/screens.md) or [Android Views](../android-view/index.md).
-On other platforms, the view subscribes to the state (`stateFlow`) and the events (`eventFlow`) of the ViewModel and
-sends it actions with `dispatch`, so it can work with it whatever the platform is.
+On Android they are drawn with [Compose](../compose/screens.md) or [Android Views](../android-view/index.md).
+Any other platform only needs to collect `stateFlow` and `eventFlow` and send actions with `dispatch`.
 
 ## What is not available everywhere
 

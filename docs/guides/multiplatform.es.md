@@ -26,9 +26,8 @@ kotlin {
 }
 ```
 
-La app de Android los pinta con [Compose](../compose/screens.es.md) o con [vistas de Android](../android-view/index.es.md).
-En otras plataformas, la vista se suscribe al estado (`stateFlow`) y a los eventos (`eventFlow`) del ViewModel y le
-envía acciones con `dispatch`, así que puede interactuar con él sea cual sea la plataforma.
+En Android se pintan con [Compose](../compose/screens.es.md) o con [vistas de Android](../android-view/index.es.md).
+En cualquier otra plataforma basta con recoger `stateFlow` y `eventFlow` y enviar acciones con `dispatch`.
 
 ## Lo que no está disponible en todas partes
 
