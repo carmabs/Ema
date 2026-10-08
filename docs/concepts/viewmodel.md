@@ -42,6 +42,17 @@ class LoginViewModel(
 
 ## Lifecycle hooks
 
+The ViewModel follows the lifecycle of its screen, and the hooks let it react to each stage without knowing anything
+about Android:
+
+- **Creation**, to prepare the screen: read the initializer, load the initial data and register the listeners of
+  results. It happens once, so a rotation does not load the data again.
+- **Visibility**, to run work only while the user sees the screen: start location updates, a timer or a periodic
+  refresh when it becomes visible, and stop them when it goes to the background.
+- **Destruction**, to release what the ViewModel holds when its screen is closed for good.
+
+`onStateCreated` is required; override the others only when you need them.
+
 | Hook                          | When                                                                     |
 |-------------------------------|--------------------------------------------------------------------------|
 | `onStateCreated(initializer)` | **Once**, the first time the screen is created. Receives the [initializer](../guides/initializers.md). |

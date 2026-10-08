@@ -42,6 +42,17 @@ class LoginViewModel(
 
 ## Ganchos del ciclo de vida
 
+El ViewModel sigue el ciclo de vida de su pantalla, y los ganchos le permiten reaccionar a cada etapa sin saber nada de
+Android:
+
+- **Creación**, para preparar la pantalla: leer el inicializador, cargar los datos iniciales y registrar los listeners de
+  resultados. Ocurre una sola vez, así que una rotación no vuelve a cargar los datos.
+- **Visibilidad**, para ejecutar trabajo solo mientras el usuario ve la pantalla: arrancar las actualizaciones de
+  ubicación, un temporizador o un refresco periódico cuando se hace visible, y pararlos cuando pasa a segundo plano.
+- **Destrucción**, para liberar lo que tenga el ViewModel cuando su pantalla se cierra definitivamente.
+
+`onStateCreated` es obligatorio; sobrescribe los demás solo cuando los necesites.
+
 | Gancho                        | Cuándo                                                                   |
 |-------------------------------|--------------------------------------------------------------------------|
 | `onStateCreated(initializer)` | **Una vez**, la primera vez que se crea la pantalla. Recibe el [inicializador](../guides/initializers.es.md). |
