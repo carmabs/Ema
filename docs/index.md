@@ -29,7 +29,6 @@ it only reports what the user did through actions.
 - **Events are not state.** Toasts, snackbars and "go to the next screen" are delivered exactly once and never replayed.
 - **ViewModels in pure Kotlin.** `ema-core` is a Kotlin Multiplatform library with no Android dependency, so the
   presentation layer can be tested on the JVM and shared with other platforms.
-- **No dependency injection framework imposed.** You create the ViewModels however you like.
 - **Small surface.** No code generation and no custom build plugins.
 
 ## Modules

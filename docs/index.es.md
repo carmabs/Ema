@@ -31,7 +31,6 @@ solo informa de lo que ha hecho el usuario mediante acciones.
   vez y nunca se repiten.
 - **ViewModels en Kotlin puro.** `ema-core` es una librería Kotlin Multiplatform sin dependencias de Android, así que la
   capa de presentación se puede testear en la JVM y compartir con otras plataformas.
-- **No impone un framework de inyección de dependencias.** Creas los ViewModels como prefieras.
 - **Superficie pequeña.** Sin generación de código ni plugins de compilación propios.
 
 ## Módulos
