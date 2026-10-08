@@ -15,7 +15,6 @@ estructura depende solo de la disciplina.
 
 Las dos reciben el estado inicial en el constructor y, opcionalmente, el `CoroutineScope` donde se ejecuta su trabajo
 (por defecto uno en el dispatcher principal de la [configuración](../guides/configuration.es.md)).
-`EmaViewModelAction` añade `dispatch(action)` y la función abstracta `onAction`.
 
 ```kotlin
 class LoginViewModel(

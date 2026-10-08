@@ -15,7 +15,6 @@ depends only on discipline.
 
 Both receive the initial state in the constructor and, optionally, the `CoroutineScope` where their work runs
 (by default one on the main dispatcher of the [configuration](../guides/configuration.md)).
-`EmaViewModelAction` adds `dispatch(action)` and the abstract `onAction`.
 
 ```kotlin
 class LoginViewModel(
