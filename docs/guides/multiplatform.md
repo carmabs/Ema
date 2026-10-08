@@ -25,10 +25,6 @@ kotlin {
 }
 ```
 
-The Android app draws them with [Compose](../compose/screens.md) or [Android Views](../android-view/index.md).
-On other platforms, a view implements `EmaView`, the interface the Android screens are built on: it receives the states
-in `onState` and the events in `onEvent`, and binds itself to the ViewModel with `onBindView` and `onUnbindView`.
-
 ## What is not available everywhere
 
 - **Configuration.** `EmaConfiguration.Android` is in `ema-android`. On other platforms call `Ema.init` with an

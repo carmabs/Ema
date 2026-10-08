@@ -26,10 +26,6 @@ kotlin {
 }
 ```
 
-La app de Android los pinta con [Compose](../compose/screens.es.md) o con [vistas de Android](../android-view/index.es.md).
-En otras plataformas, una vista implementa `EmaView`, la interfaz sobre la que se construyen las pantallas de Android:
-recibe los estados en `onState` y los eventos en `onEvent`, y se une al ViewModel con `onBindView` y `onUnbindView`.
-
 ## Lo que no está disponible en todas partes
 
 - **Configuración.** `EmaConfiguration.Android` está en `ema-android`. En otras plataformas llama a `Ema.init` con una
