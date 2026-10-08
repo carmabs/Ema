@@ -25,6 +25,10 @@ kotlin {
 }
 ```
 
+The Android app draws them with [Compose](../compose/screens.md) or [Android Views](../android-view/index.md).
+On other platforms, the view subscribes to the state (`stateFlow`) and the events (`eventFlow`) of the ViewModel and
+sends it actions with `dispatch`, so it can work with it whatever the platform is.
+
 ## What is not available everywhere
 
 - **Configuration.** `EmaConfiguration.Android` is in `ema-android`. On other platforms call `Ema.init` with an
