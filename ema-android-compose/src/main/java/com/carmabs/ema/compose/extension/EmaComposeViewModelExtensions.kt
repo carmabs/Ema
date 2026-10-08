@@ -18,10 +18,9 @@ import com.carmabs.ema.core.viewmodel.EmaViewModelAction
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-fun <S : EmaState, A : EmaAction.Screen, E : EmaEvent> EmaViewModel<S, E>.asViewModelAction() =
+fun <S : EmaState, A : EmaAction, E : EmaEvent> EmaViewModel<S, E>.asViewModelAction() =
     this as? EmaViewModelAction<S, A, E>
         ?: throw IllegalStateException("${this::class} must inherit from EmaViewModelAction class")
 
-fun <A : EmaAction.Screen> EmaViewModel<*, *>.asActionDispatcher(): EmaActionDispatcher<A> =
-    (this as? EmaActionDispatcher<A>)
-        ?: throw IllegalStateException("${this::class} must implement EmaActionDispatcher with the proper action")
+fun <A : EmaAction> EmaViewModel<*, *>.asActionDispatcher(): EmaActionDispatcher<A> = (this as? EmaActionDispatcher<A>)
+    ?: throw IllegalStateException("${this::class} must implement EmaActionDispatcher with the proper action")

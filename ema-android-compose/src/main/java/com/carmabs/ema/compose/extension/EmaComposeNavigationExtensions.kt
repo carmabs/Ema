@@ -31,7 +31,6 @@ import com.carmabs.ema.compose.provider.EmaScreenProvider
 import com.carmabs.ema.compose.ui.EmaComposableScreen
 import com.carmabs.ema.compose.ui.EmaComposableScreenContent
 import com.carmabs.ema.core.action.EmaAction
-import com.carmabs.ema.core.initializer.EmaInitializer
 import com.carmabs.ema.core.state.EmaEvent
 import com.carmabs.ema.core.state.EmaState
 import com.carmabs.ema.core.viewmodel.EmaViewModel
@@ -55,7 +54,7 @@ fun NavController.navigate(
     navigate(routeParsed, navOptions, navigatorExtras)
 }
 
-fun <S : EmaState, A : EmaAction.Screen, E : EmaEvent> NavGraphBuilder.createComposableScreen(
+fun <S : EmaState, A : EmaAction, E : EmaEvent> NavGraphBuilder.createComposableScreen(
     screenContent: EmaComposableScreenContent<S, A, E>,
     viewModel: () -> EmaViewModel<S, E>,
     routeId: String = screenContent::class.routeId,
@@ -128,7 +127,7 @@ fun <S : EmaState, A : EmaAction.Screen, E : EmaEvent> NavGraphBuilder.createCom
         composable(
             route = parseRouteWithInitializerSupport(routeId),
             arguments = listOf(
-                navArgument(EmaInitializer.KEY) {
+                navArgument(EmaAction.Initializer.KEY) {
                     initializerSupport?.also {
                         type = EmaInitializerNavType(it.serializerStrategy)
                     }
@@ -150,11 +149,15 @@ fun routeWithInitializer(route: String, initializerBundle: EmaInitializerBundle?
 } ?: route
 
 private fun parseRouteWithInitializerSupport(routeId: String): String =
-    "$routeId?${EmaInitializer.KEY}={${EmaInitializer.KEY}}"
+    "$routeId?${EmaAction.Initializer.KEY}={${EmaAction.Initializer.KEY}}"
 
-fun routeWithInitializer(routeId: String, initializer: EmaInitializer, serializer: BundleSerializerStrategy): String {
+fun routeWithInitializer(
+    routeId: String,
+    initializer: EmaAction.Initializer,
+    serializer: BundleSerializerStrategy
+): String {
     // Encoded, because the serialized initializer can contain characters with meaning in a route, like & or #
-    return "$routeId?${EmaInitializer.KEY}=${Uri.encode(serializer.toStringValue(initializer))}"
+    return "$routeId?${EmaAction.Initializer.KEY}=${Uri.encode(serializer.toStringValue(initializer))}"
 }
 
 fun NavController.navigateBack(closeActivityWhenBackstackIsEmpty: Boolean = true): Boolean {

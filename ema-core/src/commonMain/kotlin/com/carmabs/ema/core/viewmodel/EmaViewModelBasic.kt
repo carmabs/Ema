@@ -2,13 +2,13 @@ package com.carmabs.ema.core.viewmodel
 
 import com.carmabs.ema.core.Ema
 import com.carmabs.ema.core.action.DefaultEmaEventDispatcher
+import com.carmabs.ema.core.action.EmaAction
 import com.carmabs.ema.core.action.EmaEventDispatcher
 import com.carmabs.ema.core.broadcast.BackBroadcastId
 import com.carmabs.ema.core.broadcast.backBroadcastId
 import com.carmabs.ema.core.concurrency.EmaMainScope
 import com.carmabs.ema.core.extension.checkNull
 import com.carmabs.ema.core.extension.emaName
-import com.carmabs.ema.core.initializer.EmaInitializer
 import com.carmabs.ema.core.model.EmaConfiguration
 import com.carmabs.ema.core.model.EmaFunctionResultHandler
 import com.carmabs.ema.core.model.EmaSideEffectConfig
@@ -98,7 +98,7 @@ abstract class EmaViewModelBasic<S : EmaState, E : EmaEvent>(
     protected var hasBeenInitialized: Boolean = false
         private set
 
-    override fun onCreated(initializer: EmaInitializer?) {
+    override fun onCreated(initializer: EmaAction.Initializer?) {
         if (!hasBeenInitialized) {
             hasBeenInitialized = true
             if (updateOnInitialization) {
@@ -135,7 +135,7 @@ abstract class EmaViewModelBasic<S : EmaState, E : EmaEvent>(
     /**
      * Called when the state of the view has been created
      */
-    abstract fun onStateCreated(initializer: EmaInitializer? = null)
+    abstract fun onStateCreated(initializer: EmaAction.Initializer? = null)
 
     /**
      * Called always the view goes to the foreground

@@ -16,8 +16,8 @@ import com.carmabs.ema.android.navigation.EmaActivityBackDelegate
 import com.carmabs.ema.android.navigation.EmaActivityNavControllerNavigator
 import com.carmabs.ema.android.navigation.EmaNavControllerNavigator
 import com.carmabs.ema.android.ui.EmaAndroidView
+import com.carmabs.ema.core.action.EmaAction
 import com.carmabs.ema.core.constants.INT_ZERO
-import com.carmabs.ema.core.initializer.EmaInitializer
 import com.carmabs.ema.core.initializer.EmaInitializerSerializer
 import com.carmabs.ema.core.model.EmaBackHandlerStrategy
 import com.carmabs.ema.core.state.EmaEvent
@@ -79,7 +79,7 @@ abstract class EmaCoreActivity<S : EmaState, VM : EmaViewModel<S, E>, E : EmaEve
     override fun onSupportNavigateUp() =
         (navigator as? EmaNavControllerNavigator<*>)?.navController?.navigateUp() ?: false
 
-    protected open fun overrideDestinationInitializer(): EmaInitializer? = null
+    protected open fun overrideDestinationInitializer(): EmaAction.Initializer? = null
 
     abstract fun provideViewModel(): VM
 

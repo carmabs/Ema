@@ -40,7 +40,7 @@ import com.carmabs.ema.android.savestate.SavedStateSupport
 import com.carmabs.ema.android.service.EmaJobService
 import com.carmabs.ema.android.viewmodel.EmaAndroidViewModel
 import com.carmabs.ema.android.viewmodel.EmaViewModelFactory
-import com.carmabs.ema.core.initializer.EmaInitializer
+import com.carmabs.ema.core.action.EmaAction
 import com.carmabs.ema.core.model.EmaBackHandlerStrategy
 import com.carmabs.ema.core.model.EmaConfiguration
 import com.carmabs.ema.core.state.EmaEvent
@@ -71,7 +71,7 @@ data class TestState(val value: Int = 0) : EmaState
 
 class TestViewModel : EmaViewModelBasic<TestState, EmaEvent.EMPTY>(TestState()) {
     var destroyed = false
-    override fun onStateCreated(initializer: EmaInitializer?) = Unit
+    override fun onStateCreated(initializer: EmaAction.Initializer?) = Unit
     override fun onDestroy() {
         destroyed = true
     }

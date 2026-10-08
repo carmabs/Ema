@@ -15,7 +15,7 @@ import androidx.test.core.app.ApplicationProvider
 import com.carmabs.ema.android.initializer.EmaInitializerBundle
 import com.carmabs.ema.android.initializer.bundle.BundleSerializer
 import com.carmabs.ema.android.initializer.bundle.strategy.BundleSerializerStrategy
-import com.carmabs.ema.core.initializer.EmaInitializer
+import com.carmabs.ema.core.action.EmaAction
 import com.carmabs.ema.core.model.EmaText
 import com.carmabs.ema.core.value.EmaUriType
 import java.io.Serializable
@@ -36,7 +36,7 @@ import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.GraphicsMode
 
-data class NameInitializer(val name: String) : EmaInitializer
+data class NameInitializer(val name: String) : EmaAction.Initializer
 
 object NameInitializerSerializer : KSerializer<NameInitializer> {
     override val descriptor = PrimitiveSerialDescriptor("NameInitializer", PrimitiveKind.STRING)
@@ -45,11 +45,11 @@ object NameInitializerSerializer : KSerializer<NameInitializer> {
 }
 
 data class SerializableInitializer(val id: Int) :
-    EmaInitializer,
+    EmaAction.Initializer,
     Serializable
 
 data class ParcelableInitializer(val id: Int) :
-    EmaInitializer,
+    EmaAction.Initializer,
     Parcelable {
     override fun describeContents() = 0
     override fun writeToParcel(dest: Parcel, flags: Int) = dest.writeInt(id)
@@ -68,7 +68,7 @@ class EmaInitializerExtensionsTest {
     @Test
     fun `kotlin serialization strategy saves and restores the initializer`() {
         val bundle = NameInitializer("Ana").toBundle(kSerialization)!!
-        assertEquals("\"Ana\"", bundle.getString(EmaInitializer.KEY))
+        assertEquals("\"Ana\"", bundle.getString(EmaAction.Initializer.KEY))
         assertEquals(NameInitializer("Ana"), bundle.getInitializer<NameInitializer>(kSerialization))
         assertEquals(NameInitializer("Eva"), kSerialization.fromStringValue("\"Eva\""))
         assertNull(kSerialization.restore(Bundle()))
@@ -80,7 +80,7 @@ class EmaInitializerExtensionsTest {
         val bundle = Bundle().apply { setInitializer(SerializableInitializer(1), strategy) }
         assertEquals(SerializableInitializer(1), bundle.getInitializer<SerializableInitializer>(strategy))
         assertEquals("SerializableInitializer(id=1)", strategy.toStringValue(SerializableInitializer(1)))
-        assertEquals(EmaInitializer.EMPTY, strategy.fromStringValue("x"))
+        assertEquals(EmaAction.Initializer.EMPTY, strategy.fromStringValue("x"))
     }
 
     @Test
@@ -90,7 +90,7 @@ class EmaInitializerExtensionsTest {
         serializer.save(ParcelableInitializer(7))
         assertEquals(ParcelableInitializer(7), serializer.restore())
         assertEquals("ParcelableInitializer(id=7)", strategy.toStringValue(ParcelableInitializer(7)))
-        assertEquals(EmaInitializer.EMPTY, strategy.fromStringValue("x"))
+        assertEquals(EmaAction.Initializer.EMPTY, strategy.fromStringValue("x"))
     }
 
     @Test
@@ -101,12 +101,12 @@ class EmaInitializerExtensionsTest {
         assertTrue(bundle.isEmpty)
         assertNull(strategy.restore(bundle))
         assertEquals("", strategy.toStringValue(NameInitializer("a")))
-        assertEquals(EmaInitializer.EMPTY, strategy.fromStringValue("a"))
+        assertEquals(EmaAction.Initializer.EMPTY, strategy.fromStringValue("a"))
     }
 
     @Test
     fun `initializer bundles for navigation`() {
-        assertNull((null as EmaInitializer?).toBundle(kSerialization))
+        assertNull((null as EmaAction.Initializer?).toBundle(kSerialization))
         assertNull((null as EmaInitializerBundle?).toBundle())
         val bundle = EmaInitializerBundle(NameInitializer("Ana"), kSerialization).toBundle()!!
         assertEquals(NameInitializer("Ana"), bundle.getInitializer<NameInitializer>(kSerialization))

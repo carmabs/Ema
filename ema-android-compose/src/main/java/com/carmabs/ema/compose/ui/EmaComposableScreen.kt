@@ -23,15 +23,14 @@ import com.carmabs.ema.compose.provider.EmaScreenProvider
 import com.carmabs.ema.core.action.EmaAction
 import com.carmabs.ema.core.action.EmaActionDispatcher
 import com.carmabs.ema.core.action.EmaEventDispatcher
-import com.carmabs.ema.core.initializer.EmaInitializer
 import com.carmabs.ema.core.model.EmaBackHandlerStrategy
 import com.carmabs.ema.core.state.EmaEvent
 import com.carmabs.ema.core.state.EmaState
 import com.carmabs.ema.core.viewmodel.EmaViewModel
 
 @Composable
-fun <S : EmaState, A : EmaAction.Screen, E : EmaEvent> EmaComposableScreen(
-    initializer: EmaInitializer? = null,
+fun <S : EmaState, A : EmaAction, E : EmaEvent> EmaComposableScreen(
+    initializer: EmaAction.Initializer? = null,
     vm: EmaViewModel<S, E>,
     actions: EmaActionDispatcher<A>,
     screenContent: EmaComposableScreenContent<S, A, E>,
@@ -63,8 +62,8 @@ fun <S : EmaState, A : EmaAction.Screen, E : EmaEvent> EmaComposableScreen(
 }
 
 @Composable
-fun <A : EmaAction.Screen, S : EmaState, E : EmaEvent> EmaComposableScreen(
-    initializer: EmaInitializer? = null,
+fun <A : EmaAction, S : EmaState, E : EmaEvent> EmaComposableScreen(
+    initializer: EmaAction.Initializer? = null,
     vm: () -> EmaViewModel<S, E>,
     screenContent: EmaComposableScreenContent<S, A, E>,
     onEvent: (E) -> Unit,
@@ -113,8 +112,8 @@ fun <A : EmaAction.Screen, S : EmaState, E : EmaEvent> EmaComposableScreen(
 }
 
 @Composable
-private fun <S : EmaState, A : EmaAction.Screen, E : EmaEvent> RenderScreen(
-    initializer: EmaInitializer?,
+private fun <S : EmaState, A : EmaAction, E : EmaEvent> RenderScreen(
+    initializer: EmaAction.Initializer?,
     screenContent: EmaComposableScreenContent<S, A, E>,
     vm: EmaViewModel<S, E>,
     immutableActions: EmaImmutableActionDispatcher<A>,

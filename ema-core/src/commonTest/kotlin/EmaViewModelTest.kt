@@ -1,7 +1,6 @@
 import com.carmabs.ema.core.Ema
 import com.carmabs.ema.core.action.EmaAction
 import com.carmabs.ema.core.broadcast.backBroadcastId
-import com.carmabs.ema.core.initializer.EmaInitializer
 import com.carmabs.ema.core.model.EmaConfiguration
 import com.carmabs.ema.core.model.EmaMethodNameResolver
 import com.carmabs.ema.core.model.EmaSideEffectConfig
@@ -32,7 +31,7 @@ import kotlinx.coroutines.withTimeoutOrNull
 
 data class CounterState(val count: Int = 0, val text: String = "") : EmaState
 
-sealed interface CounterAction : EmaAction.Screen {
+sealed interface CounterAction : EmaAction {
     data object Increment : CounterAction
     data class Write(val text: String) : CounterAction
 }
@@ -42,7 +41,7 @@ sealed interface CounterEvent : EmaEvent {
     data object Message : CounterEvent
 }
 
-data class CounterInitializer(val start: Int) : EmaInitializer
+data class CounterInitializer(val start: Int) : EmaAction.Initializer
 
 class CounterViewModel(scope: CoroutineScope, private val renderOnInitialization: Boolean = true) :
     EmaViewModelAction<CounterState, CounterAction, CounterEvent>(CounterState(), scope) {
@@ -52,7 +51,7 @@ class CounterViewModel(scope: CoroutineScope, private val renderOnInitialization
     override val updateOnInitialization: Boolean
         get() = renderOnInitialization
 
-    override fun onStateCreated(initializer: EmaInitializer?) {
+    override fun onStateCreated(initializer: EmaAction.Initializer?) {
         hooks.add("created")
         (initializer as? CounterInitializer)?.also { updateState { copy(count = it.start) } }
     }
@@ -334,13 +333,13 @@ class EmaViewModelTest {
 }
 
 class SenderViewModel(scope: CoroutineScope) : EmaViewModelBasic<CounterState, CounterEvent>(CounterState(), scope) {
-    override fun onStateCreated(initializer: EmaInitializer?) = Unit
+    override fun onStateCreated(initializer: EmaAction.Initializer?) = Unit
     fun send(data: Any?) = dispatchBroadcast(data)
 }
 
 class ReceiverViewModel(scope: CoroutineScope) : EmaViewModelBasic<CounterState, CounterEvent>(CounterState(), scope) {
     val received = mutableListOf<Any?>()
-    override fun onStateCreated(initializer: EmaInitializer?) = Unit
+    override fun onStateCreated(initializer: EmaAction.Initializer?) = Unit
     override fun onBroadcastListenerSetup() {
         registerBackBroadcastListener(SenderViewModel::class.backBroadcastId) { received.add(it) }
     }

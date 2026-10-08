@@ -14,5 +14,5 @@ import com.carmabs.ema.core.viewmodel.EmaViewModelAction
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
 
-abstract class BaseViewModel<S : EmaState, A : EmaAction.Screen, E : EmaEvent>(initialDataState: S) :
+abstract class BaseViewModel<S : EmaState, A : EmaAction, E : EmaEvent>(initialDataState: S) :
     EmaViewModelAction<S, A, E>(initialDataState)

@@ -1,10 +1,10 @@
 package com.carmabs.ema.presentation.profile.creation
 
-import com.carmabs.ema.core.initializer.EmaInitializer
+import com.carmabs.ema.core.action.EmaAction
 import kotlinx.serialization.Serializable
 
 @Serializable
-sealed class ProfileCreationInitializer : EmaInitializer {
+sealed class ProfileCreationInitializer : EmaAction.Initializer {
     @Serializable
     data object UserBasic : ProfileCreationInitializer()
 

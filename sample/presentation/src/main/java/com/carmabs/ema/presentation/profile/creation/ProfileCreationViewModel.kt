@@ -2,14 +2,14 @@ package com.carmabs.ema.presentation.profile.creation
 
 import com.carmabs.domain.model.Role
 import com.carmabs.domain.model.User
-import com.carmabs.ema.core.initializer.EmaInitializer
+import com.carmabs.ema.core.action.EmaAction
 import com.carmabs.ema.presentation.base.BaseViewModel
 
 class ProfileCreationViewModel(initialDataState: ProfileCreationState) :
     BaseViewModel<ProfileCreationState, ProfileCreationAction, ProfileCreationEvent>(
         initialDataState
     ) {
-    override fun onStateCreated(initializer: EmaInitializer?) {
+    override fun onStateCreated(initializer: EmaAction.Initializer?) {
         when (initializer as ProfileCreationInitializer) {
             ProfileCreationInitializer.Admin -> updateState {
                 copy(role = Role.ADMIN)
