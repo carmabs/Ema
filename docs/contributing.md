@@ -72,6 +72,26 @@ and in Spanish (`page.es.md`): when you change one, update the other too. To pre
 
 ```bash
 python3 -m venv .venv
-.venv/bin/pip install mkdocs-material mkdocs-static-i18n
+.venv/bin/pip install -r docs/requirements.txt
 .venv/bin/mkdocs serve
 ```
+
+The site has a version selector, built with [mike](https://github.com/jimporter/mike): `dev` is the documentation of
+`develop` and every release has its own version, with `latest` pointing to the last one. They are published
+automatically (see below). `mkdocs build --strict` runs in the CI, so broken links fail the pull request.
+
+## Continuous integration and releases
+
+Every pull request to `develop` or `master` must pass the `Spotless`, `Tests` and `Docs` checks before it can be merged.
+
+Releases follow git-flow and are automated with GitHub Actions:
+
+1. Run the **Start release** workflow from `develop` (optionally with the version; by default it is the current one
+   without `-SNAPSHOT`). It creates `release/X.Y.Z`, a commit that removes `-SNAPSHOT` and a pull request to `master`.
+2. Fix whatever is needed in the `release/X.Y.Z` branch and merge the pull request **with a merge commit**, not squash.
+3. The **Finish release** workflow creates the tag and the GitHub release, asks [JitPack](https://jitpack.io) to build
+   it, publishes the documentation of the version and opens a pull request `sync/X.Y.Z` to `develop` that starts the
+   next `X.(Y+1).0-SNAPSHOT`. Merge it with a merge commit too.
+
+The workflows that open pull requests need a `RELEASE_TOKEN` secret: a personal access token with the `repo` and
+`workflow` scopes. With the default token GitHub does not run the CI on those pull requests.

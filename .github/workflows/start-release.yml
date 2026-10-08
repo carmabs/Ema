@@ -1,0 +1,61 @@
+name: Start release
+
+# Creates release/<version> from develop, drops the -SNAPSHOT suffix in a commit and opens the pull request to master.
+# Needs the RELEASE_TOKEN secret (a personal access token with the repo and workflow scopes): the pull requests
+# opened with the default GITHUB_TOKEN do not trigger the CI, and its checks are required to merge.
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to release (empty: the current one without -SNAPSHOT)"
+        required: false
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  start:
+    name: Start release
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop'
+    env:
+      GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.RELEASE_TOKEN }}
+          fetch-depth: 0
+
+      - name: Resolve version
+        id: version
+        run: |
+          current=$(sed -nE 's/.*versionName +: +"([^"]+)".*/\1/p' build-system/config.gradle)
+          version="${{ inputs.version }}"
+          version="${version:-${current%-SNAPSHOT}}"
+          if ! [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::'$version' is not a valid version (expected X.Y.Z)"; exit 1
+          fi
+          if git ls-remote --exit-code --tags origin "$version" >/dev/null || \
+             git ls-remote --exit-code --heads origin "release/$version" >/dev/null; then
+            echo "::error::The tag or the branch release/$version already exists"; exit 1
+          fi
+          echo "current=$current" >> "$GITHUB_OUTPUT"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Create the release branch
+        run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
+          git checkout -b "release/${{ steps.version.outputs.version }}"
+          sed -i -E 's/(versionName +: +")[^"]+(")/\1${{ steps.version.outputs.version }}\2/' build-system/config.gradle
+          git commit -am "Release ${{ steps.version.outputs.version }}"
+          git push origin "release/${{ steps.version.outputs.version }}"
+
+      - name: Open the pull request to master
+        run: |
+          gh pr create --base master --head "release/${{ steps.version.outputs.version }}" \
+            --title "Release ${{ steps.version.outputs.version }}" \
+            --body "Release ${{ steps.version.outputs.version }}. Merge it with a merge commit (not squash): when it is merged the tag, the documentation and the pull request that syncs develop are created."

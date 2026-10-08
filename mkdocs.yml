@@ -127,3 +127,9 @@ nav:
       - Utilities: android-view/utilities.md
   - Recommendations: recommendations.md
   - Contributing: contributing.md
+
+# Version selector: every release is published with mike (see docs/contributing.md)
+extra:
+  version:
+    provider: mike
+    default: latest
