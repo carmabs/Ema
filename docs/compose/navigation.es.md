@@ -4,10 +4,14 @@ En Ema **el ViewModel nunca navega**. Publica un [evento](../concepts/events.es.
 lambda `onEvent` del destino se lo pasa a un **navigator**, que sabe cómo moverse.
 
 ```mermaid
-flowchart LR
-    VM[ViewModel] -- "postEvent(UserTypeSelected)" --> G[onEvent de createComposableScreen]
-    G -- "handleEvent(event)" --> N[Navigator]
-    N -- "navController.navigate(route)" --> NC[NavController]
+sequenceDiagram
+    participant VM as ViewModel
+    participant G as createComposableScreen
+    participant N as Navigator
+    participant NC as NavController
+    VM->>G: postEvent(UserTypeSelected)
+    G->>N: onEvent(event)
+    N->>NC: navigate(route, initializer)
 ```
 
 ## Rutas

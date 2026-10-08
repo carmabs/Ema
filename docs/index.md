@@ -11,11 +11,14 @@ It gives you three simple building blocks and takes care of everything around th
 | **Event**      | Something that happened in the feature, delivered to the view once.  | `sealed interface LoginEvent : EmaEvent`           |
 
 ```mermaid
-flowchart LR
-    V[View<br/>Compose screen] -- "dispatch(action)" --> VM[ViewModel]
-    VM -- "stateFlow: StateFlow&lt;S&gt;" --> V
-    VM -- "eventFlow: one-shot events" --> V
-    V -- "onEvent(event)" --> N[Navigator]
+sequenceDiagram
+    participant V as View
+    participant VM as ViewModel
+    participant N as Navigator
+    V->>VM: dispatch(action)
+    VM-->>V: new state (stateFlow)
+    VM-->>V: one-shot event (eventFlow)
+    V->>N: navigate(event)
 ```
 
 The view **renders** the state and **reacts** to events. It never decides business logic:

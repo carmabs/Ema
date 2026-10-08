@@ -4,10 +4,14 @@ In Ema the **ViewModel never navigates**. It posts an [event](../concepts/events
 and the view hands that event to a **navigator**, which knows how to move around.
 
 ```mermaid
-flowchart LR
-    VM[ViewModel] -- "postEvent(LoginSuccess)" --> V[Fragment.onEvent]
-    V -- "navigate(event)" --> N[Navigator]
-    N -- "navController.navigate(...)" --> NC[NavController]
+sequenceDiagram
+    participant VM as ViewModel
+    participant F as Fragment
+    participant N as Navigator
+    participant NC as NavController
+    VM->>F: postEvent(LoginSuccess)
+    F->>N: navigate(event)
+    N->>NC: navigate(actionId, initializer)
 ```
 
 ```kotlin

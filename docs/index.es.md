@@ -11,11 +11,14 @@ Te da tres piezas sencillas y se encarga de todo lo que las rodea
 | **Evento**   | Algo que ha pasado en la funcionalidad, entregado a la vista una vez.   | `sealed interface LoginEvent : EmaEvent`           |
 
 ```mermaid
-flowchart LR
-    V[Vista<br/>pantalla Compose] -- "dispatch(action)" --> VM[ViewModel]
-    VM -- "stateFlow: StateFlow&lt;S&gt;" --> V
-    VM -- "eventFlow: eventos de un solo uso" --> V
-    V -- "onEvent(event)" --> N[Navigator]
+sequenceDiagram
+    participant V as Vista
+    participant VM as ViewModel
+    participant N as Navigator
+    V->>VM: dispatch(action)
+    VM-->>V: nuevo estado (stateFlow)
+    VM-->>V: evento de un solo uso (eventFlow)
+    V->>N: navigate(event)
 ```
 
 La vista **pinta** el estado y **reacciona** a los eventos. Nunca decide lógica de negocio:

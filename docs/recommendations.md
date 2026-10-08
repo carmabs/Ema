@@ -14,16 +14,17 @@ None of this is required by Ema, but it is how the `sample/` app is organised an
 | `android-utils` | Android helpers shared by several modules.                                       | Android library |                                  |
 
 ```mermaid
-flowchart TB
+%%{init: {"flowchart": {"curve": "step"}}}%%
+flowchart LR
     app --> ui
     app --> data
     ui --> presentation
-    ui --> android-utils
-    data --> domain
-    data --> android-utils
     presentation --> domain
+    data --> domain
     domain --> ema-core
 ```
+
+The diagram leaves out `android-utils`, which `ui` and `data` use.
 
 Keeping `presentation` free of Android has two benefits:
 

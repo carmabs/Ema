@@ -14,16 +14,17 @@ Nada de esto lo exige Ema, pero así está organizada la app `sample/` y funcion
 | `android-utils` | Ayudas de Android compartidas por varios módulos.                                | Librería Android |                                 |
 
 ```mermaid
-flowchart TB
+%%{init: {"flowchart": {"curve": "step"}}}%%
+flowchart LR
     app --> ui
     app --> data
     ui --> presentation
-    ui --> android-utils
-    data --> domain
-    data --> android-utils
     presentation --> domain
+    data --> domain
     domain --> ema-core
 ```
+
+El diagrama no incluye `android-utils`, que usan `ui` y `data`.
 
 Mantener `presentation` sin Android tiene dos ventajas:
 

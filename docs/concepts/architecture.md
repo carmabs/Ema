@@ -3,23 +3,17 @@
 Every Ema screen is made of the same five pieces.
 
 ```mermaid
-flowchart TB
-    subgraph View
-        direction TB
-        F[Compose screen / Fragment]
-        NV[Navigator]
-    end
-    subgraph Presentation
-        VM[ViewModel]
-    end
-    subgraph Domain
-        UC[Use cases]
-    end
-    F -- "1. dispatch(action)" --> VM
-    VM -- "2. sideEffect { }" --> UC
-    UC -- "3. result" --> VM
-    VM -- "4. updateState / postEvent" --> F
-    F -- "5. navigate(event)" --> NV
+sequenceDiagram
+    autonumber
+    participant V as View<br/>(Compose screen / Fragment)
+    participant VM as ViewModel
+    participant UC as Use case
+    participant N as Navigator
+    V->>VM: dispatch(action)
+    VM->>UC: sideEffect { useCase(input) }
+    UC-->>VM: result
+    VM-->>V: updateState / postEvent
+    V->>N: navigate(event)
 ```
 
 | Piece         | Responsibility                                                                 | Knows about Android? |

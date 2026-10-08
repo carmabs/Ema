@@ -3,23 +3,17 @@
 Todas las pantallas de Ema se componen de las mismas cinco piezas.
 
 ```mermaid
-flowchart TB
-    subgraph Vista
-        direction TB
-        F[Pantalla Compose / Fragment]
-        NV[Navigator]
-    end
-    subgraph Presentación
-        VM[ViewModel]
-    end
-    subgraph Dominio
-        UC[Casos de uso]
-    end
-    F -- "1. dispatch(action)" --> VM
-    VM -- "2. sideEffect { }" --> UC
-    UC -- "3. resultado" --> VM
-    VM -- "4. updateState / postEvent" --> F
-    F -- "5. navigate(event)" --> NV
+sequenceDiagram
+    autonumber
+    participant V as Vista<br/>(pantalla Compose / Fragment)
+    participant VM as ViewModel
+    participant UC as Caso de uso
+    participant N as Navigator
+    V->>VM: dispatch(action)
+    VM->>UC: sideEffect { useCase(input) }
+    UC-->>VM: resultado
+    VM-->>V: updateState / postEvent
+    V->>N: navigate(event)
 ```
 
 | Pieza         | Responsabilidad                                                                | ¿Conoce Android? |

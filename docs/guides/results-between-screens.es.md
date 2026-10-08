@@ -7,11 +7,10 @@ Ema lo llama **back broadcast**. Es un mensaje punto a punto, del ViewModel de u
 sequenceDiagram
     participant H as HomeViewModel
     participant P as ProfileCreationViewModel
-    H->>H: registerBackBroadcastListener(Profile…)
-    Note over P: el usuario confirma
-    P->>P: dispatchBroadcast(user)
-    Note over P: la pantalla se cierra y el ViewModel se destruye
-    P-->>H: el listener recibe el usuario
+    Note over H: registerBackBroadcastListener(ProfileCreationViewModel)
+    Note over P: el usuario confirma:<br/>dispatchBroadcast(user)
+    Note over P: la pantalla se cierra y<br/>el ViewModel se destruye
+    P->>H: el listener recibe el usuario
 ```
 
 ## Enviar
