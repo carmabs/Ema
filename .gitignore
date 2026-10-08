@@ -5,3 +5,7 @@
 /gradlew.bat
 local.properties
 .DS_Store
+
+# Documentation preview (MkDocs)
+/.venv
+/site
