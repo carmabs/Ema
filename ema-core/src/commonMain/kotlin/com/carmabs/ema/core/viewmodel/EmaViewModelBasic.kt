@@ -7,14 +7,11 @@ import com.carmabs.ema.core.action.EmaEventDispatcher
 import com.carmabs.ema.core.broadcast.BackBroadcastId
 import com.carmabs.ema.core.broadcast.backBroadcastId
 import com.carmabs.ema.core.concurrency.EmaMainScope
-import com.carmabs.ema.core.extension.checkNull
-import com.carmabs.ema.core.extension.emaName
 import com.carmabs.ema.core.model.EmaConfiguration
 import com.carmabs.ema.core.model.EmaFunctionResultHandler
 import com.carmabs.ema.core.model.EmaSideEffectConfig
+import com.carmabs.ema.core.model.emaSideEffect
 import com.carmabs.ema.core.model.reflection.EmaReflection
-import com.carmabs.ema.core.model.reflection.EmaReflectionData
-import com.carmabs.ema.core.model.reflection.EmaReflectionException
 import com.carmabs.ema.core.state.EmaEvent
 import com.carmabs.ema.core.state.EmaState
 import kotlin.coroutines.CoroutineContext
@@ -184,46 +181,15 @@ abstract class EmaViewModelBasic<S : EmaState, E : EmaEvent>(
         throwException: Boolean,
         logName: String?,
         action: suspend CoroutineScope.() -> T
-    ) = EmaFunctionResultHandler(
+    ) = emaSideEffect(
+        container = this,
         scope = scope,
         dispatcher = dispatcher,
-        onAction = action,
-        throwExceptions = throwException,
-        successDefaultAction = sideEffectConfig.defaultSuccessAction?.let { success ->
-            {
-                success.invoke(EmaReflectionData(generateEmaReflection(action, logName), it))
-            }
-        },
-        errorDefaultAction = when (val exceptionPolicy = sideEffectConfig.exceptionPolicy) {
-            is EmaSideEffectConfig.ExceptionPolicy.CatchExceptions -> {
-                {
-                    exceptionPolicy.defaultAction?.invoke(
-                        EmaReflectionException(
-                            generateEmaReflection(
-                                action,
-                                logName
-                            ),
-                            it
-                        )
-                    )
-                }
-            }
-
-            EmaSideEffectConfig.ExceptionPolicy.ThrowExceptions -> null
-        },
-        finishDefaultAction = sideEffectConfig.defaultFinishAction?.let {
-            {
-                it.invoke(generateEmaReflection(action, logName))
-            }
-        }
+        logName = logName,
+        sideEffectConfig = sideEffectConfig,
+        throwException = throwException,
+        action = action
     )
-
-    private fun <T> generateEmaReflection(action: suspend CoroutineScope.() -> T, logName: String?): EmaReflection =
-        EmaReflection(
-            containerClassName = this::class.simpleName.checkNull(),
-            containerClassQualifiedName = this::class.emaName,
-            methodName = logName ?: sideEffectConfig.methodNameResolver.resolve(this, action)
-        )
 
     protected fun <T> singleSideEffect(
         id: String,
