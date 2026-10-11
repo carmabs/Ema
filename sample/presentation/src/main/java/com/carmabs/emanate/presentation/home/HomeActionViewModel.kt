@@ -38,6 +38,9 @@ class HomeActionViewModel(private val getUserFriendsUseCase: GetUserFriendsUseCa
             HomeAction.ProfileClicked -> {
                 onActionCreateProfileClicked()
             }
+
+            // Only dispatched by HomeViewModel
+            is HomeFriendsLoaded -> Unit
         }
     }
 

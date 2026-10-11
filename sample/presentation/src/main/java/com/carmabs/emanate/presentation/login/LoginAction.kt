@@ -1,5 +1,6 @@
 package com.carmabs.emanate.presentation.login
 
+import com.carmabs.domain.model.User
 import com.carmabs.emanate.core.action.EmaAction
 
 /**
@@ -25,4 +26,13 @@ sealed interface LoginAction : EmaAction {
         data object BadCredentialsAccepted : Error
         data object BackPressed : Error
     }
+}
+
+/**
+ * Steps of the login request. Only dispatched by the side effects of LoginViewModel.
+ */
+internal sealed interface LoginRequest : LoginAction {
+    data object Started : LoginRequest
+    data class Succeeded(val user: User) : LoginRequest
+    data object Failed : LoginRequest
 }

@@ -34,6 +34,9 @@ class LoginActionViewModel(private val loginUseCase: LoginUseCase, initialDataSt
             LoginAction.Error.BadCredentialsAccepted -> onActionBadCredentialsAccepted()
 
             LoginAction.Error.BackPressed -> onActionErrorBackPressed()
+
+            // Only dispatched by LoginViewModel
+            is LoginRequest -> Unit
         }
     }
 

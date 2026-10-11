@@ -1,5 +1,6 @@
 package com.carmabs.emanate.presentation.home
 
+import com.carmabs.domain.model.User
 import com.carmabs.emanate.core.action.EmaAction
 
 /**
@@ -14,3 +15,8 @@ import com.carmabs.emanate.core.action.EmaAction
 sealed interface HomeAction : EmaAction {
     data object ProfileClicked : HomeAction
 }
+
+/**
+ * The friends of the user have been loaded. Only dispatched by the side effects of HomeViewModel.
+ */
+internal data class HomeFriendsLoaded(val friends: List<User>) : HomeAction
