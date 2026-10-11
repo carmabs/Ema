@@ -4,6 +4,7 @@ import com.carmabs.emanate.core.action.EmaAction
 import com.carmabs.emanate.core.source.SourceSetupScope
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
+import com.carmabs.emanate.core.viewmodel.EmaViewModel
 import kotlin.reflect.KClass
 
 /**
@@ -42,6 +43,11 @@ fun <S : EmaState, F : EmaAction> reducerOf(
 }
 
 fun <S : EmaState, A : EmaAction, E : EmaEvent, F : EmaAction> SourceSetupScope<S, A, E>.reducerOf(
+    actionType: KClass<F>,
+    reduceAction: ReducerScope<S>.(F) -> S
+): EmaReducer<S, F> = com.carmabs.emanate.core.source.reducer.reducerOf(actionType, reduceAction)
+
+fun <S : EmaState, A : EmaAction, E : EmaEvent, F : EmaAction> EmaViewModel<S, A, E>.reducerOf(
     actionType: KClass<F>,
     reduceAction: ReducerScope<S>.(F) -> S
 ): EmaReducer<S, F> = com.carmabs.emanate.core.source.reducer.reducerOf(actionType, reduceAction)

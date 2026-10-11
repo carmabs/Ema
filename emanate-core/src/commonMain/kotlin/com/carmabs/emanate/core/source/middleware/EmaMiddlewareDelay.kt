@@ -4,6 +4,7 @@ import com.carmabs.emanate.core.action.EmaAction
 import com.carmabs.emanate.core.source.SourceSetupScope
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
+import com.carmabs.emanate.core.viewmodel.EmaViewModel
 import kotlin.reflect.KClass
 import kotlin.time.Duration
 import kotlinx.coroutines.delay
@@ -49,6 +50,13 @@ fun <S : EmaState, A : EmaAction, F : EmaAction> middlewareDelayOf(
 }
 
 fun <S : EmaState, A : EmaAction, E : EmaEvent, F : EmaAction> SourceSetupScope<S, A, E>.middlewareDelayOf(
+    actionType: KClass<F>,
+    delay: Duration,
+    onActionDelayed: (NextAfterScope<S, A>.(F) -> Unit)? = null
+): EmaMiddlewareDelay<S, A, F> =
+    com.carmabs.emanate.core.source.middleware.middlewareDelayOf(actionType, delay, onActionDelayed)
+
+fun <S : EmaState, A : EmaAction, E : EmaEvent, F : EmaAction> EmaViewModel<S, A, E>.middlewareDelayOf(
     actionType: KClass<F>,
     delay: Duration,
     onActionDelayed: (NextAfterScope<S, A>.(F) -> Unit)? = null

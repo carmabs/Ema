@@ -63,6 +63,7 @@ fun <S : EmaState, A : EmaAction, E : EmaEvent> EmaSource(
         middlewares = setupScope.middlewareList,
         reducers = setupScope.reducerList,
         sideEffects = setupScope.sideEffectList,
+        container = null,
         eventDispatcher = DefaultEmaEventDispatcher()
     )
 }
@@ -86,6 +87,7 @@ class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
     private val middlewares: List<EmaMiddleware<S, A, *>>,
     private val reducers: List<EmaReducer<S, *>>,
     private val sideEffects: List<SideEffect<S, A, E, *>>,
+    container: Any?,
     private val eventDispatcher: DefaultEmaEventDispatcher<E>
 ) : EmaEventDispatcher<E>,
     EmaActionDispatcher<A> {
@@ -94,6 +96,11 @@ class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
      * Scope of all the work of the source, cancelled by [close]
      */
     private val scope = CoroutineScope(SupervisorJob() + dispatcher)
+
+    /**
+     * Reported as the class that launches the side effects: the view model that owns the source, or the source
+     */
+    private val container: Any = container ?: this
 
     val stateFlow: StateFlow<S> = mutableStateFlow.asStateFlow()
 
@@ -251,7 +258,7 @@ class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
      */
     internal fun launch(key: Any?, timeout: Duration?, onTimeout: () -> Unit, block: suspend () -> Unit): Job {
         key?.let { removeJob(it)?.cancel() }
-        val job = emaSideEffect(container = this, scope = scope) {
+        val job = emaSideEffect(container = container, scope = scope) {
             if (timeout == null) {
                 block()
             } else if (withTimeoutOrNull(timeout) { block() } == null) {
