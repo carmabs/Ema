@@ -4,9 +4,9 @@ import android.app.Application
 import com.carmabs.app.di.dataModule
 import com.carmabs.app.di.uiModule
 import com.carmabs.app.di.useCaseModule
-import com.carmabs.ema.android.configuration.Android
-import com.carmabs.ema.core.Ema
-import com.carmabs.ema.core.model.EmaConfiguration
+import com.carmabs.emanate.android.configuration.Android
+import com.carmabs.emanate.core.Ema
+import com.carmabs.emanate.core.model.EmaConfiguration
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 

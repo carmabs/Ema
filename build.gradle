@@ -14,10 +14,10 @@ apply from: 'build-system/config.gradle'
 
 // Coverage report of the published modules: ./gradlew koverHtmlReport (build/reports/kover/html)
 dependencies {
-    kover project(':ema-core')
-    kover project(':ema-android')
-    kover project(':ema-android-view')
-    kover project(':ema-android-compose')
+    kover project(':emanate-core')
+    kover project(':emanate-android')
+    kover project(':emanate-android-view')
+    kover project(':emanate-android-compose')
 }
 
 kover {

@@ -2,7 +2,7 @@ package com.carmabs.domain.usecase
 
 import com.carmabs.domain.model.User
 import com.carmabs.domain.repository.Repository
-import com.carmabs.ema.core.usecase.EmaUseCase
+import com.carmabs.emanate.core.usecase.EmaUseCase
 
 /**
  * Login

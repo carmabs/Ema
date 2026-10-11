@@ -2,14 +2,14 @@ plugins {
     alias(libs.plugins.android.application)
 }
 android {
-    compileSdk = rootProject.emaVersioning.compileSdk
+    compileSdk = rootProject.emanateVersioning.compileSdk
 
     defaultConfig {
-        applicationId = "com.carmabs.ema"
-        minSdk = rootProject.emaVersioning.minSdk
-        targetSdk = rootProject.emaVersioning.targetSdk
-        versionCode = rootProject.emaVersioning.versionCode
-        versionName = rootProject.emaVersioning.versionName
+        applicationId = "com.carmabs.emanate"
+        minSdk = rootProject.emanateVersioning.minSdk
+        targetSdk = rootProject.emanateVersioning.targetSdk
+        versionCode = rootProject.emanateVersioning.versionCode
+        versionName = rootProject.emanateVersioning.versionName
         testInstrumentationRunner = "android.support.test.runner.AndroidJUnitRunner"
     }
 
@@ -20,7 +20,7 @@ android {
         }
     }
 
-    def javaVersion = rootProject.emaVersioning.javaVersion
+    def javaVersion = rootProject.emanateVersioning.javaVersion
 
     compileOptions {
         sourceCompatibility = javaVersion
@@ -29,11 +29,11 @@ android {
 
     kotlin {
         compilerOptions {
-            jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.fromTarget(rootProject.emaVersioning.kotlinJvmTarget)
+            jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.fromTarget(rootProject.emanateVersioning.kotlinJvmTarget)
         }
     }
 
-    namespace = 'com.carmabs.ema.sample.injection'
+    namespace = 'com.carmabs.emanate.sample.injection'
 
 }
 
@@ -44,6 +44,6 @@ dependencies {
     implementation project(path: ':android-utils')
     implementation project(path: ':domain')
 
-    implementation project(rootProject.emaLibraries.emaAndroid)
+    implementation project(rootProject.emanateLibraries.emanateAndroid)
     implementation libs.koin.android
 }

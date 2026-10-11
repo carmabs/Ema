@@ -35,10 +35,10 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
       - run: >
           ./gradlew
-          :ema-core:allTests
-          :ema-android:testDebugUnitTest
-          :ema-android-view:testDebugUnitTest
-          :ema-android-compose:testDebugUnitTest
+          :emanate-core:allTests
+          :emanate-android:testDebugUnitTest
+          :emanate-android-view:testDebugUnitTest
+          :emanate-android-compose:testDebugUnitTest
 
   docs:
     name: Docs

@@ -12,7 +12,7 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         maven { url = "https://jitpack.io" }
-        // Tools downloaded by the Kotlin plugin to compile and test the JS and Wasm targets of ema-core
+        // Tools downloaded by the Kotlin plugin to compile and test the JS and Wasm targets of emanate-core
         ivy {
             url = "https://nodejs.org/dist"
             patternLayout { artifact("v[revision]/[artifact](-v[revision]-[classifier]).[ext]") }
@@ -33,9 +33,9 @@ dependencyResolutionManagement {
         }
     }
 }
-rootProject.name = "Ema"
+rootProject.name = "Emanate"
 
-include ':ema-core',
-        ':ema-android',
-        ':ema-android-view',
-        ':ema-android-compose'
+include ':emanate-core',
+        ':emanate-android',
+        ':emanate-android-view',
+        ':emanate-android-compose'

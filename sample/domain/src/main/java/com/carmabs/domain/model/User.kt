@@ -1,6 +1,6 @@
 package com.carmabs.domain.model
 
-import com.carmabs.ema.core.constants.STRING_EMPTY
+import com.carmabs.emanate.core.constants.STRING_EMPTY
 import kotlinx.serialization.Serializable
 
 /**
