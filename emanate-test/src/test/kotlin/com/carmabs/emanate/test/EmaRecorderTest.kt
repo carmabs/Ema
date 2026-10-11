@@ -1,0 +1,165 @@
+package com.carmabs.emanate.test
+
+import com.carmabs.emanate.core.Ema
+import com.carmabs.emanate.core.action.EmaAction
+import com.carmabs.emanate.core.source.EmaSource
+import com.carmabs.emanate.core.source.SourceSetupScope
+import com.carmabs.emanate.core.state.EmaEvent
+import com.carmabs.emanate.core.state.EmaState
+import com.carmabs.emanate.core.viewmodel.EmaViewModel
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertNotSame
+import kotlin.test.assertSame
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
+
+private data class ProfileState(val name: String = "", val loading: Boolean = false) : EmaState
+
+private sealed interface ProfileAction : EmaAction {
+    data object Load : ProfileAction
+    data class Loaded(val name: String) : ProfileAction
+}
+
+private sealed interface ProfileEvent : EmaEvent {
+    data object Welcome : ProfileEvent
+}
+
+private class ProfileViewModel :
+    EmaViewModel<ProfileState, ProfileAction, ProfileEvent>(
+        initialDataState = ProfileState(),
+        logger = null
+    ) {
+    override fun SourceSetupScope<ProfileState, ProfileAction, ProfileEvent>.setup() {
+        addReducer<ProfileAction> { action ->
+            when (action) {
+                ProfileAction.Load -> state.copy(loading = true)
+                is ProfileAction.Loaded -> state.copy(name = action.name, loading = false)
+            }
+        }
+        addSideEffect<ProfileAction.Load> {
+            delay(1000)
+            dispatch(ProfileAction.Loaded("Ema"))
+        }
+        addSideEffect<ProfileAction.Loaded> { postEvent(ProfileEvent.Welcome) }
+    }
+}
+
+@OptIn(ExperimentalCoroutinesApi::class)
+class EmaRecorderTest {
+
+    @BeforeTest
+    fun setUp() {
+        useTestDispatchers()
+    }
+
+    @AfterTest
+    fun tearDown() {
+        resetTestDispatchers()
+    }
+
+    @Test
+    fun `records a view model`() = runTest {
+        val viewModel = ProfileViewModel()
+        val recorder = viewModel.record()
+
+        viewModel.dispatch(ProfileAction.Load)
+        advanceUntilIdle()
+
+        recorder.assertActions(ProfileAction.Load, ProfileAction.Loaded("Ema"))
+        recorder.assertStates(ProfileState(loading = true), ProfileState(name = "Ema"))
+        recorder.assertState(ProfileState(name = "Ema"))
+        recorder.assertState { !it.loading }
+        recorder.assertEvents(ProfileEvent.Welcome)
+    }
+
+    @Test
+    fun `records a source`() = runTest {
+        val source = EmaSource<ProfileState, ProfileAction, ProfileEvent>(ProfileState()) {
+            addReducer<ProfileAction> { action ->
+                when (action) {
+                    ProfileAction.Load -> state.copy(loading = true)
+                    is ProfileAction.Loaded -> state.copy(name = action.name, loading = false)
+                }
+            }
+        }
+        val recorder = source.record()
+
+        source.dispatch(ProfileAction.Loaded("Ema"))
+        advanceUntilIdle()
+
+        recorder.assertActions(ProfileAction.Loaded("Ema"))
+        recorder.assertState(ProfileState(name = "Ema"))
+        recorder.assertNoEvents()
+        source.close()
+    }
+
+    @Test
+    fun `failed checks explain the difference`() = runTest {
+        val viewModel = ProfileViewModel()
+        val recorder = viewModel.record()
+
+        viewModel.dispatch(ProfileAction.Load)
+
+        val error = assertFailsWith<AssertionError> { recorder.assertActions(ProfileAction.Loaded("Ema")) }
+        assertEquals("Expected actions <[Loaded(name=Ema)]> but were <[Load]>", error.message)
+        assertFailsWith<AssertionError> { recorder.assertState { !it.loading } }
+        assertFailsWith<AssertionError> { recorder.assertEvents(ProfileEvent.Welcome) }
+    }
+
+    @Test
+    fun `the view model can be cleared in the test`() = runTest {
+        val viewModel = ProfileViewModel()
+        val recorder = viewModel.record()
+
+        viewModel.onResumeView()
+        viewModel.onCleared()
+        advanceUntilIdle()
+
+        recorder.assertActions(EmaAction.Lifecycle.Resumed, EmaAction.Lifecycle.Destroyed)
+    }
+}
+
+@OptIn(ExperimentalCoroutinesApi::class)
+class EmaRecorderStandardDispatcherTest {
+
+    private lateinit var dispatcher: TestDispatcher
+
+    @BeforeTest
+    fun setUp() {
+        dispatcher = useTestDispatchers(StandardTestDispatcher())
+    }
+
+    @AfterTest
+    fun tearDown() {
+        resetTestDispatchers()
+    }
+
+    @Test
+    fun `with a standard dispatcher the actions run when the test advances`() = runTest {
+        val viewModel = ProfileViewModel()
+        val recorder = viewModel.record()
+
+        viewModel.dispatch(ProfileAction.Load)
+        recorder.assertActions()
+
+        advanceUntilIdle()
+        recorder.assertActions(ProfileAction.Load, ProfileAction.Loaded("Ema"))
+    }
+
+    @Test
+    fun `resetting the dispatchers restores the configuration of Ema`() {
+        assertSame(dispatcher, Ema.configuration.dispatchers.main)
+
+        resetTestDispatchers()
+
+        assertNotSame(dispatcher, Ema.configuration.dispatchers.main)
+    }
+}

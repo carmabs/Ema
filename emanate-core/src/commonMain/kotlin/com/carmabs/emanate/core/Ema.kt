@@ -44,7 +44,7 @@ object Ema {
     /**
      * Replaces the configuration, for example to run the ViewModels and use cases on the dispatchers of a test. Unlike
      * [init], it can be called any number of times, so call it in the setup of each test. It is internal: the test
-     * utilities of EmaX use it as a friend module.
+     * utilities of emanate-test use it as a friend module.
      */
     internal fun initForTest(configuration: EmaConfiguration) {
         initializedConfiguration = configuration

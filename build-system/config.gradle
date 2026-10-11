@@ -12,6 +12,7 @@ rootProject.ext {
             artifactAndroidId      : 'emanate-android',
             artifactComposeId      : 'emanate-compose',
             artifactAndroidViewId  : 'emanate-android-view',
+            artifactTestId         : 'emanate-test',
             javaVersion            : JavaVersion.VERSION_21,
             kotlinJvmTarget        : "21",
             testRunner             : "androidx.test.runner.AndroidJUnitRunner",

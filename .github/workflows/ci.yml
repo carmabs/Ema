@@ -39,6 +39,7 @@ jobs:
           :emanate-android:testDebugUnitTest
           :emanate-android-view:testDebugUnitTest
           :emanate-android-compose:testDebugUnitTest
+          :emanate-test:test
 
   docs:
     name: Docs
