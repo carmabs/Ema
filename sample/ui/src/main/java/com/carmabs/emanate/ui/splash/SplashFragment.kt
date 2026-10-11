@@ -5,14 +5,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.carmabs.emanate.android.ui.EmaFragment
+import com.carmabs.emanate.core.action.EmaAction
 import com.carmabs.emanate.core.navigator.EmaNavigator
 import com.carmabs.emanate.core.state.EmaState
+import com.carmabs.emanate.presentation.base.SampleViewModel
+import com.carmabs.emanate.presentation.splash.SplashActionViewModel
 import com.carmabs.emanate.presentation.splash.SplashEvent
-import com.carmabs.emanate.presentation.splash.SplashViewModel
 import com.carmabs.emanate.sample.ui.databinding.SplashFragmentBinding
 import org.koin.android.ext.android.get
 
-class SplashFragment : EmaFragment<SplashFragmentBinding, EmaState.EMPTY, SplashViewModel, SplashEvent>() {
+class SplashFragment :
+    EmaFragment<
+        SplashFragmentBinding,
+        EmaState.EMPTY,
+        SampleViewModel<EmaState.EMPTY, EmaAction.EMPTY, SplashEvent>,
+        SplashEvent
+        >() {
 
     override fun createViewBinding(inflater: LayoutInflater, container: ViewGroup?): SplashFragmentBinding =
         SplashFragmentBinding.inflate(inflater, container, false)
@@ -34,7 +42,8 @@ class SplashFragment : EmaFragment<SplashFragmentBinding, EmaState.EMPTY, Splash
         }
     }
 
-    override fun provideViewModel(): SplashViewModel = get()
+    override fun provideViewModel(): SampleViewModel<EmaState.EMPTY, EmaAction.EMPTY, SplashEvent> =
+        get<SplashActionViewModel>()
 
     override fun SplashFragmentBinding.onState(state: EmaState.EMPTY) {
     }

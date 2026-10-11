@@ -4,11 +4,11 @@ import com.carmabs.domain.model.User
 import com.carmabs.domain.usecase.GetUserFriendsUseCase
 import com.carmabs.emanate.core.action.EmaAction
 import com.carmabs.emanate.core.broadcast.backBroadcastId
-import com.carmabs.emanate.presentation.base.BaseViewModel
-import com.carmabs.emanate.presentation.profile.creation.ProfileCreationViewModel
+import com.carmabs.emanate.presentation.base.BaseActionViewModel
+import com.carmabs.emanate.presentation.profile.creation.ProfileCreationActionViewModel
 
-class HomeViewModel(private val getUserFriendsUseCase: GetUserFriendsUseCase, initialDataState: HomeState) :
-    BaseViewModel<HomeState, HomeAction, HomeEvent>(initialDataState) {
+class HomeActionViewModel(private val getUserFriendsUseCase: GetUserFriendsUseCase, initialDataState: HomeState) :
+    BaseActionViewModel<HomeState, HomeAction, HomeEvent>(initialDataState) {
 
     private lateinit var user: User
     override fun onStateCreated(initializer: EmaAction.Initializer?) {
@@ -46,7 +46,7 @@ class HomeViewModel(private val getUserFriendsUseCase: GetUserFriendsUseCase, in
     }
 
     override fun onBroadcastListenerSetup() {
-        registerBroadcastListener(ProfileCreationViewModel::class.backBroadcastId) {
+        registerBroadcastListener(ProfileCreationActionViewModel::class.backBroadcastId) {
             val user = it as User
             dispatchBroadcast(user)
             updateState {

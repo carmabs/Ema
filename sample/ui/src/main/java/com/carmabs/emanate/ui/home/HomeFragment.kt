@@ -12,18 +12,20 @@ import com.carmabs.emanate.android.initializer.bundle.strategy.BundleSerializerS
 import com.carmabs.emanate.android.ui.EmaFragment
 import com.carmabs.emanate.android.ui.recycler.EmaBaseRecyclerAdapter
 import com.carmabs.emanate.core.navigator.EmaNavigator
+import com.carmabs.emanate.presentation.base.SampleViewModel
 import com.carmabs.emanate.presentation.extension.fullNameOf
 import com.carmabs.emanate.presentation.extension.initialsOf
 import com.carmabs.emanate.presentation.home.HomeAction
+import com.carmabs.emanate.presentation.home.HomeActionViewModel
 import com.carmabs.emanate.presentation.home.HomeEvent
 import com.carmabs.emanate.presentation.home.HomeInitializer
 import com.carmabs.emanate.presentation.home.HomeState
-import com.carmabs.emanate.presentation.home.HomeViewModel
 import com.carmabs.emanate.sample.ui.R
 import com.carmabs.emanate.sample.ui.databinding.HomeFragmentBinding
 import org.koin.android.ext.android.get
 
-class HomeFragment : EmaFragment<HomeFragmentBinding, HomeState, HomeViewModel, HomeEvent>() {
+class HomeFragment :
+    EmaFragment<HomeFragmentBinding, HomeState, SampleViewModel<HomeState, HomeAction, HomeEvent>, HomeEvent>() {
 
     private var adapter: EmaBaseRecyclerAdapter<User>? = null
     override val initializerStrategy: BundleSerializerStrategy
@@ -45,7 +47,8 @@ class HomeFragment : EmaFragment<HomeFragmentBinding, HomeState, HomeViewModel, 
         }
     }
 
-    override fun provideViewModel(): HomeViewModel = get()
+    override fun provideViewModel(): SampleViewModel<HomeState, HomeAction, HomeEvent> =
+        get<HomeActionViewModel>()
 
     override fun HomeFragmentBinding.onState(state: HomeState) {
         state.userData?.also { onUserData(it) }

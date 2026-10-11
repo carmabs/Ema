@@ -7,11 +7,11 @@ import com.carmabs.emanate.core.broadcast.backBroadcastId
 import com.carmabs.emanate.core.constants.STRING_EMPTY
 import com.carmabs.emanate.core.model.onFailure
 import com.carmabs.emanate.core.model.onSuccess
-import com.carmabs.emanate.presentation.base.BaseViewModel
-import com.carmabs.emanate.presentation.home.HomeViewModel
+import com.carmabs.emanate.presentation.base.BaseActionViewModel
+import com.carmabs.emanate.presentation.home.HomeActionViewModel
 
-class LoginViewModel(private val loginUseCase: LoginUseCase, initialDataState: LoginState) :
-    BaseViewModel<LoginState, LoginAction, LoginEvent>(initialDataState) {
+class LoginActionViewModel(private val loginUseCase: LoginUseCase, initialDataState: LoginState) :
+    BaseActionViewModel<LoginState, LoginAction, LoginEvent>(initialDataState) {
     override fun onStateCreated(initializer: EmaAction.Initializer?) = Unit
     override fun onAction(action: LoginAction) {
         when (action) {
@@ -60,7 +60,7 @@ class LoginViewModel(private val loginUseCase: LoginUseCase, initialDataState: L
     private var pendingUser: User? = null
 
     override fun onBroadcastListenerSetup() {
-        registerBroadcastListener(HomeViewModel::class.backBroadcastId) {
+        registerBroadcastListener(HomeActionViewModel::class.backBroadcastId) {
             pendingUser = it as User
         }
     }

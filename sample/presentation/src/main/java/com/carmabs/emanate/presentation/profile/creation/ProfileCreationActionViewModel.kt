@@ -3,10 +3,10 @@ package com.carmabs.emanate.presentation.profile.creation
 import com.carmabs.domain.model.Role
 import com.carmabs.domain.model.User
 import com.carmabs.emanate.core.action.EmaAction
-import com.carmabs.emanate.presentation.base.BaseViewModel
+import com.carmabs.emanate.presentation.base.BaseActionViewModel
 
-class ProfileCreationViewModel(initialDataState: ProfileCreationState) :
-    BaseViewModel<ProfileCreationState, ProfileCreationAction, ProfileCreationEvent>(
+class ProfileCreationActionViewModel(initialDataState: ProfileCreationState) :
+    BaseActionViewModel<ProfileCreationState, ProfileCreationAction, ProfileCreationEvent>(
         initialDataState
     ) {
     override fun onStateCreated(initializer: EmaAction.Initializer?) {

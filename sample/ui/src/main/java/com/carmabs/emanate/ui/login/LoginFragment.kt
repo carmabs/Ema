@@ -12,12 +12,13 @@ import com.carmabs.emanate.android.extension.setTextWithCursorAtEnd
 import com.carmabs.emanate.core.constants.STRING_EMPTY
 import com.carmabs.emanate.core.model.EmaText
 import com.carmabs.emanate.core.navigator.EmaNavigator
+import com.carmabs.emanate.presentation.base.SampleViewModel
 import com.carmabs.emanate.presentation.extension.fullName
 import com.carmabs.emanate.presentation.login.LoginAction
+import com.carmabs.emanate.presentation.login.LoginActionViewModel
 import com.carmabs.emanate.presentation.login.LoginEvent
 import com.carmabs.emanate.presentation.login.LoginOverlap
 import com.carmabs.emanate.presentation.login.LoginState
-import com.carmabs.emanate.presentation.login.LoginViewModel
 import com.carmabs.emanate.sample.ui.R
 import com.carmabs.emanate.sample.ui.databinding.LoginFragmentBinding
 import com.carmabs.emanate.ui.base.BaseFragment
@@ -25,7 +26,8 @@ import com.carmabs.emanate.ui.dialog.error.ErrorDialogData
 import com.carmabs.emanate.ui.dialog.error.ErrorDialogListener
 import org.koin.android.ext.android.get
 
-class LoginFragment : BaseFragment<LoginFragmentBinding, LoginState, LoginViewModel, LoginEvent>() {
+class LoginFragment :
+    BaseFragment<LoginFragmentBinding, LoginState, SampleViewModel<LoginState, LoginAction, LoginEvent>, LoginEvent>() {
 
     override fun createViewBinding(inflater: LayoutInflater, container: ViewGroup?): LoginFragmentBinding =
         LoginFragmentBinding.inflate(inflater, container, false)
@@ -117,7 +119,8 @@ class LoginFragment : BaseFragment<LoginFragmentBinding, LoginState, LoginViewMo
         }
     }
 
-    override fun provideViewModel(): LoginViewModel = get()
+    override fun provideViewModel(): SampleViewModel<LoginState, LoginAction, LoginEvent> =
+        get<LoginActionViewModel>()
 
     override suspend fun LoginFragmentBinding.onEvent(event: LoginEvent) {
         when (event) {

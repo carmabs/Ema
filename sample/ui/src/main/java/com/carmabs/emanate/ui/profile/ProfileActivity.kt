@@ -18,9 +18,9 @@ import com.carmabs.emanate.presentation.profile.creation.ProfileCreationAction
 import com.carmabs.emanate.presentation.profile.creation.ProfileCreationEvent
 import com.carmabs.emanate.presentation.profile.creation.ProfileCreationInitializer
 import com.carmabs.emanate.presentation.profile.creation.ProfileCreationState
-import com.carmabs.emanate.presentation.profile.creation.ProfileCreationViewModel
+import com.carmabs.emanate.presentation.profile.creation.ProfileCreationActionViewModel
 import com.carmabs.emanate.presentation.profile.onboarding.ProfileOnBoardingInitializer
-import com.carmabs.emanate.presentation.profile.onboarding.ProfileOnBoardingViewModel
+import com.carmabs.emanate.presentation.profile.onboarding.ProfileOnBoardingActionViewModel
 import com.carmabs.emanate.ui.profile.creation.ProfileCreationScreenContent
 import com.carmabs.emanate.ui.profile.onboarding.ProfileOnBoardingNavigator
 import com.carmabs.emanate.ui.profile.onboarding.ProfileOnBoardingScreenContent
@@ -58,11 +58,11 @@ class ProfileActivity : ComponentActivity() {
                         onEvent = {
                             navigator.handleProfileOnBoardingEvent(it)
                         },
-                        viewModel = { get<ProfileOnBoardingViewModel>() }
+                        viewModel = { get<ProfileOnBoardingActionViewModel>() }
                     )
                     createComposableScreen(
                         screenContent = ProfileCreationScreenContent(),
-                        viewModel = { get<ProfileCreationViewModel>() },
+                        viewModel = { get<ProfileCreationActionViewModel>() },
                         onEvent = {
                             navigator.handleProfileCreationEvent(it)
                         },
