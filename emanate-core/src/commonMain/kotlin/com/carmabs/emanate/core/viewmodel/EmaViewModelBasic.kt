@@ -221,7 +221,7 @@ abstract class EmaViewModelBasic<S : EmaState, E : EmaEvent>(
     private val emaResultHandler: ResultHandler = ResultHandler.getInstance()
 
     /**
-     * Here should implement the listener for result data from other views through [registerBackBroadcastListener] method
+     * Here should implement the listener for result data from other views through [registerBroadcastListener] method
      */
     protected open fun onBroadcastListenerSetup() = Unit
 
@@ -258,10 +258,10 @@ abstract class EmaViewModelBasic<S : EmaState, E : EmaEvent>(
     }
 
     /**
-     * Set the listener for back data when the result view is destroyed. To select the resultId use the EmaViewModelContract::class.resultId() method
-     * of the selected implementation of EmaViewModelContract whose result is required. Example SampleEmaViewModel::class.resultId()
+     * Sets the listener of the result that another view model sends with [dispatchBroadcast], received when that view
+     * model is destroyed. Select it with the id of its class, for example `SampleViewModel::class.backBroadcastId`
      */
-    protected fun registerBackBroadcastListener(backBroadcastId: BackBroadcastId, receiver: (Any?) -> Unit) {
+    protected fun registerBroadcastListener(backBroadcastId: BackBroadcastId, receiver: (Any?) -> Unit) {
         emaResultHandler.addResultReceiver(
             ReceiverModel(
                 resultKey = backBroadcastId.id,

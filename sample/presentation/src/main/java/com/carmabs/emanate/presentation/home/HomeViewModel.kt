@@ -46,7 +46,7 @@ class HomeViewModel(private val getUserFriendsUseCase: GetUserFriendsUseCase, in
     }
 
     override fun onBroadcastListenerSetup() {
-        registerBackBroadcastListener(ProfileCreationViewModel::class.backBroadcastId) {
+        registerBroadcastListener(ProfileCreationViewModel::class.backBroadcastId) {
             val user = it as User
             dispatchBroadcast(user)
             updateState {

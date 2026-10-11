@@ -60,7 +60,7 @@ class LoginViewModel(private val loginUseCase: LoginUseCase, initialDataState: L
     private var pendingUser: User? = null
 
     override fun onBroadcastListenerSetup() {
-        registerBackBroadcastListener(HomeViewModel::class.backBroadcastId) {
+        registerBroadcastListener(HomeViewModel::class.backBroadcastId) {
             pendingUser = it as User
         }
     }

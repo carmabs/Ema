@@ -7,7 +7,7 @@ Ema lo llama **back broadcast**. Es un mensaje punto a punto, del ViewModel de u
 sequenceDiagram
     participant H as HomeViewModel
     participant P as ProfileCreationViewModel
-    Note over H: registerBackBroadcastListener(ProfileCreationViewModel)
+    Note over H: registerBroadcastListener(ProfileCreationViewModel)
     Note over P: el usuario confirma:<br/>dispatchBroadcast(user)
     Note over P: la pantalla se cierra y<br/>el ViewModel se destruye
     P->>H: el listener recibe el usuario
@@ -31,7 +31,7 @@ En la pantalla que espera, registra un listener en `onBroadcastListenerSetup`. E
 
 ```kotlin
 override fun onBroadcastListenerSetup() {
-    registerBackBroadcastListener(ProfileCreationViewModel::class.backBroadcastId) {
+    registerBroadcastListener(ProfileCreationViewModel::class.backBroadcastId) {
         val user = it as User
         updateState { copy(userList = userList + user) }
     }

@@ -7,7 +7,7 @@ Ema calls this a **back broadcast**. It is a point-to-point message, from the Vi
 sequenceDiagram
     participant H as HomeViewModel
     participant P as ProfileCreationViewModel
-    Note over H: registerBackBroadcastListener(ProfileCreationViewModel)
+    Note over H: registerBroadcastListener(ProfileCreationViewModel)
     Note over P: the user confirms:<br/>dispatchBroadcast(user)
     Note over P: the screen closes and<br/>the ViewModel is cleared
     P->>H: the listener receives the user
@@ -31,7 +31,7 @@ In the screen that is waiting, register a listener in `onBroadcastListenerSetup`
 
 ```kotlin
 override fun onBroadcastListenerSetup() {
-    registerBackBroadcastListener(ProfileCreationViewModel::class.backBroadcastId) {
+    registerBroadcastListener(ProfileCreationViewModel::class.backBroadcastId) {
         val user = it as User
         updateState { copy(userList = userList + user) }
     }

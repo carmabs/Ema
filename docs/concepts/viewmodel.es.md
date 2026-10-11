@@ -37,7 +37,7 @@ class LoginViewModel(
 | `postEvent(event, allowDuplicated)`     | Envía un evento de un solo uso. Consulta [Eventos](events.es.md).        |
 | `sideEffect { }` / `singleSideEffect(id) { }` | Ejecuta trabajo suspendido. Consulta [Trabajo asíncrono y errores](../guides/async-and-errors.es.md). |
 | `dispatchBroadcast(data)`               | Envía un resultado a la pantalla anterior. Consulta [Resultados entre pantallas](../guides/results-between-screens.es.md). |
-| `registerBackBroadcastListener(...)`    | Recibe un resultado de otra pantalla.                                    |
+| `registerBroadcastListener(...)`        | Recibe un resultado de otra pantalla.                                    |
 | `scope`                                 | El `CoroutineScope` del ViewModel.                                       |
 
 ## Ganchos del ciclo de vida

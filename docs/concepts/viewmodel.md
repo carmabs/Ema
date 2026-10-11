@@ -37,7 +37,7 @@ class LoginViewModel(
 | `postEvent(event, allowDuplicated)`     | Sends a one-shot event. See [Events](events.md).                         |
 | `sideEffect { }` / `singleSideEffect(id) { }` | Runs suspending work. See [Async work and errors](../guides/async-and-errors.md). |
 | `dispatchBroadcast(data)`               | Sends a result to the previous screen. See [Results between screens](../guides/results-between-screens.md). |
-| `registerBackBroadcastListener(...)`    | Receives a result from another screen.                                   |
+| `registerBroadcastListener(...)`        | Receives a result from another screen.                                   |
 | `scope`                                 | The `CoroutineScope` of the ViewModel.                                   |
 
 ## Lifecycle hooks

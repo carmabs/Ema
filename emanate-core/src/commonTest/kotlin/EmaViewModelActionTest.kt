@@ -333,7 +333,7 @@ class ReceiverViewModel(scope: CoroutineScope) : EmaViewModelBasic<CounterState,
     val received = mutableListOf<Any?>()
     override fun onStateCreated(initializer: EmaAction.Initializer?) = Unit
     override fun onBroadcastListenerSetup() {
-        registerBackBroadcastListener(SenderViewModel::class.backBroadcastId) { received.add(it) }
+        registerBroadcastListener(SenderViewModel::class.backBroadcastId) { received.add(it) }
     }
 }
 
