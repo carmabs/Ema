@@ -169,6 +169,7 @@ class EmaModelTest {
     fun `the default dispatchers can be created on any platform`() {
         val dispatchers = EmaDispatchers()
 
+        assertSame(Dispatchers.Main, dispatchers.main)
         assertSame(Dispatchers.Default, dispatchers.default)
     }
 

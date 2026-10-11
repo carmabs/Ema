@@ -35,8 +35,7 @@ En cualquier otra plataforma basta con recoger `stateFlow` y `eventFlow` y envia
   `EmaConfiguration` hecha para ellas, o usa la configuración por defecto. Consulta [Configuración](configuration.es.md).
 - **Nombres de función en los logs.** Solo la configuración de Android obtiene el nombre de la función que lanzó un
   `sideEffect`. En el resto, pasa `logName`.
-- **Dispatcher principal.** El scope por defecto de los ViewModels usa `Dispatchers.Main.immediate`, o `Dispatchers.Main`
-  donde no se admite. En las plataformas sin dispatcher principal (Linux, Windows, Android Native), configura otro `main`
-  en `EmaDispatchers` o pasa el scope al ViewModel.
+- **Dispatcher principal.** El scope por defecto de los ViewModels usa `Dispatchers.Main`. En las plataformas que no lo
+  tienen (Linux, Windows, Android Native), configura otro `main` en `EmaDispatchers` o pasa el scope al ViewModel.
 - **Dispatcher de IO.** JS y Wasm no tienen `Dispatchers.IO`, así que allí los casos de uso se ejecutan en
   `Dispatchers.Default`. Consulta [Dispatchers](configuration.es.md#dispatchers).
