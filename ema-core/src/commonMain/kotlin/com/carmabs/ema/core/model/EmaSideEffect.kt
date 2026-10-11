@@ -33,7 +33,7 @@ fun <T> emaSideEffect(
     sideEffectConfig: EmaSideEffectConfig = Ema.configuration.sideEffectConfig,
     throwException: Boolean = sideEffectConfig.exceptionPolicy is EmaSideEffectConfig.ExceptionPolicy.ThrowExceptions,
     action: suspend CoroutineScope.() -> T
-): EmaFunctionResultHandler<T> {
+): EmaSideEffectResult<T> {
     val reflection: () -> EmaReflection = {
         EmaReflection(
             containerClassName = container::class.simpleName.checkNull(),
@@ -41,7 +41,7 @@ fun <T> emaSideEffect(
             methodName = logName ?: sideEffectConfig.methodNameResolver.resolve(container, action)
         )
     }
-    return EmaFunctionResultHandler(
+    return EmaSideEffectResult(
         scope = scope,
         dispatcher = dispatcher,
         onAction = action,

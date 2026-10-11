@@ -28,7 +28,7 @@ import kotlinx.coroutines.launch
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
 
-class EmaFunctionResultHandler<T> internal constructor(
+class EmaSideEffectResult<T> internal constructor(
     scope: CoroutineScope,
     dispatcher: CoroutineContext,
     onAction: suspend CoroutineScope.() -> T,

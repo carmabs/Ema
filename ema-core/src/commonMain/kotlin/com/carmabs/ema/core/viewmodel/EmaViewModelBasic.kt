@@ -8,8 +8,8 @@ import com.carmabs.ema.core.broadcast.BackBroadcastId
 import com.carmabs.ema.core.broadcast.backBroadcastId
 import com.carmabs.ema.core.concurrency.EmaMainScope
 import com.carmabs.ema.core.model.EmaConfiguration
-import com.carmabs.ema.core.model.EmaFunctionResultHandler
 import com.carmabs.ema.core.model.EmaSideEffectConfig
+import com.carmabs.ema.core.model.EmaSideEffectResult
 import com.carmabs.ema.core.model.emaSideEffect
 import com.carmabs.ema.core.model.reflection.EmaReflection
 import com.carmabs.ema.core.state.EmaEvent
@@ -174,7 +174,7 @@ abstract class EmaViewModelBasic<S : EmaState, E : EmaEvent>(
         throwException: Boolean = shouldThrowException(),
         logName: String? = null,
         action: suspend CoroutineScope.() -> T
-    ): EmaFunctionResultHandler<T> = generateResultHandler(dispatcher, throwException, logName, action)
+    ): EmaSideEffectResult<T> = generateResultHandler(dispatcher, throwException, logName, action)
 
     private fun <T> generateResultHandler(
         dispatcher: CoroutineContext,
@@ -197,7 +197,7 @@ abstract class EmaViewModelBasic<S : EmaState, E : EmaEvent>(
         throwException: Boolean = shouldThrowException(),
         logName: String? = null,
         action: suspend CoroutineScope.() -> T
-    ): EmaFunctionResultHandler<T> {
+    ): EmaSideEffectResult<T> {
         singleSideEffectMap[id]?.cancel()
         val handler = generateResultHandler(dispatcher, throwException, logName, action)
         singleSideEffectMap[id] = handler.job
