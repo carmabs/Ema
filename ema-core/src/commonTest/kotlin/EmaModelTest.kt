@@ -1,4 +1,5 @@
 import com.carmabs.ema.core.Ema
+import com.carmabs.ema.core.EmaTestApi
 import com.carmabs.ema.core.action.DefaultEmaActionDispatcher
 import com.carmabs.ema.core.action.EmaAction
 import com.carmabs.ema.core.action.EmaActionDispatcher
@@ -138,6 +139,19 @@ class EmaModelTest {
         Ema.init(configuration)
         assertSame(configuration, Ema.configuration)
         assertFailsWith<IllegalStateException> { Ema.init(EmaConfiguration()) }
+    }
+
+    @Test
+    @OptIn(EmaTestApi::class)
+    fun `tests can replace the configuration any number of times`() {
+        Ema.init(EmaConfiguration())
+        val first = EmaConfiguration(dataClassPrinter = { "first" })
+        val second = EmaConfiguration(dataClassPrinter = { "second" })
+
+        Ema.initForTest(first)
+        assertSame(first, Ema.configuration)
+        Ema.initForTest(second)
+        assertSame(second, Ema.configuration)
     }
 
     @Test

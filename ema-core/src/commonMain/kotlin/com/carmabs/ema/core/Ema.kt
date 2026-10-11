@@ -36,6 +36,15 @@ object Ema {
     }
 
     /**
+     * Replaces the configuration, for example to run the ViewModels and use cases on the dispatchers of a test. Unlike
+     * [init], it can be called any number of times, so call it in the setup of each test.
+     */
+    @EmaTestApi
+    fun initForTest(configuration: EmaConfiguration) {
+        initializedConfiguration = configuration
+    }
+
+    /**
      * Removes the configuration so [init] can be called again. Only for tests.
      */
     internal fun reset() {
