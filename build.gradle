@@ -34,11 +34,11 @@ kover {
 // Code format of the library: ./gradlew spotlessApply (the rules are in .editorconfig)
 spotless {
     kotlin {
-        target 'ema-*/src/**/*.kt'
+        target 'emanate-*/src/**/*.kt'
         ktlint(libs.versions.ktlint.get())
     }
     format 'misc', {
-        target '*.gradle', 'ema-*/*.gradle', 'build-system/*.gradle', 'gradle/*.toml', '*.md', '.editorconfig', '.gitignore'
+        target '*.gradle', 'emanate-*/*.gradle', 'build-system/*.gradle', 'gradle/*.toml', '*.md', '.editorconfig', '.gitignore'
         trimTrailingWhitespace()
         leadingTabsToSpaces()
         endWithNewline()
