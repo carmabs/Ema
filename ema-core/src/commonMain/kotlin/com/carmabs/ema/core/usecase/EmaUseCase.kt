@@ -19,10 +19,8 @@ abstract class EmaUseCase<I, O> {
      * Executes a function inside a background thread provided by dispatcher
      * @return the object with the return value
      */
-    suspend operator fun invoke(
-        input: I,
-        dispatcher: CoroutineDispatcher = Ema.configuration.useCaseBackgroundDispatcher
-    ): O = withContext(dispatcher) { useCaseFunction(input) }
+    suspend operator fun invoke(input: I, dispatcher: CoroutineDispatcher = Ema.configuration.dispatchers.io): O =
+        withContext(dispatcher) { useCaseFunction(input) }
 
     /**
      * Function to implement by child classes to execute the code associated to data retrieving.

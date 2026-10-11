@@ -275,8 +275,8 @@ class EmaAndroidConfigurationTest {
     @Test
     fun `android configuration uses the android implementations`() {
         val configuration = EmaConfiguration.Android
-        assertSame(Dispatchers.Main.immediate, configuration.mainDispatcher)
-        assertSame(Dispatchers.IO, configuration.useCaseBackgroundDispatcher)
+        assertSame(Dispatchers.Main.immediate, configuration.dispatchers.main)
+        assertSame(Dispatchers.IO, configuration.dispatchers.io)
         assertSame(EmaAndroidMethodNameResolver, configuration.sideEffectConfig.methodNameResolver)
         assertIs<EmaAndroidDataClassPrinter>(configuration.dataClassPrinter)
     }

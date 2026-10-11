@@ -4,6 +4,8 @@ import com.carmabs.ema.core.action.EmaAction
 import com.carmabs.ema.core.action.EmaActionDispatcher
 import com.carmabs.ema.core.broadcast.EmaBroadcastEvent
 import com.carmabs.ema.core.broadcast.EmaFlowBroadcastManager
+import com.carmabs.ema.core.concurrency.EmaDispatchers
+import com.carmabs.ema.core.concurrency.EmaMainScope
 import com.carmabs.ema.core.delegate.emaBooleanDelegate
 import com.carmabs.ema.core.delegate.emaStartTriggerDelegate
 import com.carmabs.ema.core.delegate.emaSyncDelegate
@@ -41,6 +43,7 @@ import com.carmabs.ema.core.usecase.EmaUseCase
 import com.carmabs.ema.core.value.EmaUriRes
 import com.carmabs.ema.core.value.EmaUriType
 import com.carmabs.ema.core.viewmodel.EmaViewModel
+import kotlin.coroutines.ContinuationInterceptor
 import kotlin.coroutines.resume
 import kotlin.test.AfterTest
 import kotlin.test.Test
@@ -56,11 +59,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.yield
@@ -133,6 +138,26 @@ class EmaModelTest {
         Ema.init(configuration)
         assertSame(configuration, Ema.configuration)
         assertFailsWith<IllegalStateException> { Ema.init(EmaConfiguration()) }
+    }
+
+    @Test
+    fun `ViewModels and use cases run on the dispatchers of the configuration`() = runTest {
+        val main = UnconfinedTestDispatcher(testScheduler)
+        val io = StandardTestDispatcher(testScheduler)
+        Ema.init(EmaConfiguration(dispatchers = EmaDispatchers(main = main, io = io)))
+        val useCase = object : EmaUseCase<Unit, ContinuationInterceptor?>() {
+            override suspend fun useCaseFunction(input: Unit) = currentCoroutineContext()[ContinuationInterceptor]
+        }
+
+        assertSame(main, EmaMainScope().coroutineContext[ContinuationInterceptor])
+        assertSame(io, useCase(Unit))
+    }
+
+    @Test
+    fun `the default dispatchers can be created on any platform`() {
+        val dispatchers = EmaDispatchers()
+
+        assertSame(Dispatchers.Default, dispatchers.default)
     }
 
     @Test
