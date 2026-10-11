@@ -5,7 +5,6 @@ import com.carmabs.ema.core.action.EmaEventDispatcher
 import com.carmabs.ema.core.extension.emaName
 import com.carmabs.ema.core.state.EmaEvent
 import com.carmabs.ema.core.state.EmaState
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -28,8 +27,6 @@ interface EmaViewModel<S : EmaState, E : EmaEvent> : EmaEventDispatcher<E> {
      * Used to know if subscribed view should render the state
      */
     val shouldRenderState: Boolean
-
-    fun setScope(scope: CoroutineScope)
 
     fun onCreated(initializer: EmaAction.Initializer? = null)
 
@@ -56,8 +53,6 @@ interface EmaViewModel<S : EmaState, E : EmaEvent> : EmaEventDispatcher<E> {
 
         override val shouldRenderState: Boolean
             get() = true
-
-        override fun setScope(scope: CoroutineScope) = Unit
 
         override fun onCreated(initializer: EmaAction.Initializer?) = Unit
 

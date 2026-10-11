@@ -263,14 +263,6 @@ class EmaViewModelTest {
     }
 
     @Test
-    fun `setScope replaces the scope of the ViewModel`() = runTest {
-        val viewModel = createViewModel()
-        val scope = CoroutineScope(UnconfinedTestDispatcher(testScheduler))
-        viewModel.setScope(scope)
-        assertEquals(scope, viewModel.currentScope())
-    }
-
-    @Test
     fun `default side effect actions receive the reflection with the resolved method name`() = runTest {
         val successes = mutableListOf<EmaReflection>()
         val finishes = mutableListOf<EmaReflection>()

@@ -209,7 +209,6 @@ class EmaModelTest {
     @Test
     fun `empty ViewModel does nothing`() = runTest {
         val viewModel = EmaViewModel.EMPTY
-        viewModel.setScope(CoroutineScope(Dispatchers.Default))
         viewModel.onCreated()
         viewModel.onStartView()
         viewModel.onResumeView()

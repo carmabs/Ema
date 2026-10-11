@@ -51,8 +51,7 @@ abstract class EmaViewModelBasic<S : EmaState, E : EmaEvent>(
     /**
      * The scope where coroutines will be launched by default.
      */
-    protected var scope: CoroutineScope = defaultScope
-        private set
+    protected val scope: CoroutineScope = defaultScope
 
     /**
      * To determine if the view must be updated when view model is created automatically
@@ -71,10 +70,6 @@ abstract class EmaViewModelBasic<S : EmaState, E : EmaEvent>(
         get() {
             return updateOnInitialization || hasBeenUpdated
         }
-
-    final override fun setScope(scope: CoroutineScope) {
-        this.scope = scope
-    }
 
     /**
      * Observable state that launch event every time a value is set. This value will be the state

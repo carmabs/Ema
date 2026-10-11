@@ -89,8 +89,8 @@ su pantalla y sobrevive a los cambios de configuración:
 Así, cada pantalla tiene su propio ViewModel, creado una sola vez. Consulta
 [Inyección de dependencias](../guides/dependency-injection.es.md).
 
-El ViewModel se identifica por el nombre de su clase (`id`). Su `scope` se sustituye por el `viewModelScope` del
-`ViewModel` de Android, así que el trabajo se cancela automáticamente cuando se destruye.
+El ViewModel se identifica por el nombre de su clase (`id`). Cuando se destruye el `ViewModel` de Android, llama a
+`onCleared`, que cancela el `scope` del ViewModel, así que su trabajo se detiene automáticamente.
 
 ## Pintar antes de la primera actualización
 
