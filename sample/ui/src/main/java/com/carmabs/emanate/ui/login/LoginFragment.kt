@@ -19,12 +19,13 @@ import com.carmabs.emanate.presentation.login.LoginActionViewModel
 import com.carmabs.emanate.presentation.login.LoginEvent
 import com.carmabs.emanate.presentation.login.LoginOverlap
 import com.carmabs.emanate.presentation.login.LoginState
+import com.carmabs.emanate.presentation.login.LoginViewModel
 import com.carmabs.emanate.sample.ui.R
 import com.carmabs.emanate.sample.ui.databinding.LoginFragmentBinding
 import com.carmabs.emanate.ui.base.BaseFragment
+import com.carmabs.emanate.ui.base.sampleViewModel
 import com.carmabs.emanate.ui.dialog.error.ErrorDialogData
 import com.carmabs.emanate.ui.dialog.error.ErrorDialogListener
-import org.koin.android.ext.android.get
 
 class LoginFragment :
     BaseFragment<LoginFragmentBinding, LoginState, SampleViewModel<LoginState, LoginAction, LoginEvent>, LoginEvent>() {
@@ -120,7 +121,7 @@ class LoginFragment :
     }
 
     override fun provideViewModel(): SampleViewModel<LoginState, LoginAction, LoginEvent> =
-        get<LoginActionViewModel>()
+        sampleViewModel(LoginViewModel::class, LoginActionViewModel::class)
 
     override suspend fun LoginFragmentBinding.onEvent(event: LoginEvent) {
         when (event) {

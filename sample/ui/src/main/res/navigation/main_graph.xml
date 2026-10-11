@@ -2,8 +2,19 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    app:startDestination="@id/splashFragment">
-    
+    app:startDestination="@id/implementationChoiceFragment">
+
+    <!-- It stays in the back stack, so going back from the login lets choose the other implementation -->
+    <fragment
+        android:id="@+id/implementationChoiceFragment"
+        android:name="com.carmabs.emanate.ui.choice.ImplementationChoiceFragment"
+        android:label="ImplementationChoiceFragment"
+        tools:layout="@layout/implementation_choice_fragment">
+        <action
+            android:id="@+id/action_implementationChoiceFragment_to_splashFragment"
+            app:destination="@id/splashFragment" />
+    </fragment>
+
     <fragment
         android:id="@+id/splashFragment"
         android:name="com.carmabs.emanate.ui.splash.SplashFragment"

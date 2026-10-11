@@ -15,18 +15,20 @@ import com.carmabs.emanate.compose.extension.createComposableScreen
 import com.carmabs.emanate.compose.extension.routeId
 import com.carmabs.emanate.compose.initializer.EmaInitializerSupport
 import com.carmabs.emanate.presentation.profile.creation.ProfileCreationAction
+import com.carmabs.emanate.presentation.profile.creation.ProfileCreationActionViewModel
 import com.carmabs.emanate.presentation.profile.creation.ProfileCreationEvent
 import com.carmabs.emanate.presentation.profile.creation.ProfileCreationInitializer
 import com.carmabs.emanate.presentation.profile.creation.ProfileCreationState
-import com.carmabs.emanate.presentation.profile.creation.ProfileCreationActionViewModel
-import com.carmabs.emanate.presentation.profile.onboarding.ProfileOnBoardingInitializer
+import com.carmabs.emanate.presentation.profile.creation.ProfileCreationViewModel
 import com.carmabs.emanate.presentation.profile.onboarding.ProfileOnBoardingActionViewModel
+import com.carmabs.emanate.presentation.profile.onboarding.ProfileOnBoardingInitializer
+import com.carmabs.emanate.presentation.profile.onboarding.ProfileOnBoardingViewModel
+import com.carmabs.emanate.ui.base.sampleViewModel
 import com.carmabs.emanate.ui.profile.creation.ProfileCreationScreenContent
 import com.carmabs.emanate.ui.profile.onboarding.ProfileOnBoardingNavigator
 import com.carmabs.emanate.ui.profile.onboarding.ProfileOnBoardingScreenContent
 import com.carmabs.emanate.ui.theme.EmaSampleTheme
 import kotlinx.coroutines.launch
-import org.koin.android.ext.android.get
 
 class ProfileActivity : ComponentActivity() {
 
@@ -58,11 +60,18 @@ class ProfileActivity : ComponentActivity() {
                         onEvent = {
                             navigator.handleProfileOnBoardingEvent(it)
                         },
-                        viewModel = { get<ProfileOnBoardingActionViewModel>() }
+                        viewModel = {
+                            sampleViewModel(
+                                ProfileOnBoardingViewModel::class,
+                                ProfileOnBoardingActionViewModel::class
+                            )
+                        }
                     )
                     createComposableScreen(
                         screenContent = ProfileCreationScreenContent(),
-                        viewModel = { get<ProfileCreationActionViewModel>() },
+                        viewModel = {
+                            sampleViewModel(ProfileCreationViewModel::class, ProfileCreationActionViewModel::class)
+                        },
                         onEvent = {
                             navigator.handleProfileCreationEvent(it)
                         },

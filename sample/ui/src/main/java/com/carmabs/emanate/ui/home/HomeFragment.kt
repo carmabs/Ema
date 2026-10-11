@@ -20,9 +20,10 @@ import com.carmabs.emanate.presentation.home.HomeActionViewModel
 import com.carmabs.emanate.presentation.home.HomeEvent
 import com.carmabs.emanate.presentation.home.HomeInitializer
 import com.carmabs.emanate.presentation.home.HomeState
+import com.carmabs.emanate.presentation.home.HomeViewModel
 import com.carmabs.emanate.sample.ui.R
 import com.carmabs.emanate.sample.ui.databinding.HomeFragmentBinding
-import org.koin.android.ext.android.get
+import com.carmabs.emanate.ui.base.sampleViewModel
 
 class HomeFragment :
     EmaFragment<HomeFragmentBinding, HomeState, SampleViewModel<HomeState, HomeAction, HomeEvent>, HomeEvent>() {
@@ -48,7 +49,7 @@ class HomeFragment :
     }
 
     override fun provideViewModel(): SampleViewModel<HomeState, HomeAction, HomeEvent> =
-        get<HomeActionViewModel>()
+        sampleViewModel(HomeViewModel::class, HomeActionViewModel::class)
 
     override fun HomeFragmentBinding.onState(state: HomeState) {
         state.userData?.also { onUserData(it) }

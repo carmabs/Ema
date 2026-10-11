@@ -11,8 +11,9 @@ import com.carmabs.emanate.core.state.EmaState
 import com.carmabs.emanate.presentation.base.SampleViewModel
 import com.carmabs.emanate.presentation.splash.SplashActionViewModel
 import com.carmabs.emanate.presentation.splash.SplashEvent
+import com.carmabs.emanate.presentation.splash.SplashViewModel
 import com.carmabs.emanate.sample.ui.databinding.SplashFragmentBinding
-import org.koin.android.ext.android.get
+import com.carmabs.emanate.ui.base.sampleViewModel
 
 class SplashFragment :
     EmaFragment<
@@ -43,7 +44,7 @@ class SplashFragment :
     }
 
     override fun provideViewModel(): SampleViewModel<EmaState.EMPTY, EmaAction.EMPTY, SplashEvent> =
-        get<SplashActionViewModel>()
+        sampleViewModel(SplashViewModel::class, SplashActionViewModel::class)
 
     override fun SplashFragmentBinding.onState(state: EmaState.EMPTY) {
     }
