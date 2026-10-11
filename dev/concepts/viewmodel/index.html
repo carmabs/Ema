@@ -1741,8 +1741,8 @@ screen and survives configuration changes:</p>
 <li>When the screen is closed, the ViewModel is cleared. Opening the screen again creates a new one.</li>
 </ol>
 <p>Each screen therefore has its own ViewModel, created once. See <a href="../../guides/dependency-injection/">Dependency injection</a>.</p>
-<p>The ViewModel is identified by its class name (<code>id</code>). Its <code>scope</code> is replaced by the <code>viewModelScope</code> of the
-Android ViewModel, so work is cancelled automatically when the ViewModel is cleared.</p>
+<p>The ViewModel is identified by its class name (<code>id</code>). When the Android ViewModel is cleared it calls <code>onCleared</code>, which
+cancels the <code>scope</code> of the ViewModel, so its work stops automatically.</p>
 <h2 id="rendering-before-the-first-update">Rendering before the first update<a class="headerlink" href="#rendering-before-the-first-update" title="Permanent link">&para;</a></h2>
 <p><code>updateOnInitialization</code> (protected, <code>true</code> by default) controls whether a Compose screen draws the initial state
 straight away. Override it with <code>false</code> to render only after the first call to <code>updateState</code>.</p>

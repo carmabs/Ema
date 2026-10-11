@@ -1619,9 +1619,9 @@ entre pantallas y el ciclo de vida de la vista.</p>
 <ol>
 <li><strong>Pasa tu propio scope.</strong> El segundo parámetro del constructor de <code>EmaViewModelBasic</code> / <code>EmaViewModelAction</code> es el
    <code>CoroutineScope</code>. Exponlo en el constructor de tus ViewModels, con un valor por defecto, para que los tests puedan
-   sustituirlo. El scope por defecto usa <code>Dispatchers.Main</code>, que no existe en los tests unitarios. Con un
-   <code>UnconfinedTestDispatcher</code> el trabajo se ejecuta inmediatamente; con un <code>StandardTestDispatcher</code>, llama a
-   <code>advanceUntilIdle()</code> para ejecutarlo.</li>
+   sustituirlo. El scope por defecto usa el dispatcher <code>main</code> de la configuración, <code>Dispatchers.Main</code>, que no existe
+   en los tests unitarios. Con un <code>UnconfinedTestDispatcher</code> el trabajo se ejecuta inmediatamente; con un
+   <code>StandardTestDispatcher</code>, llama a <code>advanceUntilIdle()</code> para ejecutarlo.</li>
 </ol>
 <p><div class="highlight"><pre><span></span><code><span class="kd">class</span><span class="w"> </span><span class="nc">CounterViewModel</span><span class="p">(</span><span class="n">scope</span><span class="p">:</span><span class="w"> </span><span class="n">CoroutineScope</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EmaMainScope</span><span class="p">())</span><span class="w"> </span><span class="p">:</span>
 <span class="w">    </span><span class="n">EmaViewModelAction</span><span class="o">&lt;</span><span class="n">CounterState</span><span class="p">,</span><span class="w"> </span><span class="n">CounterAction</span><span class="p">,</span><span class="w"> </span><span class="n">CounterEvent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">CounterState</span><span class="p">(),</span><span class="w"> </span><span class="n">scope</span><span class="p">)</span>

@@ -670,6 +670,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#dispatchers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dispatchers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#nombrar-los-side-effects" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1544,6 +1555,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#dispatchers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dispatchers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#nombrar-los-side-effects" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1624,16 +1646,10 @@
 </thead>
 <tbody>
 <tr>
-<td><code>mainDispatcher</code></td>
-<td><code>Dispatchers.Main</code></td>
-<td><code>Dispatchers.Main.immediate</code></td>
-<td>Dónde ejecutan los ViewModels sus corrutinas por defecto.</td>
-</tr>
-<tr>
-<td><code>useCaseBackgroundDispatcher</code></td>
-<td><code>Dispatchers.Default</code></td>
-<td><code>Dispatchers.IO</code></td>
-<td>Dónde se ejecutan por defecto los <a href="../utilities/#casos-de-uso">casos de uso</a>.</td>
+<td><code>dispatchers</code></td>
+<td><code>EmaDispatchers()</code></td>
+<td><code>main</code> es <code>Dispatchers.Main.immediate</code></td>
+<td>Dónde se ejecutan los ViewModels, los casos de uso y el trabajo de cálculo. Consulta <a href="#dispatchers">Dispatchers</a>.</td>
 </tr>
 <tr>
 <td><code>sideEffectConfig</code></td>
@@ -1661,6 +1677,41 @@
 <span class="p">)</span>
 </code></pre></div>
 <p><code>EmaConfiguration.Android</code> está en <code>ema-android</code> (<code>com.carmabs.ema.android.configuration.Android</code>).</p>
+<h2 id="dispatchers">Dispatchers<a class="headerlink" href="#dispatchers" title="Permanent link">&para;</a></h2>
+<p><code>EmaDispatchers</code> agrupa los dispatchers que usa Ema por defecto:</p>
+<table>
+<thead>
+<tr>
+<th>Dispatcher</th>
+<th>Por defecto</th>
+<th>Lo usan</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>main</code></td>
+<td><code>Dispatchers.Main</code></td>
+<td>Los ViewModels, a través de su scope por defecto <code>EmaMainScope()</code>.</td>
+</tr>
+<tr>
+<td><code>io</code></td>
+<td><code>Dispatchers.IO</code>, o <code>Dispatchers.Default</code> en JS y Wasm</td>
+<td>Los <a href="../utilities/#casos-de-uso">casos de uso</a>: red, disco y trabajo bloqueante.</td>
+</tr>
+<tr>
+<td><code>default</code></td>
+<td><code>Dispatchers.Default</code></td>
+<td>El trabajo de cálculo, como procesar imágenes en <code>ema-android</code>.</td>
+</tr>
+</tbody>
+</table>
+<p><code>EmaConfiguration.Android</code> usa <code>Dispatchers.Main.immediate</code> como <code>main</code>, igual que el <code>viewModelScope</code> de Android: el
+trabajo que empieza en el hilo principal, como despachar una acción desde un clic, se ejecuta en el momento en lugar de
+esperar al siguiente frame.</p>
+<p>Cambia cualquiera de ellos con <code>copy</code>, manteniendo los demás:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">val</span><span class="w"> </span><span class="nv">android</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EmaConfiguration</span><span class="p">.</span><span class="na">Android</span>
+<span class="n">Ema</span><span class="p">.</span><span class="na">init</span><span class="p">(</span><span class="n">android</span><span class="p">.</span><span class="na">copy</span><span class="p">(</span><span class="n">dispatchers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">android</span><span class="p">.</span><span class="na">dispatchers</span><span class="p">.</span><span class="na">copy</span><span class="p">(</span><span class="n">io</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">myIoDispatcher</span><span class="p">)))</span>
+</code></pre></div>
 <h2 id="nombrar-los-side-effects">Nombrar los side effects<a class="headerlink" href="#nombrar-los-side-effects" title="Permanent link">&para;</a></h2>
 <p>Cada <code>sideEffect</code> informa del nombre de la función que lo lanzó, algo útil para registrar los errores.</p>
 <ul>

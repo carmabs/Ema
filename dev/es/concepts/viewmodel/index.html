@@ -1742,8 +1742,8 @@ su pantalla y sobrevive a los cambios de configuración:</p>
 </ol>
 <p>Así, cada pantalla tiene su propio ViewModel, creado una sola vez. Consulta
 <a href="../../guides/dependency-injection/">Inyección de dependencias</a>.</p>
-<p>El ViewModel se identifica por el nombre de su clase (<code>id</code>). Su <code>scope</code> se sustituye por el <code>viewModelScope</code> del
-<code>ViewModel</code> de Android, así que el trabajo se cancela automáticamente cuando se destruye.</p>
+<p>El ViewModel se identifica por el nombre de su clase (<code>id</code>). Cuando se destruye el <code>ViewModel</code> de Android, llama a
+<code>onCleared</code>, que cancela el <code>scope</code> del ViewModel, así que su trabajo se detiene automáticamente.</p>
 <h2 id="pintar-antes-de-la-primera-actualización">Pintar antes de la primera actualización<a class="headerlink" href="#pintar-antes-de-la-primera-actualización" title="Permanent link">&para;</a></h2>
 <p><code>updateOnInitialization</code> (protegido, <code>true</code> por defecto) decide si una pantalla Compose pinta el estado inicial
 directamente. Sobrescríbelo con <code>false</code> para pintar solo después de la primera llamada a <code>updateState</code>.</p>

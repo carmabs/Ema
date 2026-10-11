@@ -1619,8 +1619,9 @@ results between screens and the view lifecycle.</p>
 <ol>
 <li><strong>Pass your own scope.</strong> The second constructor parameter of <code>EmaViewModelBasic</code> / <code>EmaViewModelAction</code> is the
    <code>CoroutineScope</code>. Expose it in the constructor of your ViewModels, with a default value, so tests can replace it.
-   The default scope uses <code>Dispatchers.Main</code>, which does not exist in unit tests. With an <code>UnconfinedTestDispatcher</code>
-   the work runs immediately; with a <code>StandardTestDispatcher</code>, call <code>advanceUntilIdle()</code> to run it.</li>
+   The default scope uses the <code>main</code> dispatcher of the configuration, <code>Dispatchers.Main</code>, which does not exist in unit
+   tests. With an <code>UnconfinedTestDispatcher</code> the work runs immediately; with a <code>StandardTestDispatcher</code>, call
+   <code>advanceUntilIdle()</code> to run it.</li>
 </ol>
 <p><div class="highlight"><pre><span></span><code><span class="kd">class</span><span class="w"> </span><span class="nc">CounterViewModel</span><span class="p">(</span><span class="n">scope</span><span class="p">:</span><span class="w"> </span><span class="n">CoroutineScope</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EmaMainScope</span><span class="p">())</span><span class="w"> </span><span class="p">:</span>
 <span class="w">    </span><span class="n">EmaViewModelAction</span><span class="o">&lt;</span><span class="n">CounterState</span><span class="p">,</span><span class="w"> </span><span class="n">CounterAction</span><span class="p">,</span><span class="w"> </span><span class="n">CounterEvent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">CounterState</span><span class="p">(),</span><span class="w"> </span><span class="n">scope</span><span class="p">)</span>

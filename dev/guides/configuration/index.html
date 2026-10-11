@@ -670,6 +670,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#dispatchers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dispatchers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#naming-the-side-effects" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1544,6 +1555,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#dispatchers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dispatchers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#naming-the-side-effects" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1624,16 +1646,10 @@
 </thead>
 <tbody>
 <tr>
-<td><code>mainDispatcher</code></td>
-<td><code>Dispatchers.Main</code></td>
-<td><code>Dispatchers.Main.immediate</code></td>
-<td>Where ViewModels run their coroutines by default.</td>
-</tr>
-<tr>
-<td><code>useCaseBackgroundDispatcher</code></td>
-<td><code>Dispatchers.Default</code></td>
-<td><code>Dispatchers.IO</code></td>
-<td>Where <a href="../utilities/#use-cases">use cases</a> run by default.</td>
+<td><code>dispatchers</code></td>
+<td><code>EmaDispatchers()</code></td>
+<td><code>main</code> is <code>Dispatchers.Main.immediate</code></td>
+<td>Where ViewModels, use cases and CPU-intensive work run. See <a href="#dispatchers">Dispatchers</a>.</td>
 </tr>
 <tr>
 <td><code>sideEffectConfig</code></td>
@@ -1661,6 +1677,41 @@
 <span class="p">)</span>
 </code></pre></div>
 <p><code>EmaConfiguration.Android</code> is in <code>ema-android</code> (<code>com.carmabs.ema.android.configuration.Android</code>).</p>
+<h2 id="dispatchers">Dispatchers<a class="headerlink" href="#dispatchers" title="Permanent link">&para;</a></h2>
+<p><code>EmaDispatchers</code> groups the dispatchers Ema uses by default:</p>
+<table>
+<thead>
+<tr>
+<th>Dispatcher</th>
+<th>Default</th>
+<th>Used by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>main</code></td>
+<td><code>Dispatchers.Main</code></td>
+<td>ViewModels, through their default scope <code>EmaMainScope()</code>.</td>
+</tr>
+<tr>
+<td><code>io</code></td>
+<td><code>Dispatchers.IO</code>, or <code>Dispatchers.Default</code> on JS and Wasm</td>
+<td><a href="../utilities/#use-cases">Use cases</a>: network, disk and blocking work.</td>
+</tr>
+<tr>
+<td><code>default</code></td>
+<td><code>Dispatchers.Default</code></td>
+<td>CPU-intensive work, such as processing images in <code>ema-android</code>.</td>
+</tr>
+</tbody>
+</table>
+<p><code>EmaConfiguration.Android</code> uses <code>Dispatchers.Main.immediate</code> as <code>main</code>, as the <code>viewModelScope</code> of Android does: the
+work started from the main thread, such as dispatching an action from a click, runs at once instead of waiting for the
+next frame.</p>
+<p>Change any of them with <code>copy</code>, keeping the others:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">val</span><span class="w"> </span><span class="nv">android</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EmaConfiguration</span><span class="p">.</span><span class="na">Android</span>
+<span class="n">Ema</span><span class="p">.</span><span class="na">init</span><span class="p">(</span><span class="n">android</span><span class="p">.</span><span class="na">copy</span><span class="p">(</span><span class="n">dispatchers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">android</span><span class="p">.</span><span class="na">dispatchers</span><span class="p">.</span><span class="na">copy</span><span class="p">(</span><span class="n">io</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">myIoDispatcher</span><span class="p">)))</span>
+</code></pre></div>
 <h2 id="naming-the-side-effects">Naming the side effects<a class="headerlink" href="#naming-the-side-effects" title="Permanent link">&para;</a></h2>
 <p>Every <code>sideEffect</code> reports the name of the function that launched it, which is useful for logging errors.</p>
 <ul>

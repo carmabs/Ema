@@ -1604,7 +1604,9 @@ Any other platform only needs to collect <code>stateFlow</code> and <code>eventF
 <li><strong>Function names in the logs.</strong> Only the Android configuration resolves the name of the function that launched a
   <code>sideEffect</code>. Elsewhere, pass <code>logName</code>.</li>
 <li><strong>Main dispatcher.</strong> The default ViewModel scope uses <code>Dispatchers.Main</code>. On platforms without one (Linux, Windows,
-  Android Native), configure another <code>mainDispatcher</code> or pass the scope to the ViewModel.</li>
+  Android Native), configure another <code>main</code> in <code>EmaDispatchers</code> or pass the scope to the ViewModel.</li>
+<li><strong>IO dispatcher.</strong> JS and Wasm don't have <code>Dispatchers.IO</code>, so use cases run on <code>Dispatchers.Default</code> there. See
+  <a href="../configuration/#dispatchers">Dispatchers</a>.</li>
 </ul>
 
 

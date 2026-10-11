@@ -1605,7 +1605,9 @@ En cualquier otra plataforma basta con recoger <code>stateFlow</code> y <code>ev
 <li><strong>Nombres de función en los logs.</strong> Solo la configuración de Android obtiene el nombre de la función que lanzó un
   <code>sideEffect</code>. En el resto, pasa <code>logName</code>.</li>
 <li><strong>Dispatcher principal.</strong> El scope por defecto de los ViewModels usa <code>Dispatchers.Main</code>. En las plataformas que no lo
-  tienen (Linux, Windows, Android Native), configura otro <code>mainDispatcher</code> o pasa el scope al ViewModel.</li>
+  tienen (Linux, Windows, Android Native), configura otro <code>main</code> en <code>EmaDispatchers</code> o pasa el scope al ViewModel.</li>
+<li><strong>Dispatcher de IO.</strong> JS y Wasm no tienen <code>Dispatchers.IO</code>, así que allí los casos de uso se ejecutan en
+  <code>Dispatchers.Default</code>. Consulta <a href="../configuration/#dispatchers">Dispatchers</a>.</li>
 </ul>
 
 
