@@ -1,14 +1,24 @@
+@file:OptIn(ExperimentalAtomicApi::class)
+
 package com.carmabs.emanate.core.source
 
 import com.carmabs.emanate.core.Ema
 import com.carmabs.emanate.core.action.EmaAction
 import com.carmabs.emanate.core.action.EmaActionDispatcher
+import com.carmabs.emanate.core.model.emaSideEffect
+import com.carmabs.emanate.core.source.middleware.EmaMiddleware
+import com.carmabs.emanate.core.source.middleware.MiddlewareContext
+import com.carmabs.emanate.core.source.middleware.MiddlewareScope
 import com.carmabs.emanate.core.source.reducer.EmaReducer
 import com.carmabs.emanate.core.source.reducer.ReducerScope
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
 import kotlin.concurrent.Volatile
+import kotlin.concurrent.atomics.AtomicBoolean
+import kotlin.concurrent.atomics.AtomicReference
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.reflect.cast
+import kotlin.time.Duration
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -19,14 +29,17 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 
 /**
- * Creates a source. Its actions are of type [A]: every action goes through the reducers of its type. The source
- * creates its own scope with [dispatcher], so call [EmaSource.close] when it isn't needed anymore to cancel its work.
+ * Creates a source. Its actions are of type [A]: every action goes through the middlewares and the reducers of its
+ * type. The source
+ * creates its own scope with [dispatcher], so call [EmaSource.close] when it isn't needed anymore to cancel its
+ * work.
  *
  * @param dispatcher where the source runs. By default the main dispatcher of Ema, as the state is usually drawn by
  * the view; use cases run on their own dispatcher anyway.
- * @param setup adds the reducers of the source
+ * @param setup adds the middlewares and the reducers of the source
  */
 @Suppress("FunctionName") // Factory named like the class
 fun <S : EmaState, A : EmaAction, E : EmaEvent> EmaSource(
@@ -41,6 +54,7 @@ fun <S : EmaState, A : EmaAction, E : EmaEvent> EmaSource(
     return EmaSource(
         mutableStateFlow = MutableStateFlow(initialState),
         dispatcher = dispatcher,
+        middlewares = setupScope.middlewareList,
         reducers = setupScope.reducerList
     )
 }
@@ -61,6 +75,7 @@ fun <S : EmaState, A : EmaAction, E : EmaEvent> EmaSource(
 class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
     private val mutableStateFlow: MutableStateFlow<S>,
     dispatcher: CoroutineDispatcher,
+    private val middlewares: List<EmaMiddleware<S, A, *>>,
     private val reducers: List<EmaReducer<S, *>>
 ) : EmaActionDispatcher<A> {
 
@@ -75,9 +90,16 @@ class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
         get() = mutableStateFlow.value
 
     /**
-     * Steps pending to run, one after another
+     * Steps pending to run, one after another: new actions and the middleware chains continued asynchronously
      */
     private val queue = Channel<() -> Unit>(Channel.UNLIMITED)
+
+    private val middlewareContext = MiddlewareContext(this)
+
+    /**
+     * Asynchronous work running with a key, for example the id of a nextAfter
+     */
+    private val jobsByKey = AtomicReference<Map<Any, Job>>(emptyMap())
 
     @Volatile
     private var observers: List<EmaSourceObserver<S, E>> = emptyList()
@@ -118,7 +140,7 @@ class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
     internal fun dispatchAction(action: EmaAction) {
         queue.trySend {
             observers.forEach { it.onAction(action) }
-            reduce(action)
+            runMiddleware(0, action)
         }
     }
 
@@ -136,5 +158,95 @@ class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
     private fun <F : EmaAction> reduce(reducer: EmaReducer<S, F>, state: S, action: EmaAction): S {
         if (!reducer.actionType.isInstance(action)) return state
         return with(reducer) { ReducerScope(state).reduce(reducer.actionType.cast(action)) }
+    }
+
+    /**
+     * Runs the middleware at [index] with [action]. When all the middlewares have called next, the reducers run.
+     * A middleware of other type of actions is skipped.
+     */
+    private fun runMiddleware(index: Int, action: EmaAction) {
+        if (index == middlewares.size) {
+            reduce(action)
+            return
+        }
+        val middleware = middlewares[index]
+        if (!middleware.actionType.isInstance(action)) {
+            runMiddleware(index + 1, action)
+            return
+        }
+        val running = AtomicBoolean(true)
+        val middlewareScope = MiddlewareScope<S, A>(middlewareContext, action, running) { nextAction ->
+            if (running.load()) {
+                runMiddleware(index + 1, nextAction)
+            } else {
+                // Called after the middleware has finished, for example from nextAfter: the chain continues in the
+                // source coroutine so the reducers never run at the same time
+                queue.trySend { runMiddleware(index + 1, nextAction) }
+            }
+        }
+        try {
+            invoke(middleware, middlewareScope, action)
+        } finally {
+            running.store(false)
+        }
+    }
+
+    private fun <F : EmaAction> invoke(
+        middleware: EmaMiddleware<S, A, F>,
+        middlewareScope: MiddlewareScope<S, A>,
+        action: EmaAction
+    ) {
+        with(middleware) { middlewareScope.invoke(middleware.actionType.cast(action)) }
+    }
+
+    /**
+     * Launches asynchronous work applying the side effect configuration of Ema.
+     * @param key if work with the same key is running, it is cancelled
+     * @param timeout if the work doesn't finish in this time, it is cancelled and [onTimeout] is called
+     */
+    internal fun launch(key: Any?, timeout: Duration?, onTimeout: () -> Unit, block: suspend () -> Unit): Job {
+        key?.let { removeJob(it)?.cancel() }
+        val job = emaSideEffect(container = this, scope = scope) {
+            if (timeout == null) {
+                block()
+            } else if (withTimeoutOrNull(timeout) { block() } == null) {
+                onTimeout()
+            }
+        }.job
+        key?.let {
+            putJob(it, job)
+            job.invokeOnCompletion { _ -> removeJob(it, job) }
+        }
+        return job
+    }
+
+    private fun putJob(key: Any, job: Job) {
+        updateJobs { it + (key to job) }
+    }
+
+    /**
+     * Removes the job of [key] and returns it
+     */
+    private fun removeJob(key: Any): Job? {
+        var removed: Job? = null
+        updateJobs { jobs ->
+            removed = jobs[key]
+            jobs - key
+        }
+        return removed
+    }
+
+    /**
+     * Removes the job of [key] only if it is [job], so a newer job with the same key is kept
+     */
+    private fun removeJob(key: Any, job: Job) {
+        updateJobs { jobs -> if (jobs[key] === job) jobs - key else jobs }
+    }
+
+    private inline fun updateJobs(transform: (Map<Any, Job>) -> Map<Any, Job>) {
+        while (true) {
+            val jobs = jobsByKey.load()
+            if (jobsByKey.compareAndSet(jobs, transform(jobs))) return
+        }
     }
 }
