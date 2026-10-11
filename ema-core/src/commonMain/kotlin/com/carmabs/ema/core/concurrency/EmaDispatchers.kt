@@ -23,13 +23,17 @@ data class EmaDispatchers(
 
 /**
  * `Dispatchers.Main.immediate`, or `Dispatchers.Main` where immediate isn't supported or there is no main dispatcher.
- * In that case it fails when used, as `Dispatchers.Main` does.
+ * In that case it fails when used, as `Dispatchers.Main` does. Each platform fails differently when there is no
+ * immediate dispatcher: the JVM without a main dispatcher throws IllegalStateException, and Linux native
+ * NotImplementedError.
  */
 private fun defaultMainDispatcher(): CoroutineDispatcher = try {
     Dispatchers.Main.immediate
 } catch (_: UnsupportedOperationException) {
     Dispatchers.Main
 } catch (_: IllegalStateException) {
+    Dispatchers.Main
+} catch (_: NotImplementedError) {
     Dispatchers.Main
 }
 
