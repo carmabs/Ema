@@ -39,12 +39,28 @@ private sealed interface TestEvent : EmaEvent {
 private data class TestInitializer(val text: String) : EmaAction.Initializer
 
 /**
+ * Result sent by the view model of other screen
+ */
+private data class TextSent(val text: String) : EmaAction
+
+/**
  * Use case of the view model, to check that it can be used inside the scopes
  */
 private class LoadUseCase {
     suspend operator fun invoke(): String {
         delay(1000)
         return "loaded"
+    }
+}
+
+/**
+ * View model of other screen that sends a result
+ */
+private class SenderViewModel(dispatcher: CoroutineDispatcher) :
+    EmaViewModel<TestState, TestAction, TestEvent>(TestState(), dispatcher, logger = null) {
+
+    override fun SourceSetupScope<TestState, TestAction, TestEvent>.setup() {
+        addSideEffect<TestAction.Update> { action -> broadcastDispatcher.dispatch(TextSent(action.text)) }
     }
 }
 
@@ -81,6 +97,8 @@ private class TestViewModel(
         addReducer<TestAction.Update> { action -> state.copy(text = action.text) }
         addReducer<TestInitializer> { action -> state.copy(text = action.text) }
         addReducer<EmaAction.Lifecycle.Resumed> { state.copy(resumed = true) }
+        addBroadcastListener<TextSent>()
+        addReducer<TextSent> { action -> state.copy(text = action.text) }
         addReducer<TestAction.Load> { state.copy(text = "loading") }
         addSideEffect<TestAction.Load> {
             dispatch(TestAction.Update(loadUseCase()))
@@ -267,5 +285,35 @@ class EmaViewModelTest {
 
         assertEquals(setOf("EMA_TestViewModel"), tags)
         viewModel.onCleared()
+    }
+
+    @Test
+    fun `view models receive the actions broadcast by other view models`() = runTest {
+        val receiver = TestViewModel(testDispatcher())
+        val sender = SenderViewModel(testDispatcher())
+        receiver.onCreated()
+        sender.onCreated()
+
+        sender.dispatch(TestAction.Update("result"))
+        runCurrent()
+
+        assertEquals("result", receiver.stateFlow.value.text)
+        sender.onCleared()
+        receiver.onCleared()
+    }
+
+    @Test
+    fun `a cleared view model doesn't receive broadcast actions`() = runTest {
+        val receiver = TestViewModel(testDispatcher())
+        val sender = SenderViewModel(testDispatcher())
+        receiver.onCreated()
+        sender.onCreated()
+
+        receiver.onCleared()
+        sender.dispatch(TestAction.Update("result"))
+        runCurrent()
+
+        assertEquals("", receiver.stateFlow.value.text)
+        sender.onCleared()
     }
 }

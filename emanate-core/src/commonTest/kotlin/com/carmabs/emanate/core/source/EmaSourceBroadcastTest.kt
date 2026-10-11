@@ -1,0 +1,130 @@
+package com.carmabs.emanate.core.source
+
+import com.carmabs.emanate.core.Ema
+import com.carmabs.emanate.core.action.EmaAction
+import com.carmabs.emanate.core.state.EmaEvent
+import com.carmabs.emanate.core.state.EmaState
+import kotlin.test.AfterTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.runCurrent
+import kotlinx.coroutines.test.runTest
+
+private data class ListState(val users: List<String> = emptyList(), val notified: Boolean = false) : EmaState
+
+private sealed interface SenderAction : EmaAction {
+    data class Create(val user: String) : SenderAction
+}
+
+private sealed interface ReceiverAction : EmaAction
+
+/**
+ * Broadcast actions: their type is the id of the broadcast
+ */
+private sealed interface UserBroadcast : EmaAction {
+    data class Created(val user: String) : UserBroadcast
+    data class Deleted(val user: String) : UserBroadcast
+}
+
+private sealed interface NoEvent : EmaEvent
+
+@OptIn(ExperimentalCoroutinesApi::class)
+class EmaSourceBroadcastTest {
+
+    private val received = mutableListOf<String>()
+
+    private fun TestScope.senderSource() = EmaSource<ListState, SenderAction, NoEvent>(
+        ListState(),
+        UnconfinedTestDispatcher(testScheduler)
+    ) {
+        addSideEffect<SenderAction.Create> { action ->
+            broadcastDispatcher.dispatch(UserBroadcast.Created(action.user))
+        }
+    }
+
+    private fun TestScope.receiverSource() = EmaSource<ListState, ReceiverAction, NoEvent>(
+        ListState(),
+        UnconfinedTestDispatcher(testScheduler)
+    ) {
+        addBroadcastListener<UserBroadcast.Created>()
+        addMiddleware<UserBroadcast> { action ->
+            received += "middleware $action"
+            next()
+        }
+        addReducer<UserBroadcast> { action ->
+            when (action) {
+                is UserBroadcast.Created -> state.copy(users = state.users + action.user)
+                is UserBroadcast.Deleted -> state.copy(users = state.users - action.user)
+            }
+        }
+        addSideEffect<UserBroadcast.Created> { action -> received += "side effect ${action.user}" }
+    }
+
+    @AfterTest
+    fun checkListenersRemoved() {
+        assertEquals(0, Ema.actionBroadcaster.listenerCount)
+    }
+
+    @Test
+    fun `a broadcast action goes through the middlewares reducers and side effects of the listener`() = runTest {
+        val sender = senderSource()
+        val receiver = receiverSource()
+
+        sender.dispatch(SenderAction.Create("Ana"))
+        runCurrent()
+
+        assertEquals(ListState(users = listOf("Ana")), receiver.state)
+        assertEquals(listOf("middleware Created(user=Ana)", "side effect Ana"), received)
+        sender.close()
+        receiver.close()
+    }
+
+    @Test
+    fun `only the actions of the listened type are received`() = runTest {
+        val receiver = receiverSource()
+
+        Ema.actionBroadcaster.dispatch(UserBroadcast.Created("Ana"))
+        Ema.actionBroadcaster.dispatch(UserBroadcast.Deleted("Ana"))
+        runCurrent()
+
+        assertEquals(ListState(users = listOf("Ana")), receiver.state)
+        assertTrue(received.none { "Deleted" in it })
+        receiver.close()
+    }
+
+    @Test
+    fun `every source listening to the type receives the action`() = runTest {
+        val sender = senderSource()
+        val firstReceiver = receiverSource()
+        val secondReceiver = receiverSource()
+
+        sender.dispatch(SenderAction.Create("Ana"))
+        runCurrent()
+
+        assertEquals(listOf("Ana"), firstReceiver.state.users)
+        assertEquals(listOf("Ana"), secondReceiver.state.users)
+        sender.close()
+        firstReceiver.close()
+        secondReceiver.close()
+    }
+
+    @Test
+    fun `the listener is removed when the source is closed`() = runTest {
+        val sender = senderSource()
+        val receiver = receiverSource()
+        assertEquals(1, Ema.actionBroadcaster.listenerCount)
+
+        receiver.close()
+        sender.dispatch(SenderAction.Create("Ana"))
+        runCurrent()
+
+        assertEquals(0, Ema.actionBroadcaster.listenerCount)
+        assertEquals(ListState(), receiver.state)
+        assertTrue(received.isEmpty())
+        sender.close()
+    }
+}

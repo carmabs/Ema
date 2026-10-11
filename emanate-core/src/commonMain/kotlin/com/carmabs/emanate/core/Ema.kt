@@ -1,5 +1,6 @@
 package com.carmabs.emanate.core
 
+import com.carmabs.emanate.core.broadcast.EmaActionBroadcaster
 import com.carmabs.emanate.core.broadcast.EmaBroadcastManager
 import com.carmabs.emanate.core.broadcast.EmaFlowBroadcastManager
 import com.carmabs.emanate.core.model.EmaConfiguration
@@ -26,6 +27,11 @@ object Ema {
      * Manager to send events to any part of the app that is listening to them.
      */
     val broadcastManager: EmaBroadcastManager by lazy { EmaFlowBroadcastManager() }
+
+    /**
+     * Sends the actions broadcast by the side effects to the sources listening to their type.
+     */
+    internal val actionBroadcaster: EmaActionBroadcaster by lazy { EmaActionBroadcaster() }
 
     /**
      * Sets the configuration of Ema. It can be called only once.

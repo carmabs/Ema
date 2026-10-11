@@ -7,6 +7,7 @@ import com.carmabs.emanate.core.action.DefaultEmaEventDispatcher
 import com.carmabs.emanate.core.action.EmaAction
 import com.carmabs.emanate.core.action.EmaActionDispatcher
 import com.carmabs.emanate.core.action.EmaEventDispatcher
+import com.carmabs.emanate.core.broadcast.EmaActionBroadcaster
 import com.carmabs.emanate.core.model.emaSideEffect
 import com.carmabs.emanate.core.source.middleware.EmaMiddleware
 import com.carmabs.emanate.core.source.middleware.MiddlewareContext
@@ -22,6 +23,7 @@ import kotlin.concurrent.Volatile
 import kotlin.concurrent.atomics.AtomicBoolean
 import kotlin.concurrent.atomics.AtomicReference
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
+import kotlin.reflect.KClass
 import kotlin.reflect.cast
 import kotlin.time.Duration
 import kotlinx.coroutines.CoroutineDispatcher
@@ -38,14 +40,14 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 
 /**
- * Creates a source. Its actions are of type [A]: every action goes through the middlewares, the reducers and the
- * side effects of its type. The source
+ * Creates a source. Its actions are of type [A], plus the ones it listens to with addBroadcastListener: every action
+ * goes through the middlewares, the reducers and the side effects of its type. The source
  * creates its own scope with [dispatcher], so call [EmaSource.close] when it isn't needed anymore to cancel its
  * work.
  *
  * @param dispatcher where the source runs. By default the main dispatcher of Ema, as the state is usually drawn by
  * the view; use cases run on their own dispatcher anyway.
- * @param setup adds the middlewares, reducers and side effects of the source
+ * @param setup adds the middlewares, reducers, side effects and broadcast listeners of the source
  */
 @Suppress("FunctionName") // Factory named like the class
 fun <S : EmaState, A : EmaAction, E : EmaEvent> EmaSource(
@@ -63,6 +65,7 @@ fun <S : EmaState, A : EmaAction, E : EmaEvent> EmaSource(
         middlewares = setupScope.middlewareList,
         reducers = setupScope.reducerList,
         sideEffects = setupScope.sideEffectList,
+        broadcastListeners = setupScope.broadcastListenerList,
         container = null,
         eventDispatcher = DefaultEmaEventDispatcher()
     )
@@ -87,8 +90,10 @@ class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
     private val middlewares: List<EmaMiddleware<S, A, *>>,
     private val reducers: List<EmaReducer<S, *>>,
     private val sideEffects: List<SideEffect<S, A, E, *>>,
+    broadcastListeners: List<KClass<out EmaAction>>,
     container: Any?,
-    private val eventDispatcher: DefaultEmaEventDispatcher<E>
+    private val eventDispatcher: DefaultEmaEventDispatcher<E>,
+    internal val broadcaster: EmaActionBroadcaster = Ema.actionBroadcaster
 ) : EmaEventDispatcher<E>,
     EmaActionDispatcher<A> {
 
@@ -134,6 +139,13 @@ class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
         observers = observers + observer
     }
 
+    /**
+     * Listeners of the broadcast actions, added while the source is open
+     */
+    private val listeners = broadcastListeners.map { actionType ->
+        EmaActionBroadcaster.Listener(actionType) { dispatchAction(it) }
+    }.onEach { broadcaster.addListener(it) }
+
     private val loop: Job = scope.launch {
         for (step in queue) {
             step()
@@ -148,6 +160,7 @@ class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
      * @return the job that completes when the source has finished
      */
     fun close(): Job {
+        listeners.forEach { broadcaster.removeListener(it) }
         queue.close()
         return loop
     }

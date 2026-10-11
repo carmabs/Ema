@@ -48,8 +48,9 @@ abstract class EmaViewModel<S : EmaState, A : EmaAction, E : EmaEvent>(
     final override val initialState: S = initialDataState
 
     /**
-     * Adds the middlewares, reducers and side effects of the view model. Besides the actions of type [A], they can
-     * handle the [Initializer] of the screen and its [Lifecycle] actions.
+     * Adds the middlewares, reducers, side effects and broadcast listeners of the view model. Besides the actions of
+     * type [A], they can handle the [Initializer] of the screen, its [Lifecycle] actions and the actions broadcast by
+     * other view models that it listens to.
      */
     abstract fun SourceSetupScope<S, A, E>.setup()
 
@@ -102,6 +103,7 @@ abstract class EmaViewModel<S : EmaState, A : EmaAction, E : EmaEvent>(
             ) + setupScope.middlewareList,
             reducers = setupScope.reducerList,
             sideEffects = setupScope.sideEffectList,
+            broadcastListeners = setupScope.broadcastListenerList,
             container = this,
             eventDispatcher = eventDispatcher
         )

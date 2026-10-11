@@ -1,6 +1,7 @@
 package com.carmabs.emanate.core.source.sideeffect
 
 import com.carmabs.emanate.core.action.EmaAction
+import com.carmabs.emanate.core.action.EmaActionDispatcher
 import com.carmabs.emanate.core.source.EmaDsl
 import com.carmabs.emanate.core.source.EmaSource
 import com.carmabs.emanate.core.state.EmaEvent
@@ -9,8 +10,8 @@ import com.carmabs.emanate.core.state.EmaState
 /**
  * Created by Carlos Mateo Benito on 11/10/2026.
  *
- * Scope of a side effect. It runs after the reducers of the action, so it can read the new state, dispatch actions
- * and post events, but it can't decide the path of the action.
+ * Scope of a side effect. It runs after the reducers of the action, so it can read the new state, dispatch actions,
+ * broadcast them and post events, but it can't decide the path of the action.
  *
  * <p>
  * Copyright (c) 2026 by Carmabs. All rights reserved.
@@ -31,6 +32,13 @@ class SideEffectScope<out S : EmaState, in A : EmaAction, in E : EmaEvent> inter
     fun dispatch(action: A) {
         source.dispatchAction(action)
     }
+
+    /**
+     * Broadcasts any action to the sources listening to its type, added with addBroadcastListener. For example, to
+     * send a result to the previous screen. It is delivered only to the listeners added at the moment.
+     */
+    val broadcastDispatcher: EmaActionDispatcher<EmaAction>
+        get() = source.broadcaster
 
     /**
      * Posts an event for the view. It arrives after the actions dispatched before it, so the view sees their state.

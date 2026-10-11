@@ -19,7 +19,7 @@ import kotlin.time.Duration
 /**
  * Created by Carlos Mateo Benito on 11/10/2026.
  *
- * Adds the middlewares, reducers and side effects of the source. It can only be used inside setup.
+ * Adds the middlewares, reducers, side effects and broadcast listeners of the source. It can only be used inside setup.
  *
  * <p>
  * Copyright (c) 2026 by Carmabs. All rights reserved.
@@ -35,6 +35,8 @@ class SourceSetupScope<S : EmaState, A : EmaAction, E : EmaEvent> internal const
     internal var reducerList: List<EmaReducer<S, *>> = emptyList()
         private set
     internal var sideEffectList: List<SideEffect<S, A, E, *>> = emptyList()
+        private set
+    internal var broadcastListenerList: List<KClass<out EmaAction>> = emptyList()
         private set
 
     private var built = false
@@ -121,6 +123,24 @@ class SourceSetupScope<S : EmaState, A : EmaAction, E : EmaEvent> internal const
         noinline sideEffect: suspend SideEffectScope<S, A, E>.(F) -> Unit
     ) {
         addSideEffect(F::class, concurrency, timeout, onTimeout, sideEffect)
+    }
+
+    /**
+     * Implementation of the inline addBroadcastListener with the type of the actions.
+     */
+    @PublishedApi
+    internal fun addBroadcastListener(actionType: KClass<out EmaAction>) {
+        checkNotBuilt()
+        broadcastListenerList = broadcastListenerList + actionType
+    }
+
+    /**
+     * Listens to the actions of type [F] broadcast with the broadcastDispatcher of any side effect. The type of the
+     * action is the id of the broadcast. They enter this source like the dispatched ones: they go through its
+     * middlewares, reducers and side effects of type [F]. The listener is removed when the source is closed.
+     */
+    inline fun <reified F : EmaAction> addBroadcastListener() {
+        addBroadcastListener(F::class)
     }
 
     /**
