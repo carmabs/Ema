@@ -7,14 +7,19 @@ import com.carmabs.emanate.core.source.middleware.middlewareOf
 import com.carmabs.emanate.core.source.reducer.EmaReducer
 import com.carmabs.emanate.core.source.reducer.ReducerScope
 import com.carmabs.emanate.core.source.reducer.reducerOf
+import com.carmabs.emanate.core.source.sideeffect.SideEffect
+import com.carmabs.emanate.core.source.sideeffect.SideEffectConcurrency
+import com.carmabs.emanate.core.source.sideeffect.SideEffectScope
+import com.carmabs.emanate.core.source.sideeffect.sideEffectOf
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
 import kotlin.reflect.KClass
+import kotlin.time.Duration
 
 /**
  * Created by Carlos Mateo Benito on 11/10/2026.
  *
- * Adds the middlewares and the reducers of the source. It can only be used inside setup.
+ * Adds the middlewares, reducers and side effects of the source. It can only be used inside setup.
  *
  * <p>
  * Copyright (c) 2026 by Carmabs. All rights reserved.
@@ -28,6 +33,8 @@ class SourceSetupScope<S : EmaState, A : EmaAction, E : EmaEvent> internal const
     internal var middlewareList: List<EmaMiddleware<S, A, *>> = emptyList()
         private set
     internal var reducerList: List<EmaReducer<S, *>> = emptyList()
+        private set
+    internal var sideEffectList: List<SideEffect<S, A, E, *>> = emptyList()
         private set
 
     private var built = false
@@ -78,6 +85,42 @@ class SourceSetupScope<S : EmaState, A : EmaAction, E : EmaEvent> internal const
      */
     inline fun <reified F : EmaAction> addReducer(noinline reduceAction: ReducerScope<S>.(F) -> S) {
         addReducer(F::class, reduceAction)
+    }
+
+    /**
+     * Adds side effects. Each one runs asynchronously after the reducers of the actions of its type.
+     */
+    fun addSideEffect(vararg sideEffect: SideEffect<S, A, E, *>) {
+        checkNotBuilt()
+        sideEffectList = sideEffectList + sideEffect
+    }
+
+    /**
+     * Implementation of the inline addSideEffect with the type of the actions.
+     */
+    @PublishedApi
+    internal fun <F : EmaAction> addSideEffect(
+        filter: KClass<F>,
+        concurrency: SideEffectConcurrency,
+        timeout: Duration?,
+        onTimeout: (SideEffectScope<S, A, E>.(F) -> Unit)?,
+        sideEffect: suspend SideEffectScope<S, A, E>.(F) -> Unit
+    ) {
+        addSideEffect(sideEffectOf(filter, concurrency, timeout, onTimeout, sideEffect))
+    }
+
+    /**
+     * Adds a side effect for the actions of type [F]. It runs asynchronously after their reducers.
+     * @param concurrency what happens when an action launches it while it is still running
+     * @param timeout if the side effect doesn't finish in this time, it is cancelled and [onTimeout] is called
+     */
+    inline fun <reified F : EmaAction> addSideEffect(
+        concurrency: SideEffectConcurrency = SideEffectConcurrency.Every,
+        timeout: Duration? = null,
+        noinline onTimeout: (SideEffectScope<S, A, E>.(F) -> Unit)? = null,
+        noinline sideEffect: suspend SideEffectScope<S, A, E>.(F) -> Unit
+    ) {
+        addSideEffect(F::class, concurrency, timeout, onTimeout, sideEffect)
     }
 
     /**

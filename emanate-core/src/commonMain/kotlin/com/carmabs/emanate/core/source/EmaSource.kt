@@ -3,14 +3,19 @@
 package com.carmabs.emanate.core.source
 
 import com.carmabs.emanate.core.Ema
+import com.carmabs.emanate.core.action.DefaultEmaEventDispatcher
 import com.carmabs.emanate.core.action.EmaAction
 import com.carmabs.emanate.core.action.EmaActionDispatcher
+import com.carmabs.emanate.core.action.EmaEventDispatcher
 import com.carmabs.emanate.core.model.emaSideEffect
 import com.carmabs.emanate.core.source.middleware.EmaMiddleware
 import com.carmabs.emanate.core.source.middleware.MiddlewareContext
 import com.carmabs.emanate.core.source.middleware.MiddlewareScope
 import com.carmabs.emanate.core.source.reducer.EmaReducer
 import com.carmabs.emanate.core.source.reducer.ReducerScope
+import com.carmabs.emanate.core.source.sideeffect.SideEffect
+import com.carmabs.emanate.core.source.sideeffect.SideEffectConcurrency
+import com.carmabs.emanate.core.source.sideeffect.SideEffectScope
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
 import kotlin.concurrent.Volatile
@@ -25,6 +30,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -32,14 +38,14 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 
 /**
- * Creates a source. Its actions are of type [A]: every action goes through the middlewares and the reducers of its
- * type. The source
+ * Creates a source. Its actions are of type [A]: every action goes through the middlewares, the reducers and the
+ * side effects of its type. The source
  * creates its own scope with [dispatcher], so call [EmaSource.close] when it isn't needed anymore to cancel its
  * work.
  *
  * @param dispatcher where the source runs. By default the main dispatcher of Ema, as the state is usually drawn by
  * the view; use cases run on their own dispatcher anyway.
- * @param setup adds the middlewares and the reducers of the source
+ * @param setup adds the middlewares, reducers and side effects of the source
  */
 @Suppress("FunctionName") // Factory named like the class
 fun <S : EmaState, A : EmaAction, E : EmaEvent> EmaSource(
@@ -55,7 +61,9 @@ fun <S : EmaState, A : EmaAction, E : EmaEvent> EmaSource(
         mutableStateFlow = MutableStateFlow(initialState),
         dispatcher = dispatcher,
         middlewares = setupScope.middlewareList,
-        reducers = setupScope.reducerList
+        reducers = setupScope.reducerList,
+        sideEffects = setupScope.sideEffectList,
+        eventDispatcher = DefaultEmaEventDispatcher()
     )
 }
 
@@ -76,8 +84,11 @@ class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
     private val mutableStateFlow: MutableStateFlow<S>,
     dispatcher: CoroutineDispatcher,
     private val middlewares: List<EmaMiddleware<S, A, *>>,
-    private val reducers: List<EmaReducer<S, *>>
-) : EmaActionDispatcher<A> {
+    private val reducers: List<EmaReducer<S, *>>,
+    private val sideEffects: List<SideEffect<S, A, E, *>>,
+    private val eventDispatcher: DefaultEmaEventDispatcher<E>
+) : EmaEventDispatcher<E>,
+    EmaActionDispatcher<A> {
 
     /**
      * Scope of all the work of the source, cancelled by [close]
@@ -90,14 +101,18 @@ class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
         get() = mutableStateFlow.value
 
     /**
-     * Steps pending to run, one after another: new actions and the middleware chains continued asynchronously
+     * Steps pending to run, one after another: new actions, events and the middleware chains continued
+     * asynchronously
      */
     private val queue = Channel<() -> Unit>(Channel.UNLIMITED)
 
     private val middlewareContext = MiddlewareContext(this)
 
+    private val sideEffectScope = SideEffectScope<S, A, E>(this)
+
     /**
-     * Asynchronous work running with a key, for example the id of a nextAfter
+     * Asynchronous work running with a key: the id of a nextAfter or a side effect that isn't launched for every
+     * action
      */
     private val jobsByKey = AtomicReference<Map<Any, Job>>(emptyMap())
 
@@ -105,7 +120,7 @@ class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
     private var observers: List<EmaSourceObserver<S, E>> = emptyList()
 
     /**
-     * Adds an observer of the actions and states of the source. Add it before the first action to observe
+     * Adds an observer of the actions, states and events of the source. Add it before the first action to observe
      * everything.
      */
     internal fun addObserver(observer: EmaSourceObserver<S, E>) {
@@ -167,6 +182,7 @@ class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
     private fun runMiddleware(index: Int, action: EmaAction) {
         if (index == middlewares.size) {
             reduce(action)
+            launchSideEffects(action)
             return
         }
         val middleware = middlewares[index]
@@ -199,6 +215,35 @@ class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
         with(middleware) { middlewareScope.invoke(middleware.actionType.cast(action)) }
     }
 
+    private fun launchSideEffects(action: EmaAction) {
+        // The type is checked before launching, so other actions don't cancel nor block a side effect
+        sideEffects.filter { it.actionType.isInstance(action) }.forEach { launchSideEffect(it, action) }
+    }
+
+    private fun <F : EmaAction> launchSideEffect(sideEffect: SideEffect<S, A, E, F>, action: EmaAction) {
+        val typedAction = sideEffect.actionType.cast(action)
+        // The side effect itself is the key of its running job
+        val key = when (sideEffect.concurrency) {
+            SideEffectConcurrency.Every -> null
+
+            SideEffectConcurrency.Latest -> sideEffect
+
+            SideEffectConcurrency.Leading -> {
+                // Side effects are launched only from the source coroutine, so no other one can start meanwhile
+                if (jobsByKey.load()[sideEffect]?.isActive == true) return
+                sideEffect
+            }
+        }
+        with(sideEffect) {
+            launch(
+                key = key,
+                timeout = timeout,
+                onTimeout = { sideEffectScope.onTimeout(typedAction) },
+                block = { sideEffectScope.invoke(typedAction) }
+            )
+        }
+    }
+
     /**
      * Launches asynchronous work applying the side effect configuration of Ema.
      * @param key if work with the same key is running, it is cancelled
@@ -219,6 +264,21 @@ class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
         }
         return job
     }
+
+    /**
+     * The event goes through the queue, so it arrives after the actions dispatched before it and the view sees
+     * their state when it receives the event
+     */
+    internal fun postEvent(event: E, allowDuplicated: Boolean) {
+        queue.trySend {
+            eventDispatcher.postEvent(event, allowDuplicated)
+            observers.forEach { it.onEvent(event) }
+        }
+    }
+
+    final override fun consumeEvent(event: E) = eventDispatcher.consumeEvent(event)
+
+    final override val eventFlow: Flow<List<E>> = eventDispatcher.eventFlow
 
     private fun putJob(key: Any, job: Job) {
         updateJobs { it + (key to job) }

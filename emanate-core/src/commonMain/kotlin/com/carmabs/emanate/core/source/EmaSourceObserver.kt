@@ -8,7 +8,7 @@ import com.carmabs.emanate.core.state.EmaState
  * Created by Carlos Mateo Benito on 11/10/2026.
  *
  * Observes what happens in a source, in the order the source processes it. Used by the test utilities to record the
- * actions and the states. It is internal: emanate-test uses it as a friend module.
+ * actions, the states and the events. It is internal: emanate-test uses it as a friend module.
  *
  * <p>
  * Copyright (c) 2026 by Carmabs. All rights reserved.
@@ -27,4 +27,9 @@ internal interface EmaSourceObserver<in S : EmaState, in E : EmaEvent> {
      * The reducers have returned [state] for an action.
      */
     fun onState(state: S) = Unit
+
+    /**
+     * An event has been posted.
+     */
+    fun onEvent(event: E) = Unit
 }
