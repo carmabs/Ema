@@ -14,8 +14,8 @@ class MyApplication : Application() {
 
 - Llámalo **antes de crear ningún ViewModel**: los ViewModels leen la configuración al construirse.
 - Solo se puede llamar **una vez**. Una segunda llamada lanza `IllegalStateException`.
-- Si no se llama nunca, se usa la configuración por defecto, `EmaConfiguration()`. Es lo habitual en las plataformas que
-  no son Android. En los tests, sustitúyela con `Ema.initForTest`: consulta [Tests](testing.es.md).
+- Si no se llama nunca, se usa la configuración por defecto, `EmaConfiguration()`. Es lo habitual en los tests unitarios
+  y en las plataformas que no son Android.
 
 ## Qué se puede configurar
 

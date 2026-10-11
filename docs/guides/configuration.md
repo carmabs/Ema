@@ -14,8 +14,8 @@ class MyApplication : Application() {
 
 - Call it **before any ViewModel is created**: ViewModels read the configuration when they are built.
 - It can be called **only once**. A second call throws `IllegalStateException`.
-- If it is never called, the default `EmaConfiguration()` is used. That is the usual case in non-Android platforms.
-  In tests, replace it with `Ema.initForTest`: see [Testing](testing.md).
+- If it is never called, the default `EmaConfiguration()` is used. That is the usual case in unit tests and in
+  non-Android platforms.
 
 ## What can be configured
 

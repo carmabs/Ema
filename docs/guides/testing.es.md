@@ -46,29 +46,18 @@ entre pantallas y el ciclo de vida de la vista.
 
 ## Lo que conviene saber
 
-1. **Usa los dispatchers del test.** Por defecto los ViewModels se ejecutan en `Dispatchers.Main`, que no existe en los
-   tests unitarios, y los casos de uso en `Dispatchers.IO`. Sustitúyelos en cada test con `Ema.initForTest`, para que
-   los ViewModels con el scope por defecto y los casos de uso se ejecuten en un dispatcher de test:
-
-   ```kotlin
-   @OptIn(EmaTestApi::class)
-   private fun TestScope.useTestDispatchers() {
-       val dispatcher = UnconfinedTestDispatcher(testScheduler)
-       Ema.initForTest(EmaConfiguration(dispatchers = EmaDispatchers(dispatcher, dispatcher, dispatcher)))
-   }
-   ```
-
-   Con un `UnconfinedTestDispatcher` el trabajo se ejecuta inmediatamente; con un `StandardTestDispatcher`, llama a
-   `advanceUntilIdle()` para ejecutarlo, incluidos los `delay`. No llames a `Ema.init` en los tests: solo se puede
-   llamar una vez por proceso, mientras que `Ema.initForTest` sustituye la configuración cada vez.
-2. **O pasa tu propio scope.** El segundo parámetro del constructor de `EmaViewModelBasic` / `EmaViewModelAction` es el
+1. **Pasa tu propio scope.** El segundo parámetro del constructor de `EmaViewModelBasic` / `EmaViewModelAction` es el
    `CoroutineScope`. Exponlo en el constructor de tus ViewModels, con un valor por defecto, para que los tests puedan
-   sustituirlo:
+   sustituirlo. El scope por defecto usa el dispatcher `main` de la configuración, `Dispatchers.Main.immediate`, que no
+   existe en los tests unitarios. Con un `UnconfinedTestDispatcher` el trabajo se ejecuta inmediatamente; con un
+   `StandardTestDispatcher`, llama a `advanceUntilIdle()` para ejecutarlo.
 
    ```kotlin
    class CounterViewModel(scope: CoroutineScope = EmaMainScope()) :
        EmaViewModelAction<CounterState, CounterAction, CounterEvent>(CounterState(), scope)
    ```
+2. **No hace falta configuración.** Si no se llama a `Ema.init`, se usa la configuración por defecto. No llames a
+   `Ema.init` en los tests: solo se puede llamar una vez por proceso.
 3. **Llama a `onCreated()`** para ejecutar `onStateCreated(initializer)`. Pasa un inicializador si la pantalla lo
    necesita: `viewModel.onCreated(MyInitializer.Default("x"))`.
 4. **Usa casos de uso falsos.** Son clases normales: pasa una implementación falsa, o usa tu librería de mocks.
