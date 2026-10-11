@@ -42,7 +42,7 @@ import com.carmabs.emanate.core.usecase.EmaSyncUseCase
 import com.carmabs.emanate.core.usecase.EmaUseCase
 import com.carmabs.emanate.core.value.EmaUriRes
 import com.carmabs.emanate.core.value.EmaUriType
-import com.carmabs.emanate.core.viewmodel.EmaViewModel
+import com.carmabs.emanate.core.viewmodel.EmaViewModelContract
 import kotlin.coroutines.ContinuationInterceptor
 import kotlin.coroutines.resume
 import kotlin.test.AfterTest
@@ -209,7 +209,7 @@ class EmaModelTest {
 
     @Test
     fun `empty ViewModel does nothing`() = runTest {
-        val viewModel = EmaViewModel.EMPTY
+        val viewModel = EmaViewModelContract.EMPTY
         viewModel.onCreated()
         viewModel.onStartView()
         viewModel.onResumeView()

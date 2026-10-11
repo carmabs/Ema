@@ -1,7 +1,7 @@
 package com.carmabs.emanate.core.action
 
 import com.carmabs.emanate.core.constants.INT_ONE
-import com.carmabs.emanate.core.viewmodel.EmaViewModel
+import com.carmabs.emanate.core.viewmodel.EmaViewModelContract
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow

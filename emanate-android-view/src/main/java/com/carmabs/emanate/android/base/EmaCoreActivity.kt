@@ -23,7 +23,7 @@ import com.carmabs.emanate.core.model.EmaBackHandlerStrategy
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
 import com.carmabs.emanate.core.view.EmaViewModelTrigger
-import com.carmabs.emanate.core.viewmodel.EmaViewModel
+import com.carmabs.emanate.core.viewmodel.EmaViewModelContract
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -34,7 +34,7 @@ import kotlinx.coroutines.Job
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
-abstract class EmaCoreActivity<S : EmaState, VM : EmaViewModel<S, E>, E : EmaEvent> :
+abstract class EmaCoreActivity<S : EmaState, VM : EmaViewModelContract<S, E>, E : EmaEvent> :
     AppCompatActivity(),
     EmaAndroidView<S, VM, E>,
     EmaActivityBackDelegate {

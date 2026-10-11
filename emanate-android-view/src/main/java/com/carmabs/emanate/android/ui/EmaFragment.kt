@@ -10,7 +10,7 @@ import com.carmabs.emanate.android.base.EmaCoreFragment
 import com.carmabs.emanate.android.initializer.bundle.strategy.BundleSerializerStrategy
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
-import com.carmabs.emanate.core.viewmodel.EmaViewModel
+import com.carmabs.emanate.core.viewmodel.EmaViewModelContract
 
 /**
  *
@@ -18,7 +18,7 @@ import com.carmabs.emanate.core.viewmodel.EmaViewModel
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
-abstract class EmaFragment<B : ViewBinding, S : EmaState, VM : EmaViewModel<S, E>, E : EmaEvent> :
+abstract class EmaFragment<B : ViewBinding, S : EmaState, VM : EmaViewModelContract<S, E>, E : EmaEvent> :
     EmaCoreFragment<S, VM, E>() {
 
     override val initializerStrategy: BundleSerializerStrategy

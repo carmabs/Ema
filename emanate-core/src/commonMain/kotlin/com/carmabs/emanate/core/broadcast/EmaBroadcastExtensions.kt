@@ -1,7 +1,7 @@
 package com.carmabs.emanate.core.broadcast
 
 import com.carmabs.emanate.core.extension.emaName
-import com.carmabs.emanate.core.viewmodel.EmaViewModel
+import com.carmabs.emanate.core.viewmodel.EmaViewModelContract
 import kotlin.jvm.JvmInline
 import kotlin.reflect.KClass
 
@@ -14,7 +14,7 @@ import kotlin.reflect.KClass
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-val <T : EmaViewModel<*, *>> KClass<T>.backBroadcastId: BackBroadcastId
+val <T : EmaViewModelContract<*, *>> KClass<T>.backBroadcastId: BackBroadcastId
     get() = BackBroadcastId("broadcast/${this.emaName}")
 
 @JvmInline

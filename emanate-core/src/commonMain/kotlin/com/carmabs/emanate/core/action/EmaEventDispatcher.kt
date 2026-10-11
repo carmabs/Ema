@@ -1,7 +1,7 @@
 package com.carmabs.emanate.core.action
 
 import com.carmabs.emanate.core.state.EmaEvent
-import com.carmabs.emanate.core.viewmodel.EmaViewModel
+import com.carmabs.emanate.core.viewmodel.EmaViewModelContract
 import kotlin.collections.plus
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

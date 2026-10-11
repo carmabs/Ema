@@ -8,17 +8,17 @@ import com.carmabs.emanate.android.viewmodel.EmaViewModelFactory
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
 import com.carmabs.emanate.core.view.EmaView
-import com.carmabs.emanate.core.viewmodel.EmaViewModel
+import com.carmabs.emanate.core.viewmodel.EmaViewModelContract
 
 /**
  * View to handle VM view logic states through [EmaState].
  * The user must provide in the constructor by template:
- *  - The view model class [EmaViewModel] is going to use the view
+ *  - The view model class [EmaViewModelContract] is going to use the view
  *  - The navigation state class [EmaNavigationEvent] will handle the navigation
  *
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
-interface EmaAndroidView<S : EmaState, VM : EmaViewModel<S, E>, E : EmaEvent> : EmaView<S, VM, E> {
+interface EmaAndroidView<S : EmaState, VM : EmaViewModelContract<S, E>, E : EmaEvent> : EmaView<S, VM, E> {
 
     fun initializeViewModel(activity: ComponentActivity, viewModelSeed: VM): EmaAndroidViewModel<S, E> {
         val emaFactory = EmaViewModelFactory(viewModelSeed)

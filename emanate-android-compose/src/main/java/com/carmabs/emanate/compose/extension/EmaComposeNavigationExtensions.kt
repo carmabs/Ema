@@ -33,7 +33,7 @@ import com.carmabs.emanate.compose.ui.EmaComposableScreenContent
 import com.carmabs.emanate.core.action.EmaAction
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
-import com.carmabs.emanate.core.viewmodel.EmaViewModel
+import com.carmabs.emanate.core.viewmodel.EmaViewModelContract
 
 fun NavController.navigate(
     route: String,
@@ -56,11 +56,11 @@ fun NavController.navigate(
 
 fun <S : EmaState, A : EmaAction, E : EmaEvent> NavGraphBuilder.createComposableScreen(
     screenContent: EmaComposableScreenContent<S, A, E>,
-    viewModel: () -> EmaViewModel<S, E>,
+    viewModel: () -> EmaViewModelContract<S, E>,
     routeId: String = screenContent::class.routeId,
     initializerSupport: EmaInitializerSupport? = null,
     saveStateManager: EmaSaveStateManager<S, E>? = null,
-    onViewModelInstance: (@Composable (EmaViewModel<S, E>) -> Unit)? = null,
+    onViewModelInstance: (@Composable (EmaViewModelContract<S, E>) -> Unit)? = null,
     fullScreenDialogMode: Boolean = false,
     transitionAnimation: EmaComposableTransitions = EmaComposableTransitions(),
     decoration: @Composable (

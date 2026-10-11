@@ -11,11 +11,12 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.emptyFlow
 
 /**
- * View model to handle view states.
+ * Contract between a view and its view model: the state and the events the view observes and the lifecycle it
+ * notifies. It is implemented by [EmaViewModelBasic] and [EmaViewModelAction].
  *
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
-interface EmaViewModel<S : EmaState, E : EmaEvent> : EmaEventDispatcher<E> {
+interface EmaViewModelContract<S : EmaState, E : EmaEvent> : EmaEventDispatcher<E> {
 
     val id: String
         get() {
@@ -42,7 +43,7 @@ interface EmaViewModel<S : EmaState, E : EmaEvent> : EmaEventDispatcher<E> {
 
     val stateFlow: StateFlow<S>
 
-    object EMPTY : EmaViewModel<EmaState.EMPTY, EmaEvent.EMPTY> {
+    object EMPTY : EmaViewModelContract<EmaState.EMPTY, EmaEvent.EMPTY> {
         override val initialState: EmaState.EMPTY = EmaState.EMPTY
 
         override val stateFlow: StateFlow<EmaState.EMPTY> = MutableStateFlow(initialState)

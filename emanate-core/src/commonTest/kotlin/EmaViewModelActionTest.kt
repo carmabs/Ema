@@ -106,7 +106,7 @@ class CounterViewModel(scope: CoroutineScope, private val renderOnInitialization
 }
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class EmaViewModelTest {
+class EmaViewModelActionTest {
 
     @AfterTest
     fun tearDown() {

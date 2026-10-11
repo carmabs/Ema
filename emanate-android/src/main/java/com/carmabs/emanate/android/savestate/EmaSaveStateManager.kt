@@ -3,7 +3,7 @@ package com.carmabs.emanate.android.savestate
 import androidx.lifecycle.SavedStateHandle
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
-import com.carmabs.emanate.core.viewmodel.EmaViewModel
+import com.carmabs.emanate.core.viewmodel.EmaViewModelContract
 import kotlinx.coroutines.CoroutineScope
 
 /**
@@ -16,5 +16,9 @@ import kotlinx.coroutines.CoroutineScope
  * @author <a href=“mailto:apps.carmabs@gmail.comm”>Carlos Mateo Benito</a>
  */
 fun interface EmaSaveStateManager<S : EmaState, E : EmaEvent> {
-    fun onSaveStateHandling(scope: CoroutineScope, saveStateHandle: SavedStateHandle, viewModel: EmaViewModel<S, E>)
+    fun onSaveStateHandling(
+        scope: CoroutineScope,
+        saveStateHandle: SavedStateHandle,
+        viewModel: EmaViewModelContract<S, E>
+    )
 }

@@ -12,13 +12,13 @@ import com.carmabs.emanate.android.ui.EmaToolbarActivity
 import com.carmabs.emanate.core.navigator.EmaNavigator
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
-import com.carmabs.emanate.core.viewmodel.EmaViewModel
+import com.carmabs.emanate.core.viewmodel.EmaViewModelContract
 import com.carmabs.emanate.sample.ui.R
 import com.carmabs.emanate.sample.ui.databinding.SplashActivityBinding
 import com.google.android.material.appbar.AppBarLayout
 
 class SplashActivity :
-    EmaToolbarActivity<SplashActivityBinding, EmaState.EMPTY, EmaViewModel.EMPTY, EmaEvent.EMPTY>() {
+    EmaToolbarActivity<SplashActivityBinding, EmaState.EMPTY, EmaViewModelContract.EMPTY, EmaEvent.EMPTY>() {
 
     override fun createViewBinding(inflater: LayoutInflater): SplashActivityBinding =
         SplashActivityBinding.inflate(inflater)
@@ -34,7 +34,7 @@ class SplashActivity :
 
     override fun SplashActivityBinding.provideToolbarLayout(): AppBarLayout = ablSplash
 
-    override fun provideViewModel(): EmaViewModel.EMPTY = EmaViewModel.EMPTY
+    override fun provideViewModel(): EmaViewModelContract.EMPTY = EmaViewModelContract.EMPTY
 
     override fun SplashActivityBinding.onState(data: EmaState.EMPTY) {
     }

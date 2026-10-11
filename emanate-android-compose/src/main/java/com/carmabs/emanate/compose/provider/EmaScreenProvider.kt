@@ -7,13 +7,13 @@ import com.carmabs.emanate.android.viewmodel.EmaAndroidViewModel
 import com.carmabs.emanate.android.viewmodel.EmaViewModelFactory
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
-import com.carmabs.emanate.core.viewmodel.EmaViewModel
+import com.carmabs.emanate.core.viewmodel.EmaViewModelContract
 
 object EmaScreenProvider {
 
     @Composable
     fun <S : EmaState, E : EmaEvent> provideComposableViewModel(
-        viewModel: EmaViewModel<S, E>,
+        viewModel: EmaViewModelContract<S, E>,
         savedStateHandle: SavedStateHandle?
     ): EmaAndroidViewModel<S, E> = viewModel(
         modelClass = EmaAndroidViewModel::class.java,

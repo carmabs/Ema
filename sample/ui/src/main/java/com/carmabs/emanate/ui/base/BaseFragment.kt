@@ -5,7 +5,7 @@ import com.carmabs.emanate.android.ui.EmaFragment
 import com.carmabs.emanate.core.model.EmaText
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
-import com.carmabs.emanate.core.viewmodel.EmaViewModel
+import com.carmabs.emanate.core.viewmodel.EmaViewModelContract
 import com.carmabs.emanate.sample.ui.R
 import com.carmabs.emanate.ui.dialog.AppDialogProvider
 import com.carmabs.emanate.ui.dialog.error.ErrorDialogData
@@ -25,7 +25,7 @@ import org.koin.core.parameter.parametersOf
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
 
-abstract class BaseFragment<B : ViewBinding, S : EmaState, VM : EmaViewModel<S, E>, E : EmaEvent> :
+abstract class BaseFragment<B : ViewBinding, S : EmaState, VM : EmaViewModelContract<S, E>, E : EmaEvent> :
     EmaFragment<B, S, VM, E>() {
 
     private val appDialogProvider: AppDialogProvider by inject {

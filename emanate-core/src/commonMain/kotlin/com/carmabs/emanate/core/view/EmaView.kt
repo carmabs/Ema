@@ -5,7 +5,7 @@ import com.carmabs.emanate.core.initializer.EmaInitializerSerializer
 import com.carmabs.emanate.core.navigator.EmaNavigator
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
-import com.carmabs.emanate.core.viewmodel.EmaViewModel
+import com.carmabs.emanate.core.viewmodel.EmaViewModelContract
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
@@ -14,11 +14,11 @@ import kotlinx.coroutines.launch
 /**
  * View to handle VM view logic states through [EmaState].
  * The user must provide in the constructor by template:
- *  - The view model class [EmaViewModel] is going to use the view
+ *  - The view model class [EmaViewModelContract] is going to use the view
  *
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
-interface EmaView<S : EmaState, VM : EmaViewModel<S, E>, E : EmaEvent> {
+interface EmaView<S : EmaState, VM : EmaViewModelContract<S, E>, E : EmaEvent> {
 
     /**
      * Scope for flow updates
@@ -26,7 +26,7 @@ interface EmaView<S : EmaState, VM : EmaViewModel<S, E>, E : EmaEvent> {
     val coroutineScope: CoroutineScope
 
     /**
-     * The view model [EmaViewModel] for the view
+     * The view model [EmaViewModelContract] for the view
      */
     val viewModel: VM
 

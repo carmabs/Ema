@@ -25,7 +25,7 @@ import com.carmabs.emanate.core.navigator.EmaNavigator
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
 import com.carmabs.emanate.core.view.EmaViewModelTrigger
-import com.carmabs.emanate.core.viewmodel.EmaViewModel
+import com.carmabs.emanate.core.viewmodel.EmaViewModelContract
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -36,7 +36,7 @@ import kotlinx.coroutines.Job
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
-abstract class EmaCoreFragment<S : EmaState, VM : EmaViewModel<S, E>, E : EmaEvent> :
+abstract class EmaCoreFragment<S : EmaState, VM : EmaViewModelContract<S, E>, E : EmaEvent> :
     Fragment(),
     EmaAndroidView<S, VM, E> {
 

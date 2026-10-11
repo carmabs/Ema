@@ -13,7 +13,7 @@ import com.carmabs.emanate.core.constants.FLOAT_ONE
 import com.carmabs.emanate.core.constants.FLOAT_ZERO
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
-import com.carmabs.emanate.core.viewmodel.EmaViewModel
+import com.carmabs.emanate.core.viewmodel.EmaViewModelContract
 import com.google.android.material.appbar.AppBarLayout
 
 /**
@@ -22,7 +22,7 @@ import com.google.android.material.appbar.AppBarLayout
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
-abstract class EmaToolbarActivity<B : ViewBinding, S : EmaState, VM : EmaViewModel<S, E>, E : EmaEvent> :
+abstract class EmaToolbarActivity<B : ViewBinding, S : EmaState, VM : EmaViewModelContract<S, E>, E : EmaEvent> :
     EmaActivity<B, S, VM, E>() {
 
     override val initializerStrategy: BundleSerializerStrategy

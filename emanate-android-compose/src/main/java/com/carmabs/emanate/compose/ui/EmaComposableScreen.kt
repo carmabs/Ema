@@ -25,12 +25,12 @@ import com.carmabs.emanate.core.action.EmaEventDispatcher
 import com.carmabs.emanate.core.model.EmaBackHandlerStrategy
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
-import com.carmabs.emanate.core.viewmodel.EmaViewModel
+import com.carmabs.emanate.core.viewmodel.EmaViewModelContract
 
 @Composable
 fun <S : EmaState, A : EmaAction, E : EmaEvent> EmaComposableScreen(
     initializer: EmaAction.Initializer? = null,
-    vm: EmaViewModel<S, E>,
+    vm: EmaViewModelContract<S, E>,
     actions: EmaActionDispatcher<A>,
     screenContent: EmaComposableScreenContent<S, A, E>,
     onEvent: (E) -> Unit,
@@ -63,7 +63,7 @@ fun <S : EmaState, A : EmaAction, E : EmaEvent> EmaComposableScreen(
 @Composable
 fun <A : EmaAction, S : EmaState, E : EmaEvent> EmaComposableScreen(
     initializer: EmaAction.Initializer? = null,
-    vm: () -> EmaViewModel<S, E>,
+    vm: () -> EmaViewModelContract<S, E>,
     screenContent: EmaComposableScreenContent<S, A, E>,
     onEvent: (E) -> Unit,
     saveStateSupport: SavedStateSupport<S, E>? = null,
@@ -114,7 +114,7 @@ fun <A : EmaAction, S : EmaState, E : EmaEvent> EmaComposableScreen(
 private fun <S : EmaState, A : EmaAction, E : EmaEvent> RenderScreen(
     initializer: EmaAction.Initializer?,
     screenContent: EmaComposableScreenContent<S, A, E>,
-    vm: EmaViewModel<S, E>,
+    vm: EmaViewModelContract<S, E>,
     immutableActions: EmaImmutableActionDispatcher<A>,
     onEvent: (E) -> Unit
 ) {

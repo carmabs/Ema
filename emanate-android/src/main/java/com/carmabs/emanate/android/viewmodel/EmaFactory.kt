@@ -3,14 +3,14 @@ package com.carmabs.emanate.android.viewmodel
 import androidx.lifecycle.AbstractSavedStateViewModelFactory
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import com.carmabs.emanate.core.viewmodel.EmaViewModel
+import com.carmabs.emanate.core.viewmodel.EmaViewModelContract
 
 /**
  * Interface which all factories of [EmaAndroidViewModel] must use to be handled by the library
  *
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
-abstract class EmaFactory<VM : EmaViewModel<*, *>> : AbstractSavedStateViewModelFactory() {
+abstract class EmaFactory<VM : EmaViewModelContract<*, *>> : AbstractSavedStateViewModelFactory() {
 
     /**
      * Called if the view model has not been created yet

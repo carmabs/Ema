@@ -33,7 +33,7 @@ import com.carmabs.emanate.compose.extension.routeWithInitializer
 import com.carmabs.emanate.compose.initializer.EmaInitializerSupport
 import com.carmabs.emanate.core.navigator.EmaNavigationNode
 import com.carmabs.emanate.core.state.EmaEvent
-import com.carmabs.emanate.core.viewmodel.EmaViewModel
+import com.carmabs.emanate.core.viewmodel.EmaViewModelContract
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
@@ -75,7 +75,7 @@ class EmaComposeNavigationTest {
 
     private lateinit var navController: NavHostController
     private var viewModel: CounterViewModel? = null
-    private val instances = mutableListOf<EmaViewModel<*, *>>()
+    private val instances = mutableListOf<EmaViewModelContract<*, *>>()
     private val received = mutableListOf<CounterEvent>()
     private var saveStateSetups = 0
 

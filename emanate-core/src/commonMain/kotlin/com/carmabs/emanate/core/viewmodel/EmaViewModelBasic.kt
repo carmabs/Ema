@@ -31,7 +31,7 @@ import kotlinx.coroutines.flow.asStateFlow
 abstract class EmaViewModelBasic<S : EmaState, E : EmaEvent>(
     initialDataState: S,
     defaultScope: CoroutineScope = EmaMainScope()
-) : EmaViewModel<S, E> {
+) : EmaViewModelContract<S, E> {
 
     private val emaEventDispatcher = DefaultEmaEventDispatcher<E>()
     private val singleSideEffectMap by lazy {
@@ -258,8 +258,8 @@ abstract class EmaViewModelBasic<S : EmaState, E : EmaEvent>(
     }
 
     /**
-     * Set the listener for back data when the result view is destroyed. To select the resultId use the EmaViewModel::class.resultId() method
-     * of the selected implementation of EmaViewModel whose result is required. Example SampleEmaViewModel::class.resultId()
+     * Set the listener for back data when the result view is destroyed. To select the resultId use the EmaViewModelContract::class.resultId() method
+     * of the selected implementation of EmaViewModelContract whose result is required. Example SampleEmaViewModel::class.resultId()
      */
     protected fun registerBackBroadcastListener(backBroadcastId: BackBroadcastId, receiver: (Any?) -> Unit) {
         emaResultHandler.addResultReceiver(

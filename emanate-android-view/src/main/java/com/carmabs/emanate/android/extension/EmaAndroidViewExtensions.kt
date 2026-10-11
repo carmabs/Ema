@@ -8,7 +8,7 @@ import com.carmabs.emanate.android.ui.EmaAndroidView
 import com.carmabs.emanate.android.viewmodel.EmaAndroidViewModel
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
-import com.carmabs.emanate.core.viewmodel.EmaViewModel
+import com.carmabs.emanate.core.viewmodel.EmaViewModelContract
 
 /**
  * Created by Carlos Mateo Benito on 13/02/2021.
@@ -20,7 +20,7 @@ import com.carmabs.emanate.core.viewmodel.EmaViewModel
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
 @Suppress("ClassName")
-internal fun <S : EmaState, VM : EmaViewModel<S, E>, E : EmaEvent> EmaAndroidView<S, VM, E>.generateViewModel(
+internal fun <S : EmaState, VM : EmaViewModelContract<S, E>, E : EmaEvent> EmaAndroidView<S, VM, E>.generateViewModel(
     vm: VM
 ): EmaAndroidViewModel<S, E> {
     val fragmentScope =
