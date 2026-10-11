@@ -48,8 +48,9 @@ results between screens and the view lifecycle.
 
 1. **Pass your own scope.** The second constructor parameter of `EmaViewModelBasic` / `EmaViewModelAction` is the
    `CoroutineScope`. Expose it in the constructor of your ViewModels, with a default value, so tests can replace it.
-   The default scope uses `Dispatchers.Main`, which does not exist in unit tests. With an `UnconfinedTestDispatcher`
-   the work runs immediately; with a `StandardTestDispatcher`, call `advanceUntilIdle()` to run it.
+   The default scope uses the `main` dispatcher of the configuration, `Dispatchers.Main`, which does not exist in unit
+   tests. With an `UnconfinedTestDispatcher` the work runs immediately; with a `StandardTestDispatcher`, call
+   `advanceUntilIdle()` to run it.
 
    ```kotlin
    class CounterViewModel(scope: CoroutineScope = EmaMainScope()) :

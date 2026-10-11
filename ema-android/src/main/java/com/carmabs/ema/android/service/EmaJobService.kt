@@ -7,8 +7,8 @@ import android.os.Handler
 import android.os.Looper
 import android.os.ResultReceiver
 import androidx.core.app.JobIntentService
+import com.carmabs.ema.core.Ema
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 /**
@@ -26,7 +26,7 @@ import kotlinx.coroutines.launch
  **/
 abstract class EmaJobService : JobIntentService() {
 
-    private val coroutineScope = CoroutineScope(Dispatchers.Default)
+    private val coroutineScope = CoroutineScope(Ema.configuration.dispatchers.default)
 
     companion object {
         private const val EMA_SERVICE_LISTENER = "EMA_SERVICE_LISTENER"

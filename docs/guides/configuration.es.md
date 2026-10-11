@@ -21,8 +21,7 @@ class MyApplication : Application() {
 
 | Propiedad                     | `EmaConfiguration()` por defecto | `EmaConfiguration.Android`     | Para qué                                                  |
 |-------------------------------|------------------------------|------------------------------------|-----------------------------------------------------------|
-| `mainDispatcher`              | `Dispatchers.Main`           | `Dispatchers.Main.immediate`       | Dónde ejecutan los ViewModels sus corrutinas por defecto. |
-| `useCaseBackgroundDispatcher` | `Dispatchers.Default`        | `Dispatchers.IO`                   | Dónde se ejecutan por defecto los [casos de uso](utilities.es.md#casos-de-uso). |
+| `dispatchers`                 | `EmaDispatchers()`           | `main` es `Dispatchers.Main.immediate` | Dónde se ejecutan los ViewModels, los casos de uso y el trabajo de cálculo. Consulta [Dispatchers](#dispatchers). |
 | `sideEffectConfig`            | `EmaSideEffectConfig()`      | Obtiene el nombre de los métodos de las lambdas | Cómo gestiona `sideEffect` los errores y qué informa. Consulta [Trabajo asíncrono y errores](async-and-errors.es.md#errores). |
 | `dataClassPrinter`            | `EmaDataClassPrinter.ToString` | Imprime todos los campos, con sangría | Cómo imprime los objetos `toStringPretty()`.          |
 
@@ -41,6 +40,27 @@ Ema.init(
 ```
 
 `EmaConfiguration.Android` está en `ema-android` (`com.carmabs.ema.android.configuration.Android`).
+
+## Dispatchers
+
+`EmaDispatchers` agrupa los dispatchers que usa Ema por defecto:
+
+| Dispatcher | Por defecto                                                                  | Lo usan                                                                   |
+|------------|------------------------------------------------------------------------------|---------------------------------------------------------------------------|
+| `main`     | `Dispatchers.Main`                                                           | Los ViewModels, a través de su scope por defecto `EmaMainScope()`.        |
+| `io`       | `Dispatchers.IO`, o `Dispatchers.Default` en JS y Wasm                       | Los [casos de uso](utilities.es.md#casos-de-uso): red, disco y trabajo bloqueante. |
+| `default`  | `Dispatchers.Default`                                                        | El trabajo de cálculo, como procesar imágenes en `ema-android`.           |
+
+`EmaConfiguration.Android` usa `Dispatchers.Main.immediate` como `main`, igual que el `viewModelScope` de Android: el
+trabajo que empieza en el hilo principal, como despachar una acción desde un clic, se ejecuta en el momento en lugar de
+esperar al siguiente frame.
+
+Cambia cualquiera de ellos con `copy`, manteniendo los demás:
+
+```kotlin
+val android = EmaConfiguration.Android
+Ema.init(android.copy(dispatchers = android.dispatchers.copy(io = myIoDispatcher)))
+```
 
 ## Nombrar los side effects
 

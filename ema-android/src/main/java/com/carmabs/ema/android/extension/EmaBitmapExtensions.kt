@@ -14,6 +14,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.util.Size
 import androidx.annotation.ColorInt
+import com.carmabs.ema.core.Ema
 import com.carmabs.ema.core.constants.FLOAT_ONE
 import com.carmabs.ema.core.constants.FLOAT_ZERO
 import com.carmabs.ema.core.constants.INT_ONE
@@ -23,7 +24,6 @@ import kotlin.math.absoluteValue
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 /**
@@ -74,7 +74,7 @@ fun Bitmap.toByteArray(): ByteArray {
 fun Bitmap.copyDefault(mutable: Boolean = true): Bitmap = copy(config!!, mutable)
 
 suspend fun ByteArray.toBitmap(width: Int? = null, height: Int? = null, @ColorInt colorTint: Int? = null): Bitmap =
-    withContext(Dispatchers.Default) {
+    withContext(Ema.configuration.dispatchers.default) {
         val resultBitmap = if (width != null && height != null) {
             Bitmap.createScaledBitmap(
                 BitmapFactory.decodeByteArray(

@@ -88,8 +88,8 @@ screen and survives configuration changes:
 
 Each screen therefore has its own ViewModel, created once. See [Dependency injection](../guides/dependency-injection.md).
 
-The ViewModel is identified by its class name (`id`). Its `scope` is replaced by the `viewModelScope` of the
-Android ViewModel, so work is cancelled automatically when the ViewModel is cleared.
+The ViewModel is identified by its class name (`id`). When the Android ViewModel is cleared it calls `onCleared`, which
+cancels the `scope` of the ViewModel, so its work stops automatically.
 
 ## Rendering before the first update
 

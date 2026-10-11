@@ -22,10 +22,8 @@ abstract class EmaFlowUseCase<I, O> {
      * Executes a function inside a background thread provided by dispatcher
      * @return the object with the return value
      */
-    operator fun invoke(
-        input: I,
-        dispatcher: CoroutineDispatcher = Ema.configuration.useCaseBackgroundDispatcher
-    ): Flow<O> = useCaseFunction(input).flowOn(dispatcher)
+    operator fun invoke(input: I, dispatcher: CoroutineDispatcher = Ema.configuration.dispatchers.io): Flow<O> =
+        useCaseFunction(input).flowOn(dispatcher)
 
     /**
      * Function to implement by child classes to execute the code associated to data retrieving.

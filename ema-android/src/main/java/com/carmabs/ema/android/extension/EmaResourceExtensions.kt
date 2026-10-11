@@ -24,12 +24,12 @@ import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
+import com.carmabs.ema.core.Ema
 import com.carmabs.ema.core.constants.FLOAT_ONE
 import com.carmabs.ema.core.constants.INT_ZERO
 import com.carmabs.ema.core.value.EmaUriRes
 import com.carmabs.ema.core.value.EmaUriType
 import java.io.ByteArrayOutputStream
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 /*
@@ -123,7 +123,7 @@ suspend fun @receiver:DrawableRes Int.getBitmapFromResource(
     width: Int? = null,
     height: Int? = null,
     @ColorInt color: Int? = null
-): Bitmap = withContext(Dispatchers.Default) {
+): Bitmap = withContext(Ema.configuration.dispatchers.default) {
     ContextCompat.getDrawable(context, this@getBitmapFromResource)?.let {
         val drawable: Drawable = it
         val bitmap: Bitmap = Bitmap.createBitmap(
@@ -159,7 +159,7 @@ suspend fun @receiver:DrawableRes Int.getBitmapCropFromResource(
     context: Context,
     width: Int? = null,
     height: Int? = null
-): Bitmap = withContext(Dispatchers.Default) {
+): Bitmap = withContext(Ema.configuration.dispatchers.default) {
     val bitmap: Bitmap =
         BitmapFactory.decodeResource(context.resources, this@getBitmapCropFromResource)
     bitmap.resizeCropSquare()
