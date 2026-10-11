@@ -14,15 +14,14 @@ class MyApplication : Application() {
 
 - Call it **before any ViewModel is created**: ViewModels read the configuration when they are built.
 - It can be called **only once**. A second call throws `IllegalStateException`.
-- If it is never called, the default `EmaConfiguration()` is used. That is the usual case in unit tests and in
-  non-Android platforms.
+- If it is never called, the default `EmaConfiguration()` is used. That is the usual case in non-Android platforms.
+  In tests, replace it with `Ema.initForTest`: see [Testing](testing.md).
 
 ## What can be configured
 
 | Property                      | Default `EmaConfiguration()` | `EmaConfiguration.Android`         | Purpose                                                   |
 |-------------------------------|------------------------------|------------------------------------|-----------------------------------------------------------|
-| `mainDispatcher`              | `Dispatchers.Main`           | `Dispatchers.Main.immediate`       | Where ViewModels run their coroutines by default.         |
-| `useCaseBackgroundDispatcher` | `Dispatchers.Default`        | `Dispatchers.IO`                   | Where [use cases](utilities.md#use-cases) run by default. |
+| `dispatchers`                 | `EmaDispatchers()`           | `EmaDispatchers()`                 | Where ViewModels, use cases and CPU-intensive work run. See [Dispatchers](#dispatchers). |
 | `sideEffectConfig`            | `EmaSideEffectConfig()`      | Resolves the method names from the lambdas | How `sideEffect` handles errors and what it reports. See [Async work and errors](async-and-errors.md#errors). |
 | `dataClassPrinter`            | `EmaDataClassPrinter.ToString` | Prints every field, indented     | How `toStringPretty()` prints objects.                    |
 
@@ -41,6 +40,25 @@ Ema.init(
 ```
 
 `EmaConfiguration.Android` is in `ema-android` (`com.carmabs.ema.android.configuration.Android`).
+
+## Dispatchers
+
+`EmaDispatchers` groups the dispatchers Ema uses by default:
+
+| Dispatcher | Default                                                                      | Used by                                                               |
+|------------|------------------------------------------------------------------------------|-----------------------------------------------------------------------|
+| `main`     | `Dispatchers.Main.immediate`, or `Dispatchers.Main` where it isn't supported | ViewModels, through their default scope `EmaMainScope()`.             |
+| `io`       | `Dispatchers.IO`, or `Dispatchers.Default` on JS and Wasm                    | [Use cases](utilities.md#use-cases): network, disk and blocking work. |
+| `default`  | `Dispatchers.Default`                                                        | CPU-intensive work, such as processing images in `ema-android`.       |
+
+`main` is `Main.immediate` because the work started from the main thread, such as dispatching an action from a click,
+runs at once instead of waiting for the next frame, as in the `viewModelScope` of Android.
+
+Change any of them with `copy` or by creating your own:
+
+```kotlin
+Ema.init(EmaConfiguration.Android.copy(dispatchers = EmaDispatchers(io = myIoDispatcher)))
+```
 
 ## Naming the side effects
 

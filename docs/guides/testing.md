@@ -46,17 +46,28 @@ results between screens and the view lifecycle.
 
 ## Things to know
 
-1. **Pass your own scope.** The second constructor parameter of `EmaViewModelBasic` / `EmaViewModelAction` is the
-   `CoroutineScope`. Expose it in the constructor of your ViewModels, with a default value, so tests can replace it.
-   The default scope uses `Dispatchers.Main`, which does not exist in unit tests. With an `UnconfinedTestDispatcher`
-   the work runs immediately; with a `StandardTestDispatcher`, call `advanceUntilIdle()` to run it.
+1. **Use the dispatchers of the test.** By default ViewModels run on `Dispatchers.Main`, which does not exist in unit
+   tests, and use cases on `Dispatchers.IO`. Replace them in each test with `Ema.initForTest`, so ViewModels with the
+   default scope and use cases run on a test dispatcher:
+
+   ```kotlin
+   @OptIn(EmaTestApi::class)
+   private fun TestScope.useTestDispatchers() {
+       val dispatcher = UnconfinedTestDispatcher(testScheduler)
+       Ema.initForTest(EmaConfiguration(dispatchers = EmaDispatchers(dispatcher, dispatcher, dispatcher)))
+   }
+   ```
+
+   With an `UnconfinedTestDispatcher` the work runs immediately; with a `StandardTestDispatcher`, call
+   `advanceUntilIdle()` to run it, delays included. Do not call `Ema.init` in tests: it can be called only once per
+   process, while `Ema.initForTest` replaces the configuration every time.
+2. **Or pass your own scope.** The second constructor parameter of `EmaViewModelBasic` / `EmaViewModelAction` is the
+   `CoroutineScope`. Expose it in the constructor of your ViewModels, with a default value, so tests can replace it:
 
    ```kotlin
    class CounterViewModel(scope: CoroutineScope = EmaMainScope()) :
        EmaViewModelAction<CounterState, CounterAction, CounterEvent>(CounterState(), scope)
    ```
-2. **No configuration is needed.** If `Ema.init` is not called, the default configuration is used. Do not call
-   `Ema.init` in tests: it can be called only once per process.
 3. **Call `onCreated()`** to run `onStateCreated(initializer)`. Pass an initializer if the screen needs one:
    `viewModel.onCreated(MyInitializer.Default("x"))`.
 4. **Fake the use cases.** They are ordinary classes: pass a fake implementation, or mock them with your mocking library.

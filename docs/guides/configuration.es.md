@@ -14,15 +14,14 @@ class MyApplication : Application() {
 
 - Llámalo **antes de crear ningún ViewModel**: los ViewModels leen la configuración al construirse.
 - Solo se puede llamar **una vez**. Una segunda llamada lanza `IllegalStateException`.
-- Si no se llama nunca, se usa la configuración por defecto, `EmaConfiguration()`. Es lo habitual en los tests unitarios
-  y en las plataformas que no son Android.
+- Si no se llama nunca, se usa la configuración por defecto, `EmaConfiguration()`. Es lo habitual en las plataformas que
+  no son Android. En los tests, sustitúyela con `Ema.initForTest`: consulta [Tests](testing.es.md).
 
 ## Qué se puede configurar
 
 | Propiedad                     | `EmaConfiguration()` por defecto | `EmaConfiguration.Android`     | Para qué                                                  |
 |-------------------------------|------------------------------|------------------------------------|-----------------------------------------------------------|
-| `mainDispatcher`              | `Dispatchers.Main`           | `Dispatchers.Main.immediate`       | Dónde ejecutan los ViewModels sus corrutinas por defecto. |
-| `useCaseBackgroundDispatcher` | `Dispatchers.Default`        | `Dispatchers.IO`                   | Dónde se ejecutan por defecto los [casos de uso](utilities.es.md#casos-de-uso). |
+| `dispatchers`                 | `EmaDispatchers()`           | `EmaDispatchers()`                 | Dónde se ejecutan los ViewModels, los casos de uso y el trabajo de cálculo. Consulta [Dispatchers](#dispatchers). |
 | `sideEffectConfig`            | `EmaSideEffectConfig()`      | Obtiene el nombre de los métodos de las lambdas | Cómo gestiona `sideEffect` los errores y qué informa. Consulta [Trabajo asíncrono y errores](async-and-errors.es.md#errores). |
 | `dataClassPrinter`            | `EmaDataClassPrinter.ToString` | Imprime todos los campos, con sangría | Cómo imprime los objetos `toStringPretty()`.          |
 
@@ -41,6 +40,25 @@ Ema.init(
 ```
 
 `EmaConfiguration.Android` está en `ema-android` (`com.carmabs.ema.android.configuration.Android`).
+
+## Dispatchers
+
+`EmaDispatchers` agrupa los dispatchers que usa Ema por defecto:
+
+| Dispatcher | Por defecto                                                                  | Lo usan                                                                   |
+|------------|------------------------------------------------------------------------------|---------------------------------------------------------------------------|
+| `main`     | `Dispatchers.Main.immediate`, o `Dispatchers.Main` donde no se admite        | Los ViewModels, a través de su scope por defecto `EmaMainScope()`.        |
+| `io`       | `Dispatchers.IO`, o `Dispatchers.Default` en JS y Wasm                       | Los [casos de uso](utilities.es.md#casos-de-uso): red, disco y trabajo bloqueante. |
+| `default`  | `Dispatchers.Default`                                                        | El trabajo de cálculo, como procesar imágenes en `ema-android`.           |
+
+`main` es `Main.immediate` porque el trabajo que empieza en el hilo principal, como despachar una acción desde un clic,
+se ejecuta en el momento en lugar de esperar al siguiente frame, igual que en el `viewModelScope` de Android.
+
+Cambia cualquiera de ellos con `copy` o creando los tuyos:
+
+```kotlin
+Ema.init(EmaConfiguration.Android.copy(dispatchers = EmaDispatchers(io = myIoDispatcher)))
+```
 
 ## Nombrar los side effects
 
