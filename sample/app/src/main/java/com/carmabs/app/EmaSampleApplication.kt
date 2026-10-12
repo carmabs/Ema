@@ -7,6 +7,7 @@ import com.carmabs.app.di.useCaseModule
 import com.carmabs.emanate.android.configuration.Android
 import com.carmabs.emanate.core.Emanate
 import com.carmabs.emanate.core.model.EmaConfiguration
+import com.carmabs.emanate.sample.injection.BuildConfig
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 
@@ -23,7 +24,7 @@ class EmaSampleApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        Emanate.init(EmaConfiguration.Android)
+        Emanate.init(EmaConfiguration.Android(debug = BuildConfig.DEBUG))
         startKoin {
             androidContext(this@EmaSampleApplication)
             modules(dataModule, uiModule, useCaseModule)

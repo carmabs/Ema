@@ -51,21 +51,21 @@ See [Kotlin Multiplatform](guides/multiplatform.md).
 ## Initialize Emanate
 
 Call `Emanate.init` once, when the application starts and before any ViewModel is created.
-`EmaConfiguration.Android` is the configuration for Android apps:
+`EmaConfiguration.Android(debug)` is the configuration for Android apps:
 
 ```kotlin
 class MyApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        Emanate.init(EmaConfiguration.Android)
+        Emanate.init(EmaConfiguration.Android(debug = BuildConfig.DEBUG))
     }
 }
 ```
 
 Register the application in `AndroidManifest.xml` (`android:name=".MyApplication"`).
-The configuration decides the dispatchers, how errors inside `sideEffect` are handled and how objects are printed
-in the logs. See [Configuration](guides/configuration.md).
+The configuration decides the dispatchers, what happens with the exceptions and where the logs go: with
+`BuildConfig.DEBUG`, debug builds log and fail at once, and release builds don't log and keep working. See [Configuration](guides/configuration.md).
 
 ## Your first screen
 

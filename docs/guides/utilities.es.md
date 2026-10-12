@@ -68,8 +68,8 @@ Implementa `useCaseFunction` (la función protegida) y llama al caso de uso como
 
 ## Imprimir objetos
 
-`toStringPretty()` imprime cualquier objeto, por ejemplo un estado, con el `EmaDataClassPrinter` de la
-[configuración](configuration.es.md#imprimir-objetos). Con `EmaConfiguration.Android` imprime todos los campos,
+`toStringPretty()` imprime cualquier objeto, por ejemplo un estado, con el `printer` de la
+[configuración](configuration.es.md#imprimir-objetos). Con `EmaConfiguration.Android(debug)` imprime todos los campos,
 los objetos anidados y las colecciones, con sangría:
 
 ```kotlin

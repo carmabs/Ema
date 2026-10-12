@@ -102,7 +102,7 @@ and side effects handle like any other.
 
 `Destroyed` is the last action. The rest of the work of the ViewModel is cancelled after it, but its side effects can
 finish, up to their `timeout` or the `destroyedTimeout` of the
-[side effect configuration](../guides/configuration.md), 5 seconds by default, for example to send a result to the previous screen:
+[configuration](../guides/configuration.md), 5 seconds by default, for example to send a result to the previous screen:
 
 ```kotlin
 sideEffects {

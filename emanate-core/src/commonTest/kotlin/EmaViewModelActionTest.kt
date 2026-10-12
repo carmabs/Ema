@@ -1,9 +1,12 @@
 import com.carmabs.emanate.core.Emanate
 import com.carmabs.emanate.core.action.EmaAction
+import com.carmabs.emanate.core.error.EmaErrorPolicy
+import com.carmabs.emanate.core.logging.EmaLogger
 import com.carmabs.emanate.core.model.EmaConfiguration
 import com.carmabs.emanate.core.model.reflection.Reflection
+import com.carmabs.emanate.core.model.reflection.ReflectionData
 import com.carmabs.emanate.core.sideeffect.EmaMethodNameResolver
-import com.carmabs.emanate.core.sideeffect.EmaSideEffectConfig
+import com.carmabs.emanate.core.sideeffect.EmaSideEffectListener
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
 import com.carmabs.emanate.core.viewmodel.EmaViewModelAction
@@ -265,18 +268,25 @@ class EmaViewModelActionTest {
     }
 
     @Test
-    fun `default side effect actions receive the reflection with the resolved method name`() = runTest {
+    fun `the side effect listener and the errors receive the reflection with the resolved method name`() = runTest {
         val successes = mutableListOf<Reflection>()
         val finishes = mutableListOf<Reflection>()
         val errors = mutableListOf<Throwable>()
+        val logs = mutableListOf<String>()
         Emanate.init(
             EmaConfiguration(
-                sideEffectConfig = EmaSideEffectConfig(
-                    defaultSuccessAction = { successes.add(it.reflection) },
-                    defaultFinishAction = { finishes.add(it) },
-                    exceptionPolicy = EmaSideEffectConfig.ExceptionPolicy.CatchExceptions { errors.add(it.exception) },
-                    methodNameResolver = EmaMethodNameResolver { _, _ -> "resolved" }
-                )
+                sideEffectListener = object : EmaSideEffectListener {
+                    override fun onSuccess(data: ReflectionData) {
+                        successes.add(data.reflection)
+                    }
+
+                    override fun onFinish(reflection: Reflection) {
+                        finishes.add(reflection)
+                    }
+                },
+                errorPolicy = EmaErrorPolicy.Catch { errors.add(it.exception) },
+                logger = EmaLogger { tag, message -> logs += "$tag: $message" },
+                methodNameResolver = EmaMethodNameResolver { _, _ -> "resolved" }
             )
         )
         val viewModel = createViewModel()
@@ -290,6 +300,8 @@ class EmaViewModelActionTest {
         assertEquals("CounterViewModel", successes.first().containerClassName)
         assertEquals("CounterViewModel", successes.first().containerClassQualifiedName)
         assertEquals(1, errors.size)
+        // The caught errors are also logged
+        assertTrue(logs.any { it.startsWith("CounterViewModel: resolved failed: ") && "boom" in it })
     }
 
     @Test
@@ -297,10 +309,11 @@ class EmaViewModelActionTest {
         var methodName: String? = null
         Emanate.init(
             EmaConfiguration(
-                sideEffectConfig = EmaSideEffectConfig(defaultFinishAction = {
-                    methodName =
-                        it.methodName
-                })
+                sideEffectListener = object : EmaSideEffectListener {
+                    override fun onFinish(reflection: Reflection) {
+                        methodName = reflection.methodName
+                    }
+                }
             )
         )
         createViewModel().launch { 1 }
@@ -308,14 +321,8 @@ class EmaViewModelActionTest {
     }
 
     @Test
-    fun `exceptions are rethrown with the ThrowExceptions policy`() = runTest {
-        Emanate.init(
-            EmaConfiguration(
-                sideEffectConfig = EmaSideEffectConfig(
-                    exceptionPolicy = EmaSideEffectConfig.ExceptionPolicy.ThrowExceptions
-                )
-            )
-        )
+    fun `exceptions are rethrown with the Throw policy`() = runTest {
+        Emanate.init(EmaConfiguration(errorPolicy = EmaErrorPolicy.Throw))
         var uncaught: Throwable? = null
         val viewModel = CounterViewModel(UnconfinedTestDispatcher(testScheduler))
         val handler = CoroutineExceptionHandler { _, e -> uncaught = e }

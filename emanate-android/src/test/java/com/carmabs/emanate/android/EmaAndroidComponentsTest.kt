@@ -41,6 +41,7 @@ import com.carmabs.emanate.android.service.EmaJobService
 import com.carmabs.emanate.android.viewmodel.EmaAndroidViewModel
 import com.carmabs.emanate.android.viewmodel.EmaViewModelFactory
 import com.carmabs.emanate.core.action.EmaAction
+import com.carmabs.emanate.core.error.EmaErrorPolicy
 import com.carmabs.emanate.core.model.EmaBackHandlerStrategy
 import com.carmabs.emanate.core.model.EmaConfiguration
 import com.carmabs.emanate.core.state.EmaEvent
@@ -52,7 +53,9 @@ import java.util.concurrent.TimeUnit
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
+import kotlin.test.assertNotNull
 import kotlin.test.assertNotSame
+import kotlin.test.assertNull
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
 import kotlinx.coroutines.CoroutineScope
@@ -274,11 +277,22 @@ class EmaAndroidConfigurationTest {
 
     @Test
     fun `android configuration uses the android implementations`() {
-        val configuration = EmaConfiguration.Android
+        val configuration = EmaConfiguration.Android(debug = true)
         assertSame(Dispatchers.Main.immediate, configuration.dispatchers.main)
         assertSame(Dispatchers.IO, configuration.dispatchers.io)
-        assertSame(EmaAndroidMethodNameResolver, configuration.sideEffectConfig.methodNameResolver)
-        assertIs<EmaAndroidDataClassPrinter>(configuration.dataClassPrinter)
+        assertSame(EmaAndroidMethodNameResolver, configuration.methodNameResolver)
+        assertIs<EmaAndroidDataClassPrinter>(configuration.printer)
+    }
+
+    @Test
+    fun `android configuration logs and throws only in debug`() {
+        val debug = EmaConfiguration.Android(debug = true)
+        assertNotNull(debug.logger)
+        assertSame(EmaErrorPolicy.Throw, debug.errorPolicy)
+
+        val release = EmaConfiguration.Android(debug = false)
+        assertNull(release.logger)
+        assertIs<EmaErrorPolicy.Catch>(release.errorPolicy)
     }
 
     @Test

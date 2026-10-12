@@ -35,6 +35,10 @@ android {
 
     namespace = 'com.carmabs.emanate.sample.injection'
 
+    buildFeatures {
+        buildConfig = true
+    }
+
 }
 
 dependencies {

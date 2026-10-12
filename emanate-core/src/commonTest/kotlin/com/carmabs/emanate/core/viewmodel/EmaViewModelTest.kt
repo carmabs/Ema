@@ -4,7 +4,6 @@ import com.carmabs.emanate.core.Emanate
 import com.carmabs.emanate.core.action.EmaAction
 import com.carmabs.emanate.core.logging.EmaLogger
 import com.carmabs.emanate.core.model.EmaConfiguration
-import com.carmabs.emanate.core.sideeffect.EmaSideEffectConfig
 import com.carmabs.emanate.core.source.middleware.middlewareDelayOf
 import com.carmabs.emanate.core.source.reducer.reducerOf
 import com.carmabs.emanate.core.state.EmaEvent
@@ -302,7 +301,7 @@ class EmaViewModelTest {
 
     @Test
     fun `the time of the side effects of destroyed is set in the configuration`() = runTest {
-        Emanate.initForTest(EmaConfiguration(sideEffectConfig = EmaSideEffectConfig(destroyedTimeout = 2.seconds)))
+        Emanate.initForTest(EmaConfiguration(destroyedTimeout = 2.seconds))
         try {
             val closing = ClosingViewModel(testDispatcher(), 3.seconds)
             closing.onCreated(null)

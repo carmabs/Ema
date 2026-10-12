@@ -4,14 +4,17 @@ package com.carmabs.emanate.core.sideeffect
 
 import com.carmabs.emanate.core.Emanate
 import com.carmabs.emanate.core.delegate.emaSyncDelegate
+import com.carmabs.emanate.core.error.EmaError
+import com.carmabs.emanate.core.error.EmaErrorPolicy
+import com.carmabs.emanate.core.error.reportError
 import com.carmabs.emanate.core.extension.qualifiedNameOrSimpleName
 import com.carmabs.emanate.core.extension.toNonNull
+import com.carmabs.emanate.core.model.EmaConfiguration
 import com.carmabs.emanate.core.model.EmaResult
 import com.carmabs.emanate.core.model.onFailure
 import com.carmabs.emanate.core.model.onSuccess
 import com.carmabs.emanate.core.model.reflection.Reflection
 import com.carmabs.emanate.core.model.reflection.ReflectionData
-import com.carmabs.emanate.core.model.reflection.ReflectionException
 import kotlin.concurrent.atomics.AtomicBoolean
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.coroutines.CoroutineContext
@@ -26,8 +29,8 @@ import kotlinx.coroutines.launch
  * <p>
  * Copyright (c) 2022 by Carmabs. All rights reserved.
  * </p>
- * Side effect of the ViewModels and the sources. It launches [action] applying the [EmaSideEffectConfig], its default
- * actions and its exception policy, and handles its result with:
+ * Side effect of the ViewModels and the sources. It launches [action] applying the error policy and the side effect
+ * listener of the [EmaConfiguration], and handles its result with:
  * - onSuccess when the result of action function is successful
  * - onError when the action function has thrown an error
  * - onFinish when the action function has ended, independently if an error has been thrown
@@ -37,8 +40,8 @@ import kotlinx.coroutines.launch
  * @param scope where the side effect is launched
  * @param dispatcher where the side effect runs
  * @param logName name reported as method name in [Reflection]. If it is null,
- * [EmaSideEffectConfig.methodNameResolver] is used
- * @param sideEffectConfig configuration applied
+ * [EmaConfiguration.methodNameResolver] is used
+ * @param configuration configuration applied
  * @param throwException if true, the exceptions are thrown instead of being handled
  * @param action function launched
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
@@ -48,8 +51,8 @@ class SideEffectResult<T> internal constructor(
     scope: CoroutineScope,
     dispatcher: CoroutineContext = scope.coroutineContext,
     logName: String? = null,
-    sideEffectConfig: EmaSideEffectConfig = Emanate.configuration.sideEffectConfig,
-    throwException: Boolean = sideEffectConfig.exceptionPolicy is EmaSideEffectConfig.ExceptionPolicy.ThrowExceptions,
+    configuration: EmaConfiguration = Emanate.configuration,
+    throwException: Boolean = configuration.errorPolicy is EmaErrorPolicy.Throw,
     action: suspend CoroutineScope.() -> T
 ) : OnSuccessFinish<T>,
     OnErrorFinish {
@@ -64,17 +67,17 @@ class SideEffectResult<T> internal constructor(
     private var finished: AtomicBoolean = AtomicBoolean(false)
 
     override val job: Job = scope.launch(dispatcher) {
-        // Only created if a default action of the configuration needs it
+        // Only created if the listener or an error needs it
         val reflection by lazy {
             Reflection(
                 containerClassName = container::class.simpleName.toNonNull(),
                 containerClassQualifiedName = container::class.qualifiedNameOrSimpleName,
-                methodName = logName ?: sideEffectConfig.methodNameResolver.resolve(container, action)
+                methodName = logName ?: configuration.methodNameResolver.resolve(container, action)
             )
         }
         try {
             val data = action.invoke(this)
-            sideEffectConfig.defaultSuccessAction?.invoke(ReflectionData(reflection, data))
+            configuration.sideEffectListener?.onSuccess(ReflectionData(reflection, data))
             result = EmaResult.success(data)
         } catch (e: Throwable) {
             // A cancellation is not an error: it must be propagated to keep the coroutine cancellable
@@ -82,13 +85,10 @@ class SideEffectResult<T> internal constructor(
                 throw e
             }
 
-            val exceptionPolicy = sideEffectConfig.exceptionPolicy
-            if (exceptionPolicy is EmaSideEffectConfig.ExceptionPolicy.CatchExceptions) {
-                exceptionPolicy.defaultAction?.invoke(ReflectionException(reflection, e))
-            }
+            configuration.reportError(EmaError(reflection, e))
             result = EmaResult.failure(e)
         } finally {
-            sideEffectConfig.defaultFinishAction?.invoke(reflection)
+            configuration.sideEffectListener?.onFinish(reflection)
             result?.apply {
                 onSuccess {
                     successListener?.invoke(it)

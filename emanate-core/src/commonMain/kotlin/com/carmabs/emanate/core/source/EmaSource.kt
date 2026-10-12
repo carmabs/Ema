@@ -101,7 +101,7 @@ class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
 
     /**
      * Job of the side effects of [EmaAction.Lifecycle.Destroyed]. [close] doesn't cancel them, so they can finish, up
-     * to their timeout or the destroyedTimeout of the side effect configuration: it completes when they do.
+     * to their timeout or the destroyedTimeout of the configuration: it completes when they do.
      */
     private val destroyedJob = SupervisorJob()
 
@@ -272,7 +272,7 @@ class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
         // with a timeout so they don't keep the source alive
         val destroyed = action == EmaAction.Lifecycle.Destroyed
         with(sideEffect) {
-            val destroyedTimeout = Emanate.configuration.sideEffectConfig.destroyedTimeout
+            val destroyedTimeout = Emanate.configuration.destroyedTimeout
             launch(
                 key = key,
                 timeout = if (destroyed) timeout ?: destroyedTimeout else timeout,

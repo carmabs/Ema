@@ -67,8 +67,8 @@ Implement `useCaseFunction` (the protected function) and call the use case like 
 
 ## Pretty printing
 
-`toStringPretty()` prints any object, for example a state, with the `EmaDataClassPrinter` of the
-[configuration](configuration.md#printing-objects). With `EmaConfiguration.Android` it prints every field,
+`toStringPretty()` prints any object, for example a state, with the `printer` of the
+[configuration](configuration.md#printing-objects). With `EmaConfiguration.Android(debug)` it prints every field,
 nested objects and collections, indented:
 
 ```kotlin

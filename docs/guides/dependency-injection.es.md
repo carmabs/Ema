@@ -31,7 +31,7 @@ class EmaSampleApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        Emanate.init(EmaConfiguration.Android)
+        Emanate.init(EmaConfiguration.Android(debug = BuildConfig.DEBUG))
         startKoin {
             androidContext(this@EmaSampleApplication)
             modules(dataModule, useCaseModule, uiModule)

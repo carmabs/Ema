@@ -4,9 +4,9 @@ import com.carmabs.emanate.core.Emanate
 import com.carmabs.emanate.core.action.EmaAction
 import com.carmabs.emanate.core.action.EmaEventConsumer
 import com.carmabs.emanate.core.action.EventDispatcher
+import com.carmabs.emanate.core.error.EmaErrorPolicy
 import com.carmabs.emanate.core.model.EmaConfiguration
 import com.carmabs.emanate.core.model.reflection.Reflection
-import com.carmabs.emanate.core.sideeffect.EmaSideEffectConfig
 import com.carmabs.emanate.core.sideeffect.SideEffectResult
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
@@ -48,11 +48,6 @@ abstract class EmaViewModelClassic<S : EmaState, E : EmaEvent>(
      * Emanate configuration
      */
     private val config: EmaConfiguration = Emanate.configuration
-
-    /**
-     * SideEffect configuration
-     */
-    private val sideEffectConfig = config.sideEffectConfig
 
     /**
      * The scope where coroutines are launched by default. It is cancelled when the view model is cleared.
@@ -162,8 +157,8 @@ abstract class EmaViewModelClassic<S : EmaState, E : EmaEvent>(
      * be called through this method with [action] function
      * @param action is the function that will be executed in background
      * @param dispatcher where the useCase is launched by default
-     * @param logName name reported as method name in [Reflection] for the default actions of
-     * [EmaSideEffectConfig]. If it is null, [EmaSideEffectConfig.methodNameResolver] is used
+     * @param logName name reported as method name in [Reflection], in the errors and the side effect listener of the
+     * configuration. If it is null, [EmaConfiguration.methodNameResolver] is used
      * @return The EmaUseCaseResult where you can handle the result with the methods
      * - onSuccess when the result of action function is successful
      * - onError when the action function has thrown an error
@@ -187,7 +182,7 @@ abstract class EmaViewModelClassic<S : EmaState, E : EmaEvent>(
         scope = scope,
         dispatcher = dispatcher,
         logName = logName,
-        sideEffectConfig = sideEffectConfig,
+        configuration = config,
         throwException = throwException,
         action = action
     )
@@ -205,8 +200,7 @@ abstract class EmaViewModelClassic<S : EmaState, E : EmaEvent>(
         return handler
     }
 
-    private fun shouldThrowException() =
-        sideEffectConfig.exceptionPolicy is EmaSideEffectConfig.ExceptionPolicy.ThrowExceptions
+    private fun shouldThrowException() = config.errorPolicy is EmaErrorPolicy.Throw
 
     /**
      * Method to override onCleared ViewModel method

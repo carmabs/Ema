@@ -105,7 +105,7 @@ middlewares, los reducers y los side effects gestionan como cualquier otra.
 
 `Destroyed` es la última acción. El resto del trabajo del ViewModel se cancela después de ella, pero sus side effects
 pueden terminar, hasta su `timeout` o el `destroyedTimeout` de la
-[configuración de los side effects](../guides/configuration.es.md), 5 segundos por defecto, por ejemplo para enviar un resultado a la
+[configuración](../guides/configuration.es.md), 5 segundos por defecto, por ejemplo para enviar un resultado a la
 pantalla anterior:
 
 ```kotlin

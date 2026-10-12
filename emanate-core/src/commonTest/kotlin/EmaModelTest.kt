@@ -128,8 +128,8 @@ class EmaModelTest {
     @Test
     fun `Emanate uses the default configuration until it is initialized once`() {
         assertSame(Emanate.configuration, Emanate.configuration)
-        assertSame(EmaDataClassPrinter.ToString, Emanate.configuration.dataClassPrinter)
-        val configuration = EmaConfiguration(dataClassPrinter = { "custom" })
+        assertSame(EmaDataClassPrinter.ToString, Emanate.configuration.printer)
+        val configuration = EmaConfiguration(printer = { "custom" })
         Emanate.init(configuration)
         assertSame(configuration, Emanate.configuration)
         assertFailsWith<IllegalStateException> { Emanate.init(EmaConfiguration()) }
@@ -138,8 +138,8 @@ class EmaModelTest {
     @Test
     fun `tests can replace the configuration any number of times`() {
         Emanate.init(EmaConfiguration())
-        val first = EmaConfiguration(dataClassPrinter = { "first" })
-        val second = EmaConfiguration(dataClassPrinter = { "second" })
+        val first = EmaConfiguration(printer = { "first" })
+        val second = EmaConfiguration(printer = { "second" })
 
         Emanate.initForTest(first)
         assertSame(first, Emanate.configuration)
@@ -177,7 +177,7 @@ class EmaModelTest {
     fun `objects are printed with the configured printer`() {
         assertEquals("CounterState(count=1, text=)", CounterState(count = 1).toStringPretty())
         assertEquals("null", EmaDataClassPrinter.ToString.print(null))
-        Emanate.init(EmaConfiguration(dataClassPrinter = { "printed $it" }))
+        Emanate.init(EmaConfiguration(printer = { "printed $it" }))
         assertEquals("printed 1", 1.toStringPretty())
     }
 

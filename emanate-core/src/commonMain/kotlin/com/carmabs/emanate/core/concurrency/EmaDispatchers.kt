@@ -6,7 +6,7 @@ import kotlinx.coroutines.Dispatchers
 /**
  * Dispatchers used by Emanate, set in [com.carmabs.emanate.core.model.EmaConfiguration.dispatchers].
  *
- * @param main where ViewModels run their coroutines by default. `EmaConfiguration.Android` uses
+ * @param main where ViewModels run their coroutines by default. `EmaConfiguration.Android(debug)` uses
  * `Dispatchers.Main.immediate`, so the work started from the main thread runs at once, without waiting for the next
  * frame.
  * @param io where use cases run by default: blocking work such as network or disk. It is `Dispatchers.IO` on the JVM

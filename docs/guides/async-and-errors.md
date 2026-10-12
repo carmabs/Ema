@@ -60,33 +60,35 @@ singleSideEffect("search") {
 
 ## Errors
 
-**By default exceptions thrown inside `sideEffect` are caught and ignored** unless you use `onError`
-or configure a default action. Choose a policy in the `sideEffectConfig` of the [configuration](configuration.md):
+The `errorPolicy` of the [configuration](configuration.md) decides what happens when a side effect throws an
+exception:
+
+| `EmaErrorPolicy`  | Effect |
+|-------------------|--------|
+| `Catch(onError)`  | **Default, and in release builds with `EmaConfiguration.Android(debug)`.** The exception is caught and written to the `logger`, and the ViewModel keeps working. `onError` also receives each one. |
+| `Throw`           | The exception is thrown again and the app fails at once. **In debug builds with `EmaConfiguration.Android(debug)`.** |
 
 ```kotlin
 Emanate.init(
-    EmaConfiguration.Android.copy(
-        sideEffectConfig = EmaConfiguration.Android.sideEffectConfig.copy(
-            exceptionPolicy = EmaSideEffectConfig.ExceptionPolicy.CatchExceptions(
-                defaultAction = { error -> Log.e("Emanate", "${error.reflection.methodName} failed", error.exception) }
-            ),
-            defaultSuccessAction = { success -> /* e.g. analytics */ },
-            defaultFinishAction = { reflection -> /* ... */ }
-        )
+    EmaConfiguration.Android(debug = BuildConfig.DEBUG).copy(
+        errorPolicy = EmaErrorPolicy.Catch { error -> crashReporter.record(error.exception) }
     )
 )
 ```
 
-| Option                                | Effect                                                                         |
-|---------------------------------------|--------------------------------------------------------------------------------|
-| `CatchExceptions(defaultAction)`      | **Default.** Exceptions are caught. `defaultAction` is called for each one.    |
-| `ThrowExceptions`                     | Exceptions are rethrown and crash the app. Handy while developing.             |
-| `defaultSuccessAction`                | Called every time a `sideEffect` succeeds.                                     |
-| `defaultFinishAction`                 | Called every time a `sideEffect` ends.                                         |
-| `destroyedTimeout`                    | How long the side effects of `Lifecycle.Destroyed` in an `EmaViewModel` can run after it is cleared, unless they have their own `timeout`. 5 seconds by default. |
+`onError` receives an `EmaError` with the exception and its `reflection`: the name of the ViewModel and of the function
+that launched the work. See [Naming the side effects](configuration.md#naming-the-side-effects).
 
-The callbacks receive an `EmaReflection` (or `EmaReflectionData` / `EmaReflectionException`) with the name of the ViewModel and
-the function that launched the work, useful for logging. See [Naming the side effects](configuration.md#naming-the-side-effects).
+To track every side effect, for example to measure them, set a `sideEffectListener`. Its `onSuccess` and `onFinish`
+are called when each one ends:
+
+```kotlin
+EmaConfiguration.Android(debug = BuildConfig.DEBUG).copy(
+    sideEffectListener = object : EmaSideEffectListener {
+        override fun onFinish(reflection: Reflection) = analytics.track(reflection.methodName)
+    }
+)
+```
 
 `sideEffect(throwException = true) { }` rethrows the exceptions of a single side effect, whatever the policy.
 

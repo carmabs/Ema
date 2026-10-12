@@ -30,7 +30,7 @@ Any other platform only needs to collect `stateFlow` and `eventFlow` and send ac
 
 ## What is not available everywhere
 
-- **Configuration.** `EmaConfiguration.Android` is in `emanate-android`. On other platforms call `Emanate.init` with an
+- **Configuration.** `EmaConfiguration.Android(debug)` is in `emanate-android`. On other platforms call `Emanate.init` with an
   `EmaConfiguration` built for them, or use the default one. See [Configuration](configuration.md).
 - **Function names in the logs.** Only the Android configuration resolves the name of the function that launched a
   `sideEffect`. Elsewhere, pass `logName`.
