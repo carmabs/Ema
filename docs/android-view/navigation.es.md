@@ -114,7 +114,7 @@ El inicializador llega a `onStateCreated` del ViewModel. Fuera del grafo de nave
 
 ## Resultados
 
-La forma habitual de devolver un resultado a la pantalla anterior es un back broadcast entre ViewModels, que funciona
+La forma habitual de devolver un resultado a la pantalla anterior es emitir una acción entre ViewModels, que funciona
 igual en Compose y en las vistas. Consulta [Resultados entre pantallas](../guides/results-between-screens.es.md).
 
 Un Fragment sin navigator también puede devolver un resultado al Fragment anterior con `navigateBack(result)`. El anterior

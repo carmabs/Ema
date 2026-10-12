@@ -1,8 +1,8 @@
 # Resultados entre pantallas
 
-A veces una pantalla tiene que decirle algo a la anterior: "he creado este usuario". Cómo se envía el resultado depende
-del [ViewModel](../concepts/viewmodel.es.md): un `EmaViewModel` emite una acción, y un ViewModel clásico envía un back
-broadcast.
+A veces una pantalla tiene que decirle algo a la anterior: "he creado este usuario". El resultado se emite como una
+acción con cualquier [ViewModel](../concepts/viewmodel.es.md): `EmaViewModel` y los clásicos comparten el mismo
+broadcaster, así que un ViewModel clásico puede recibir lo que emite un `EmaViewModel`, y al revés.
 
 ## Con EmaViewModel: acciones emitidas
 
@@ -37,7 +37,7 @@ Emítelo con `broadcast`, disponible en todos los side effects. Acepta cualquier
 
 ```kotlin
 addSideEffect<ProfileCreationAction.DialogConfirmClicked> {
-    broadcast(ProfileCreationBroadcast.UserCreated(User(state.name, state.surname, state.role)))
+    broadcast(ProfileCreationBroadcast.UserCreated(User(state.name, state.surname, state.role)), keepUntilReceived = true)
     postEvent(ProfileCreationEvent.DialogConfirmationAccepted)
 }
 ```
@@ -55,7 +55,7 @@ override fun SourceSetupScope<HomeState, HomeAction, HomeEvent>.setup() {
     }
     // Lo pasa a la pantalla de login
     addSideEffect<ProfileCreationBroadcast.UserCreated> { action ->
-        broadcast(HomeBroadcast.UserAdded(action.user))
+        broadcast(HomeBroadcast.UserAdded(action.user), keepUntilReceived = true)
     }
 }
 ```
@@ -63,68 +63,59 @@ override fun SourceSetupScope<HomeState, HomeAction, HomeEvent>.setup() {
 ### Reglas
 
 - **La entrega es inmediata**, a todos los ViewModels que escuchan el tipo en ese momento. Los ViewModels de las
-  pantallas anteriores siguen vivos en el back stack, así que lo reciben. Si nadie escucha, la acción se pierde.
-- **Cualquier número de receptores.** Todas las sources que escuchan el tipo reciben la acción.
+  pantallas anteriores siguen vivos en el back stack, así que lo reciben. Si nadie escucha, la acción se pierde, salvo
+  que se guarde.
+- **Cualquier número de receptores.** Todos los ViewModels que escuchan el tipo reciben la acción.
 - **El listener se elimina cuando se destruye el ViewModel**, junto con el resto de su trabajo.
 - **Tiene tipo.** El resultado es una data class, sin casts.
 - **Vive en memoria.** No se guarda si se mata el proceso.
 
+### Guardarla hasta que se reciba
+
+Con `keepUntilReceived = true`, una acción que nadie escucha se guarda y se entrega al **primer** ViewModel que escuche
+su tipo. Solo se guarda la última de cada clase. Si alguien escucha, se entrega en el momento, como siempre.
+
+Cubre la pantalla que todavía no se ha creado: después de que se mate el proceso, Android restaura la pantalla actual,
+pero el ViewModel de la anterior solo se crea cuando el usuario vuelve a ella. Sin guardar el resultado, se perdería. No
+cubre un proceso que muere después de emitir el resultado: también se guarda en memoria.
+
+En los tests, `resetTestDispatchers` de `emanate-test` elimina las acciones guardadas que nadie ha recibido.
+
 > Si el receptor muestra algo, publica un evento: espera hasta que la vista lo consume, así que se muestra cuando la
 > pantalla vuelve a estar visible.
 
-## Con los ViewModels clásicos: back broadcast
+## Con los ViewModels clásicos
 
-Un back broadcast es un mensaje punto a punto, del ViewModel de una pantalla al ViewModel de otra, que se entrega cuando
-se cierra la primera.
-
-```mermaid
-sequenceDiagram
-    participant H as HomeViewModel
-    participant P as ProfileCreationViewModel
-    Note over H: registerBroadcastListener(ProfileCreationViewModel)
-    Note over P: el usuario confirma:<br/>dispatchBroadcast(user)
-    Note over P: la pantalla se cierra y<br/>el ViewModel se destruye
-    P->>H: el listener recibe el usuario
-```
+Los ViewModels clásicos emiten y reciben las mismas acciones, con dos funciones.
 
 ### Enviar
 
-En la pantalla que se cierra, llama a `dispatchBroadcast` con los datos:
+Llama a `broadcast` con la acción:
 
 ```kotlin
 private fun onActionDialogConfirmClicked() {
     hideOverlap()
-    dispatchBroadcast(User(state.name, state.surname, state.role))
+    val user = User(state.name, state.surname, state.role)
+    broadcast(ProfileCreationBroadcast.UserCreated(user), keepUntilReceived = true)
     postEvent(ProfileCreationEvent.DialogConfirmationAccepted)
 }
 ```
 
 ### Recibir
 
-En la pantalla que espera, registra un listener en `onBroadcastListenerSetup`. El id del emisor es la clase de su ViewModel:
+Registra un listener de su tipo en `onBroadcastListenerSetup`. Se elimina cuando se destruye el ViewModel:
 
 ```kotlin
 override fun onBroadcastListenerSetup() {
-    registerBroadcastListener(ProfileCreationViewModel::class) {
-        val user = it as User
-        updateState { copy(userList = userList + user) }
+    registerBroadcastListener<ProfileCreationBroadcast.UserCreated> { action ->
+        updateState { copy(userList = userList + action.user) }
+        // Lo pasa a la pantalla de login
+        broadcast(HomeBroadcast.UserAdded(action.user), keepUntilReceived = true)
     }
 }
 ```
 
-### Pasarlo a lo largo de una cadena
-
-El resultado del emisor se entrega a **un** receptor. Para reenviarlo más allá, vuelve a enviarlo desde el receptor.
-En el sample, `HomeActionViewModel` recibe el usuario nuevo de la pantalla de creación, lo añade a su lista y llama a
-`dispatchBroadcast(user)` para que `LoginActionViewModel` lo reciba cuando se cierre Home.
-
-### Reglas
-
-- **La entrega ocurre cuando se destruye el ViewModel del emisor**, es decir, cuando se cierra su pantalla.
-- **Solo un receptor por emisor.** Registrar un segundo listener para el mismo emisor lanza `IllegalStateException`.
-- **El resultado se guarda si todavía no hay nadie escuchando**, y se entrega cuando el receptor se registra. Esto cubre
-  el caso en que la pantalla anterior se recrea después de la muerte del proceso.
-- **Vive en memoria.** No se guarda si el proceso muere. Los datos son de tipo `Any?`, así que haz el cast con cuidado.
+Las reglas son las [mismas](#reglas). El listener se ejecuta en el scope del ViewModel.
 
 > Si el receptor reacciona mostrando algo, guarda el resultado y publica un evento desde `onViewResumed`, como hace
 > `LoginActionViewModel`, en vez de actuar desde el listener: puede que la vista todavía no esté lista.

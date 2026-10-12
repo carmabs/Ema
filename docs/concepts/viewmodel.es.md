@@ -140,8 +140,8 @@ class LoginViewModel(
 | `updateState { copy(...) }`                   | Reemplaza el estado y avisa a la vista.                                  |
 | `postEvent(event, allowDuplicated)`           | Envía un evento de un solo uso. Consulta [Eventos](events.es.md).        |
 | `sideEffect { }` / `singleSideEffect(id) { }` | Ejecuta trabajo suspendido. Consulta [Trabajo asíncrono y errores](../guides/async-and-errors.es.md). |
-| `dispatchBroadcast(data)`                     | Envía un resultado a la pantalla anterior. Consulta [Resultados entre pantallas](../guides/results-between-screens.es.md). |
-| `registerBroadcastListener(...)`              | Recibe un resultado de otra pantalla.                                    |
+| `broadcast(action, keepUntilReceived)`        | Emite una acción, por ejemplo un resultado para la pantalla anterior. Consulta [Resultados entre pantallas](../guides/results-between-screens.es.md). |
+| `registerBroadcastListener<A> { }`            | Recibe las acciones emitidas de tipo `A`.                                |
 | `scope`                                       | El `CoroutineScope` del ViewModel.                                       |
 
 ### Ganchos del ciclo de vida

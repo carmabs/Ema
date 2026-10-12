@@ -4,7 +4,6 @@ import com.carmabs.emanate.core.Ema
 import com.carmabs.emanate.core.action.EmaAction
 import com.carmabs.emanate.core.action.EmaEventConsumer
 import com.carmabs.emanate.core.action.EventDispatcher
-import com.carmabs.emanate.core.extension.qualifiedNameOrSimpleName
 import com.carmabs.emanate.core.model.EmaConfiguration
 import com.carmabs.emanate.core.model.reflection.Reflection
 import com.carmabs.emanate.core.sideeffect.EmaSideEffectConfig
@@ -14,7 +13,9 @@ import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
 import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.KClass
+import kotlin.reflect.cast
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
@@ -22,6 +23,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 /**
  * View model to handle view states.
@@ -218,10 +220,9 @@ abstract class EmaViewModelClassic<S : EmaState, E : EmaEvent>(
     protected var state: S = initialState
         private set
 
-    private val emaResultHandler: ResultHandler = ResultHandler.getInstance()
-
     /**
-     * Here should implement the listener for result data from other views through [registerBroadcastListener] method
+     * Called once, when the view model is created. Register here the listeners of the broadcast actions with
+     * [registerBroadcastListener].
      */
     protected open fun onBroadcastListenerSetup() = Unit
 
@@ -245,47 +246,40 @@ abstract class EmaViewModelClassic<S : EmaState, E : EmaEvent>(
     }
 
     /**
-     * Set a result for previous view when the current one is destroyed
+     * Broadcasts any action to the view models and sources listening to its type, added with
+     * [registerBroadcastListener] or addBroadcastListener. For example, to send a result to the previous screen. It is
+     * delivered to the ones listening at the moment.
+     * @param keepUntilReceived if nobody is listening to it, it is kept and delivered to the first one that listens to
+     * its type. For example, when the previous screen is created again after the process has been killed.
      */
-    protected fun dispatchBroadcast(data: Any?) {
-        emaResultHandler.addResult(
-            ResultModel(
-                key = this::class.resultKey,
-                ownerId = id,
-                data = data
-            )
-        )
+    protected fun broadcast(action: EmaAction, keepUntilReceived: Boolean = false) {
+        Ema.actionBroadcaster.broadcast(action, keepUntilReceived)
     }
 
     /**
-     * Sets the listener of the result that the view model of class [sender] sends with [dispatchBroadcast], received
-     * when that view model is destroyed. For example `registerBroadcastListener(SampleViewModel::class) { }`
+     * Listens to the actions of type [A] broadcast by other view models or sources while this view model is alive.
+     * Call it in [onBroadcastListenerSetup].
      */
-    protected fun registerBroadcastListener(sender: KClass<out EmaViewModelContract<*, *>>, receiver: (Any?) -> Unit) {
-        val resultKey = sender.resultKey
-        emaResultHandler.addResultReceiver(
-            ReceiverModel(
-                resultKey = resultKey,
-                ownerId = id,
-                function = receiver
-            )
-        )
-        emaResultHandler.notifyPendingResults(id, resultKey)
+    protected inline fun <reified A : EmaAction> registerBroadcastListener(noinline receiver: (A) -> Unit) {
+        registerBroadcastListener(A::class, receiver)
     }
 
     /**
-     * Key of the results sent by the view models of this class
+     * Implementation of the inline registerBroadcastListener with the type of the actions. It starts undispatched, so
+     * it is already listening when it returns.
      */
-    private val KClass<*>.resultKey: String
-        get() = "broadcast/$qualifiedNameOrSimpleName"
+    @PublishedApi
+    internal fun <A : EmaAction> registerBroadcastListener(actionType: KClass<A>, receiver: (A) -> Unit) {
+        scope.launch(start = CoroutineStart.UNDISPATCHED) {
+            Ema.actionBroadcaster.listen(listOf(actionType)).collect { receiver(actionType.cast(it)) }
+        }
+    }
 
     /**
      * Method called when the ViewModel is destroyed. It cancels all background pending tasks.
      * Check call name for EmaAndroidView. It uses reflection to call this internal method
      */
     final override fun onCleared() {
-        emaResultHandler.notifyResults(id)
-        emaResultHandler.removeResultListener(id)
         scope.cancel()
         onDestroy()
     }

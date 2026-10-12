@@ -65,8 +65,9 @@ class EmaSourceBroadcastTest {
     }
 
     @AfterTest
-    fun checkListenersRemoved() {
+    fun checkBroadcasterIsClean() {
         assertEquals(0, Ema.actionBroadcaster.listenerCount)
+        assertEquals(0, Ema.actionBroadcaster.pendingCount)
     }
 
     @Test
@@ -126,5 +127,42 @@ class EmaSourceBroadcastTest {
         assertEquals(ListState(), receiver.state)
         assertTrue(received.isEmpty())
         sender.close()
+    }
+
+    @Test
+    fun `a kept action without listener is delivered to the first source that listens to it`() = runTest {
+        Ema.actionBroadcaster.broadcast(UserBroadcast.Created("Ana"), keepUntilReceived = true)
+
+        val firstReceiver = receiverSource()
+        val secondReceiver = receiverSource()
+        runCurrent()
+
+        assertEquals(listOf("Ana"), firstReceiver.state.users)
+        assertEquals(emptyList(), secondReceiver.state.users)
+        firstReceiver.close()
+        secondReceiver.close()
+    }
+
+    @Test
+    fun `a kept action with listeners is delivered at the moment and not kept`() = runTest {
+        val receiver = receiverSource()
+
+        Ema.actionBroadcaster.broadcast(UserBroadcast.Created("Ana"), keepUntilReceived = true)
+        runCurrent()
+
+        assertEquals(listOf("Ana"), receiver.state.users)
+        assertEquals(0, Ema.actionBroadcaster.pendingCount)
+        receiver.close()
+    }
+
+    @Test
+    fun `a kept action of a type not listened to is still kept`() = runTest {
+        val receiver = receiverSource()
+
+        Ema.actionBroadcaster.broadcast(UserBroadcast.Deleted("Ana"), keepUntilReceived = true)
+
+        assertEquals(1, Ema.actionBroadcaster.pendingCount)
+        Ema.actionBroadcaster.clearPendingActions()
+        receiver.close()
     }
 }

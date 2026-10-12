@@ -39,12 +39,14 @@ fun useTestDispatchers(dispatcher: TestDispatcher = UnconfinedTestDispatcher()):
 }
 
 /**
- * Undoes [useTestDispatchers]: restores `Dispatchers.Main` and the configuration of Ema. Call it after each test, for
- * example in a function annotated with AfterTest.
+ * Undoes [useTestDispatchers]: restores `Dispatchers.Main` and the configuration of Ema, and removes the actions
+ * broadcast with keepUntilReceived that nobody received, so they don't reach the next test. Call it after each test,
+ * for example in a function annotated with AfterTest.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 fun resetTestDispatchers() {
     Dispatchers.resetMain()
     configurationBeforeTest?.let { Ema.initForTest(it) }
     configurationBeforeTest = null
+    Ema.actionBroadcaster.clearPendingActions()
 }

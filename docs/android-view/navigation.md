@@ -114,8 +114,8 @@ puts it in the arguments of a Fragment.
 
 ## Results
 
-The usual way to return a result to the previous screen is a back broadcast between ViewModels, which works the same in
-Compose and in Views. See [Results between screens](../guides/results-between-screens.md).
+The usual way to return a result to the previous screen is to broadcast an action between ViewModels, which works the
+same in Compose and in Views. See [Results between screens](../guides/results-between-screens.md).
 
 A Fragment without navigator can also return a result to the previous Fragment with `navigateBack(result)`. The previous
 one receives it with `setEmaResultListener`:

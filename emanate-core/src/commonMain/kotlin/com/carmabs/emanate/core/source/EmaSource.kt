@@ -37,7 +37,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 
@@ -147,9 +146,7 @@ class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
      */
     private val broadcastJob: Job? = broadcastListeners.takeIf { it.isNotEmpty() }?.let { actionTypes ->
         scope.launch(start = CoroutineStart.UNDISPATCHED) {
-            broadcaster.actions
-                .filter { action -> actionTypes.any { it.isInstance(action) } }
-                .collect { dispatchAction(it) }
+            broadcaster.listen(actionTypes).collect { dispatchAction(it) }
         }
     }
 

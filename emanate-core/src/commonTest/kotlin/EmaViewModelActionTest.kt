@@ -322,45 +322,89 @@ class EmaViewModelActionTest {
     }
 }
 
+data class UserSent(val user: String) : EmaAction
+
 class SenderViewModel(scope: CoroutineScope) : EmaViewModelClassic<CounterState, CounterEvent>(CounterState(), scope) {
     override fun onStateCreated(initializer: EmaAction.Initializer?) = Unit
-    fun send(data: Any?) = dispatchBroadcast(data)
+    fun send(user: String, keepUntilReceived: Boolean = false) = broadcast(UserSent(user), keepUntilReceived)
 }
 
 class ReceiverViewModel(scope: CoroutineScope) :
     EmaViewModelClassic<CounterState, CounterEvent>(CounterState(), scope) {
-    val received = mutableListOf<Any?>()
+    val received = mutableListOf<String>()
     override fun onStateCreated(initializer: EmaAction.Initializer?) = Unit
     override fun onBroadcastListenerSetup() {
-        registerBroadcastListener(SenderViewModel::class) { received.add(it) }
+        registerBroadcastListener<UserSent> { received.add(it.user) }
     }
 }
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class EmaBackBroadcastTest {
+class EmaClassicBroadcastTest {
+
+    private fun TestScope.newScope() = CoroutineScope(UnconfinedTestDispatcher(testScheduler))
+
+    @AfterTest
+    fun checkBroadcasterIsClean() {
+        assertEquals(0, Ema.actionBroadcaster.listenerCount)
+        assertEquals(0, Ema.actionBroadcaster.pendingCount)
+    }
 
     @Test
-    fun `the result is delivered to the receiver when the sender is cleared`() = runTest {
-        val scope = CoroutineScope(UnconfinedTestDispatcher(testScheduler))
-        val receiver = ReceiverViewModel(scope).apply { onCreated() }
-        val sender = SenderViewModel(scope)
+    fun `the action is delivered at the moment to every receiver`() = runTest {
+        val firstReceiver = ReceiverViewModel(newScope()).apply { onCreated() }
+        val secondReceiver = ReceiverViewModel(newScope()).apply { onCreated() }
 
-        sender.send("user")
+        SenderViewModel(newScope()).send("Ana")
+
+        assertEquals(listOf("Ana"), firstReceiver.received)
+        assertEquals(listOf("Ana"), secondReceiver.received)
+        firstReceiver.onCleared()
+        secondReceiver.onCleared()
+    }
+
+    @Test
+    fun `an action without receiver is lost`() = runTest {
+        SenderViewModel(newScope()).send("Ana")
+
+        val receiver = ReceiverViewModel(newScope()).apply { onCreated() }
+
         assertTrue(receiver.received.isEmpty())
-        sender.onCleared()
-        assertEquals(listOf<Any?>("user"), receiver.received)
         receiver.onCleared()
     }
 
     @Test
-    fun `a result without receiver is delivered when the receiver registers`() = runTest {
-        val scope = CoroutineScope(UnconfinedTestDispatcher(testScheduler))
-        SenderViewModel(scope).apply {
-            send("pending")
-            onCleared()
-        }
-        val receiver = ReceiverViewModel(scope).apply { onCreated() }
-        assertEquals(listOf<Any?>("pending"), receiver.received)
+    fun `a kept action is delivered only to the first receiver that registers`() = runTest {
+        SenderViewModel(newScope()).send("Ana", keepUntilReceived = true)
+        assertEquals(1, Ema.actionBroadcaster.pendingCount)
+
+        val firstReceiver = ReceiverViewModel(newScope()).apply { onCreated() }
+        val secondReceiver = ReceiverViewModel(newScope()).apply { onCreated() }
+
+        assertEquals(listOf("Ana"), firstReceiver.received)
+        assertTrue(secondReceiver.received.isEmpty())
+        firstReceiver.onCleared()
+        secondReceiver.onCleared()
+    }
+
+    @Test
+    fun `only the last kept action of each class is delivered`() = runTest {
+        val sender = SenderViewModel(newScope())
+        sender.send("Ana", keepUntilReceived = true)
+        sender.send("Luis", keepUntilReceived = true)
+
+        val receiver = ReceiverViewModel(newScope()).apply { onCreated() }
+
+        assertEquals(listOf("Luis"), receiver.received)
         receiver.onCleared()
+    }
+
+    @Test
+    fun `the receiver stops listening when it is cleared`() = runTest {
+        val receiver = ReceiverViewModel(newScope()).apply { onCreated() }
+        receiver.onCleared()
+
+        SenderViewModel(newScope()).send("Ana")
+
+        assertTrue(receiver.received.isEmpty())
     }
 }

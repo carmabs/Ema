@@ -76,7 +76,8 @@ class ProfileCreationActionViewModel(initialDataState: ProfileCreationState) :
 
     private fun onActionDialogConfirmClicked() {
         hideOverlap()
-        dispatchBroadcast(User(state.name, state.surname, state.role))
+        val user = User(state.name, state.surname, state.role)
+        broadcast(ProfileCreationBroadcast.UserCreated(user), keepUntilReceived = true)
         postEvent(ProfileCreationEvent.DialogConfirmationAccepted)
     }
 

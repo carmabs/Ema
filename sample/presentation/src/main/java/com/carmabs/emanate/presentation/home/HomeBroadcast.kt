@@ -4,7 +4,7 @@ import com.carmabs.domain.model.User
 import com.carmabs.emanate.core.action.EmaAction
 
 /**
- * Actions broadcast by HomeViewModel. Their type is the id of the broadcast.
+ * Actions broadcast by the home view models. Their type is the id of the broadcast.
  *
  * <p>
  * Copyright (c) 2026, Carmabs. All rights reserved.
