@@ -1,6 +1,6 @@
 # Configuration
 
-Ema is configured once, when the application starts, with `Ema.init`:
+Emanate is configured once, when the application starts, with `Ema.init`:
 
 ```kotlin
 class MyApplication : Application() {
@@ -32,24 +32,24 @@ Ema.init(
     EmaConfiguration.Android.copy(
         sideEffectConfig = EmaConfiguration.Android.sideEffectConfig.copy(
             exceptionPolicy = EmaSideEffectConfig.ExceptionPolicy.CatchExceptions { error ->
-                Log.e("Ema", "${error.reflection.methodName} failed", error.exception)
+                Log.e("Emanate", "${error.reflection.methodName} failed", error.exception)
             }
         )
     )
 )
 ```
 
-`EmaConfiguration.Android` is in `ema-android` (`com.carmabs.ema.android.configuration.Android`).
+`EmaConfiguration.Android` is in `emanate-android` (`com.carmabs.emanate.android.configuration.Android`).
 
 ## Dispatchers
 
-`EmaDispatchers` groups the dispatchers Ema uses by default:
+`EmaDispatchers` groups the dispatchers Emanate uses by default:
 
-| Dispatcher | Default                                                                      | Used by                                                               |
-|------------|------------------------------------------------------------------------------|-----------------------------------------------------------------------|
-| `main`     | `Dispatchers.Main`                                                           | ViewModels, through their default scope `EmaMainScope()`.             |
-| `io`       | `Dispatchers.IO`, or `Dispatchers.Default` on JS and Wasm                    | [Use cases](utilities.md#use-cases): network, disk and blocking work. |
-| `default`  | `Dispatchers.Default`                                                        | CPU-intensive work, such as processing images in `ema-android`.       |
+| Dispatcher | Default                                                   | Used by                                                               |
+|------------|-----------------------------------------------------------|-----------------------------------------------------------------------|
+| `main`     | `Dispatchers.Main`                                        | ViewModels, through their default scope `EmaMainScope()`.             |
+| `io`       | `Dispatchers.IO`, or `Dispatchers.Default` on JS and Wasm | [Use cases](utilities.md#use-cases): network, disk and blocking work. |
+| `default`  | `Dispatchers.Default`                                     | CPU-intensive work, such as processing images in `emanate-android`.   |
 
 `EmaConfiguration.Android` uses `Dispatchers.Main.immediate` as `main`, as the `viewModelScope` of Android does: the
 work started from the main thread, such as dispatching an action from a click, runs at once instead of waiting for the

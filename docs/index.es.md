@@ -1,6 +1,6 @@
-# Ema
+# Emanate
 
-Ema es una pequeña librería para construir pantallas con un **flujo unidireccional, de estilo MVI**.
+Emanate es una pequeña librería para construir pantallas con un **flujo unidireccional, de estilo MVI**.
 Te da tres piezas sencillas y se encarga de todo lo que las rodea
 (ciclo de vida, corrutinas, navegación, diálogos, muerte del proceso...).
 
@@ -24,7 +24,7 @@ sequenceDiagram
 La vista **pinta** el estado y **reacciona** a los eventos. Nunca decide lógica de negocio:
 solo informa de lo que ha hecho el usuario mediante acciones.
 
-## Por qué Ema
+## Por qué Emanate
 
 - **Una sola forma de hacer las cosas.** Todas las pantallas tienen la misma forma, así que alguien nuevo en el equipo
   puede leer cualquier funcionalidad.
@@ -32,23 +32,23 @@ solo informa de lo que ha hecho el usuario mediante acciones.
   el dispositivo o recrear la vista nunca los pierde.
 - **Los eventos no son estado.** Los toasts, los snackbars y el "ir a la siguiente pantalla" se entregan exactamente una
   vez y nunca se repiten.
-- **ViewModels en Kotlin puro.** `ema-core` es una librería Kotlin Multiplatform sin dependencias de Android, así que la
+- **ViewModels en Kotlin puro.** `emanate-core` es una librería Kotlin Multiplatform sin dependencias de Android, así que la
   capa de presentación se puede testear en la JVM y compartir con otras plataformas.
 - **Superficie pequeña.** Sin generación de código ni plugins de compilación propios.
 
 ## Módulos
 
-| Artefacto          | Para qué sirve                                                                               |
-|--------------------|----------------------------------------------------------------------------------------------|
-| `ema-core`         | Estado, acciones, eventos, ViewModels y casos de uso. Kotlin Multiplatform puro.             |
-| `ema-android`      | Integración con Android compartida por todas las UI: configuración, inicializadores, permisos, textos, imágenes. |
-| `ema-compose`      | Pantallas, navegación y previews de Jetpack Compose. **La forma recomendada de construir la UI.** |
-| `ema-android-view` | Fragments, Activities, diálogos y listas para el sistema de vistas de Android.               |
+| Artefacto              | Para qué sirve                                                                                                   |
+|------------------------|------------------------------------------------------------------------------------------------------------------|
+| `emanate-core`         | Estado, acciones, eventos, ViewModels y casos de uso. Kotlin Multiplatform puro.                                 |
+| `emanate-android`      | Integración con Android compartida por todas las UI: configuración, inicializadores, permisos, textos, imágenes. |
+| `emanate-compose`      | Pantallas, navegación y previews de Jetpack Compose. **La forma recomendada de construir la UI.**                |
+| `emanate-android-view` | Fragments, Activities, diálogos y listas para el sistema de vistas de Android.                                   |
 
-`ema-android-view` expone `ema-android`, y ambos exponen `ema-core`. Una app con Compose añade `ema-android` y `ema-compose`.
+`emanate-android-view` expone `emanate-android`, y ambos exponen `emanate-core`. Una app con Compose añade `emanate-android` y `emanate-compose`.
 
 > **Compose primero.** Las pantallas nuevas deberían escribirse con Compose. El soporte del sistema de vistas está en su
-> propio módulo, `ema-android-view`, y se deprecará en el futuro en favor de Compose.
+> propio módulo, `emanate-android-view`, y se deprecará en el futuro en favor de Compose.
 
 ## Por dónde seguir
 
@@ -77,7 +77,7 @@ solo informa de lo que ha hecho el usuario mediante acciones.
     - [Guardar el estado si el proceso muere](compose/save-state.es.md)
     - [Permisos](compose/permissions.es.md)
     - [Utilidades](compose/utilities.es.md)
-5. **[Vistas de Android](android-view/index.es.md)** (`ema-android-view`)
+5. **[Vistas de Android](android-view/index.es.md)** (`emanate-android-view`)
 6. [Recomendaciones](recommendations.es.md): estructura del proyecto y convenciones de nombres.
 7. [Contribuir](contributing.es.md): compilar, testear y formatear la librería.
 

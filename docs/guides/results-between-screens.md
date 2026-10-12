@@ -1,7 +1,7 @@
 # Results between screens
 
 Sometimes a screen needs to tell the previous one something when it closes: "I created this user".
-Ema calls this a **back broadcast**. It is a point-to-point message, from the ViewModel of one screen to the ViewModel of another.
+Emanate calls this a **back broadcast**. It is a point-to-point message, from the ViewModel of one screen to the ViewModel of another.
 
 ```mermaid
 sequenceDiagram

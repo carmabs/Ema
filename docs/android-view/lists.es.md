@@ -1,6 +1,6 @@
 # Listas
 
-Para `RecyclerView`, Ema da adapters basados en `ListAdapter` y ViewBinding.
+Para `RecyclerView`, Emanate da adapters basados en `ListAdapter` y ViewBinding.
 
 ## Un tipo de elemento
 

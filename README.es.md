@@ -1,8 +1,8 @@
-# Ema
+# Emanate
 
 [English](README.md) · **Español**
 
-**Ema** es una pequeña librería para construir pantallas con un flujo unidireccional, de estilo MVI:
+**Emanate** es una pequeña librería para construir pantallas con un flujo unidireccional, de estilo MVI:
 un **estado** que pinta la vista, **acciones** que realiza el usuario y **eventos** de un solo uso a los que reacciona
 la vista. Los ViewModels son código Kotlin Multiplatform puro, las pantallas se construyen con Jetpack Compose y el
 sistema de vistas de Android tiene soporte en su propio módulo.
@@ -44,15 +44,15 @@ maven { url = uri("https://jitpack.io") }
 ```kotlin
 dependencies {
     // Compose
-    implementation("com.github.carmabs.ema:ema-android:7.0.0")
-    implementation("com.github.carmabs.ema:ema-compose:7.0.0")
+    implementation("com.github.carmabs.ema:emanate-android:7.0.0")
+    implementation("com.github.carmabs.ema:emanate-compose:7.0.0")
 
     // Vistas de Android
-    implementation("com.github.carmabs.ema:ema-android-view:7.0.0")
+    implementation("com.github.carmabs.ema:emanate-android-view:7.0.0")
 }
 ```
 
-En un módulo de Kotlin puro o multiplataforma usa `ema-core`. Después inicializa Ema en tu `Application`:
+En un módulo de Kotlin puro o multiplataforma usa `emanate-core`. Después inicializa Emanate en tu `Application`:
 
 ```kotlin
 Ema.init(EmaConfiguration.Android)

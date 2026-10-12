@@ -63,7 +63,7 @@ Ema.init(
     EmaConfiguration.Android.copy(
         sideEffectConfig = EmaConfiguration.Android.sideEffectConfig.copy(
             exceptionPolicy = EmaSideEffectConfig.ExceptionPolicy.CatchExceptions(
-                defaultAction = { error -> Log.e("Ema", "${error.reflection.methodName} failed", error.exception) }
+                defaultAction = { error -> Log.e("Emanate", "${error.reflection.methodName} failed", error.exception) }
             ),
             defaultSuccessAction = { success -> /* por ejemplo, analítica */ },
             defaultFinishAction = { reflection -> /* ... */ }

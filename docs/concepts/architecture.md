@@ -1,6 +1,6 @@
 # Architecture
 
-Every Ema screen is made of the same five pieces.
+Every Emanate screen is made of the same five pieces.
 
 ```mermaid
 sequenceDiagram

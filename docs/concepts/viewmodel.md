@@ -1,6 +1,6 @@
 # ViewModel
 
-An Ema ViewModel is a plain Kotlin class with no Android dependencies. There are two flavours:
+An Emanate ViewModel is a plain Kotlin class with no Android dependencies. There are two flavours:
 
 | Class                                  | Use it when                                                              |
 |----------------------------------------|--------------------------------------------------------------------------|
@@ -77,12 +77,12 @@ override fun onStateCreated(initializer: EmaAction.Initializer?) {
 
 ## How the ViewModel is kept alive
 
-On Android, Ema keeps your ViewModel inside an Android `ViewModel` (`EmaAndroidViewModel`), so it lives as long as its
+On Android, Emanate keeps your ViewModel inside an Android `ViewModel` (`EmaAndroidViewModel`), so it lives as long as its
 screen and survives configuration changes:
 
-1. The first time a screen is opened, Ema calls the function you gave it (`viewModel` in Compose, `provideViewModel()`
+1. The first time a screen is opened, Emanate calls the function you gave it (`viewModel` in Compose, `provideViewModel()`
    in Views) and keeps that instance.
-2. While the screen exists, after rotations or when coming back from the back stack, Ema reuses the instance it keeps.
+2. While the screen exists, after rotations or when coming back from the back stack, Emanate reuses the instance it keeps.
    Your function is not called again.
 3. When the screen is closed, the ViewModel is cleared. Opening the screen again creates a new one.
 

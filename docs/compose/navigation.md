@@ -1,6 +1,6 @@
 # Compose navigation
 
-In Ema the **ViewModel never navigates**. It posts an [event](../concepts/events.md) that says what happened,
+In Emanate the **ViewModel never navigates**. It posts an [event](../concepts/events.md) that says what happened,
 and the `onEvent` lambda of the destination hands it to a **navigator**, which knows how to move around.
 
 ```mermaid

@@ -39,7 +39,7 @@ Cómo viaja el inicializador depende de la tecnología de UI:
   Activity. Consulta [Navegación con vistas de Android](../android-view/navigation.es.md#pasar-un-inicializador).
 
 Para abrir una activity tú mismo, mételo en el intent con `Intent(...).setInitializer(initializer, strategy)` y léelo en
-la activity con `getInitializer(strategy, savedInstanceState)`. Estas extensiones están en `ema-android`.
+la activity con `getInitializer(strategy, savedInstanceState)`. Estas extensiones están en `emanate-android`.
 
 ## Usarlo en el ViewModel
 

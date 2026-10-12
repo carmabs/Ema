@@ -63,7 +63,7 @@ equal consecutive states are not delivered twice and slow collectors only see th
 
 ## Modelling dialogs, loading and errors
 
-Ema does not have special "loading" or "error" states. They are ordinary fields of your state, so they survive
+Emanate does not have special "loading" or "error" states. They are ordinary fields of your state, so they survive
 a rotation and are easy to test.
 
 **A dialog**: a nullable sealed type. `null` means no dialog.

@@ -1,6 +1,6 @@
 # Android Views
 
-The `ema-android-view` module brings Ema to the Android View system: Fragments, Activities, `DialogFragment`s,
+The `emanate-android-view` module brings Emanate to the Android View system: Fragments, Activities, `DialogFragment`s,
 `RecyclerView` adapters and the Navigation component with XML graphs.
 
 > **Compose is the recommended way to build the UI.** This module is kept for apps that still use Views, and it will
@@ -8,11 +8,11 @@ The `ema-android-view` module brings Ema to the Android View system: Fragments, 
 
 ```kotlin
 dependencies {
-    implementation("com.github.carmabs.ema:ema-android-view:$emaVersion")
+    implementation("com.github.carmabs.ema:emanate-android-view:$emanateVersion")
 }
 ```
 
-It includes `ema-android` and `ema-core`. The ViewModels, states, actions and events are exactly the same as in
+It includes `emanate-android` and `emanate-core`. The ViewModels, states, actions and events are exactly the same as in
 Compose: only the view changes, so a screen can move from Views to Compose without touching its ViewModel.
 
 ## Pages

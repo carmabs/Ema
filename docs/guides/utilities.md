@@ -15,11 +15,11 @@ EmaText.empty()
 Resolve it where you have a context:
 
 ```kotlin
-data.title.stringResource()                 // Compose (com.carmabs.ema.compose.extension)
-data.title.string(context)                  // Android (com.carmabs.ema.android.extension)
+data.title.stringResource()                 // Compose (com.carmabs.emanate.compose.extension)
+data.title.string(context)                  // Android (com.carmabs.emanate.android.extension)
 ```
 
-`R.string.x.toEmaText(args)` and `R.plurals.x.toEmaText(quantity, args)` are shortcuts from `ema-android`.
+`R.string.x.toEmaText(args)` and `R.plurals.x.toEmaText(quantity, args)` are shortcuts from `emanate-android`.
 
 Two `EmaText` are equal when they describe the same text, arguments included, so a state that holds them is compared
 correctly. A text without arguments is never formatted: `EmaText.text("50%")` is shown as is.
@@ -83,11 +83,11 @@ Log.d("Login", state.toStringPretty())
 | `EmaUniqueSelector`       | Keeps a single option selected in a group and tells which ones were deselected. |
 | `emaFlowSingleEvent<T>()` | A `MutableSharedFlow` with no replay, for one-shot signals.                     |
 
-`ema-core` also has extensions for numbers, strings, lists, dates and flows in `com.carmabs.ema.core.extension`.
+`emanate-core` also has extensions for numbers, strings, lists, dates and flows in `com.carmabs.emanate.core.extension`.
 
 ## Android helpers
 
-`ema-android` has the Android helpers shared by Compose and Views:
+`emanate-android` has the Android helpers shared by Compose and Views:
 
 | Helper                                                    | What it does                                                        |
 |-----------------------------------------------------------|---------------------------------------------------------------------|

@@ -1,6 +1,6 @@
 # Arquitectura
 
-Todas las pantallas de Ema se componen de las mismas cinco piezas.
+Todas las pantallas de Emanate se componen de las mismas cinco piezas.
 
 ```mermaid
 sequenceDiagram

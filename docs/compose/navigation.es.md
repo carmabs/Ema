@@ -1,6 +1,6 @@
 # Navegación en Compose
 
-En Ema **el ViewModel nunca navega**. Publica un [evento](../concepts/events.es.md) que dice lo que ha pasado, y la
+En Emanate **el ViewModel nunca navega**. Publica un [evento](../concepts/events.es.md) que dice lo que ha pasado, y la
 lambda `onEvent` del destino se lo pasa a un **navigator**, que sabe cómo moverse.
 
 ```mermaid

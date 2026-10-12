@@ -16,11 +16,11 @@ EmaText.empty()
 Resuélvelo donde tengas un contexto:
 
 ```kotlin
-data.title.stringResource()                 // Compose (com.carmabs.ema.compose.extension)
-data.title.string(context)                  // Android (com.carmabs.ema.android.extension)
+data.title.stringResource()                 // Compose (com.carmabs.emanate.compose.extension)
+data.title.string(context)                  // Android (com.carmabs.emanate.android.extension)
 ```
 
-`R.string.x.toEmaText(args)` y `R.plurals.x.toEmaText(quantity, args)` son atajos de `ema-android`.
+`R.string.x.toEmaText(args)` y `R.plurals.x.toEmaText(quantity, args)` son atajos de `emanate-android`.
 
 Dos `EmaText` son iguales cuando describen el mismo texto, argumentos incluidos, así que un estado que los contenga se
 compara correctamente. Un texto sin argumentos nunca se formatea: `EmaText.text("50%")` se muestra tal cual.
@@ -84,11 +84,11 @@ Log.d("Login", state.toStringPretty())
 | `EmaUniqueSelector`       | Mantiene una sola opción seleccionada en un grupo e indica cuáles se han deseleccionado. |
 | `emaFlowSingleEvent<T>()` | Un `MutableSharedFlow` sin replay, para señales de un solo uso.                 |
 
-`ema-core` también tiene extensiones para números, strings, listas, fechas y flows en `com.carmabs.ema.core.extension`.
+`emanate-core` también tiene extensiones para números, strings, listas, fechas y flows en `com.carmabs.emanate.core.extension`.
 
 ## Ayudas de Android
 
-`ema-android` tiene las ayudas de Android que comparten Compose y las vistas:
+`emanate-android` tiene las ayudas de Android que comparten Compose y las vistas:
 
 | Ayuda                                                      | Qué hace                                                            |
 |------------------------------------------------------------|---------------------------------------------------------------------|

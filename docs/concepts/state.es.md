@@ -63,7 +63,7 @@ dos veces y los colectores lentos solo ven el último valor.
 
 ## Modelar diálogos, carga y errores
 
-Ema no tiene estados especiales de "carga" o "error". Son campos normales de tu estado, así que sobreviven a una rotación
+Emanate no tiene estados especiales de "carga" o "error". Son campos normales de tu estado, así que sobreviven a una rotación
 y son fáciles de testear.
 
 **Un diálogo**: un tipo sellado nullable. `null` significa que no hay diálogo.

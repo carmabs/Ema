@@ -1,7 +1,7 @@
 # Resultados entre pantallas
 
 A veces una pantalla tiene que decirle algo a la anterior cuando se cierra: "he creado este usuario".
-Ema lo llama **back broadcast**. Es un mensaje punto a punto, del ViewModel de una pantalla al ViewModel de otra.
+Emanate lo llama **back broadcast**. Es un mensaje punto a punto, del ViewModel de una pantalla al ViewModel de otra.
 
 ```mermaid
 sequenceDiagram

@@ -1,6 +1,6 @@
 # Navigation and back handling
 
-In Ema the **ViewModel never navigates**. It posts an [event](../concepts/events.md) that says what happened,
+In Emanate the **ViewModel never navigates**. It posts an [event](../concepts/events.md) that says what happened,
 and the view hands that event to a **navigator**, which knows how to move around.
 
 ```mermaid
@@ -79,7 +79,7 @@ override val navigator: EmaNavigator<EmaEvent.EMPTY> = EmaActivityNavControllerH
 )
 ```
 
-Ema sets the graph in `onPostCreate`, with the initializer of the activity intent as the arguments of the start
+Emanate sets the graph in `onPostCreate`, with the initializer of the activity intent as the arguments of the start
 destination. To start it with another initializer, override `overrideDestinationInitializer()`.
 When the back stack is empty, `navigateBack` finishes the activity.
 

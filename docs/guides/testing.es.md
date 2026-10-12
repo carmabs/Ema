@@ -41,7 +41,7 @@ class CounterViewModelTest {
 }
 ```
 
-Los tests de la propia librería, en `ema-core/src/commonTest`, tienen más ejemplos: side effects, eventos, resultados
+Los tests de la propia librería, en `emanate-core/src/commonTest`, tienen más ejemplos: side effects, eventos, resultados
 entre pantallas y el ciclo de vida de la vista.
 
 ## Lo que conviene saber

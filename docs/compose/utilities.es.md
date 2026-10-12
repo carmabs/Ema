@@ -1,6 +1,6 @@
 # Utilidades de Compose
 
-Las ayudas de `ema-compose` están en `com.carmabs.ema.compose.extension`.
+Las ayudas de `emanate-compose` están en `com.carmabs.emanate.compose.extension`.
 
 ## Textos y recursos
 

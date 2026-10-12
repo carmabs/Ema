@@ -1,6 +1,6 @@
 # Utilidades de las vistas
 
-Las extensiones de `ema-android-view` están en `com.carmabs.ema.android.extension`.
+Las extensiones de `emanate-android-view` están en `com.carmabs.emanate.android.extension`.
 
 ## Vistas
 

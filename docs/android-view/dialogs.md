@@ -22,7 +22,7 @@ Because it is state, the dialog is restored after a rotation and the ViewModel k
 
 ## Creating a dialog
 
-Ema provides the machinery to show dialogs as `DialogFragment`s without duplicates after rotations. You provide three things.
+Emanate provides the machinery to show dialogs as `DialogFragment`s without duplicates after rotations. You provide three things.
 
 **1. The dialog data.** A class that implements `EmaDialogData`:
 

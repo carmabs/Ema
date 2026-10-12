@@ -23,15 +23,15 @@ dependencyResolutionManagement {
 Añade las dependencias de tu tecnología de UI:
 
 ```kotlin
-val emaVersion = "7.0.0"
+val emanateVersion = "7.0.0"
 
 dependencies {
     // Compose (recomendado)
-    implementation("com.github.carmabs.ema:ema-android:$emaVersion")
-    implementation("com.github.carmabs.ema:ema-compose:$emaVersion")
+    implementation("com.github.carmabs.ema:emanate-android:$emanateVersion")
+    implementation("com.github.carmabs.ema:emanate-compose:$emanateVersion")
 
     // Vistas de Android: Fragments y Activities
-    implementation("com.github.carmabs.ema:ema-android-view:$emaVersion")
+    implementation("com.github.carmabs.ema:emanate-android-view:$emanateVersion")
 }
 ```
 
@@ -39,14 +39,14 @@ En un módulo de Kotlin puro, como un módulo `presentation` con los ViewModels,
 
 ```kotlin
 dependencies {
-    implementation("com.github.carmabs.ema:ema-core:$emaVersion")
+    implementation("com.github.carmabs.ema:emanate-core:$emanateVersion")
 }
 ```
 
-`ema-core` es una librería Kotlin Multiplatform, así que también se puede usar desde el `commonMain` de un módulo
+`emanate-core` es una librería Kotlin Multiplatform, así que también se puede usar desde el `commonMain` de un módulo
 multiplataforma. Consulta [Kotlin Multiplatform](guides/multiplatform.es.md).
 
-## Inicializar Ema
+## Inicializar Emanate
 
 Llama a `Ema.init` una vez, cuando arranca la aplicación y antes de crear ningún ViewModel.
 `EmaConfiguration.Android` es la configuración para apps Android:

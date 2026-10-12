@@ -1,6 +1,6 @@
 # Compose utilities
 
-The helpers of `ema-compose` are in `com.carmabs.ema.compose.extension`.
+The helpers of `emanate-compose` are in `com.carmabs.emanate.compose.extension`.
 
 ## Texts and resources
 

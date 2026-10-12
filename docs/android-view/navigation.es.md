@@ -1,6 +1,6 @@
 # Navegación y botón atrás
 
-En Ema **el ViewModel nunca navega**. Publica un [evento](../concepts/events.es.md) que dice lo que ha pasado, y la vista
+En Emanate **el ViewModel nunca navega**. Publica un [evento](../concepts/events.es.md) que dice lo que ha pasado, y la vista
 se lo pasa a un **navigator**, que sabe cómo moverse.
 
 ```mermaid
@@ -79,7 +79,7 @@ override val navigator: EmaNavigator<EmaEvent.EMPTY> = EmaActivityNavControllerH
 )
 ```
 
-Ema asigna el grafo en `onPostCreate`, con el inicializador del intent de la activity como argumentos del destino
+Emanate asigna el grafo en `onPostCreate`, con el inicializador del intent de la activity como argumentos del destino
 inicial. Para empezarlo con otro inicializador, sobrescribe `overrideDestinationInitializer()`.
 Cuando el back stack se queda vacío, `navigateBack` cierra la activity.
 

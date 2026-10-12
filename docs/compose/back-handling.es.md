@@ -8,7 +8,7 @@ override fun onBack(state: ProfileCreationState): ProfileCreationAction? =
     if (state.overlap == null) ProfileCreationAction.OnBack else null
 ```
 
-Ema instala un único `BackHandler`, activo solo cuando `onBack` devuelve una acción. Devolver `null` en algunos estados es
+Emanate instala un único `BackHandler`, activo solo cuando `onBack` devuelve una acción. Devolver `null` en algunos estados es
 la forma de desactivar la interceptación.
 
 - Un diálogo pintado con `AlertDialog` o `Dialog` gestiona el botón atrás por sí mismo, así que devuelve `null` mientras
