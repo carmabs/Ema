@@ -8,7 +8,7 @@ import com.carmabs.emanate.core.action.EmaActionDispatcher
 import com.carmabs.emanate.core.action.EmaEventConsumer
 import com.carmabs.emanate.core.action.EventDispatcher
 import com.carmabs.emanate.core.broadcast.EmaActionBroadcaster
-import com.carmabs.emanate.core.sideeffect.sideEffect
+import com.carmabs.emanate.core.sideeffect.SideEffectResult
 import com.carmabs.emanate.core.source.middleware.EmaMiddleware
 import com.carmabs.emanate.core.source.middleware.MiddlewareContext
 import com.carmabs.emanate.core.source.middleware.MiddlewareScope
@@ -275,7 +275,7 @@ class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
      */
     internal fun launch(key: Any?, timeout: Duration?, onTimeout: () -> Unit, block: suspend () -> Unit): Job {
         key?.let { removeJob(it)?.cancel() }
-        val job = sideEffect(container = container, scope = scope) {
+        val job = SideEffectResult(container = container, scope = scope) {
             if (timeout == null) {
                 block()
             } else if (withTimeoutOrNull(timeout) { block() } == null) {

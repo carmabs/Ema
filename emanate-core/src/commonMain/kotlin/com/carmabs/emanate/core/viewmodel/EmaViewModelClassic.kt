@@ -8,7 +8,6 @@ import com.carmabs.emanate.core.model.EmaConfiguration
 import com.carmabs.emanate.core.model.reflection.Reflection
 import com.carmabs.emanate.core.sideeffect.EmaSideEffectConfig
 import com.carmabs.emanate.core.sideeffect.SideEffectResult
-import com.carmabs.emanate.core.sideeffect.sideEffect
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
 import kotlin.coroutines.CoroutineContext
@@ -176,14 +175,14 @@ abstract class EmaViewModelClassic<S : EmaState, E : EmaEvent>(
         throwException: Boolean = shouldThrowException(),
         logName: String? = null,
         action: suspend CoroutineScope.() -> T
-    ): SideEffectResult<T> = generateResultHandler(dispatcher, throwException, logName, action)
+    ): SideEffectResult<T> = launchSideEffect(dispatcher, throwException, logName, action)
 
-    private fun <T> generateResultHandler(
+    private fun <T> launchSideEffect(
         dispatcher: CoroutineContext,
         throwException: Boolean,
         logName: String?,
         action: suspend CoroutineScope.() -> T
-    ) = sideEffect(
+    ) = SideEffectResult(
         container = this,
         scope = scope,
         dispatcher = dispatcher,
@@ -201,7 +200,7 @@ abstract class EmaViewModelClassic<S : EmaState, E : EmaEvent>(
         action: suspend CoroutineScope.() -> T
     ): SideEffectResult<T> {
         singleSideEffectMap[id]?.cancel()
-        val handler = generateResultHandler(dispatcher, throwException, logName, action)
+        val handler = launchSideEffect(dispatcher, throwException, logName, action)
         singleSideEffectMap[id] = handler.job
         return handler
     }
