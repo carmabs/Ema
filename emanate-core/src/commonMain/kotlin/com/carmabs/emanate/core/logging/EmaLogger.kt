@@ -15,9 +15,9 @@ fun interface EmaLogger {
 
     companion object {
         /**
-         * Writes with println, adding EMA_LOG_ before the tag. It is the logger of the view models by default.
+         * Writes with println, adding EMA_ before the tag. It is the logger of the default configuration.
          */
-        val Println: EmaLogger = EmaLogger(prefix = "EMA_LOG_") { tag, message -> println("$tag: $message") }
+        val Println: EmaLogger = EmaLogger(prefix = "EMA_") { tag, message -> println("$tag: $message") }
     }
 
     /**

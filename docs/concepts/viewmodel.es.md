@@ -68,8 +68,9 @@ Además del estado inicial, el constructor recibe:
 
 - `dispatcher`: dónde se ejecuta el ViewModel. Por defecto, el dispatcher `main` de la
   [configuración](../guides/configuration.es.md).
-- `logger`: un `EmaLogger` que registra cada acción con el estado antes y después de ella. Por defecto
-  `EmaLogger.Println`, que añade `EMA_LOG_` delante del nombre del ViewModel; pasa `null` para desactivar los logs.
+- `logger`: el `EmaLogger` que registra cada acción con el estado antes y después de ella, con el nombre del
+  ViewModel como tag. Por defecto, el `logger` de la [configuración](../guides/configuration.es.md#logs), que es
+  `EmaLogger.Println` si no se cambia; pasa `null` para desactivar los logs de este ViewModel.
 
 `setup` se llama la primera vez que se usa el ViewModel, no en el constructor, así que puede usar las propiedades de tu
 clase, como sus casos de uso.

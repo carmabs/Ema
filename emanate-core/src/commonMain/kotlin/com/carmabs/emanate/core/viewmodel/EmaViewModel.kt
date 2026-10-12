@@ -14,6 +14,7 @@ import com.carmabs.emanate.core.source.SourceSetupScope
 import com.carmabs.emanate.core.source.buildSourceSetup
 import com.carmabs.emanate.core.source.middleware.loggerMiddleware
 import com.carmabs.emanate.core.source.middleware.middlewareOf
+import com.carmabs.emanate.core.source.middleware.receivedActionLoggerMiddleware
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
 import kotlin.concurrent.Volatile
@@ -32,7 +33,9 @@ import kotlinx.coroutines.flow.asStateFlow
  *
  * @param initialDataState state of the view before any action
  * @param dispatcher where the view model runs. By default the main dispatcher of Ema.
- * @param logger logs every action with the state before and after it. Null to disable the logs.
+ * @param logger logs every action with the state before and after it, and in one line when it is received, so the
+ * actions stopped by a middleware are also logged. By default the logger of the configuration of Ema. Null to disable
+ * the logs of this view model.
  *
  * <p>
  * Copyright (c) 2026 by Carmabs. All rights reserved.
@@ -43,7 +46,7 @@ import kotlinx.coroutines.flow.asStateFlow
 abstract class EmaViewModel<S : EmaState, A : EmaAction, E : EmaEvent>(
     initialDataState: S,
     private val dispatcher: CoroutineDispatcher = Ema.configuration.dispatchers.main,
-    private val logger: EmaLogger? = EmaLogger.Println
+    private val logger: EmaLogger? = Ema.configuration.logger
 ) : EmaViewModelContract<S, E>,
     EmaActionDispatcher<A> {
 
@@ -99,13 +102,15 @@ abstract class EmaViewModel<S : EmaState, A : EmaAction, E : EmaEvent>(
      */
     private fun createSource(): EmaSource<S, EmaAction, E> {
         val sourceSetup = setup()
+        val tag = this::class.simpleName.orEmpty()
         return EmaSource(
             mutableStateFlow = mutableStateFlow,
             dispatcher = dispatcher,
+            // The full log goes last, right before the reducers, so it logs the state they return
             middlewares = listOfNotNull(
-                logger?.let { loggerMiddleware(this::class.simpleName.orEmpty(), it) },
+                logger?.let { receivedActionLoggerMiddleware(tag, it) },
                 updateTrackerMiddleware
-            ) + sourceSetup.middlewares,
+            ) + sourceSetup.middlewares + listOfNotNull(logger?.let { loggerMiddleware(tag, it) }),
             reducers = sourceSetup.reducers,
             sideEffects = sourceSetup.sideEffects,
             broadcastListeners = sourceSetup.broadcastListeners,

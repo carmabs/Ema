@@ -7,12 +7,26 @@ import com.carmabs.emanate.core.state.EmaState
 import kotlin.math.absoluteValue
 
 /**
- * Logs every action with the state before and after it. Add it as the first middleware to see the whole flow.
+ * Logs every action with the state before and after its reducers. Add it as the last middleware: the reducers run as
+ * soon as it calls next, so the state after the action is the one they return, even if a previous middleware has
+ * continued the action later with nextAfter. The actions that a middleware stops don't reach it.
  *
  * @param tag of the logs
  */
 fun loggerMiddleware(tag: String, logger: EmaLogger): EmaMiddleware<EmaState, Nothing, EmaAction> =
     LoggerEmaMiddleware(tag, logger)
+
+/**
+ * Logs in one line every action that enters the source. Added as the first middleware, together with
+ * [loggerMiddleware] as the last one, it shows the actions that a middleware stops or changes.
+ */
+internal fun receivedActionLoggerMiddleware(
+    tag: String,
+    logger: EmaLogger
+): EmaMiddleware<EmaState, Nothing, EmaAction> = middlewareOf(EmaAction::class) { action ->
+    logger.log(tag, "Received action: $action")
+    next()
+}
 
 /**
  * Created by Carlos Mateo Benito on 11/10/2026.
@@ -36,7 +50,7 @@ internal class LoggerEmaMiddleware(
         val info: (String) -> Unit = { line -> logger.log(tag, line) }
         run {
             info("")
-            info(printLine('*', "STARTING EMA STATE LOGGING", textPadding = padding))
+            info(printLine('*', "STARTING EMA ACTION LOGGING", textPadding = padding))
             info(printLine('*', "", sideCharacterLimit = 2))
             info(printLine('|', "Dispatched action", textPadding = padding))
             info(printLine('|', "", sideCharacterLimit = 2))
@@ -82,7 +96,7 @@ internal class LoggerEmaMiddleware(
             }
             info(printLine('|', ""))
             info(printLine('*', "", sideCharacterLimit = 2))
-            info(printLine('*', "FINISHED EMA STATE LOGGING", textPadding = padding))
+            info(printLine('*', "FINISHED EMA ACTION LOGGING", textPadding = padding))
             info("")
         }
     }

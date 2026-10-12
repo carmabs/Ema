@@ -1,11 +1,16 @@
 package com.carmabs.emanate.core.viewmodel
 
+import com.carmabs.emanate.core.Ema
 import com.carmabs.emanate.core.action.EmaAction
+import com.carmabs.emanate.core.logging.EmaLogger
+import com.carmabs.emanate.core.model.EmaConfiguration
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
 import java.io.ByteArrayOutputStream
 import java.io.PrintStream
+import kotlin.test.AfterTest
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -18,7 +23,7 @@ private data class CountState(val count: Int = 0) : EmaState
 private data object IncrementAction : EmaAction
 
 /**
- * View model that doesn't pass a logger, to check the default one
+ * View model that doesn't pass a logger, to check the one of the configuration
  */
 private class DefaultLoggerViewModel(dispatcher: CoroutineDispatcher) :
     EmaViewModel<CountState, IncrementAction, EmaEvent.EMPTY>(CountState(), dispatcher) {
@@ -36,6 +41,11 @@ private class DefaultLoggerViewModel(dispatcher: CoroutineDispatcher) :
 @OptIn(ExperimentalCoroutinesApi::class)
 class EmaViewModelLoggerTest {
 
+    @AfterTest
+    fun resetConfiguration() {
+        Ema.reset()
+    }
+
     @Test
     fun `the view model logs with println by default`() = runTest {
         val output = ByteArrayOutputStream()
@@ -50,6 +60,37 @@ class EmaViewModelLoggerTest {
             System.setOut(systemOut)
         }
 
-        assertTrue(output.toString().lines().any { it.startsWith("EMA_LOG_DefaultLoggerViewModel: ") })
+        assertTrue(output.toString().lines().any { it.startsWith("EMA_DefaultLoggerViewModel: ") })
+    }
+
+    @Test
+    fun `the view model uses the logger of the configuration`() = runTest {
+        val tags = mutableSetOf<String>()
+        Ema.initForTest(EmaConfiguration(logger = EmaLogger { tag, _ -> tags += tag }))
+
+        val viewModel = DefaultLoggerViewModel(UnconfinedTestDispatcher(testScheduler))
+        viewModel.dispatch(IncrementAction)
+        runCurrent()
+        viewModel.onCleared()
+
+        assertEquals(setOf("DefaultLoggerViewModel"), tags)
+    }
+
+    @Test
+    fun `a null logger in the configuration disables the logs`() = runTest {
+        val output = ByteArrayOutputStream()
+        val systemOut = System.out
+        System.setOut(PrintStream(output))
+        Ema.initForTest(EmaConfiguration(logger = null))
+        try {
+            val viewModel = DefaultLoggerViewModel(UnconfinedTestDispatcher(testScheduler))
+            viewModel.dispatch(IncrementAction)
+            runCurrent()
+            viewModel.onCleared()
+        } finally {
+            System.setOut(systemOut)
+        }
+
+        assertTrue(output.toString().lines().none { it.startsWith("EMA_") })
     }
 }

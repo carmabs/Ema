@@ -297,6 +297,24 @@ class EmaViewModelTest {
     }
 
     @Test
+    fun `the logger logs the received action and the state after a middleware continues it later`() = runTest {
+        val logs = mutableListOf<String>()
+        val viewModel = TestViewModel(testDispatcher(), logger = EmaLogger { _, message -> logs += message })
+
+        viewModel.dispatch(TestAction.Slow)
+        runCurrent()
+        // The delay of Slow hasn't finished, so only the received action is logged
+        assertTrue("Received action: Slow" in logs)
+        assertTrue(logs.none { "State after apply action" in it })
+
+        advanceTimeBy(1500)
+        runCurrent()
+        val stateAfter = logs.dropWhile { "State after apply action" !in it }
+        assertTrue(stateAfter.any { "count=1" in it })
+        viewModel.onCleared()
+    }
+
+    @Test
     fun `view models receive the actions broadcast by other view models`() = runTest {
         val receiver = TestViewModel(testDispatcher())
         val sender = SenderViewModel(testDispatcher())

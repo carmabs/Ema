@@ -24,6 +24,7 @@ class MyApplication : Application() {
 | `dispatchers`                 | `EmaDispatchers()`           | `main` is `Dispatchers.Main.immediate` | Where ViewModels, use cases and CPU-intensive work run. See [Dispatchers](#dispatchers). |
 | `sideEffectConfig`            | `EmaSideEffectConfig()`      | Resolves the method names from the lambdas | How `sideEffect` handles errors and what it reports. See [Async work and errors](async-and-errors.md#errors). |
 | `dataClassPrinter`            | `EmaDataClassPrinter.ToString` | Prints every field, indented     | How `toStringPretty()` prints objects.                    |
+| `logger`                      | `EmaLogger.Println`          | `EmaLogger.Println`                | Writes the logs of Emanate, like the actions of every `EmaViewModel`. See [Logs](#logs). |
 
 `EmaConfiguration` is a data class, so customize the Android configuration with `copy`:
 
@@ -81,3 +82,29 @@ To decide the name differently, implement `EmaMethodNameResolver` and set it in 
 `toStringPretty()` prints any object with the configured `EmaDataClassPrinter`. `EmaConfiguration.Android` uses
 `EmaAndroidDataClassPrinter`, which prints the fields, nested objects, collections and maps with indentation.
 Implement `EmaDataClassPrinter` to print them your own way.
+
+## Logs
+
+Emanate writes its logs with the `logger` of the configuration. By default it is `EmaLogger.Println`, which writes to
+the standard output and adds `EMA_` before the tag.
+
+Every `EmaViewModel` uses it, with its name as tag, to log its actions:
+
+- One line when an action is received, before the middlewares: `Received action: Search(query=ema)`. It shows the
+  actions that a middleware stops, which don't reach the reducers.
+- A block with the action and the state before and after its reducers. It is written right before them, after all the
+  middlewares, so the state after the action is correct even if a middleware continues it later with `nextAfter`, and
+  the action is the one the reducers receive.
+
+The state may contain data of the user, so disable the logs in release builds, or send them to your own logger:
+
+```kotlin
+Ema.init(
+    EmaConfiguration.Android.copy(
+        logger = if (BuildConfig.DEBUG) EmaLogger { tag, message -> Log.d(tag, message) } else null
+    )
+)
+```
+
+A ViewModel can still pass its own `logger` in the constructor, or `null` to disable only its logs. A source used on
+its own doesn't log: add `loggerMiddleware(tag, logger)` as its last middleware.

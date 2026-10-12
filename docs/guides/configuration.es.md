@@ -24,6 +24,7 @@ class MyApplication : Application() {
 | `dispatchers`                 | `EmaDispatchers()`           | `main` es `Dispatchers.Main.immediate` | Dónde se ejecutan los ViewModels, los casos de uso y el trabajo de cálculo. Consulta [Dispatchers](#dispatchers). |
 | `sideEffectConfig`            | `EmaSideEffectConfig()`      | Obtiene el nombre de los métodos de las lambdas | Cómo gestiona `sideEffect` los errores y qué informa. Consulta [Trabajo asíncrono y errores](async-and-errors.es.md#errores). |
 | `dataClassPrinter`            | `EmaDataClassPrinter.ToString` | Imprime todos los campos, con sangría | Cómo imprime los objetos `toStringPretty()`.          |
+| `logger`                      | `EmaLogger.Println`          | `EmaLogger.Println`                | Escribe los logs de Emanate, como las acciones de cada `EmaViewModel`. Consulta [Logs](#logs). |
 
 `EmaConfiguration` es una data class, así que personaliza la configuración de Android con `copy`:
 
@@ -81,3 +82,30 @@ Para decidir el nombre de otra forma, implementa `EmaMethodNameResolver` y asíg
 `toStringPretty()` imprime cualquier objeto con el `EmaDataClassPrinter` configurado. `EmaConfiguration.Android` usa
 `EmaAndroidDataClassPrinter`, que imprime los campos, los objetos anidados, las colecciones y los mapas con sangría.
 Implementa `EmaDataClassPrinter` para imprimirlos a tu manera.
+
+## Logs
+
+Emanate escribe sus logs con el `logger` de la configuración. Por defecto es `EmaLogger.Println`, que escribe en la
+salida estándar y añade `EMA_` delante del tag.
+
+Cada `EmaViewModel` lo usa, con su nombre como tag, para registrar sus acciones:
+
+- Una línea cuando recibe una acción, antes de los middlewares: `Received action: Search(query=ema)`. Muestra las
+  acciones que detiene un middleware, que no llegan a los reducers.
+- Un bloque con la acción y el estado antes y después de sus reducers. Se escribe justo antes de ellos, después de todos
+  los middlewares, así que el estado después de la acción es correcto aunque un middleware la continúe más tarde con
+  `nextAfter`, y la acción es la que reciben los reducers.
+
+El estado puede contener datos del usuario, así que desactiva los logs en las builds de release, o envíalos a tu
+propio logger:
+
+```kotlin
+Ema.init(
+    EmaConfiguration.Android.copy(
+        logger = if (BuildConfig.DEBUG) EmaLogger { tag, message -> Log.d(tag, message) } else null
+    )
+)
+```
+
+Un ViewModel puede pasar su propio `logger` en el constructor, o `null` para desactivar solo sus logs. Una source
+usada por sí sola no registra nada: añade `loggerMiddleware(tag, logger)` como su último middleware.

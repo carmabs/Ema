@@ -66,8 +66,9 @@ Everything about reducers, middlewares and side effects is in [Source](source.md
 The constructor receives, besides the initial state:
 
 - `dispatcher`: where the ViewModel runs. By default the `main` dispatcher of the [configuration](../guides/configuration.md).
-- `logger`: an `EmaLogger` that logs every action with the state before and after it. By default `EmaLogger.Println`,
-  which adds `EMA_LOG_` before the name of the ViewModel; pass `null` to disable the logs.
+- `logger`: the `EmaLogger` that logs every action with the state before and after it, with the name of the
+  ViewModel as tag. By default the `logger` of the [configuration](../guides/configuration.md#logs),
+  `EmaLogger.Println` unless it is changed; pass `null` to disable the logs of this ViewModel.
 
 `setup` is called the first time the ViewModel is used, not in the constructor, so it can use the properties of your
 class, like its use cases.
