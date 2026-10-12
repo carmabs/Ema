@@ -77,22 +77,22 @@ class EmaInitializerExtensionsTest {
     }
 
     @Test
-    fun `serializable strategy saves and restores the initializer`() {
+    fun `serializable strategy saves and restores the initializer, but not in routes`() {
         val strategy = BundleSerializerStrategy.serializable<SerializableInitializer>()
         val bundle = Bundle().apply { setInitializer(SerializableInitializer(1), strategy) }
         assertEquals(SerializableInitializer(1), bundle.getInitializer<SerializableInitializer>(strategy))
-        assertEquals("SerializableInitializer(id=1)", strategy.toStringValue(SerializableInitializer(1)))
-        assertEquals(EmaAction.Initializer.EMPTY, strategy.fromStringValue("x"))
+        assertFailsWith<UnsupportedOperationException> { strategy.toStringValue(SerializableInitializer(1)) }
+        assertFailsWith<UnsupportedOperationException> { strategy.fromStringValue("x") }
     }
 
     @Test
-    fun `parcelable strategy saves and restores the initializer`() {
+    fun `parcelable strategy saves and restores the initializer, but not in routes`() {
         val strategy = BundleSerializerStrategy.parcelable<ParcelableInitializer>()
         val serializer = BundleSerializer(Bundle(), strategy)
         serializer.save(ParcelableInitializer(7))
         assertEquals(ParcelableInitializer(7), serializer.restore())
-        assertEquals("ParcelableInitializer(id=7)", strategy.toStringValue(ParcelableInitializer(7)))
-        assertEquals(EmaAction.Initializer.EMPTY, strategy.fromStringValue("x"))
+        assertFailsWith<UnsupportedOperationException> { strategy.toStringValue(ParcelableInitializer(7)) }
+        assertFailsWith<UnsupportedOperationException> { strategy.fromStringValue("x") }
     }
 
     @Test

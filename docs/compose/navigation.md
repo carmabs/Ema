@@ -85,7 +85,10 @@ navController.navigate(
 
 Another overload receives a `NavOptionsBuilder` lambda, like `navigate(route) { launchSingleTop = true }`.
 
-The destination declares how to read it with `initializerSupport`. In routes, use the `kSerialization` strategy:
+The destination declares how to read it with `initializerSupport`. The initializer travels in the route as text, so
+Compose navigation reads it with kotlinx.serialization: `EmaInitializerSupport` only accepts the `kSerialization`
+strategy, and the `parcelable` and `serializable` strategies, which only work with Bundles, fail if they are used in a
+route:
 
 ```kotlin
 createComposableScreen(

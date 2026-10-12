@@ -12,6 +12,9 @@ import java.io.Serializable
  * Copyright (c) 2024 by Carmabs. All rights reserved.
  * </p>
  *
+ * Saves the initializer in a Bundle as a Serializable, for the View system. It can't travel in a route of Compose
+ * navigation, which is text: use [BundleSerializerStrategy.kSerialization] there.
+ *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
 class SerializableBundleStrategy<I> constructor(private val initializerClass: Class<I>) :
@@ -20,15 +23,19 @@ class SerializableBundleStrategy<I> constructor(private val initializerClass: Cl
         bundle.putSerializable(EmaAction.Initializer.KEY, initializer as Serializable)
     }
 
-    override fun toStringValue(initializer: EmaAction.Initializer): String {
-        // TODO Check if should be recommendable pass string parser as argument
-        return initializer.toString()
-    }
+    /**
+     * Not supported: reading a Serializable from a text that may come from outside the app, like a deep link, isn't safe
+     */
+    override fun toStringValue(initializer: EmaAction.Initializer): String = throw unsupportedInRoutes()
 
-    override fun fromStringValue(value: String): EmaAction.Initializer {
-        // TODO Check if should be recommendable pass string parser as argument
-        return EmaAction.Initializer.EMPTY
-    }
+    /**
+     * Not supported: reading a Serializable from a text that may come from outside the app, like a deep link, isn't safe
+     */
+    override fun fromStringValue(value: String): EmaAction.Initializer = throw unsupportedInRoutes()
+
+    private fun unsupportedInRoutes() = UnsupportedOperationException(
+        "Serializable initializers can't travel in a route: use BundleSerializerStrategy.kSerialization"
+    )
 
     override fun restore(bundle: Bundle): EmaAction.Initializer? {
         val initializer: I? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {

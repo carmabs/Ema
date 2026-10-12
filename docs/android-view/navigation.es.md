@@ -112,6 +112,14 @@ override val initializerStrategy: BundleSerializerStrategy
 El inicializador llega a `onStateCreated` del ViewModel. Fuera del grafo de navegación,
 `fragment.setInitializer(initializer, strategy)` lo mete en los argumentos de un Fragment.
 
+El inicializador viaja en un Bundle, así que funciona cualquiera de las estrategias de `BundleSerializerStrategy`:
+
+| Estrategia                       | El inicializador es                                          |
+|----------------------------------|--------------------------------------------------------------|
+| `kSerialization(serializer)`     | Una clase `@Serializable`, guardada como JSON. También funciona en las rutas de Compose. |
+| `parcelable<Initializer>()`      | `Parcelable`.                                                 |
+| `serializable<Initializer>()`    | `java.io.Serializable`.                                       |
+
 ## Resultados
 
 La forma habitual de devolver un resultado a la pantalla anterior es emitir una acción entre ViewModels, que funciona
