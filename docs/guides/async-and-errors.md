@@ -61,7 +61,9 @@ singleSideEffect("search") {
 ## Errors
 
 The `errorPolicy` of the [configuration](configuration.md) decides what happens when a side effect throws an
-exception:
+exception, and also a middleware or a reducer of an `EmaViewModel` or an `EmaSource`. With `Catch`, the action of a
+middleware or a reducer that fails is discarded, without changing the state, and the next actions are processed as
+usual:
 
 | `EmaErrorPolicy`  | Effect |
 |-------------------|--------|
@@ -89,6 +91,12 @@ EmaConfiguration.Android(debug = BuildConfig.DEBUG).copy(
     }
 )
 ```
+
+In the classic ViewModels it also applies to `onAction`, to the lifecycle hooks, like `onStateCreated` or
+`onViewResumed`, and to the listeners of `registerBroadcastListener`, which keep receiving after an error. `onAction`
+changes the state imperatively, so with `Catch` the changes made before the exception are kept. The view calls the
+public functions of an `EmaViewModelClassic` directly, so Emanate can't catch their exceptions: launch the work that
+may fail with `sideEffect`.
 
 `sideEffect(throwException = true) { }` rethrows the exceptions of a single side effect, whatever the policy.
 

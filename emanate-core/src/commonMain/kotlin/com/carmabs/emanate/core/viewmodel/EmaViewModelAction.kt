@@ -26,7 +26,8 @@ abstract class EmaViewModelAction<S : EmaState, A : EmaAction, E : EmaEvent>(
     EmaActionDispatcher<A> {
 
     final override fun dispatch(action: A) {
-        onAction(action)
+        // Like a reducer, but the state is changed imperatively, so the changes made before an error are kept
+        handlingErrors("action ${action::class.simpleName}") { onAction(action) }
     }
 
     protected abstract fun onAction(action: A)

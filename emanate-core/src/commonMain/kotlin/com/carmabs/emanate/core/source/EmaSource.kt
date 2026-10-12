@@ -8,6 +8,7 @@ import com.carmabs.emanate.core.action.EmaActionDispatcher
 import com.carmabs.emanate.core.action.EmaEventConsumer
 import com.carmabs.emanate.core.action.EventDispatcher
 import com.carmabs.emanate.core.broadcast.EmaActionBroadcaster
+import com.carmabs.emanate.core.error.runHandlingErrors
 import com.carmabs.emanate.core.sideeffect.SideEffectResult
 import com.carmabs.emanate.core.source.middleware.EmaMiddleware
 import com.carmabs.emanate.core.source.middleware.MiddlewareContext
@@ -157,12 +158,16 @@ class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
     init {
         // Runs the steps one after another
         scope.launch {
-            for (step in queue) {
-                step()
+            try {
+                for (step in queue) {
+                    step()
+                }
+            } finally {
+                // The queue is closed in close, after the pending steps. If a step throws an exception with the Throw
+                // policy, the source stops too, so its work is cancelled.
+                scope.cancel()
+                destroyedJob.complete()
             }
-            // The queue is closed in close, after the pending steps
-            scope.cancel()
-            destroyedJob.complete()
         }
     }
 
@@ -189,7 +194,7 @@ class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
     internal fun dispatchAction(action: EmaAction) {
         queue.trySend {
             observers.forEach { it.onAction(action) }
-            runMiddleware(0, action)
+            runChain(0, action)
         }
     }
 
@@ -231,13 +236,25 @@ class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
             } else {
                 // Called after the middleware has finished, for example from nextAfter: the chain continues in the
                 // source coroutine so the reducers never run at the same time
-                queue.trySend { runMiddleware(index + 1, nextAction) }
+                queue.trySend { runChain(index + 1, nextAction) }
             }
         }
         try {
             invoke(middleware, middlewareScope, action)
         } finally {
             running.store(false)
+        }
+    }
+
+    /**
+     * Runs the chain of [action] from the middleware at [index]. If a middleware or a reducer throws an exception, the
+     * error policy decides: with Catch the action is discarded without changing the state, and the source keeps working.
+     */
+    private fun runChain(index: Int, action: EmaAction) {
+        // With Throw the exception stops the source. With Catch it is reported with the action that failed, and its
+        // stack trace shows the middleware or the reducer.
+        Emanate.configuration.runHandlingErrors(container, { "action ${action::class.simpleName}" }) {
+            runMiddleware(index, action)
         }
     }
 

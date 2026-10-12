@@ -5,6 +5,7 @@ import com.carmabs.emanate.core.action.EmaAction
 import com.carmabs.emanate.core.action.EmaEventConsumer
 import com.carmabs.emanate.core.action.EventDispatcher
 import com.carmabs.emanate.core.error.EmaErrorPolicy
+import com.carmabs.emanate.core.error.runHandlingErrors
 import com.carmabs.emanate.core.model.EmaConfiguration
 import com.carmabs.emanate.core.model.reflection.Reflection
 import com.carmabs.emanate.core.sideeffect.SideEffectResult
@@ -97,20 +98,20 @@ abstract class EmaViewModelClassic<S : EmaState, E : EmaEvent>(
             if (updateOnInitialization) {
                 mStateFlow.tryEmit(state)
             }
-            onStateCreated(initializer)
-            onBroadcastListenerSetup()
+            handlingErrors("onStateCreated") { onStateCreated(initializer) }
+            handlingErrors("onBroadcastListenerSetup") { onBroadcastListenerSetup() }
         }
     }
 
     final override fun onStartView() {
-        onViewStarted()
+        handlingErrors("onViewStarted") { onViewStarted() }
     }
 
     /**
      * Called when view is shown in foreground
      */
     final override fun onResumeView() {
-        onViewResumed()
+        handlingErrors("onViewResumed") { onViewResumed() }
         firstTimeResumed = false
     }
 
@@ -118,11 +119,11 @@ abstract class EmaViewModelClassic<S : EmaState, E : EmaEvent>(
      * Called when view is hidden in background
      */
     final override fun onPauseView() {
-        onViewPaused()
+        handlingErrors("onViewPaused") { onViewPaused() }
     }
 
     final override fun onStopView() {
-        onViewStopped()
+        handlingErrors("onViewStopped") { onViewStopped() }
     }
 
     /**
@@ -269,7 +270,10 @@ abstract class EmaViewModelClassic<S : EmaState, E : EmaEvent>(
     @PublishedApi
     internal fun <A : EmaAction> registerBroadcastListener(actionType: KClass<A>, receiver: (A) -> Unit) {
         scope.launch(start = CoroutineStart.UNDISPATCHED) {
-            Emanate.actionBroadcaster.listen(listOf(actionType)).collect { receiver(actionType.cast(it)) }
+            Emanate.actionBroadcaster.listen(listOf(actionType)).collect { action ->
+                // With Catch the listener keeps receiving after an error
+                handlingErrors("broadcast listener of ${actionType.simpleName}") { receiver(actionType.cast(action)) }
+            }
         }
     }
 
@@ -279,6 +283,14 @@ abstract class EmaViewModelClassic<S : EmaState, E : EmaEvent>(
      */
     final override fun onCleared() {
         scope.cancel()
-        onDestroy()
+        handlingErrors("onDestroy") { onDestroy() }
+    }
+
+    /**
+     * Runs [block], code of the view model called by Emanate, applying the error policy of the configuration. With
+     * Catch the error is reported as thrown in [where], and the changes made in the state before it are kept.
+     */
+    internal fun handlingErrors(where: String, block: () -> Unit) {
+        config.runHandlingErrors(this, { where }, block)
     }
 }

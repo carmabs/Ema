@@ -11,8 +11,8 @@ import com.carmabs.emanate.core.model.reflection.Reflection
  * Copyright (c) 2024 by Carmabs. All rights reserved.
  * </p>
  *
- * @param reflection where it was thrown: the class of the view model and the piece, like "reducer of LoginAction" or
- * the name of the function that launched a side effect
+ * @param reflection where it was thrown: the class of the view model and, for a middleware or a reducer, the action
+ * that failed, like "action Search", or for a side effect the name of the function that launched it
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */

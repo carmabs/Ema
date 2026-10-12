@@ -1,0 +1,128 @@
+package com.carmabs.emanate.core.viewmodel
+
+import com.carmabs.emanate.core.Emanate
+import com.carmabs.emanate.core.action.EmaAction
+import com.carmabs.emanate.core.error.EmaError
+import com.carmabs.emanate.core.error.EmaErrorPolicy
+import com.carmabs.emanate.core.model.EmaConfiguration
+import com.carmabs.emanate.core.state.EmaEvent
+import com.carmabs.emanate.core.state.EmaState
+import kotlin.test.AfterTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.runCurrent
+import kotlinx.coroutines.test.runTest
+
+private data class BrokenState(val count: Int = 0) : EmaState
+
+private sealed interface BrokenAction : EmaAction {
+    data object Increment : BrokenAction
+    data object Broken : BrokenAction
+}
+
+private data class Ping(val id: Int, val broken: Boolean = false) : EmaAction
+
+/**
+ * Classic view model whose code called by Emanate throws exceptions
+ */
+private class BrokenViewModel(dispatcher: CoroutineDispatcher) :
+    EmaViewModelAction<BrokenState, BrokenAction, EmaEvent.EMPTY>(BrokenState(), dispatcher) {
+
+    val received = mutableListOf<String>()
+
+    override fun onStateCreated(initializer: EmaAction.Initializer?) {
+        error("broken onStateCreated")
+    }
+
+    override fun onBroadcastListenerSetup() {
+        registerBroadcastListener<Ping> { ping ->
+            if (ping.broken) error("broken listener")
+            received += "ping ${ping.id}"
+        }
+    }
+
+    override fun onAction(action: BrokenAction) {
+        when (action) {
+            BrokenAction.Increment -> updateState { copy(count = count + 1) }
+
+            BrokenAction.Broken -> {
+                updateState { copy(count = 10) }
+                error("broken action")
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalCoroutinesApi::class)
+class EmaViewModelClassicErrorTest {
+
+    private val errors = mutableListOf<EmaError>()
+
+    private fun catchErrors() {
+        Emanate.initForTest(EmaConfiguration(errorPolicy = EmaErrorPolicy.Catch { errors += it }, logger = null))
+    }
+
+    @AfterTest
+    fun tearDown() {
+        Emanate.reset()
+    }
+
+    private fun TestScope.brokenViewModel() = BrokenViewModel(UnconfinedTestDispatcher(testScheduler))
+
+    @Test
+    fun `an action that fails is reported and the view model keeps working`() = runTest {
+        catchErrors()
+        val viewModel = brokenViewModel()
+
+        viewModel.dispatch(BrokenAction.Broken)
+        viewModel.dispatch(BrokenAction.Increment)
+
+        assertEquals("action Broken", errors.single().reflection.methodName)
+        // The state is changed imperatively, so the change made before the error is kept
+        assertEquals(BrokenState(count = 11), viewModel.stateFlow.value)
+        viewModel.onCleared()
+    }
+
+    @Test
+    fun `a lifecycle hook that fails is reported and the next ones run`() = runTest {
+        catchErrors()
+        val viewModel = brokenViewModel()
+
+        viewModel.onCreated(null)
+
+        assertEquals(listOf("onStateCreated"), errors.map { it.reflection.methodName })
+        assertEquals("BrokenViewModel", errors.single().reflection.containerClassName)
+        viewModel.onCleared()
+    }
+
+    @Test
+    fun `a broadcast listener keeps receiving after an error`() = runTest {
+        catchErrors()
+        val viewModel = brokenViewModel()
+        viewModel.onCreated(null)
+
+        Emanate.actionBroadcaster.broadcast(Ping(1, broken = true))
+        Emanate.actionBroadcaster.broadcast(Ping(2))
+        runCurrent()
+
+        assertEquals(listOf("ping 2"), viewModel.received)
+        assertEquals("broadcast listener of Ping", errors.last().reflection.methodName)
+        viewModel.onCleared()
+    }
+
+    @Test
+    fun `the Throw policy throws the exception of an action again`() = runTest {
+        Emanate.initForTest(EmaConfiguration(errorPolicy = EmaErrorPolicy.Throw, logger = null))
+        val viewModel = brokenViewModel()
+
+        val exception = assertFailsWith<IllegalStateException> { viewModel.dispatch(BrokenAction.Broken) }
+
+        assertEquals("broken action", exception.message)
+        viewModel.onCleared()
+    }
+}

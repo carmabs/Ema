@@ -60,7 +60,9 @@ singleSideEffect("search") {
 
 ## Errores
 
-La `errorPolicy` de la [configuración](configuration.es.md) decide qué pasa cuando un side effect lanza una excepción:
+La `errorPolicy` de la [configuración](configuration.es.md) decide qué pasa cuando un side effect lanza una excepción, y
+también un middleware o un reducer de un `EmaViewModel` o una `EmaSource`. Con `Catch`, la acción de un middleware o un
+reducer que falla se descarta, sin cambiar el estado, y las siguientes acciones se procesan con normalidad:
 
 | `EmaErrorPolicy`  | Efecto |
 |-------------------|--------|
@@ -88,6 +90,12 @@ EmaConfiguration.Android(debug = BuildConfig.DEBUG).copy(
     }
 )
 ```
+
+En los ViewModels clásicos también se aplica a `onAction`, a los métodos del ciclo de vida, como `onStateCreated` u
+`onViewResumed`, y a los listeners de `registerBroadcastListener`, que siguen recibiendo después de un error.
+`onAction` cambia el estado de forma imperativa, así que con `Catch` se mantienen los cambios hechos antes de la
+excepción. La vista llama directamente a las funciones públicas de un `EmaViewModelClassic`, así que Emanate no puede
+capturar sus excepciones: lanza con `sideEffect` el trabajo que pueda fallar.
 
 `sideEffect(throwException = true) { }` relanza las excepciones de un único side effect, sea cual sea la política.
 
