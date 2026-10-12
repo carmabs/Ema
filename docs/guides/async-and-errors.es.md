@@ -1,6 +1,11 @@
 # Trabajo asíncrono y errores
 
-Ejecuta trabajo suspendido en el ViewModel con `sideEffect`:
+En un `EmaViewModel`, el trabajo suspendido se ejecuta en los side effects declarados en `setup`: los lanzan las acciones
+de su tipo y comunican su resultado despachando acciones, como se explica en [Source](../concepts/source.es.md). Siguen
+la misma configuración que el `sideEffect` de los ViewModels clásicos que se describe aquí: las acciones por defecto, la
+política de excepciones y los casos de uso ejecutándose en el dispatcher de segundo plano.
+
+En un ViewModel clásico, ejecuta trabajo suspendido con `sideEffect`:
 
 ```kotlin
 private fun doLogin() {

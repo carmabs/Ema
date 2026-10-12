@@ -8,6 +8,70 @@ The whole state/event contract is observable:
 - `stateFlow.value` is the state.
 - `eventFlow` holds the pending events.
 
+## Testing an EmaViewModel with emanate-test
+
+`emanate-test` has the utilities to test the ViewModels built with `EmaViewModel` and the
+[sources](../concepts/source.md). It is a JVM library, so add it to the tests of a JVM or Android module:
+
+```kotlin
+dependencies {
+    testImplementation("com.github.carmabs.ema:emanate-test:$emanateVersion")
+}
+```
+
+It brings `kotlinx-coroutines-test` and requires the same version of `emanate-core` it was built with.
+
+| Utility                         | Purpose                                                                       |
+|---------------------------------|-------------------------------------------------------------------------------|
+| `useTestDispatchers()`          | Runs the ViewModels, sources and use cases created after it on the dispatcher of the test, also as `Dispatchers.Main`. Call it before each test. |
+| `resetTestDispatchers()`        | Restores the dispatchers and the configuration of Emanate. Call it after each test. |
+| `viewModel.record()`            | Records in order the actions, states and events of a ViewModel or a source.  |
+| `assertActions(...)`            | The recorded actions, including the ones blocked by a middleware.            |
+| `assertStates(...)`             | Every state returned by the reducers.                                         |
+| `assertState(state)` / `assertState { }` | The last state, or a condition on it.                               |
+| `assertEvents(...)` / `assertNoEvents()` | The posted events.                                                  |
+
+```kotlin
+class LoginViewModelTest {
+
+    @BeforeTest
+    fun setUp() {
+        useTestDispatchers()
+    }
+
+    @AfterTest
+    fun tearDown() {
+        resetTestDispatchers()
+    }
+
+    @Test
+    fun `the right credentials log in the user`() = runTest {
+        val viewModel = LoginViewModel(LoginUseCase(FakeRepository()), LoginState.DEFAULT)
+        val recorder = viewModel.record()
+
+        viewModel.dispatch(LoginAction.UserNameWritten("Admin"))
+        viewModel.dispatch(LoginAction.PasswordWritten("1234"))
+        viewModel.dispatch(LoginAction.Login)
+        advanceUntilIdle()
+
+        recorder.assertState { !it.isLoading }
+        recorder.assertEvents(LoginEvent.Message("Carmabs"), LoginEvent.LoginSuccess(admin))
+    }
+}
+```
+
+- **Create the ViewModel after `useTestDispatchers`**, so it runs on the dispatcher of the test. By default it is an
+  `UnconfinedTestDispatcher`, which processes the actions as soon as they are dispatched; pass a
+  `StandardTestDispatcher` to process them when the test advances.
+- **Record before the first action** to record everything.
+- **`advanceUntilIdle()`** runs the side effects, delays included, because `runTest` uses the scheduler of the test
+  dispatcher.
+- **Several ViewModels** can be tested together, for example the results broadcast between screens: the
+  `LoginViewModelTest` of the sample creates the profile creation, home and login ViewModels and checks the user
+  created in the first one reaches the last one.
+
+## Testing the classic ViewModels
+
 Add `kotlinx-coroutines-test` to your test dependencies:
 
 ```kotlin
@@ -44,7 +108,7 @@ class CounterViewModelTest {
 The tests of the library itself, in `emanate-core/src/commonTest`, have more examples: side effects, events,
 results between screens and the view lifecycle.
 
-## Things to know
+### Things to know
 
 1. **Pass your own scope.** The second constructor parameter of `EmaViewModelBasic` / `EmaViewModelAction` is the
    `CoroutineScope`. Expose it in the constructor of your ViewModels, with a default value, so tests can replace it.

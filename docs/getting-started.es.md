@@ -35,11 +35,13 @@ dependencies {
 }
 ```
 
-En un módulo de Kotlin puro, como un módulo `presentation` con los ViewModels, añade solo el núcleo:
+En un módulo de Kotlin puro, como un módulo `presentation` con los ViewModels, añade solo el núcleo, y `emanate-test` para
+testearlos:
 
 ```kotlin
 dependencies {
     implementation("com.github.carmabs.ema:emanate-core:$emanateVersion")
+    testImplementation("com.github.carmabs.ema:emanate-test:$emanateVersion")
 }
 ```
 
@@ -82,16 +84,16 @@ sealed interface CounterEvent : EmaEvent {
 }
 
 class CounterViewModel :
-    EmaViewModelAction<CounterState, CounterAction, CounterEvent>(CounterState()) {
+    EmaViewModel<CounterState, CounterAction, CounterEvent>(CounterState()) {
 
-    override fun onStateCreated(initializer: EmaAction.Initializer?) = Unit
-
-    override fun onAction(action: CounterAction) {
-        when (action) {
-            CounterAction.Increment -> {
-                updateState { copy(count = count + 1) }
-                if (state.count == LIMIT) postEvent(CounterEvent.LimitReached(LIMIT))
+    override fun SourceSetupScope<CounterState, CounterAction, CounterEvent>.setup() {
+        addReducer<CounterAction> { action ->
+            when (action) {
+                CounterAction.Increment -> state.copy(count = state.count + 1)
             }
+        }
+        addSideEffect<CounterAction.Increment> {
+            if (state.count == LIMIT) postEvent(CounterEvent.LimitReached(LIMIT))
         }
     }
 
@@ -101,9 +103,13 @@ class CounterViewModel :
 }
 ```
 
-- `updateState { copy(...) }` crea el siguiente estado y avisa a la vista.
-- `postEvent(...)` envía un evento de un solo uso a la vista.
+- El reducer devuelve el siguiente estado para cada acción, y se avisa a la vista.
+- El side effect se ejecuta después del reducer, con el nuevo estado, y `postEvent(...)` envía un evento de un solo uso a
+  la vista.
 - El ViewModel nunca toca clases de Android, así que se puede testear en la JVM.
+
+`EmaViewModel` es el ViewModel recomendado. También está disponible el clásico `EmaViewModelAction`, que actualiza el
+estado de forma imperativa en `onAction`: consulta [ViewModel](concepts/viewmodel.es.md).
 
 ### La pantalla
 
@@ -175,8 +181,8 @@ Si construyes la UI con Fragments y Activities, la misma pantalla se escribe com
 ## Qué ha pasado
 
 1. El usuario pulsa el botón: la pantalla llama a `actions.dispatch(Increment)`.
-2. El ViewModel calcula el siguiente estado con `updateState`.
+2. El reducer del ViewModel calcula el siguiente estado.
 3. La pantalla recibe el nuevo estado y se recompone.
-4. En la décima pulsación el ViewModel además publica `LimitReached`, que la pantalla muestra una vez y consume.
+4. En la décima pulsación el side effect además publica `LimitReached`, que la pantalla muestra una vez y consume.
 
 Sigue con [Arquitectura](concepts/architecture.es.md).

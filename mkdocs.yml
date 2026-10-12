@@ -67,6 +67,7 @@ plugins:
             State: Estado
             Actions: Acciones
             Events: Eventos
+            Source: Fuente
             Guides: Guías
             Configuration: Configuración
             Initializers: Inicializadores
@@ -99,6 +100,7 @@ nav:
       - Actions: concepts/actions.md
       - Events: concepts/events.md
       - ViewModel: concepts/viewmodel.md
+      - Source: concepts/source.md
   - Guides:
       - Configuration: guides/configuration.md
       - Initializers: guides/initializers.md

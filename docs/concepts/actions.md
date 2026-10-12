@@ -27,7 +27,24 @@ Use a `sealed interface` so that `when` is exhaustive. When you add an action th
 
 ## Handling actions
 
-Extend `EmaViewModelAction<State, Action, Event>` and implement `onAction`:
+In an `EmaViewModel`, declare in `setup` the reducers, middlewares and side effects of each type of action. With the
+`sealed` type, a reducer handles every action of the screen in an exhaustive `when`:
+
+```kotlin
+override fun SourceSetupScope<LoginState, LoginAction, LoginEvent>.setup() {
+    addReducer<LoginAction> { action ->
+        when (action) {
+            is LoginAction.UserNameWritten -> state.copy(userName = action.user, userNameError = false)
+            is LoginAction.PasswordWritten -> state.copy(userPassword = action.password, passwordError = false)
+            // ...
+        }
+    }
+    addSideEffect<LoginAction.Login> { /* ... */ }
+}
+```
+
+See [Source](source.md). In a classic ViewModel, extend `EmaViewModelAction<State, Action, Event>` and implement
+`onAction`:
 
 ```kotlin
 class LoginViewModel(
@@ -48,8 +65,8 @@ class LoginViewModel(
 }
 ```
 
-`onAction` is `protected`. The public entry point is `dispatch(action)`, so a view can only communicate through
-actions and cannot call arbitrary ViewModel functions.
+In both, the public entry point is `dispatch(action)`, so a view can only communicate through actions and cannot call
+arbitrary ViewModel functions.
 
 If you prefer not to declare actions, `EmaViewModelBasic<State, Event>` lets the view call public functions of the
 ViewModel, as in classic MVVM. Actions are recommended: see [ViewModel](viewmodel.md).
@@ -73,4 +90,5 @@ see [Android Views](../android-view/screens.md#sending-actions).
 |---------------------------|-------------------------------------------------------------------|
 | `EmaAction`               | The actions of a screen. Your actions extend this.                |
 | `EmaAction.Initializer`   | The data a screen starts with. See [Initializers](../guides/initializers.md). |
+| `EmaAction.Lifecycle`     | The lifecycle of the view, received by an `EmaViewModel`: `Started`, `Resumed`, `Paused`, `Stopped` and `Destroyed`. |
 | `EmaAction.EMPTY`         | The action type of a screen without actions.                      |

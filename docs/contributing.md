@@ -8,6 +8,7 @@
 | `emanate-android`         | Android library shared by both UI technologies.                                                   |
 | `emanate-android-compose` | Compose support, published as `emanate-compose`.                                                  |
 | `emanate-android-view`    | Android View system support.                                                                      |
+| `emanate-test`            | JVM utilities to test the ViewModels and the sources, a friend module of `emanate-core`.          |
 | `sample`                  | A separate Gradle build with the sample app. It includes the library modules from the repository. |
 
 ## Building
@@ -38,6 +39,7 @@ The JVM target is always compiled, because the Android modules use it.
 | `emanate-android`         | Robolectric                               | `./gradlew :emanate-android:testDebugUnitTest`         |
 | `emanate-android-view`    | Robolectric                               | `./gradlew :emanate-android-view:testDebugUnitTest`    |
 | `emanate-android-compose` | Compose UI tests on Robolectric           | `./gradlew :emanate-android-compose:testDebugUnitTest` |
+| `emanate-test`            | JUnit                                     | `./gradlew :emanate-test:test`                         |
 
 The resources that only the tests need live in `src/test/res`, so they are not published.
 

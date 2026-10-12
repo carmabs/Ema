@@ -30,6 +30,8 @@ it only reports what the user did through actions.
 - **State is the single source of truth.** Loading, errors and dialogs are part of the state, so rotating the device or
   recreating the view never loses them.
 - **Events are not state.** Toasts, snackbars and "go to the next screen" are delivered exactly once and never replayed.
+- **Predictable ViewModels.** `EmaViewModel` handles every action with pure reducers, middlewares and side effects,
+  so every screen follows the same flow and is easy to test.
 - **ViewModels in pure Kotlin.** `emanate-core` is a Kotlin Multiplatform library with no Android dependency, so the
   presentation layer can be tested on the JVM and shared with other platforms.
 - **Small surface.** No code generation and no custom build plugins.
@@ -42,6 +44,7 @@ it only reports what the user did through actions.
 | `emanate-android`      | Android integration shared by every UI: configuration, initializers, permissions, texts, images. |
 | `emanate-compose`      | Jetpack Compose screens, navigation and previews. **The recommended way to build the UI.**       |
 | `emanate-android-view` | Fragments, Activities, dialogs and lists for the Android View system.                            |
+| `emanate-test`         | Utilities to test the ViewModels and the sources on the JVM. See [Testing](guides/testing.md).   |
 
 `emanate-android-view` exposes `emanate-android`, and both expose `emanate-core`. A Compose app adds `emanate-android` and `emanate-compose`.
 
@@ -57,6 +60,7 @@ it only reports what the user did through actions.
     - [Actions](concepts/actions.md)
     - [Events](concepts/events.md)
     - [ViewModel](concepts/viewmodel.md)
+    - [Source](concepts/source.md)
 3. **Guides**: everything that does not depend on the UI technology.
     - [Configuration](guides/configuration.md)
     - [Initializers: passing data to a screen](guides/initializers.md)

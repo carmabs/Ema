@@ -19,16 +19,16 @@ sealed interface CounterEvent : EmaEvent {
 }
 
 class CounterViewModel :
-    EmaViewModelAction<CounterState, CounterAction, CounterEvent>(CounterState()) {
+    EmaViewModel<CounterState, CounterAction, CounterEvent>(CounterState()) {
 
-    override fun onStateCreated(initializer: EmaAction.Initializer?) = Unit
-
-    override fun onAction(action: CounterAction) {
-        when (action) {
-            CounterAction.Increment -> {
-                updateState { copy(count = count + 1) }
-                if (state.count == 10) postEvent(CounterEvent.LimitReached(10))
+    override fun SourceSetupScope<CounterState, CounterAction, CounterEvent>.setup() {
+        addReducer<CounterAction> { action ->
+            when (action) {
+                CounterAction.Increment -> state.copy(count = state.count + 1)
             }
+        }
+        addSideEffect<CounterAction.Increment> {
+            if (state.count == 10) postEvent(CounterEvent.LimitReached(10))
         }
     }
 }
@@ -52,7 +52,8 @@ dependencies {
 }
 ```
 
-For a pure Kotlin or multiplatform module use `emanate-core`. Then initialize Emanate in your `Application`:
+For a pure Kotlin or multiplatform module use `emanate-core`, and `emanate-test` to test the ViewModels.
+Then initialize Emanate in your `Application`:
 
 ```kotlin
 Ema.init(EmaConfiguration.Android)
@@ -63,7 +64,7 @@ Ema.init(EmaConfiguration.Android)
 The guide is in [`docs/`](docs/index.md):
 
 - [Getting started](docs/getting-started.md)
-- Concepts: [architecture](docs/concepts/architecture.md), [state](docs/concepts/state.md), [actions](docs/concepts/actions.md), [events](docs/concepts/events.md), [ViewModel](docs/concepts/viewmodel.md)
+- Concepts: [architecture](docs/concepts/architecture.md), [state](docs/concepts/state.md), [actions](docs/concepts/actions.md), [events](docs/concepts/events.md), [ViewModel](docs/concepts/viewmodel.md), [source](docs/concepts/source.md)
 - Guides: [configuration](docs/guides/configuration.md), [initializers](docs/guides/initializers.md), [async work and errors](docs/guides/async-and-errors.md), [testing](docs/guides/testing.md), [Kotlin Multiplatform](docs/guides/multiplatform.md) and more
 - [Compose](docs/compose/screens.md): screens, navigation, back handling, dialogs, saved state and permissions
 - [Android Views](docs/android-view/index.md): Fragments, Activities, dialogs and lists
@@ -73,4 +74,6 @@ The guide is in [`docs/`](docs/index.md):
 
 The [`sample/`](sample) app shows every feature working together: a login with validation and dialogs,
 a list with roles, and a Compose flow with navigation, back handling and saved state.
+Its first screen lets you choose the ViewModels of the rest: built with `EmaViewModel`, the recommended way, or with
+the classic `EmaViewModelAction`, so you can compare both.
 Open the `sample` folder in Android Studio and run the `app` module.

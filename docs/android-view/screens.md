@@ -145,15 +145,15 @@ Fragments of the same Activity that use the same ViewModel class then get the sa
 
 ## Activities
 
-An Activity that only hosts fragments uses `EmaViewModel.EMPTY` and a navigator that owns the navigation graph:
+An Activity that only hosts fragments uses `EmaViewModelContract.EMPTY` and a navigator that owns the navigation graph:
 
 ```kotlin
 class SplashActivity :
-    EmaToolbarActivity<SplashActivityBinding, EmaState.EMPTY, EmaViewModel.EMPTY, EmaEvent.EMPTY>() {
+    EmaToolbarActivity<SplashActivityBinding, EmaState.EMPTY, EmaViewModelContract.EMPTY, EmaEvent.EMPTY>() {
 
     override fun createViewBinding(inflater: LayoutInflater) = SplashActivityBinding.inflate(inflater)
 
-    override fun provideViewModel() = EmaViewModel.EMPTY
+    override fun provideViewModel() = EmaViewModelContract.EMPTY
 
     override fun SplashActivityBinding.onState(data: EmaState.EMPTY) = Unit
 

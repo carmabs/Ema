@@ -35,11 +35,13 @@ dependencies {
 }
 ```
 
-For a pure Kotlin module, like a `presentation` module with the ViewModels, add only the core:
+For a pure Kotlin module, like a `presentation` module with the ViewModels, add only the core, and `emanate-test` to
+test them:
 
 ```kotlin
 dependencies {
     implementation("com.github.carmabs.ema:emanate-core:$emanateVersion")
+    testImplementation("com.github.carmabs.ema:emanate-test:$emanateVersion")
 }
 ```
 
@@ -82,16 +84,16 @@ sealed interface CounterEvent : EmaEvent {
 }
 
 class CounterViewModel :
-    EmaViewModelAction<CounterState, CounterAction, CounterEvent>(CounterState()) {
+    EmaViewModel<CounterState, CounterAction, CounterEvent>(CounterState()) {
 
-    override fun onStateCreated(initializer: EmaAction.Initializer?) = Unit
-
-    override fun onAction(action: CounterAction) {
-        when (action) {
-            CounterAction.Increment -> {
-                updateState { copy(count = count + 1) }
-                if (state.count == LIMIT) postEvent(CounterEvent.LimitReached(LIMIT))
+    override fun SourceSetupScope<CounterState, CounterAction, CounterEvent>.setup() {
+        addReducer<CounterAction> { action ->
+            when (action) {
+                CounterAction.Increment -> state.copy(count = state.count + 1)
             }
+        }
+        addSideEffect<CounterAction.Increment> {
+            if (state.count == LIMIT) postEvent(CounterEvent.LimitReached(LIMIT))
         }
     }
 
@@ -101,9 +103,12 @@ class CounterViewModel :
 }
 ```
 
-- `updateState { copy(...) }` creates the next state and notifies the view.
-- `postEvent(...)` sends a one-shot event to the view.
+- The reducer returns the next state for each action, and the view is notified.
+- The side effect runs after the reducer, with the new state, and `postEvent(...)` sends a one-shot event to the view.
 - The ViewModel never touches Android classes, so it can be tested on the JVM.
+
+`EmaViewModel` is the recommended ViewModel. The classic `EmaViewModelAction`, which updates the state imperatively
+in `onAction`, is also available: see [ViewModel](concepts/viewmodel.md).
 
 ### The screen
 
@@ -174,8 +179,8 @@ If you build the UI with Fragments and Activities, the same screen is written in
 ## What just happened
 
 1. The user taps the button: the screen calls `actions.dispatch(Increment)`.
-2. The ViewModel computes the next state with `updateState`.
+2. The reducer of the ViewModel computes the next state.
 3. The screen receives the new state and recomposes.
-4. On the tenth tap the ViewModel also posts `LimitReached`, which the screen shows once and consumes.
+4. On the tenth tap the side effect also posts `LimitReached`, which the screen shows once and consumes.
 
 Continue with [Architecture](concepts/architecture.md).

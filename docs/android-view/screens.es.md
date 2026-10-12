@@ -151,15 +151,15 @@ Los Fragments de la misma Activity que usan la misma clase de ViewModel reciben 
 
 ## Activities
 
-Una Activity que solo aloja fragments usa `EmaViewModel.EMPTY` y un navigator dueño del grafo de navegación:
+Una Activity que solo aloja fragments usa `EmaViewModelContract.EMPTY` y un navigator dueño del grafo de navegación:
 
 ```kotlin
 class SplashActivity :
-    EmaToolbarActivity<SplashActivityBinding, EmaState.EMPTY, EmaViewModel.EMPTY, EmaEvent.EMPTY>() {
+    EmaToolbarActivity<SplashActivityBinding, EmaState.EMPTY, EmaViewModelContract.EMPTY, EmaEvent.EMPTY>() {
 
     override fun createViewBinding(inflater: LayoutInflater) = SplashActivityBinding.inflate(inflater)
 
-    override fun provideViewModel() = EmaViewModel.EMPTY
+    override fun provideViewModel() = EmaViewModelContract.EMPTY
 
     override fun SplashActivityBinding.onState(data: EmaState.EMPTY) = Unit
 

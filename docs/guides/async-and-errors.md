@@ -1,6 +1,11 @@
 # Async work and errors
 
-Run suspending work in the ViewModel with `sideEffect`:
+In an `EmaViewModel`, suspending work runs in the side effects declared in `setup`: they are launched by the actions
+of their type and report their result dispatching actions, as explained in [Source](../concepts/source.md). They
+follow the same configuration as the `sideEffect` of the classic ViewModels described here: the default actions, the
+exception policy and the use cases running on the background dispatcher.
+
+In a classic ViewModel, run suspending work with `sideEffect`:
 
 ```kotlin
 private fun doLogin() {

@@ -83,7 +83,7 @@ abstract class BaseScreenComposable<S : EmaState, A : EmaAction, E : EmaEvent> :
 
 ```kotlin
 abstract class BaseViewModel<S : EmaState, A : EmaAction, E : EmaEvent>(initialDataState: S) :
-    EmaViewModelAction<S, A, E>(initialDataState)
+    EmaViewModel<S, A, E>(initialDataState)
 ```
 
 An (even empty) `BaseViewModel` gives you a single place to add something later. With Android Views, a `BaseFragment`
@@ -96,6 +96,7 @@ plays the same role as `BaseScreenComposable`, with the dialog providers and the
 - Use cases have one job and take a single `Input` data class.
 - Put derived values in the state (`val showCreateButton get() = ...`), not in the view.
 - The view does not call ViewModel functions other than `dispatch`.
+- In an `EmaViewModel`, the reducers only compute the state: the business logic goes in the side effects.
 
 ## Share one palette
 
