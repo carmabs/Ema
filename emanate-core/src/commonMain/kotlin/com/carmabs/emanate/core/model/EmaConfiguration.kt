@@ -6,7 +6,7 @@ import com.carmabs.emanate.core.logging.EmaLogger
 import com.carmabs.emanate.core.sideeffect.EmaSideEffectConfig
 
 /**
- * Configuration of Ema, set with [com.carmabs.emanate.core.Ema.init].
+ * Configuration of Emanate, set with [com.carmabs.emanate.core.Emanate.init].
  *
  * @param dispatchers where ViewModels ([EmaDispatchers.main]), use cases ([EmaDispatchers.io]) and CPU-intensive work
  * ([EmaDispatchers.default]) run by default

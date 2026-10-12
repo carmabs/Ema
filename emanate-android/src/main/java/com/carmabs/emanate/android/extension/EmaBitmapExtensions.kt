@@ -14,7 +14,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.util.Size
 import androidx.annotation.ColorInt
-import com.carmabs.emanate.core.Ema
+import com.carmabs.emanate.core.Emanate
 import com.carmabs.emanate.core.constants.FLOAT_ONE
 import com.carmabs.emanate.core.constants.FLOAT_ZERO
 import com.carmabs.emanate.core.constants.INT_ONE
@@ -74,7 +74,7 @@ fun Bitmap.toByteArray(): ByteArray {
 fun Bitmap.copyDefault(mutable: Boolean = true): Bitmap = copy(config!!, mutable)
 
 suspend fun ByteArray.toBitmap(width: Int? = null, height: Int? = null, @ColorInt colorTint: Int? = null): Bitmap =
-    withContext(Ema.configuration.dispatchers.default) {
+    withContext(Emanate.configuration.dispatchers.default) {
         val resultBitmap = if (width != null && height != null) {
             Bitmap.createScaledBitmap(
                 BitmapFactory.decodeByteArray(

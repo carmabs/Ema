@@ -117,11 +117,11 @@ results between screens and the view lifecycle.
    `advanceUntilIdle()` to run it.
 
    ```kotlin
-   class CounterViewModel(dispatcher: CoroutineDispatcher = Ema.configuration.dispatchers.main) :
+   class CounterViewModel(dispatcher: CoroutineDispatcher = Emanate.configuration.dispatchers.main) :
        EmaViewModelAction<CounterState, CounterAction, CounterEvent>(CounterState(), dispatcher)
    ```
-2. **No configuration is needed.** If `Ema.init` is not called, the default configuration is used. Do not call
-   `Ema.init` in tests: it can be called only once per process.
+2. **No configuration is needed.** If `Emanate.init` is not called, the default configuration is used. Do not call
+   `Emanate.init` in tests: it can be called only once per process.
 3. **Call `onCreated()`** to run `onStateCreated(initializer)`. Pass an initializer if the screen needs one:
    `viewModel.onCreated(MyInitializer.Default("x"))`.
 4. **Fake the use cases.** They are ordinary classes: pass a fake implementation, or mock them with your mocking library.

@@ -1,6 +1,6 @@
 package com.carmabs.emanate.core.viewmodel
 
-import com.carmabs.emanate.core.Ema
+import com.carmabs.emanate.core.Emanate
 import com.carmabs.emanate.core.action.EmaAction
 import com.carmabs.emanate.core.action.EmaEventConsumer
 import com.carmabs.emanate.core.action.EventDispatcher
@@ -29,14 +29,14 @@ import kotlinx.coroutines.launch
  * View model to handle view states.
  *
  * @param initialDataState state of the view before any update
- * @param dispatcher where the view model runs. By default the main dispatcher of Ema. The view model creates its own
- * scope with it and cancels it when it is cleared.
+ * @param dispatcher where the view model runs. By default the main dispatcher of Emanate. The view model creates its
+ * own scope with it and cancels it when it is cleared.
  *
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
 abstract class EmaViewModelClassic<S : EmaState, E : EmaEvent>(
     initialDataState: S,
-    dispatcher: CoroutineDispatcher = Ema.configuration.dispatchers.main
+    dispatcher: CoroutineDispatcher = Emanate.configuration.dispatchers.main
 ) : EmaViewModelContract<S, E> {
 
     private val eventDispatcher = EventDispatcher<E>()
@@ -45,9 +45,9 @@ abstract class EmaViewModelClassic<S : EmaState, E : EmaEvent>(
     }
 
     /**
-     * Ema configuration
+     * Emanate configuration
      */
-    private val config: EmaConfiguration = Ema.configuration
+    private val config: EmaConfiguration = Emanate.configuration
 
     /**
      * SideEffect configuration
@@ -257,7 +257,7 @@ abstract class EmaViewModelClassic<S : EmaState, E : EmaEvent>(
      * its type. For example, when the previous screen is created again after the process has been killed.
      */
     protected fun broadcast(action: EmaAction, keepUntilReceived: Boolean = false) {
-        Ema.actionBroadcaster.broadcast(action, keepUntilReceived)
+        Emanate.actionBroadcaster.broadcast(action, keepUntilReceived)
     }
 
     /**
@@ -275,7 +275,7 @@ abstract class EmaViewModelClassic<S : EmaState, E : EmaEvent>(
     @PublishedApi
     internal fun <A : EmaAction> registerBroadcastListener(actionType: KClass<A>, receiver: (A) -> Unit) {
         scope.launch(start = CoroutineStart.UNDISPATCHED) {
-            Ema.actionBroadcaster.listen(listOf(actionType)).collect { receiver(actionType.cast(it)) }
+            Emanate.actionBroadcaster.listen(listOf(actionType)).collect { receiver(actionType.cast(it)) }
         }
     }
 

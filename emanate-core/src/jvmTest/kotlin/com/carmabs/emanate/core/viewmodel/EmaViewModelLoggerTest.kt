@@ -1,6 +1,6 @@
 package com.carmabs.emanate.core.viewmodel
 
-import com.carmabs.emanate.core.Ema
+import com.carmabs.emanate.core.Emanate
 import com.carmabs.emanate.core.action.EmaAction
 import com.carmabs.emanate.core.logging.EmaLogger
 import com.carmabs.emanate.core.model.EmaConfiguration
@@ -43,7 +43,7 @@ class EmaViewModelLoggerTest {
 
     @AfterTest
     fun resetConfiguration() {
-        Ema.reset()
+        Emanate.reset()
     }
 
     @Test
@@ -66,7 +66,7 @@ class EmaViewModelLoggerTest {
     @Test
     fun `the view model uses the logger of the configuration`() = runTest {
         val tags = mutableSetOf<String>()
-        Ema.initForTest(EmaConfiguration(logger = EmaLogger { tag, _ -> tags += tag }))
+        Emanate.initForTest(EmaConfiguration(logger = EmaLogger { tag, _ -> tags += tag }))
 
         val viewModel = DefaultLoggerViewModel(UnconfinedTestDispatcher(testScheduler))
         viewModel.dispatch(IncrementAction)
@@ -81,7 +81,7 @@ class EmaViewModelLoggerTest {
         val output = ByteArrayOutputStream()
         val systemOut = System.out
         System.setOut(PrintStream(output))
-        Ema.initForTest(EmaConfiguration(logger = null))
+        Emanate.initForTest(EmaConfiguration(logger = null))
         try {
             val viewModel = DefaultLoggerViewModel(UnconfinedTestDispatcher(testScheduler))
             viewModel.dispatch(IncrementAction)

@@ -1,13 +1,13 @@
 # Configuración
 
-Emanate se configura una vez, cuando arranca la aplicación, con `Ema.init`:
+Emanate se configura una vez, cuando arranca la aplicación, con `Emanate.init`:
 
 ```kotlin
 class MyApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        Ema.init(EmaConfiguration.Android)
+        Emanate.init(EmaConfiguration.Android)
     }
 }
 ```
@@ -29,7 +29,7 @@ class MyApplication : Application() {
 `EmaConfiguration` es una data class, así que personaliza la configuración de Android con `copy`:
 
 ```kotlin
-Ema.init(
+Emanate.init(
     EmaConfiguration.Android.copy(
         sideEffectConfig = EmaConfiguration.Android.sideEffectConfig.copy(
             exceptionPolicy = EmaSideEffectConfig.ExceptionPolicy.CatchExceptions { error ->
@@ -60,7 +60,7 @@ Cambia cualquiera de ellos con `copy`, manteniendo los demás:
 
 ```kotlin
 val android = EmaConfiguration.Android
-Ema.init(android.copy(dispatchers = android.dispatchers.copy(io = myIoDispatcher)))
+Emanate.init(android.copy(dispatchers = android.dispatchers.copy(io = myIoDispatcher)))
 ```
 
 ## Nombrar los side effects
@@ -100,7 +100,7 @@ El estado puede contener datos del usuario, así que desactiva los logs en las b
 propio logger:
 
 ```kotlin
-Ema.init(
+Emanate.init(
     EmaConfiguration.Android.copy(
         logger = if (BuildConfig.DEBUG) EmaLogger { tag, message -> Log.d(tag, message) } else null
     )

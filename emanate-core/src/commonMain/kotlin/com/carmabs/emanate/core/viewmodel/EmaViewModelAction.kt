@@ -1,6 +1,6 @@
 package com.carmabs.emanate.core.viewmodel
 
-import com.carmabs.emanate.core.Ema
+import com.carmabs.emanate.core.Emanate
 import com.carmabs.emanate.core.action.EmaAction
 import com.carmabs.emanate.core.action.EmaActionDispatcher
 import com.carmabs.emanate.core.state.EmaEvent
@@ -12,7 +12,7 @@ import kotlinx.coroutines.CoroutineDispatcher
  *
  * Viewmodel that handles actions by the method onAction(action:EmaAction).
  * It centralize the user actions on view.Based on MVI
- * @param dispatcher where the view model runs. By default the main dispatcher of Ema.
+ * @param dispatcher where the view model runs. By default the main dispatcher of Emanate.
  * <p>
  * Copyright (c) 2023 by Carmabs. All rights reserved.
  * </p>
@@ -21,7 +21,7 @@ import kotlinx.coroutines.CoroutineDispatcher
  */
 abstract class EmaViewModelAction<S : EmaState, A : EmaAction, E : EmaEvent>(
     initialDataState: S,
-    dispatcher: CoroutineDispatcher = Ema.configuration.dispatchers.main
+    dispatcher: CoroutineDispatcher = Emanate.configuration.dispatchers.main
 ) : EmaViewModelClassic<S, E>(initialDataState, dispatcher),
     EmaActionDispatcher<A> {
 

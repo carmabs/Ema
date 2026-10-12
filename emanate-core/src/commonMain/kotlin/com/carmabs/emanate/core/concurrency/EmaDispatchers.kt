@@ -4,7 +4,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 
 /**
- * Dispatchers used by Ema, set in [com.carmabs.emanate.core.model.EmaConfiguration.dispatchers].
+ * Dispatchers used by Emanate, set in [com.carmabs.emanate.core.model.EmaConfiguration.dispatchers].
  *
  * @param main where ViewModels run their coroutines by default. `EmaConfiguration.Android` uses
  * `Dispatchers.Main.immediate`, so the work started from the main thread runs at once, without waiting for the next

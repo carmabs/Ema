@@ -117,11 +117,11 @@ entre pantallas y el ciclo de vida de la vista.
    `StandardTestDispatcher`, llama a `advanceUntilIdle()` para ejecutarlo.
 
    ```kotlin
-   class CounterViewModel(dispatcher: CoroutineDispatcher = Ema.configuration.dispatchers.main) :
+   class CounterViewModel(dispatcher: CoroutineDispatcher = Emanate.configuration.dispatchers.main) :
        EmaViewModelAction<CounterState, CounterAction, CounterEvent>(CounterState(), dispatcher)
    ```
-2. **No hace falta configuración.** Si no se llama a `Ema.init`, se usa la configuración por defecto. No llames a
-   `Ema.init` en los tests: solo se puede llamar una vez por proceso.
+2. **No hace falta configuración.** Si no se llama a `Emanate.init`, se usa la configuración por defecto. No llames a
+   `Emanate.init` en los tests: solo se puede llamar una vez por proceso.
 3. **Llama a `onCreated()`** para ejecutar `onStateCreated(initializer)`. Pasa un inicializador si la pantalla lo
    necesita: `viewModel.onCreated(MyInitializer.Default("x"))`.
 4. **Usa casos de uso falsos.** Son clases normales: pasa una implementación falsa, o usa tu librería de mocks.

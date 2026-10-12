@@ -4,12 +4,12 @@ import com.carmabs.emanate.core.broadcast.EmaActionBroadcaster
 import com.carmabs.emanate.core.model.EmaConfiguration
 
 /**
- * Entry point to configure Ema. Call [init] once, when the application starts, before any ViewModel
+ * Entry point to configure Emanate. Call [init] once, when the application starts, before any ViewModel
  * is created. If it is not called, the default [EmaConfiguration] is used.
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-object Ema {
+object Emanate {
 
     private var initializedConfiguration: EmaConfiguration? = null
 
@@ -27,10 +27,10 @@ object Ema {
     internal val actionBroadcaster: EmaActionBroadcaster by lazy { EmaActionBroadcaster() }
 
     /**
-     * Sets the configuration of Ema. It can be called only once.
+     * Sets the configuration of Emanate. It can be called only once.
      */
     fun init(configuration: EmaConfiguration) {
-        check(initializedConfiguration == null) { "Ema can be initialized only once" }
+        check(initializedConfiguration == null) { "Emanate can be initialized only once" }
         initializedConfiguration = configuration
     }
 

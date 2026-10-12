@@ -1,4 +1,4 @@
-import com.carmabs.emanate.core.Ema
+import com.carmabs.emanate.core.Emanate
 import com.carmabs.emanate.core.action.EmaAction
 import com.carmabs.emanate.core.model.EmaConfiguration
 import com.carmabs.emanate.core.model.reflection.Reflection
@@ -113,7 +113,7 @@ class EmaViewModelActionTest {
 
     @AfterTest
     fun tearDown() {
-        Ema.reset()
+        Emanate.reset()
     }
 
     private fun TestScope.createViewModel(renderOnInitialization: Boolean = true) =
@@ -269,7 +269,7 @@ class EmaViewModelActionTest {
         val successes = mutableListOf<Reflection>()
         val finishes = mutableListOf<Reflection>()
         val errors = mutableListOf<Throwable>()
-        Ema.init(
+        Emanate.init(
             EmaConfiguration(
                 sideEffectConfig = EmaSideEffectConfig(
                     defaultSuccessAction = { successes.add(it.reflection) },
@@ -295,7 +295,7 @@ class EmaViewModelActionTest {
     @Test
     fun `the default method name names the container`() = runTest {
         var methodName: String? = null
-        Ema.init(
+        Emanate.init(
             EmaConfiguration(
                 sideEffectConfig = EmaSideEffectConfig(defaultFinishAction = {
                     methodName =
@@ -309,7 +309,7 @@ class EmaViewModelActionTest {
 
     @Test
     fun `exceptions are rethrown with the ThrowExceptions policy`() = runTest {
-        Ema.init(
+        Emanate.init(
             EmaConfiguration(
                 sideEffectConfig = EmaSideEffectConfig(
                     exceptionPolicy = EmaSideEffectConfig.ExceptionPolicy.ThrowExceptions
@@ -348,8 +348,8 @@ class EmaClassicBroadcastTest {
 
     @AfterTest
     fun checkBroadcasterIsClean() {
-        assertEquals(0, Ema.actionBroadcaster.listenerCount)
-        assertEquals(0, Ema.actionBroadcaster.pendingCount)
+        assertEquals(0, Emanate.actionBroadcaster.listenerCount)
+        assertEquals(0, Emanate.actionBroadcaster.pendingCount)
     }
 
     @Test
@@ -378,7 +378,7 @@ class EmaClassicBroadcastTest {
     @Test
     fun `a kept action is delivered only to the first receiver that registers`() = runTest {
         SenderViewModel(newDispatcher()).send("Ana", keepUntilReceived = true)
-        assertEquals(1, Ema.actionBroadcaster.pendingCount)
+        assertEquals(1, Emanate.actionBroadcaster.pendingCount)
 
         val firstReceiver = ReceiverViewModel(newDispatcher()).apply { onCreated() }
         val secondReceiver = ReceiverViewModel(newDispatcher()).apply { onCreated() }

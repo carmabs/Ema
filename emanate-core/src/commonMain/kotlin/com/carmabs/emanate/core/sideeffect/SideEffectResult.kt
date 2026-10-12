@@ -2,7 +2,7 @@
 
 package com.carmabs.emanate.core.sideeffect
 
-import com.carmabs.emanate.core.Ema
+import com.carmabs.emanate.core.Emanate
 import com.carmabs.emanate.core.delegate.emaSyncDelegate
 import com.carmabs.emanate.core.extension.qualifiedNameOrSimpleName
 import com.carmabs.emanate.core.extension.toNonNull
@@ -48,7 +48,7 @@ class SideEffectResult<T> internal constructor(
     scope: CoroutineScope,
     dispatcher: CoroutineContext = scope.coroutineContext,
     logName: String? = null,
-    sideEffectConfig: EmaSideEffectConfig = Ema.configuration.sideEffectConfig,
+    sideEffectConfig: EmaSideEffectConfig = Emanate.configuration.sideEffectConfig,
     throwException: Boolean = sideEffectConfig.exceptionPolicy is EmaSideEffectConfig.ExceptionPolicy.ThrowExceptions,
     action: suspend CoroutineScope.() -> T
 ) : OnSuccessFinish<T>,

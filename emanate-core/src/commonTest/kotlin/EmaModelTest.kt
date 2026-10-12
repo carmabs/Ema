@@ -1,4 +1,4 @@
-import com.carmabs.emanate.core.Ema
+import com.carmabs.emanate.core.Emanate
 import com.carmabs.emanate.core.action.DefaultEmaActionDispatcher
 import com.carmabs.emanate.core.action.EmaAction
 import com.carmabs.emanate.core.action.EmaActionDispatcher
@@ -122,36 +122,36 @@ class EmaModelTest {
 
     @AfterTest
     fun tearDown() {
-        Ema.reset()
+        Emanate.reset()
     }
 
     @Test
-    fun `Ema uses the default configuration until it is initialized once`() {
-        assertSame(Ema.configuration, Ema.configuration)
-        assertSame(EmaDataClassPrinter.ToString, Ema.configuration.dataClassPrinter)
+    fun `Emanate uses the default configuration until it is initialized once`() {
+        assertSame(Emanate.configuration, Emanate.configuration)
+        assertSame(EmaDataClassPrinter.ToString, Emanate.configuration.dataClassPrinter)
         val configuration = EmaConfiguration(dataClassPrinter = { "custom" })
-        Ema.init(configuration)
-        assertSame(configuration, Ema.configuration)
-        assertFailsWith<IllegalStateException> { Ema.init(EmaConfiguration()) }
+        Emanate.init(configuration)
+        assertSame(configuration, Emanate.configuration)
+        assertFailsWith<IllegalStateException> { Emanate.init(EmaConfiguration()) }
     }
 
     @Test
     fun `tests can replace the configuration any number of times`() {
-        Ema.init(EmaConfiguration())
+        Emanate.init(EmaConfiguration())
         val first = EmaConfiguration(dataClassPrinter = { "first" })
         val second = EmaConfiguration(dataClassPrinter = { "second" })
 
-        Ema.initForTest(first)
-        assertSame(first, Ema.configuration)
-        Ema.initForTest(second)
-        assertSame(second, Ema.configuration)
+        Emanate.initForTest(first)
+        assertSame(first, Emanate.configuration)
+        Emanate.initForTest(second)
+        assertSame(second, Emanate.configuration)
     }
 
     @Test
     fun `ViewModels and use cases run on the dispatchers of the configuration`() = runTest {
         val main = UnconfinedTestDispatcher(testScheduler)
         val io = StandardTestDispatcher(testScheduler)
-        Ema.init(EmaConfiguration(dispatchers = EmaDispatchers(main = main, io = io)))
+        Emanate.init(EmaConfiguration(dispatchers = EmaDispatchers(main = main, io = io)))
         val useCase = object : EmaUseCase<Unit, ContinuationInterceptor?>() {
             override suspend fun useCaseFunction(input: Unit) = currentCoroutineContext()[ContinuationInterceptor]
         }
@@ -177,7 +177,7 @@ class EmaModelTest {
     fun `objects are printed with the configured printer`() {
         assertEquals("CounterState(count=1, text=)", CounterState(count = 1).toStringPretty())
         assertEquals("null", EmaDataClassPrinter.ToString.print(null))
-        Ema.init(EmaConfiguration(dataClassPrinter = { "printed $it" }))
+        Emanate.init(EmaConfiguration(dataClassPrinter = { "printed $it" }))
         assertEquals("printed 1", 1.toStringPretty())
     }
 

@@ -64,7 +64,7 @@ singleSideEffect("search") {
 configures una acción por defecto. Elige una política en el `sideEffectConfig` de la [configuración](configuration.es.md):
 
 ```kotlin
-Ema.init(
+Emanate.init(
     EmaConfiguration.Android.copy(
         sideEffectConfig = EmaConfiguration.Android.sideEffectConfig.copy(
             exceptionPolicy = EmaSideEffectConfig.ExceptionPolicy.CatchExceptions(

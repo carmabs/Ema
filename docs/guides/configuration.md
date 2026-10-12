@@ -1,13 +1,13 @@
 # Configuration
 
-Emanate is configured once, when the application starts, with `Ema.init`:
+Emanate is configured once, when the application starts, with `Emanate.init`:
 
 ```kotlin
 class MyApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        Ema.init(EmaConfiguration.Android)
+        Emanate.init(EmaConfiguration.Android)
     }
 }
 ```
@@ -29,7 +29,7 @@ class MyApplication : Application() {
 `EmaConfiguration` is a data class, so customize the Android configuration with `copy`:
 
 ```kotlin
-Ema.init(
+Emanate.init(
     EmaConfiguration.Android.copy(
         sideEffectConfig = EmaConfiguration.Android.sideEffectConfig.copy(
             exceptionPolicy = EmaSideEffectConfig.ExceptionPolicy.CatchExceptions { error ->
@@ -60,7 +60,7 @@ Change any of them with `copy`, keeping the others:
 
 ```kotlin
 val android = EmaConfiguration.Android
-Ema.init(android.copy(dispatchers = android.dispatchers.copy(io = myIoDispatcher)))
+Emanate.init(android.copy(dispatchers = android.dispatchers.copy(io = myIoDispatcher)))
 ```
 
 ## Naming the side effects
@@ -99,7 +99,7 @@ Every `EmaViewModel` uses it, with its name as tag, to log its actions:
 The state may contain data of the user, so disable the logs in release builds, or send them to your own logger:
 
 ```kotlin
-Ema.init(
+Emanate.init(
     EmaConfiguration.Android.copy(
         logger = if (BuildConfig.DEBUG) EmaLogger { tag, message -> Log.d(tag, message) } else null
     )

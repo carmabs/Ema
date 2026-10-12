@@ -1,6 +1,6 @@
 package com.carmabs.emanate.core.viewmodel
 
-import com.carmabs.emanate.core.Ema
+import com.carmabs.emanate.core.Emanate
 import com.carmabs.emanate.core.action.EmaAction
 import com.carmabs.emanate.core.action.EmaAction.Initializer
 import com.carmabs.emanate.core.action.EmaAction.Lifecycle
@@ -32,10 +32,10 @@ import kotlinx.coroutines.flow.asStateFlow
  * view model.
  *
  * @param initialDataState state of the view before any action
- * @param dispatcher where the view model runs. By default the main dispatcher of Ema.
+ * @param dispatcher where the view model runs. By default the main dispatcher of Emanate.
  * @param logger logs every action with the state before and after it, and in one line when it is received, so the
- * actions stopped by a middleware are also logged. By default the logger of the configuration of Ema. Null to disable
- * the logs of this view model.
+ * actions stopped by a middleware are also logged. By default the logger of the configuration of Emanate. Null to
+ * disable the logs of this view model.
  *
  * <p>
  * Copyright (c) 2026 by Carmabs. All rights reserved.
@@ -45,8 +45,8 @@ import kotlinx.coroutines.flow.asStateFlow
  */
 abstract class EmaViewModel<S : EmaState, A : EmaAction, E : EmaEvent>(
     initialDataState: S,
-    private val dispatcher: CoroutineDispatcher = Ema.configuration.dispatchers.main,
-    private val logger: EmaLogger? = Ema.configuration.logger
+    private val dispatcher: CoroutineDispatcher = Emanate.configuration.dispatchers.main,
+    private val logger: EmaLogger? = Emanate.configuration.logger
 ) : EmaViewModelContract<S, E>,
     EmaActionDispatcher<A> {
 

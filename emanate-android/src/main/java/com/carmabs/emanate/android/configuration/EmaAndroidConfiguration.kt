@@ -7,7 +7,7 @@ import com.carmabs.emanate.core.sideeffect.EmaSideEffectConfig
 import kotlinx.coroutines.Dispatchers
 
 /**
- * Ema configuration for Android:
+ * Emanate configuration for Android:
  * - ViewModels run on [Dispatchers.Main.immediate], so the work started from the main thread runs at once, and use
  *   cases on `Dispatchers.IO`.
  * - The method that launched a sideEffect is resolved from its lambda.

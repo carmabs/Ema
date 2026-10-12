@@ -60,7 +60,7 @@ For a pure Kotlin or multiplatform module use `emanate-core`, and `emanate-test`
 Then initialize Emanate in your `Application`:
 
 ```kotlin
-Ema.init(EmaConfiguration.Android)
+Emanate.init(EmaConfiguration.Android)
 ```
 
 ## Documentation

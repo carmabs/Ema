@@ -50,7 +50,7 @@ See [Kotlin Multiplatform](guides/multiplatform.md).
 
 ## Initialize Emanate
 
-Call `Ema.init` once, when the application starts and before any ViewModel is created.
+Call `Emanate.init` once, when the application starts and before any ViewModel is created.
 `EmaConfiguration.Android` is the configuration for Android apps:
 
 ```kotlin
@@ -58,7 +58,7 @@ class MyApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        Ema.init(EmaConfiguration.Android)
+        Emanate.init(EmaConfiguration.Android)
     }
 }
 ```

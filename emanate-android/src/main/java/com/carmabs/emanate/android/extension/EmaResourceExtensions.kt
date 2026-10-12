@@ -24,7 +24,7 @@ import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
-import com.carmabs.emanate.core.Ema
+import com.carmabs.emanate.core.Emanate
 import com.carmabs.emanate.core.constants.FLOAT_ONE
 import com.carmabs.emanate.core.constants.INT_ZERO
 import com.carmabs.emanate.core.utils.EmaUtils
@@ -124,7 +124,7 @@ suspend fun @receiver:DrawableRes Int.getBitmapFromResource(
     width: Int? = null,
     height: Int? = null,
     @ColorInt color: Int? = null
-): Bitmap = withContext(Ema.configuration.dispatchers.default) {
+): Bitmap = withContext(Emanate.configuration.dispatchers.default) {
     ContextCompat.getDrawable(context, this@getBitmapFromResource)?.let {
         val drawable: Drawable = it
         val bitmap: Bitmap = Bitmap.createBitmap(
@@ -160,7 +160,7 @@ suspend fun @receiver:DrawableRes Int.getBitmapCropFromResource(
     context: Context,
     width: Int? = null,
     height: Int? = null
-): Bitmap = withContext(Ema.configuration.dispatchers.default) {
+): Bitmap = withContext(Emanate.configuration.dispatchers.default) {
     val bitmap: Bitmap =
         BitmapFactory.decodeResource(context.resources, this@getBitmapCropFromResource)
     bitmap.resizeCropSquare()

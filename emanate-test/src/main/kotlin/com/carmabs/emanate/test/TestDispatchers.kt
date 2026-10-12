@@ -1,6 +1,6 @@
 package com.carmabs.emanate.test
 
-import com.carmabs.emanate.core.Ema
+import com.carmabs.emanate.core.Emanate
 import com.carmabs.emanate.core.concurrency.EmaDispatchers
 import com.carmabs.emanate.core.model.EmaConfiguration
 import kotlinx.coroutines.Dispatchers
@@ -11,7 +11,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 
 /**
- * Configuration of Ema before [useTestDispatchers], restored by [resetTestDispatchers]
+ * Configuration of Emanate before [useTestDispatchers], restored by [resetTestDispatchers]
  */
 private var configurationBeforeTest: EmaConfiguration? = null
 
@@ -30,23 +30,25 @@ private var configurationBeforeTest: EmaConfiguration? = null
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 fun useTestDispatchers(dispatcher: TestDispatcher = UnconfinedTestDispatcher()): TestDispatcher {
-    if (configurationBeforeTest == null) configurationBeforeTest = Ema.configuration
+    if (configurationBeforeTest == null) configurationBeforeTest = Emanate.configuration
     Dispatchers.setMain(dispatcher)
-    Ema.initForTest(
-        Ema.configuration.copy(dispatchers = EmaDispatchers(main = dispatcher, io = dispatcher, default = dispatcher))
+    Emanate.initForTest(
+        Emanate.configuration.copy(
+            dispatchers = EmaDispatchers(main = dispatcher, io = dispatcher, default = dispatcher)
+        )
     )
     return dispatcher
 }
 
 /**
- * Undoes [useTestDispatchers]: restores `Dispatchers.Main` and the configuration of Ema, and removes the actions
+ * Undoes [useTestDispatchers]: restores `Dispatchers.Main` and the configuration of Emanate, and removes the actions
  * broadcast with keepUntilReceived that nobody received, so they don't reach the next test. Call it after each test,
  * for example in a function annotated with AfterTest.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 fun resetTestDispatchers() {
     Dispatchers.resetMain()
-    configurationBeforeTest?.let { Ema.initForTest(it) }
+    configurationBeforeTest?.let { Emanate.initForTest(it) }
     configurationBeforeTest = null
-    Ema.actionBroadcaster.clearPendingActions()
+    Emanate.actionBroadcaster.clearPendingActions()
 }

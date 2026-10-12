@@ -19,7 +19,7 @@ kotlin {
     }
 }
 
-// emanate-test uses the internal API of emanate-core, to record the sources and to replace the configuration of Ema in
+// emanate-test uses the internal API of emanate-core, to record the sources and to replace the configuration of Emanate in
 // tests, so it is a friend module of it
 tasks.named('compileKotlin') {
     friendPaths.from(configurations.compileClasspath.filter { it.path.contains('emanate-core') })

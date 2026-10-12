@@ -2,7 +2,7 @@
 
 package com.carmabs.emanate.core.source
 
-import com.carmabs.emanate.core.Ema
+import com.carmabs.emanate.core.Emanate
 import com.carmabs.emanate.core.action.EmaAction
 import com.carmabs.emanate.core.action.EmaActionDispatcher
 import com.carmabs.emanate.core.action.EmaEventConsumer
@@ -45,14 +45,14 @@ import kotlinx.coroutines.withTimeoutOrNull
  * action goes through the middlewares, the reducers and the side effects of its type. The source creates its own scope
  * with [dispatcher], so call [EmaSource.close] when it isn't needed anymore to cancel its work.
  *
- * @param dispatcher where the source runs. By default the main dispatcher of Ema, as the state is usually drawn by
+ * @param dispatcher where the source runs. By default the main dispatcher of Emanate, as the state is usually drawn by
  * the view; use cases run on their own dispatcher anyway.
  * @param setup adds the middlewares, reducers, side effects and broadcast listeners of the source
  */
 @Suppress("FunctionName") // Factory named like the class
 fun <S : EmaState, A : EmaAction, E : EmaEvent> EmaSource(
     initialState: S,
-    dispatcher: CoroutineDispatcher = Ema.configuration.dispatchers.main,
+    dispatcher: CoroutineDispatcher = Emanate.configuration.dispatchers.main,
     setup: SourceSetupScope<S, A, E>.() -> Unit
 ): EmaSource<S, A, E> {
     val sourceSetup = buildSourceSetup(setup)
@@ -90,7 +90,7 @@ class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
     broadcastListeners: List<KClass<out EmaAction>>,
     container: Any?,
     private val eventDispatcher: EventDispatcher<E>,
-    internal val broadcaster: EmaActionBroadcaster = Ema.actionBroadcaster
+    internal val broadcaster: EmaActionBroadcaster = Emanate.actionBroadcaster
 ) : EmaEventConsumer<E>,
     EmaActionDispatcher<A> {
 
@@ -265,7 +265,7 @@ class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
     }
 
     /**
-     * Launches asynchronous work applying the side effect configuration of Ema.
+     * Launches asynchronous work applying the side effect configuration of Emanate.
      * @param key if work with the same key is running, it is cancelled
      * @param timeout if the work doesn't finish in this time, it is cancelled and [onTimeout] is called
      */

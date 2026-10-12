@@ -1,6 +1,6 @@
 package com.carmabs.emanate.test
 
-import com.carmabs.emanate.core.Ema
+import com.carmabs.emanate.core.Emanate
 import com.carmabs.emanate.core.action.EmaAction
 import com.carmabs.emanate.core.source.EmaSource
 import com.carmabs.emanate.core.state.EmaEvent
@@ -160,11 +160,11 @@ class EmaRecorderStandardDispatcherTest {
     }
 
     @Test
-    fun `resetting the dispatchers restores the configuration of Ema`() {
-        assertSame(dispatcher, Ema.configuration.dispatchers.main)
+    fun `resetting the dispatchers restores the configuration of Emanate`() {
+        assertSame(dispatcher, Emanate.configuration.dispatchers.main)
 
         resetTestDispatchers()
 
-        assertNotSame(dispatcher, Ema.configuration.dispatchers.main)
+        assertNotSame(dispatcher, Emanate.configuration.dispatchers.main)
     }
 }
