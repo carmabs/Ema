@@ -42,7 +42,7 @@ class HomeViewModel(private val getUserFriendsUseCase: GetUserFriendsUseCase, in
         }
         // The login screen shows the last user added
         addSideEffect<ProfileCreationBroadcast.UserCreated> { action ->
-            broadcastDispatcher.dispatch(HomeBroadcast.UserAdded(action.user))
+            broadcast(HomeBroadcast.UserAdded(action.user))
         }
     }
 }

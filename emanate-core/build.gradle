@@ -80,9 +80,6 @@ kotlin {
     }
 
     sourceSets {
-        all {
-            languageSettings.optIn("com.carmabs.emanate.core.EmaInternalApi")
-        }
         commonMain {
             dependencies {
                 api libs.kotlinx.coroutines.core

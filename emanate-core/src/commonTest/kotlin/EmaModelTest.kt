@@ -2,16 +2,13 @@ import com.carmabs.emanate.core.Ema
 import com.carmabs.emanate.core.action.DefaultEmaActionDispatcher
 import com.carmabs.emanate.core.action.EmaAction
 import com.carmabs.emanate.core.action.EmaActionDispatcher
-import com.carmabs.emanate.core.broadcast.EmaBroadcastEvent
-import com.carmabs.emanate.core.broadcast.EmaFlowBroadcastManager
 import com.carmabs.emanate.core.concurrency.EmaDispatchers
-import com.carmabs.emanate.core.concurrency.EmaMainScope
 import com.carmabs.emanate.core.delegate.emaBooleanDelegate
 import com.carmabs.emanate.core.delegate.emaStartTriggerDelegate
 import com.carmabs.emanate.core.delegate.emaSyncDelegate
 import com.carmabs.emanate.core.dialog.EmaDialogListener
 import com.carmabs.emanate.core.extension.concat
-import com.carmabs.emanate.core.extension.minDelay
+import com.carmabs.emanate.core.extension.requireMinDurationOf
 import com.carmabs.emanate.core.extension.suspendCoroutineWithTimeout
 import com.carmabs.emanate.core.extension.until
 import com.carmabs.emanate.core.extension.untilInstanceOf
@@ -21,7 +18,6 @@ import com.carmabs.emanate.core.logging.toStringPretty
 import com.carmabs.emanate.core.manager.PermissionState
 import com.carmabs.emanate.core.model.EmaConfiguration
 import com.carmabs.emanate.core.model.EmaImage
-import com.carmabs.emanate.core.model.EmaMethodNameResolver
 import com.carmabs.emanate.core.model.EmaMultiplePermissionRequest
 import com.carmabs.emanate.core.model.EmaPermissionRequest
 import com.carmabs.emanate.core.model.EmaResult
@@ -35,6 +31,7 @@ import com.carmabs.emanate.core.model.onFailure
 import com.carmabs.emanate.core.model.onSuccess
 import com.carmabs.emanate.core.navigator.EmaNavigationNode
 import com.carmabs.emanate.core.selector.EmaUniqueSelector
+import com.carmabs.emanate.core.sideeffect.EmaMethodNameResolver
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
 import com.carmabs.emanate.core.usecase.EmaFlowUseCase
@@ -42,6 +39,7 @@ import com.carmabs.emanate.core.usecase.EmaSyncUseCase
 import com.carmabs.emanate.core.usecase.EmaUseCase
 import com.carmabs.emanate.core.value.EmaUriRes
 import com.carmabs.emanate.core.value.EmaUriType
+import com.carmabs.emanate.core.viewmodel.EmaViewModelClassic
 import com.carmabs.emanate.core.viewmodel.EmaViewModelContract
 import kotlin.coroutines.ContinuationInterceptor
 import kotlin.coroutines.resume
@@ -68,7 +66,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.yield
 
 class EmaResultTest {
 
@@ -161,7 +158,12 @@ class EmaModelTest {
             override suspend fun useCaseFunction(input: Unit) = currentCoroutineContext()[ContinuationInterceptor]
         }
 
-        assertSame(main, EmaMainScope().coroutineContext[ContinuationInterceptor])
+        val viewModel = object : EmaViewModelClassic<EmaState.EMPTY, EmaEvent.EMPTY>(EmaState.EMPTY) {
+            val interceptor = scope.coroutineContext[ContinuationInterceptor]
+            override fun onStateCreated(initializer: EmaAction.Initializer?) = Unit
+        }
+
+        assertSame(main, viewModel.interceptor)
         assertSame(io, useCase(Unit))
     }
 
@@ -333,8 +335,6 @@ private class Upper : EmaSyncUseCase<String, String> {
     override fun invoke(input: String) = input.uppercase()
 }
 
-private class UserCreated(override val data: String) : EmaBroadcastEvent<String>
-
 @OptIn(ExperimentalCoroutinesApi::class)
 class EmaCoroutinesTest {
 
@@ -347,8 +347,8 @@ class EmaCoroutinesTest {
     }
 
     @Test
-    fun `minDelay waits at least the given time`() = runTest {
-        val result = minDelay(500.milliseconds) { "done" }
+    fun `requireMinDurationOf waits at least the given time`() = runTest {
+        val result = requireMinDurationOf(500.milliseconds) { "done" }
         assertEquals("done", result)
         // The real time spent is subtracted, so the virtual delay can be a few milliseconds shorter
         assertTrue(testScheduler.currentTime >= 400)
@@ -377,25 +377,6 @@ class EmaCoroutinesTest {
         assertTrue(flow.tryEmit(1))
         assertTrue(flow.tryEmit(2))
         assertEquals(0, flow.replayCache.size)
-    }
-
-    @Test
-    fun `broadcast manager delivers events to registered listeners`() = runTest {
-        val manager = EmaFlowBroadcastManager()
-        val received = mutableListOf<String>()
-        manager.sendBroadcastEvent(UserCreated("ignored"))
-        val job = launch(UnconfinedTestDispatcher(testScheduler)) {
-            manager.registerBroadcast(UserCreated::class) { received.add(it) }
-        }
-        yield()
-        manager.sendBroadcastEvent(UserCreated("ana"))
-        assertEquals(listOf("ana"), received)
-        job.cancel()
-    }
-
-    @Test
-    fun `Ema exposes a single broadcast manager`() {
-        assertSame(Ema.broadcastManager, Ema.broadcastManager)
     }
 
     @Test

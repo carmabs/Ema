@@ -3,12 +3,12 @@
 package com.carmabs.emanate.core.source
 
 import com.carmabs.emanate.core.Ema
-import com.carmabs.emanate.core.action.DefaultEmaEventDispatcher
 import com.carmabs.emanate.core.action.EmaAction
 import com.carmabs.emanate.core.action.EmaActionDispatcher
-import com.carmabs.emanate.core.action.EmaEventDispatcher
+import com.carmabs.emanate.core.action.EmaEventConsumer
+import com.carmabs.emanate.core.action.EventDispatcher
 import com.carmabs.emanate.core.broadcast.EmaActionBroadcaster
-import com.carmabs.emanate.core.model.emaSideEffect
+import com.carmabs.emanate.core.sideeffect.sideEffect
 import com.carmabs.emanate.core.source.middleware.EmaMiddleware
 import com.carmabs.emanate.core.source.middleware.MiddlewareContext
 import com.carmabs.emanate.core.source.middleware.MiddlewareScope
@@ -28,6 +28,7 @@ import kotlin.reflect.cast
 import kotlin.time.Duration
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
@@ -36,6 +37,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 
@@ -67,7 +69,7 @@ fun <S : EmaState, A : EmaAction, E : EmaEvent> EmaSource(
         sideEffects = setupScope.sideEffectList,
         broadcastListeners = setupScope.broadcastListenerList,
         container = null,
-        eventDispatcher = DefaultEmaEventDispatcher()
+        eventDispatcher = EventDispatcher()
     )
 }
 
@@ -92,9 +94,9 @@ class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
     private val sideEffects: List<SideEffect<S, A, E, *>>,
     broadcastListeners: List<KClass<out EmaAction>>,
     container: Any?,
-    private val eventDispatcher: DefaultEmaEventDispatcher<E>,
+    private val eventDispatcher: EventDispatcher<E>,
     internal val broadcaster: EmaActionBroadcaster = Ema.actionBroadcaster
-) : EmaEventDispatcher<E>,
+) : EmaEventConsumer<E>,
     EmaActionDispatcher<A> {
 
     /**
@@ -140,11 +142,16 @@ class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
     }
 
     /**
-     * Listeners of the broadcast actions, added while the source is open
+     * Receives the broadcast actions of the types listened to while the source is open. It starts undispatched, so the
+     * source is already listening when it is created.
      */
-    private val listeners = broadcastListeners.map { actionType ->
-        EmaActionBroadcaster.Listener(actionType) { dispatchAction(it) }
-    }.onEach { broadcaster.addListener(it) }
+    private val broadcastJob: Job? = broadcastListeners.takeIf { it.isNotEmpty() }?.let { actionTypes ->
+        scope.launch(start = CoroutineStart.UNDISPATCHED) {
+            broadcaster.actions
+                .filter { action -> actionTypes.any { it.isInstance(action) } }
+                .collect { dispatchAction(it) }
+        }
+    }
 
     private val loop: Job = scope.launch {
         for (step in queue) {
@@ -160,7 +167,7 @@ class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
      * @return the job that completes when the source has finished
      */
     fun close(): Job {
-        listeners.forEach { broadcaster.removeListener(it) }
+        broadcastJob?.cancel()
         queue.close()
         return loop
     }
@@ -271,7 +278,7 @@ class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
      */
     internal fun launch(key: Any?, timeout: Duration?, onTimeout: () -> Unit, block: suspend () -> Unit): Job {
         key?.let { removeJob(it)?.cancel() }
-        val job = emaSideEffect(container = container, scope = scope) {
+        val job = sideEffect(container = container, scope = scope) {
             if (timeout == null) {
                 block()
             } else if (withTimeoutOrNull(timeout) { block() } == null) {

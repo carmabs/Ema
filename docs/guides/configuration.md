@@ -47,7 +47,7 @@ Ema.init(
 
 | Dispatcher | Default                                                   | Used by                                                               |
 |------------|-----------------------------------------------------------|-----------------------------------------------------------------------|
-| `main`     | `Dispatchers.Main`                                        | ViewModels, through their default scope `EmaMainScope()`.             |
+| `main`     | `Dispatchers.Main`                                        | ViewModels and sources, by default.                                   |
 | `io`       | `Dispatchers.IO`, or `Dispatchers.Default` on JS and Wasm | [Use cases](utilities.md#use-cases): network, disk and blocking work. |
 | `default`  | `Dispatchers.Default`                                     | CPU-intensive work, such as processing images in `emanate-android`.   |
 
@@ -81,8 +81,3 @@ To decide the name differently, implement `EmaMethodNameResolver` and set it in 
 `toStringPretty()` prints any object with the configured `EmaDataClassPrinter`. `EmaConfiguration.Android` uses
 `EmaAndroidDataClassPrinter`, which prints the fields, nested objects, collections and maps with indentation.
 Implement `EmaDataClassPrinter` to print them your own way.
-
-## The broadcast manager
-
-`Ema.broadcastManager` is the app-wide `EmaBroadcastManager`. See
-[Results between screens](results-between-screens.md#app-wide-broadcasts).

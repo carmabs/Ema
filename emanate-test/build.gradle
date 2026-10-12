@@ -16,7 +16,6 @@ java {
 kotlin {
     compilerOptions {
         jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.fromTarget(rootProject.emanateVersioning.kotlinJvmTarget)
-        optIn.add("com.carmabs.emanate.core.EmaInternalApi")
     }
 }
 

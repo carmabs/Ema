@@ -3,7 +3,7 @@
 package com.carmabs.emanate.core.source.middleware
 
 import com.carmabs.emanate.core.action.EmaAction
-import com.carmabs.emanate.core.source.EmaDsl
+import com.carmabs.emanate.core.source.EmaSourceDsl
 import com.carmabs.emanate.core.state.EmaState
 import kotlin.concurrent.atomics.AtomicBoolean
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
@@ -21,7 +21,7 @@ import kotlinx.coroutines.CancellationException
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-@EmaDsl
+@EmaSourceDsl
 class NextAfterScope<out S : EmaState, in A : EmaAction> internal constructor(
     private val middlewareScope: MiddlewareScope<S, A>
 ) {

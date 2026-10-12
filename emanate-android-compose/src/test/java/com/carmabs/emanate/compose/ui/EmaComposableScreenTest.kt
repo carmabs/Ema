@@ -13,7 +13,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.SavedStateHandle
 import com.carmabs.emanate.android.savestate.EmaSaveStateManager
 import com.carmabs.emanate.android.savestate.SavedStateSupport
-import com.carmabs.emanate.compose.BasicViewModel
+import com.carmabs.emanate.compose.ClassicViewModel
 import com.carmabs.emanate.compose.CounterEvent
 import com.carmabs.emanate.compose.CounterScreen
 import com.carmabs.emanate.compose.CounterState
@@ -182,7 +182,7 @@ class EmaComposableScreenTest {
                     previewRenderState = CounterState(5)
                 )
                 EmaComposableScreen(
-                    vm = BasicViewModel(),
+                    vm = ClassicViewModel(),
                     actions = CounterViewModel(),
                     screenContent = SilentScreen(),
                     onEvent = {},
@@ -190,7 +190,7 @@ class EmaComposableScreenTest {
                 )
                 EmaComposableScreen(vm = { CounterViewModel() }, screenContent = SilentScreen(), onEvent = {})
                 EmaComposableScreen(
-                    vm = BasicViewModel(),
+                    vm = ClassicViewModel(),
                     actions = CounterViewModel(),
                     screenContent = SilentScreen(),
                     onEvent = {}

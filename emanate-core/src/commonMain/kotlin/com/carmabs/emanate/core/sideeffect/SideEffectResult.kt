@@ -1,8 +1,11 @@
 @file:OptIn(ExperimentalAtomicApi::class)
 
-package com.carmabs.emanate.core.model
+package com.carmabs.emanate.core.sideeffect
 
 import com.carmabs.emanate.core.delegate.emaSyncDelegate
+import com.carmabs.emanate.core.model.EmaResult
+import com.carmabs.emanate.core.model.onFailure
+import com.carmabs.emanate.core.model.onSuccess
 import kotlin.concurrent.atomics.AtomicBoolean
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.coroutines.CoroutineContext

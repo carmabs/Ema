@@ -27,7 +27,7 @@ import kotlin.time.Duration
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-@EmaDsl
+@EmaSourceDsl
 class SourceSetupScope<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor() {
 
     internal var middlewareList: List<EmaMiddleware<S, A, *>> = emptyList()
@@ -135,7 +135,7 @@ class SourceSetupScope<S : EmaState, A : EmaAction, E : EmaEvent> internal const
     }
 
     /**
-     * Listens to the actions of type [F] broadcast with the broadcastDispatcher of any side effect. The type of the
+     * Listens to the actions of type [F] broadcast with the broadcast function of any side effect. The type of the
      * action is the id of the broadcast. They enter this source like the dispatched ones: they go through its
      * middlewares, reducers and side effects of type [F]. The listener is removed when the source is closed.
      */

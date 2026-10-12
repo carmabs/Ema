@@ -109,7 +109,7 @@ addSideEffect<LoginAction.Login>(concurrency = SideEffectConcurrency.Leading, ti
 | `state`                          | The state at the moment it is read.                                       |
 | `dispatch(action)`               | Dispatches an action to the source.                                       |
 | `postEvent(event)`               | Posts an [event](events.md). It arrives after the actions dispatched before it. |
-| `broadcastDispatcher.dispatch()` | Broadcasts an action to other sources. See [Results between screens](../guides/results-between-screens.md). |
+| `broadcast(action)`              | Broadcasts an action to other sources. See [Results between screens](../guides/results-between-screens.md). |
 
 `concurrency` decides what happens when an action launches the side effect while it is still running:
 

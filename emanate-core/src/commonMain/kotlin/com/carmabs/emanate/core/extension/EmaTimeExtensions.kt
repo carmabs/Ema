@@ -1,20 +1,18 @@
 package com.carmabs.emanate.core.extension
 
-import com.carmabs.emanate.core.constants.LONG_ZERO
 import kotlin.time.Duration
 import kotlin.time.TimeSource
 import kotlinx.coroutines.delay
 
 /**
- * Execute the action with a minimum delay of the min time provided.If the action lasts less than min
- * time, the remaining time is applied. It it lasts more than min time, no delay is applied.
+ * Runs [action] and makes it last at least [duration]. If it finishes before, it waits the remaining time; if it lasts
+ * longer, it doesn't wait. Useful to keep a loading visible long enough to be seen.
+ * @return the result of [action]
  */
-suspend fun <T> minDelay(minTime: Duration, action: suspend () -> T): T {
+suspend fun <T> requireMinDurationOf(duration: Duration, action: suspend () -> T): T {
     val initTime = TimeSource.Monotonic.markNow()
     val resultValue = action.invoke()
-    val differenceTime = minTime.inWholeMilliseconds - initTime.elapsedNow().inWholeMilliseconds
-    if (differenceTime > LONG_ZERO) {
-        delay(differenceTime)
-    }
+    // delay doesn't wait if the remaining time is zero or negative
+    delay(duration - initTime.elapsedNow())
     return resultValue
 }

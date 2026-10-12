@@ -12,7 +12,7 @@ import com.carmabs.emanate.core.action.EmaAction
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
 import com.carmabs.emanate.core.viewmodel.EmaViewModelAction
-import com.carmabs.emanate.core.viewmodel.EmaViewModelBasic
+import com.carmabs.emanate.core.viewmodel.EmaViewModelClassic
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
@@ -79,7 +79,7 @@ class CounterViewModel : EmaViewModelAction<CounterState, CounterAction, Counter
 /**
  * ViewModel that does not handle actions.
  */
-class BasicViewModel : EmaViewModelBasic<CounterState, CounterEvent>(CounterState()) {
+class ClassicViewModel : EmaViewModelClassic<CounterState, CounterEvent>(CounterState()) {
     override fun onStateCreated(initializer: EmaAction.Initializer?) = Unit
 }
 

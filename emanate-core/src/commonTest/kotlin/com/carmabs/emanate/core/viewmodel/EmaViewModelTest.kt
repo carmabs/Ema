@@ -60,7 +60,7 @@ private class SenderViewModel(dispatcher: CoroutineDispatcher) :
     EmaViewModel<TestState, TestAction, TestEvent>(TestState(), dispatcher, logger = null) {
 
     override fun SourceSetupScope<TestState, TestAction, TestEvent>.setup() {
-        addSideEffect<TestAction.Update> { action -> broadcastDispatcher.dispatch(TextSent(action.text)) }
+        addSideEffect<TestAction.Update> { action -> broadcast(TextSent(action.text)) }
     }
 }
 

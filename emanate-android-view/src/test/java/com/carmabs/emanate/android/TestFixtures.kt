@@ -13,7 +13,7 @@ import com.carmabs.emanate.core.action.EmaAction
 import com.carmabs.emanate.core.model.EmaBackHandlerStrategy
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
-import com.carmabs.emanate.core.viewmodel.EmaViewModelBasic
+import com.carmabs.emanate.core.viewmodel.EmaViewModelClassic
 import java.io.Serializable
 import kotlin.test.fail
 import org.robolectric.Shadows.shadowOf
@@ -28,7 +28,7 @@ data class NameInitializer(val name: String) :
     EmaAction.Initializer,
     Serializable
 
-class ViewTestViewModel : EmaViewModelBasic<ViewState, ViewEvent>(ViewState()) {
+class ViewTestViewModel : EmaViewModelClassic<ViewState, ViewEvent>(ViewState()) {
     val hooks = mutableListOf<String>()
     var initializer: EmaAction.Initializer? = null
 

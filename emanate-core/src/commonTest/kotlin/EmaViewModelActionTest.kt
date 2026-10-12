@@ -1,14 +1,13 @@
 import com.carmabs.emanate.core.Ema
 import com.carmabs.emanate.core.action.EmaAction
-import com.carmabs.emanate.core.broadcast.backBroadcastId
 import com.carmabs.emanate.core.model.EmaConfiguration
-import com.carmabs.emanate.core.model.EmaMethodNameResolver
-import com.carmabs.emanate.core.model.EmaSideEffectConfig
 import com.carmabs.emanate.core.model.reflection.Reflection
+import com.carmabs.emanate.core.sideeffect.EmaMethodNameResolver
+import com.carmabs.emanate.core.sideeffect.EmaSideEffectConfig
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
 import com.carmabs.emanate.core.viewmodel.EmaViewModelAction
-import com.carmabs.emanate.core.viewmodel.EmaViewModelBasic
+import com.carmabs.emanate.core.viewmodel.EmaViewModelClassic
 import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -259,7 +258,6 @@ class EmaViewModelActionTest {
     @Test
     fun `the id identifies the ViewModel class`() = runTest {
         assertEquals("EmaViewModel ID: CounterViewModel", createViewModel().id)
-        assertEquals("broadcast/SenderViewModel", SenderViewModel::class.backBroadcastId.id)
     }
 
     @Test
@@ -324,16 +322,17 @@ class EmaViewModelActionTest {
     }
 }
 
-class SenderViewModel(scope: CoroutineScope) : EmaViewModelBasic<CounterState, CounterEvent>(CounterState(), scope) {
+class SenderViewModel(scope: CoroutineScope) : EmaViewModelClassic<CounterState, CounterEvent>(CounterState(), scope) {
     override fun onStateCreated(initializer: EmaAction.Initializer?) = Unit
     fun send(data: Any?) = dispatchBroadcast(data)
 }
 
-class ReceiverViewModel(scope: CoroutineScope) : EmaViewModelBasic<CounterState, CounterEvent>(CounterState(), scope) {
+class ReceiverViewModel(scope: CoroutineScope) :
+    EmaViewModelClassic<CounterState, CounterEvent>(CounterState(), scope) {
     val received = mutableListOf<Any?>()
     override fun onStateCreated(initializer: EmaAction.Initializer?) = Unit
     override fun onBroadcastListenerSetup() {
-        registerBroadcastListener(SenderViewModel::class.backBroadcastId) { received.add(it) }
+        registerBroadcastListener(SenderViewModel::class) { received.add(it) }
     }
 }
 

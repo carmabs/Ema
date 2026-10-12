@@ -1,18 +1,17 @@
-@file:OptIn(ExperimentalAtomicApi::class)
-
 package com.carmabs.emanate.core.broadcast
 
 import com.carmabs.emanate.core.action.EmaAction
-import com.carmabs.emanate.core.action.EmaActionDispatcher
-import kotlin.concurrent.atomics.AtomicReference
-import kotlin.concurrent.atomics.ExperimentalAtomicApi
-import kotlin.reflect.KClass
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 
 /**
  * Created by Carlos Mateo Benito on 11/10/2026.
  *
  * Sends actions to the sources listening to their type, added with addBroadcastListener. The type of the action is
- * the id of the broadcast. It is delivered at the moment to the listeners added: if nobody is listening, it is lost.
+ * the id of the broadcast. It is delivered at the moment to the sources collecting [actions]: if nobody is
+ * collecting, it is lost.
  *
  * <p>
  * Copyright (c) 2026 by Carmabs. All rights reserved.
@@ -20,42 +19,26 @@ import kotlin.reflect.KClass
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-internal class EmaActionBroadcaster : EmaActionDispatcher<EmaAction> {
+internal class EmaActionBroadcaster {
+
+    // Unlimited buffer, so broadcast never suspends nor drops an action while a source is busy
+    private val mutableActions = MutableSharedFlow<EmaAction>(extraBufferCapacity = Channel.UNLIMITED)
 
     /**
-     * Receives the actions of [actionType]
+     * Every action broadcast. Each source filters the types it listens to.
      */
-    class Listener(val actionType: KClass<out EmaAction>, val onAction: (EmaAction) -> Unit)
-
-    private val listeners = AtomicReference<List<Listener>>(emptyList())
+    val actions: SharedFlow<EmaAction> = mutableActions.asSharedFlow()
 
     /**
-     * Number of listeners added, to check that they are removed
+     * Number of sources collecting [actions], to check that they stop when they are closed
      */
     val listenerCount: Int
-        get() = listeners.load().size
-
-    fun addListener(listener: Listener) {
-        updateListeners { it + listener }
-    }
-
-    fun removeListener(listener: Listener) {
-        updateListeners { it - listener }
-    }
+        get() = mutableActions.subscriptionCount.value
 
     /**
-     * Sends [action] to the listeners of its type
+     * Sends [action] to the sources listening to its type
      */
-    override fun dispatch(action: EmaAction) {
-        listeners.load().forEach { listener ->
-            if (listener.actionType.isInstance(action)) listener.onAction(action)
-        }
-    }
-
-    private inline fun updateListeners(transform: (List<Listener>) -> List<Listener>) {
-        while (true) {
-            val current = listeners.load()
-            if (listeners.compareAndSet(current, transform(current))) return
-        }
+    fun broadcast(action: EmaAction) {
+        mutableActions.tryEmit(action)
     }
 }

@@ -3,7 +3,7 @@ package com.carmabs.emanate.android.configuration
 import com.carmabs.emanate.android.logging.EmaAndroidDataClassPrinter
 import com.carmabs.emanate.core.concurrency.EmaDispatchers
 import com.carmabs.emanate.core.model.EmaConfiguration
-import com.carmabs.emanate.core.model.EmaSideEffectConfig
+import com.carmabs.emanate.core.sideeffect.EmaSideEffectConfig
 import kotlinx.coroutines.Dispatchers
 
 /**

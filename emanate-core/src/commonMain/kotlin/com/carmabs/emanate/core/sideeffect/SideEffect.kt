@@ -1,9 +1,8 @@
-package com.carmabs.emanate.core.model
+package com.carmabs.emanate.core.sideeffect
 
 import com.carmabs.emanate.core.Ema
-import com.carmabs.emanate.core.EmaInternalApi
-import com.carmabs.emanate.core.extension.checkNull
-import com.carmabs.emanate.core.extension.emaName
+import com.carmabs.emanate.core.extension.qualifiedNameOrSimpleName
+import com.carmabs.emanate.core.extension.toNonNull
 import com.carmabs.emanate.core.model.reflection.Reflection
 import com.carmabs.emanate.core.model.reflection.ReflectionData
 import com.carmabs.emanate.core.model.reflection.ReflectionException
@@ -12,7 +11,7 @@ import kotlinx.coroutines.CoroutineScope
 
 /**
  * Launches [action] applying the [EmaSideEffectConfig]: its default actions and its exception policy. It is the side
- * effect of the ViewModels, shared with other Ema libraries.
+ * effect of the ViewModels and the sources.
  *
  * @param container class that launches the side effect. It is reported in [Reflection]
  * @param scope where the side effect is launched
@@ -24,8 +23,7 @@ import kotlinx.coroutines.CoroutineScope
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-@EmaInternalApi
-fun <T> emaSideEffect(
+internal fun <T> sideEffect(
     container: Any,
     scope: CoroutineScope,
     dispatcher: CoroutineContext = scope.coroutineContext,
@@ -36,8 +34,8 @@ fun <T> emaSideEffect(
 ): SideEffectResult<T> {
     val reflection: () -> Reflection = {
         Reflection(
-            containerClassName = container::class.simpleName.checkNull(),
-            containerClassQualifiedName = container::class.emaName,
+            containerClassName = container::class.simpleName.toNonNull(),
+            containerClassQualifiedName = container::class.qualifiedNameOrSimpleName,
             methodName = logName ?: sideEffectConfig.methodNameResolver.resolve(container, action)
         )
     }

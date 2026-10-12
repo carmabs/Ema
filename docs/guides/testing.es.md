@@ -110,14 +110,14 @@ entre pantallas y el ciclo de vida de la vista.
 
 ### Lo que conviene saber
 
-1. **Pasa tu propio scope.** El segundo parámetro del constructor de `EmaViewModelBasic` / `EmaViewModelAction` es el
+1. **Pasa tu propio scope.** El segundo parámetro del constructor de `EmaViewModelClassic` / `EmaViewModelAction` es el
    `CoroutineScope`. Exponlo en el constructor de tus ViewModels, con un valor por defecto, para que los tests puedan
    sustituirlo. El scope por defecto usa el dispatcher `main` de la configuración, `Dispatchers.Main`, que no existe
    en los tests unitarios. Con un `UnconfinedTestDispatcher` el trabajo se ejecuta inmediatamente; con un
    `StandardTestDispatcher`, llama a `advanceUntilIdle()` para ejecutarlo.
 
    ```kotlin
-   class CounterViewModel(scope: CoroutineScope = EmaMainScope()) :
+   class CounterViewModel(scope: CoroutineScope = CoroutineScope(SupervisorJob() + Ema.configuration.dispatchers.main)) :
        EmaViewModelAction<CounterState, CounterAction, CounterEvent>(CounterState(), scope)
    ```
 2. **No hace falta configuración.** Si no se llama a `Ema.init`, se usa la configuración por defecto. No llames a

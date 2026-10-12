@@ -13,7 +13,7 @@ which are pure functions. The flow of every screen is the same and predictable, 
 pieces declared in one place, and the whole ViewModel can be tested by recording its actions, states and events with
 [emanate-test](../guides/testing.md).
 
-The classic ViewModels, `EmaViewModelAction` and `EmaViewModelBasic`, are kept for compatibility and to migrate the
+The classic ViewModels, `EmaViewModelAction` and `EmaViewModelClassic`, are kept for compatibility and to migrate the
 existing screens step by step. Both kinds can live in the same app: the views only depend on `EmaViewModelContract`.
 
 ## EmaViewModel
@@ -110,7 +110,7 @@ addSideEffect<HomeInitializer> { initializer ->
 ## Classic ViewModels
 
 `EmaViewModelAction<S, A, E>` receives the actions in `onAction` and changes the state imperatively with
-`updateState`. `EmaViewModelBasic<S, E>` doesn't declare actions: the view calls public functions of the ViewModel,
+`updateState`. `EmaViewModelClassic<S, E>` doesn't declare actions: the view calls public functions of the ViewModel,
 as in classic MVVM. Prefer `EmaViewModelAction` between the two: its single entry point, `dispatch`, and the `sealed`
 actions make the code easier to follow.
 
@@ -180,7 +180,7 @@ override fun onStateCreated(initializer: EmaAction.Initializer?) {
 
 The views don't depend on the implementation of the ViewModel, but on `EmaViewModelContract<S, E>`: the initial
 state, `stateFlow`, `eventFlow`, `consumeEvent` and the lifecycle calls (`onCreated`, `onStartView`, `onResumeView`,
-`onPauseView`, `onStopView` and `onCleared`). `EmaViewModel`, `EmaViewModelAction` and `EmaViewModelBasic` implement
+`onPauseView`, `onStopView` and `onCleared`). `EmaViewModel`, `EmaViewModelAction` and `EmaViewModelClassic` implement
 it, and `EmaViewModelContract.EMPTY` is the ViewModel of a screen without state, actions nor events.
 
 ## How the ViewModel is kept alive

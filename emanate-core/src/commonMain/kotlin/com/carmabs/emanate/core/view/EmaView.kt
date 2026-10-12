@@ -1,6 +1,6 @@
 package com.carmabs.emanate.core.view
 
-import com.carmabs.emanate.core.action.EmaEventDispatcher
+import com.carmabs.emanate.core.action.EmaEventConsumer
 import com.carmabs.emanate.core.initializer.EmaInitializerSerializer
 import com.carmabs.emanate.core.navigator.EmaNavigator
 import com.carmabs.emanate.core.state.EmaEvent
@@ -125,7 +125,7 @@ interface EmaView<S : EmaState, VM : EmaViewModelContract<S, E>, E : EmaEvent> {
         viewModel.eventFlow.collectLatest {
             it.forEach { event ->
                 onEvent(event)
-                (viewModel as? EmaEventDispatcher<E>)?.consumeEvent(event)
+                (viewModel as? EmaEventConsumer<E>)?.consumeEvent(event)
             }
         }
     }

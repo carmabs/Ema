@@ -1,11 +1,11 @@
 package com.carmabs.emanate.core.viewmodel
 
 import com.carmabs.emanate.core.Ema
-import com.carmabs.emanate.core.action.DefaultEmaEventDispatcher
 import com.carmabs.emanate.core.action.EmaAction
 import com.carmabs.emanate.core.action.EmaAction.Initializer
 import com.carmabs.emanate.core.action.EmaAction.Lifecycle
 import com.carmabs.emanate.core.action.EmaActionDispatcher
+import com.carmabs.emanate.core.action.EventDispatcher
 import com.carmabs.emanate.core.logging.EmaLogger
 import com.carmabs.emanate.core.source.EmaSource
 import com.carmabs.emanate.core.source.EmaSourceObserver
@@ -68,7 +68,7 @@ abstract class EmaViewModel<S : EmaState, A : EmaAction, E : EmaEvent>(
 
     final override val stateFlow: StateFlow<S> = mutableStateFlow.asStateFlow()
 
-    private val eventDispatcher = DefaultEmaEventDispatcher<E>()
+    private val eventDispatcher = EventDispatcher<E>()
 
     final override val eventFlow: Flow<List<E>> = eventDispatcher.eventFlow
 

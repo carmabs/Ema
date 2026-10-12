@@ -3,7 +3,6 @@ package com.carmabs.emanate.presentation.home
 import com.carmabs.domain.model.User
 import com.carmabs.domain.usecase.GetUserFriendsUseCase
 import com.carmabs.emanate.core.action.EmaAction
-import com.carmabs.emanate.core.broadcast.backBroadcastId
 import com.carmabs.emanate.presentation.base.BaseActionViewModel
 import com.carmabs.emanate.presentation.profile.creation.ProfileCreationActionViewModel
 
@@ -49,7 +48,7 @@ class HomeActionViewModel(private val getUserFriendsUseCase: GetUserFriendsUseCa
     }
 
     override fun onBroadcastListenerSetup() {
-        registerBroadcastListener(ProfileCreationActionViewModel::class.backBroadcastId) {
+        registerBroadcastListener(ProfileCreationActionViewModel::class) {
             val user = it as User
             dispatchBroadcast(user)
             updateState {

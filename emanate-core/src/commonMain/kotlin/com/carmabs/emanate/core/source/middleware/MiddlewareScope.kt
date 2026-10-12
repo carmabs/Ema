@@ -3,8 +3,8 @@
 package com.carmabs.emanate.core.source.middleware
 
 import com.carmabs.emanate.core.action.EmaAction
-import com.carmabs.emanate.core.source.EmaDsl
 import com.carmabs.emanate.core.source.EmaSource
+import com.carmabs.emanate.core.source.EmaSourceDsl
 import com.carmabs.emanate.core.state.EmaState
 import kotlin.concurrent.atomics.AtomicBoolean
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
@@ -24,7 +24,7 @@ import kotlinx.coroutines.Job
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-@EmaDsl
+@EmaSourceDsl
 class MiddlewareScope<out S : EmaState, in A : EmaAction> internal constructor(
     private val context: MiddlewareContext<S>,
     private val receivedAction: EmaAction,

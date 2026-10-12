@@ -1,7 +1,7 @@
 package com.carmabs.emanate.core.source.reducer
 
 import com.carmabs.emanate.core.action.EmaAction
-import com.carmabs.emanate.core.source.EmaDsl
+import com.carmabs.emanate.core.source.EmaSourceDsl
 import com.carmabs.emanate.core.state.EmaState
 
 /**
@@ -16,7 +16,7 @@ import com.carmabs.emanate.core.state.EmaState
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-@EmaDsl
+@EmaSourceDsl
 class ReducerScope<out S : EmaState> internal constructor(val state: S) {
 
     /**

@@ -69,7 +69,7 @@ class LoginViewModel(
 En los dos, el punto de entrada público es `dispatch(action)`, así que la vista solo puede comunicarse mediante acciones
 y no puede llamar a funciones arbitrarias del ViewModel.
 
-Si prefieres no declarar acciones, `EmaViewModelBasic<State, Event>` permite que la vista llame a funciones públicas del
+Si prefieres no declarar acciones, `EmaViewModelClassic<State, Event>` permite que la vista llame a funciones públicas del
 ViewModel, como en el MVVM clásico. Se recomiendan las acciones: consulta [ViewModel](viewmodel.es.md).
 
 ## Enviarlas desde la vista

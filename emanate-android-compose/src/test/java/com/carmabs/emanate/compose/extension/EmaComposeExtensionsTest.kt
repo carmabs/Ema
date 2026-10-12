@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.test.core.app.ApplicationProvider
-import com.carmabs.emanate.compose.BasicViewModel
+import com.carmabs.emanate.compose.ClassicViewModel
 import com.carmabs.emanate.compose.CounterAction
 import com.carmabs.emanate.compose.CounterEvent
 import com.carmabs.emanate.compose.CounterState
@@ -242,9 +242,11 @@ class EmaComposeExtensionsTest {
         assertSame<Any>(viewModel, viewModel.asActionDispatcher<CounterAction>())
         assertIs<EmaViewModelAction<*, *, *>>(viewModel.asViewModelAction<CounterState, CounterAction, CounterEvent>())
 
-        val basic = BasicViewModel()
-        assertFailsWith<IllegalStateException> { basic.asViewModelAction<CounterState, CounterAction, CounterEvent>() }
-        assertFailsWith<IllegalStateException> { basic.asActionDispatcher<CounterAction>() }
+        val classic = ClassicViewModel()
+        assertFailsWith<IllegalStateException> {
+            classic.asViewModelAction<CounterState, CounterAction, CounterEvent>()
+        }
+        assertFailsWith<IllegalStateException> { classic.asActionDispatcher<CounterAction>() }
     }
 
     @Test

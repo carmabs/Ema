@@ -21,7 +21,7 @@ import com.carmabs.emanate.compose.extension.skipForPreview
 import com.carmabs.emanate.compose.provider.EmaScreenProvider
 import com.carmabs.emanate.core.action.EmaAction
 import com.carmabs.emanate.core.action.EmaActionDispatcher
-import com.carmabs.emanate.core.action.EmaEventDispatcher
+import com.carmabs.emanate.core.action.EmaEventConsumer
 import com.carmabs.emanate.core.model.EmaBackHandlerStrategy
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
@@ -176,7 +176,7 @@ private fun <S : EmaState, A : EmaAction, E : EmaEvent> RenderScreen(
                 events.forEach { event ->
                     onEvent(event)
                     screenContent.onEvent(context, event, immutableActions)
-                    (vm as? EmaEventDispatcher<E>)?.consumeEvent(event)
+                    (vm as? EmaEventConsumer<E>)?.consumeEvent(event)
                 }
             }
         }

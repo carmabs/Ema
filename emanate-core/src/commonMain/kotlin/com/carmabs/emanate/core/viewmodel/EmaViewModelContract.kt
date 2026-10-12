@@ -1,8 +1,8 @@
 package com.carmabs.emanate.core.viewmodel
 
 import com.carmabs.emanate.core.action.EmaAction
-import com.carmabs.emanate.core.action.EmaEventDispatcher
-import com.carmabs.emanate.core.extension.emaName
+import com.carmabs.emanate.core.action.EmaEventConsumer
+import com.carmabs.emanate.core.extension.qualifiedNameOrSimpleName
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
 import kotlinx.coroutines.flow.Flow
@@ -12,16 +12,16 @@ import kotlinx.coroutines.flow.emptyFlow
 
 /**
  * Contract between a view and its view model: the state and the events the view observes and the lifecycle it
- * notifies. It is implemented by [EmaViewModel], the recommended view model, and by the classic [EmaViewModelBasic]
+ * notifies. It is implemented by [EmaViewModel], the recommended view model, and by the classic [EmaViewModelClassic]
  * and [EmaViewModelAction].
  *
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
-interface EmaViewModelContract<S : EmaState, E : EmaEvent> : EmaEventDispatcher<E> {
+interface EmaViewModelContract<S : EmaState, E : EmaEvent> : EmaEventConsumer<E> {
 
     val id: String
         get() {
-            return "EmaViewModel ID: ${this::class.emaName}"
+            return "EmaViewModel ID: ${this::class.qualifiedNameOrSimpleName}"
         }
     val initialState: S
 

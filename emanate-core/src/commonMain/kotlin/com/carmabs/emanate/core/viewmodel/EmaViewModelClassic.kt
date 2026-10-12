@@ -1,22 +1,22 @@
 package com.carmabs.emanate.core.viewmodel
 
 import com.carmabs.emanate.core.Ema
-import com.carmabs.emanate.core.action.DefaultEmaEventDispatcher
 import com.carmabs.emanate.core.action.EmaAction
-import com.carmabs.emanate.core.action.EmaEventDispatcher
-import com.carmabs.emanate.core.broadcast.BackBroadcastId
-import com.carmabs.emanate.core.broadcast.backBroadcastId
-import com.carmabs.emanate.core.concurrency.EmaMainScope
+import com.carmabs.emanate.core.action.EmaEventConsumer
+import com.carmabs.emanate.core.action.EventDispatcher
+import com.carmabs.emanate.core.extension.qualifiedNameOrSimpleName
 import com.carmabs.emanate.core.model.EmaConfiguration
-import com.carmabs.emanate.core.model.EmaSideEffectConfig
-import com.carmabs.emanate.core.model.SideEffectResult
-import com.carmabs.emanate.core.model.emaSideEffect
 import com.carmabs.emanate.core.model.reflection.Reflection
+import com.carmabs.emanate.core.sideeffect.EmaSideEffectConfig
+import com.carmabs.emanate.core.sideeffect.SideEffectResult
+import com.carmabs.emanate.core.sideeffect.sideEffect
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
 import kotlin.coroutines.CoroutineContext
+import kotlin.reflect.KClass
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,12 +28,12 @@ import kotlinx.coroutines.flow.asStateFlow
  *
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
-abstract class EmaViewModelBasic<S : EmaState, E : EmaEvent>(
+abstract class EmaViewModelClassic<S : EmaState, E : EmaEvent>(
     initialDataState: S,
-    defaultScope: CoroutineScope = EmaMainScope()
+    defaultScope: CoroutineScope = CoroutineScope(SupervisorJob() + Ema.configuration.dispatchers.main)
 ) : EmaViewModelContract<S, E> {
 
-    private val emaEventDispatcher = DefaultEmaEventDispatcher<E>()
+    private val eventDispatcher = EventDispatcher<E>()
     private val singleSideEffectMap by lazy {
         hashMapOf<String, Job>()
     }
@@ -77,9 +77,9 @@ abstract class EmaViewModelBasic<S : EmaState, E : EmaEvent>(
      */
     private val mStateFlow: MutableStateFlow<S> = MutableStateFlow(initialDataState)
 
-    final override val eventFlow: Flow<List<E>> = emaEventDispatcher.eventFlow
+    final override val eventFlow: Flow<List<E>> = eventDispatcher.eventFlow
 
-    final override fun consumeEvent(event: E) = emaEventDispatcher.consumeEvent(event)
+    final override fun consumeEvent(event: E) = eventDispatcher.consumeEvent(event)
 
     private var firstTimeResumed = true
 
@@ -176,7 +176,7 @@ abstract class EmaViewModelBasic<S : EmaState, E : EmaEvent>(
         throwException: Boolean,
         logName: String?,
         action: suspend CoroutineScope.() -> T
-    ) = emaSideEffect(
+    ) = sideEffect(
         container = this,
         scope = scope,
         dispatcher = dispatcher,
@@ -241,7 +241,7 @@ abstract class EmaViewModelBasic<S : EmaState, E : EmaEvent>(
      * @param allowDuplicated If true, allows the same event to be dispatched multiple times before being consumed.
      */
     protected fun postEvent(event: E, allowDuplicated: Boolean = false) {
-        emaEventDispatcher.postEvent(event, allowDuplicated)
+        eventDispatcher.postEvent(event, allowDuplicated)
     }
 
     /**
@@ -250,7 +250,7 @@ abstract class EmaViewModelBasic<S : EmaState, E : EmaEvent>(
     protected fun dispatchBroadcast(data: Any?) {
         emaResultHandler.addResult(
             ResultModel(
-                key = this::class.backBroadcastId.id,
+                key = this::class.resultKey,
                 ownerId = id,
                 data = data
             )
@@ -258,19 +258,26 @@ abstract class EmaViewModelBasic<S : EmaState, E : EmaEvent>(
     }
 
     /**
-     * Sets the listener of the result that another view model sends with [dispatchBroadcast], received when that view
-     * model is destroyed. Select it with the id of its class, for example `SampleViewModel::class.backBroadcastId`
+     * Sets the listener of the result that the view model of class [sender] sends with [dispatchBroadcast], received
+     * when that view model is destroyed. For example `registerBroadcastListener(SampleViewModel::class) { }`
      */
-    protected fun registerBroadcastListener(backBroadcastId: BackBroadcastId, receiver: (Any?) -> Unit) {
+    protected fun registerBroadcastListener(sender: KClass<out EmaViewModelContract<*, *>>, receiver: (Any?) -> Unit) {
+        val resultKey = sender.resultKey
         emaResultHandler.addResultReceiver(
             ReceiverModel(
-                resultKey = backBroadcastId.id,
+                resultKey = resultKey,
                 ownerId = id,
                 function = receiver
             )
         )
-        emaResultHandler.notifyPendingResults(id, backBroadcastId)
+        emaResultHandler.notifyPendingResults(id, resultKey)
     }
+
+    /**
+     * Key of the results sent by the view models of this class
+     */
+    private val KClass<*>.resultKey: String
+        get() = "broadcast/$qualifiedNameOrSimpleName"
 
     /**
      * Method called when the ViewModel is destroyed. It cancels all background pending tasks.

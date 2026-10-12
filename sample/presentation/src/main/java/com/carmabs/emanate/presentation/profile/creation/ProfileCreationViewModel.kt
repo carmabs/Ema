@@ -40,7 +40,7 @@ class ProfileCreationViewModel(initialDataState: ProfileCreationState) :
         // The home screen adds the user to its list
         addSideEffect<ProfileCreationAction.DialogConfirmClicked> {
             val user = User(state.name, state.surname, state.role)
-            broadcastDispatcher.dispatch(ProfileCreationBroadcast.UserCreated(user))
+            broadcast(ProfileCreationBroadcast.UserCreated(user))
             postEvent(ProfileCreationEvent.DialogConfirmationAccepted)
         }
 

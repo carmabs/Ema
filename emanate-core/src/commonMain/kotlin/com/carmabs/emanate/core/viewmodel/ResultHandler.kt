@@ -1,8 +1,5 @@
 package com.carmabs.emanate.core.viewmodel
 
-import com.carmabs.emanate.core.EmaInternalApi
-import com.carmabs.emanate.core.broadcast.BackBroadcastId
-
 /**
  * Created by Carlos Mateo Benito on 2019-11-03.
  *
@@ -12,8 +9,7 @@ import com.carmabs.emanate.core.broadcast.BackBroadcastId
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-@EmaInternalApi
-class ResultHandler private constructor() {
+internal class ResultHandler private constructor() {
 
     companion object {
         private val emaResultHandler = ResultHandler()
@@ -94,11 +90,14 @@ class ResultHandler private constructor() {
         }
     }
 
-    fun notifyPendingResults(ownerId: String, backBroadcastId: BackBroadcastId) {
-        pendingResultMap[backBroadcastId.id]?.also {
+    /**
+     * Notifies the result of [resultKey] that was set when nobody was listening to it
+     */
+    fun notifyPendingResults(ownerId: String, resultKey: String) {
+        pendingResultMap[resultKey]?.also {
             if (ownerId != it.ownerId) {
-                receiverMap[backBroadcastId.id]?.function?.invoke(it.data)
-                pendingResultMap.remove(backBroadcastId.id)
+                receiverMap[resultKey]?.function?.invoke(it.data)
+                pendingResultMap.remove(resultKey)
             }
         }
     }

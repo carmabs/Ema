@@ -42,7 +42,7 @@ class EmaSourceBroadcastTest {
         UnconfinedTestDispatcher(testScheduler)
     ) {
         addSideEffect<SenderAction.Create> { action ->
-            broadcastDispatcher.dispatch(UserBroadcast.Created(action.user))
+            broadcast(UserBroadcast.Created(action.user))
         }
     }
 
@@ -87,8 +87,8 @@ class EmaSourceBroadcastTest {
     fun `only the actions of the listened type are received`() = runTest {
         val receiver = receiverSource()
 
-        Ema.actionBroadcaster.dispatch(UserBroadcast.Created("Ana"))
-        Ema.actionBroadcaster.dispatch(UserBroadcast.Deleted("Ana"))
+        Ema.actionBroadcaster.broadcast(UserBroadcast.Created("Ana"))
+        Ema.actionBroadcaster.broadcast(UserBroadcast.Deleted("Ana"))
         runCurrent()
 
         assertEquals(ListState(users = listOf("Ana")), receiver.state)

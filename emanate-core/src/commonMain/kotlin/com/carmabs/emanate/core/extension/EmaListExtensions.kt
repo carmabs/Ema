@@ -14,7 +14,8 @@ import com.carmabs.emanate.core.constants.INT_ZERO
  */
 
 /**
- * Update the item with the new one provided.
+ * Replaces the first item that meets [findCriteria] with the result of [updateAction] on it.
+ * @return a new list with the item replaced, or a copy of the list if no item meets [findCriteria]
  */
 fun <T> List<T>.update(findCriteria: ((T) -> Boolean), updateAction: (T.() -> T)): List<T> {
     val itemIndex = indexOfFirst {
@@ -32,6 +33,10 @@ fun <T> List<T>.update(findCriteria: ((T) -> Boolean), updateAction: (T.() -> T)
     }
 }
 
+/**
+ * Replaces the item at [index] with the result of [updateAction] on it.
+ * @return a new list with the item replaced, or a copy of the list if [index] is negative
+ */
 fun <T> List<T>.update(index: Int, updateAction: (T.() -> T)): List<T> = if (index < INT_ZERO) {
     toList()
 } else {
@@ -42,10 +47,19 @@ fun <T> List<T>.update(index: Int, updateAction: (T.() -> T)): List<T> = if (ind
     updatedList
 }
 
+/**
+ * Runs [action] on the items alternating both ends: first, last, second, second to last... until the center.
+ * [action] receives the index of the item in the list.
+ */
 fun <T> List<T>.forEachFirstLast(action: (Int, T) -> Unit) {
     internalForEachFirstLast(INT_ZERO, size, true, action)
 }
 
+/**
+ * Maps the items alternating both ends: first, last, second, second to last... until the center. [action] receives
+ * the index of the item in the list.
+ * @return the mapped items, in the order they have been visited
+ */
 fun <T, R> List<T>.mapEachFirstLast(action: (Int, T) -> R): List<R> {
     val returnList = mutableListOf<R>()
     internalMapEachFirstLast(returnList, INT_ZERO, size, true, action)
@@ -91,6 +105,9 @@ internal fun <T, R> List<T>.internalMapEachFirstLast(
     }
 }
 
+/**
+ * Like [mapEachFirstLast], without the index of the item.
+ */
 fun <T, R> List<T>.mapFirstLast(action: (T) -> R): List<R> = firstOrNull()?.let {
     drop(INT_ONE).internalMapFirstLast(transformList = mutableListOf(action(it)), first = false, action = action)
 } ?: emptyList()

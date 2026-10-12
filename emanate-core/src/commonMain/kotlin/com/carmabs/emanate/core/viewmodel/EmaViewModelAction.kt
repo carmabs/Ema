@@ -1,11 +1,12 @@
 package com.carmabs.emanate.core.viewmodel
 
+import com.carmabs.emanate.core.Ema
 import com.carmabs.emanate.core.action.EmaAction
 import com.carmabs.emanate.core.action.EmaActionDispatcher
-import com.carmabs.emanate.core.concurrency.EmaMainScope
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
 
 /**
  * Created by Carlos Mateo Benito on 14/04/2023.
@@ -20,8 +21,8 @@ import kotlinx.coroutines.CoroutineScope
  */
 abstract class EmaViewModelAction<S : EmaState, A : EmaAction, E : EmaEvent>(
     initialDataState: S,
-    scope: CoroutineScope = EmaMainScope()
-) : EmaViewModelBasic<S, E>(initialDataState, scope),
+    scope: CoroutineScope = CoroutineScope(SupervisorJob() + Ema.configuration.dispatchers.main)
+) : EmaViewModelClassic<S, E>(initialDataState, scope),
     EmaActionDispatcher<A> {
 
     final override fun dispatch(action: A) {

@@ -2,6 +2,7 @@ package com.carmabs.emanate.core.model
 
 import com.carmabs.emanate.core.concurrency.EmaDispatchers
 import com.carmabs.emanate.core.logging.EmaDataClassPrinter
+import com.carmabs.emanate.core.sideeffect.EmaSideEffectConfig
 
 /**
  * Configuration of Ema, set with [com.carmabs.emanate.core.Ema.init].
@@ -18,5 +19,6 @@ data class EmaConfiguration(
     val sideEffectConfig: EmaSideEffectConfig = EmaSideEffectConfig(),
     val dataClassPrinter: EmaDataClassPrinter = EmaDataClassPrinter.ToString
 ) {
+    // Empty, so other modules can add predefined configurations as extensions, like EmaConfiguration.Android
     companion object
 }

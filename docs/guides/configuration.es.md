@@ -47,7 +47,7 @@ Ema.init(
 
 | Dispatcher | Por defecto                                            | Lo usan                                                                            |
 |------------|--------------------------------------------------------|------------------------------------------------------------------------------------|
-| `main`     | `Dispatchers.Main`                                     | Los ViewModels, a través de su scope por defecto `EmaMainScope()`.                 |
+| `main`     | `Dispatchers.Main`                                     | Los ViewModels y las sources, por defecto.                                         |
 | `io`       | `Dispatchers.IO`, o `Dispatchers.Default` en JS y Wasm | Los [casos de uso](utilities.es.md#casos-de-uso): red, disco y trabajo bloqueante. |
 | `default`  | `Dispatchers.Default`                                  | El trabajo de cálculo, como procesar imágenes en `emanate-android`.                |
 
@@ -81,8 +81,3 @@ Para decidir el nombre de otra forma, implementa `EmaMethodNameResolver` y asíg
 `toStringPretty()` imprime cualquier objeto con el `EmaDataClassPrinter` configurado. `EmaConfiguration.Android` usa
 `EmaAndroidDataClassPrinter`, que imprime los campos, los objetos anidados, las colecciones y los mapas con sangría.
 Implementa `EmaDataClassPrinter` para imprimirlos a tu manera.
-
-## El broadcast manager
-
-`Ema.broadcastManager` es el `EmaBroadcastManager` global de la app. Consulta
-[Resultados entre pantallas](results-between-screens.es.md#broadcasts-globales).

@@ -1,4 +1,4 @@
-package com.carmabs.emanate.core.model
+package com.carmabs.emanate.core.sideeffect
 
 /**
  * Resolves the name of the method that launched a sideEffect, used in [com.carmabs.emanate.core.model.reflection.Reflection].

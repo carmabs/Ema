@@ -45,7 +45,7 @@ import com.carmabs.emanate.core.model.EmaBackHandlerStrategy
 import com.carmabs.emanate.core.model.EmaConfiguration
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
-import com.carmabs.emanate.core.viewmodel.EmaViewModelBasic
+import com.carmabs.emanate.core.viewmodel.EmaViewModelClassic
 import java.util.UUID
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
@@ -69,7 +69,7 @@ import org.robolectric.shadows.ShadowToast
 
 data class TestState(val value: Int = 0) : EmaState
 
-class TestViewModel : EmaViewModelBasic<TestState, EmaEvent.EMPTY>(TestState()) {
+class TestViewModel : EmaViewModelClassic<TestState, EmaEvent.EMPTY>(TestState()) {
     var destroyed = false
     override fun onStateCreated(initializer: EmaAction.Initializer?) = Unit
     override fun onDestroy() {

@@ -1,4 +1,4 @@
-package com.carmabs.emanate.core.model
+package com.carmabs.emanate.core.sideeffect
 
 import com.carmabs.emanate.core.model.reflection.Reflection
 import com.carmabs.emanate.core.model.reflection.ReflectionData

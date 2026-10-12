@@ -11,11 +11,11 @@ package com.carmabs.emanate.core.extension
  */
 
 /**
- * Get float value from string, with comma or dot separator
+ * Finds a decimal number of one or two digits on each side, with comma or dot as separator. For example 3,5 or 12.25
  */
 val emaRegexGetFloatValue = Regex("\\d{1,2}[,.]\\d{1,2}")
 
 /**
- * Get character value from string, removing all digits
+ * Finds any character that is not a digit
  */
 val emaRegexGetCharacterValue = Regex("[\\D]")

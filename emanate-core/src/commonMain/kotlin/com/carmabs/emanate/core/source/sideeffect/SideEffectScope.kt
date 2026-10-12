@@ -1,9 +1,8 @@
 package com.carmabs.emanate.core.source.sideeffect
 
 import com.carmabs.emanate.core.action.EmaAction
-import com.carmabs.emanate.core.action.EmaActionDispatcher
-import com.carmabs.emanate.core.source.EmaDsl
 import com.carmabs.emanate.core.source.EmaSource
+import com.carmabs.emanate.core.source.EmaSourceDsl
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
 
@@ -19,7 +18,7 @@ import com.carmabs.emanate.core.state.EmaState
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-@EmaDsl
+@EmaSourceDsl
 class SideEffectScope<out S : EmaState, in A : EmaAction, in E : EmaEvent> internal constructor(
     private val source: EmaSource<S, *, E>
 ) {
@@ -35,10 +34,11 @@ class SideEffectScope<out S : EmaState, in A : EmaAction, in E : EmaEvent> inter
 
     /**
      * Broadcasts any action to the sources listening to its type, added with addBroadcastListener. For example, to
-     * send a result to the previous screen. It is delivered only to the listeners added at the moment.
+     * send a result to the previous screen. It is delivered only to the sources listening at the moment.
      */
-    val broadcastDispatcher: EmaActionDispatcher<EmaAction>
-        get() = source.broadcaster
+    fun broadcast(action: EmaAction) {
+        source.broadcaster.broadcast(action)
+    }
 
     /**
      * Posts an event for the view. It arrives after the actions dispatched before it, so the view sees their state.

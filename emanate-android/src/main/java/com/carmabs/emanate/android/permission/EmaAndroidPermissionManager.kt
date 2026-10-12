@@ -14,7 +14,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
 import com.carmabs.emanate.android.R
 import com.carmabs.emanate.android.extension.findActivity
-import com.carmabs.emanate.core.EmaInternalApi
 import com.carmabs.emanate.core.extension.ifTrueLet
 import com.carmabs.emanate.core.extension.toScope
 import com.carmabs.emanate.core.manager.EmaPermissionManager
@@ -74,10 +73,9 @@ class EmaAndroidPermissionManager : EmaPermissionManager {
     }
 
     /**
-     * Creates the manager from the functions of its host. Used by the hosts of other modules, like
-     * the Fragment factory of emanate-android-view.
+     * Creates the manager from the functions of its host: an Activity, a Fragment or a composable. The Fragment factory of
+     * emanate-android-view and the composable of emanate-android-compose use it, and it can be used for other hosts.
      */
-    @EmaInternalApi
     constructor(
         contextProvider: () -> Context,
         shouldShowRequestPermissionRationale: (String) -> Boolean,

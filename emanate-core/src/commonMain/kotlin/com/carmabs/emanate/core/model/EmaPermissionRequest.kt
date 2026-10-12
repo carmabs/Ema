@@ -1,6 +1,5 @@
 package com.carmabs.emanate.core.model
 
-import com.carmabs.emanate.core.EmaInternalApi
 import com.carmabs.emanate.core.manager.PermissionState
 
 /**
@@ -13,9 +12,13 @@ import com.carmabs.emanate.core.manager.PermissionState
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
 class EmaPermissionRequest private constructor(
-    @EmaInternalApi
+    /**
+     * False when the request is cancelled: the permission manager must not request the permission
+     */
     val shouldRequest: Boolean,
-    @EmaInternalApi
+    /**
+     * Called by the permission manager with the result of the request
+     */
     val onPermissionResponse: ((PermissionState) -> Unit)
 ) {
     companion object {

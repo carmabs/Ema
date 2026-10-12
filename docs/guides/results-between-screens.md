@@ -17,9 +17,9 @@ sequenceDiagram
     participant L as LoginViewModel
     Note over H: addBroadcastListener<UserCreated>()
     Note over L: addBroadcastListener<UserAdded>()
-    P->>H: broadcastDispatcher.dispatch(UserCreated(user))
+    P->>H: broadcast(UserCreated(user))
     Note over H: reducer: adds the user to the list
-    H->>L: broadcastDispatcher.dispatch(UserAdded(user))
+    H->>L: broadcast(UserAdded(user))
     Note over L: side effect: postEvent(LastUserAdded)
 ```
 
@@ -33,11 +33,11 @@ sealed interface ProfileCreationBroadcast : EmaAction {
 
 ### Send
 
-Broadcast it with `broadcastDispatcher`, available in every side effect. It accepts any action:
+Broadcast it with `broadcast`, available in every side effect. It accepts any action:
 
 ```kotlin
 addSideEffect<ProfileCreationAction.DialogConfirmClicked> {
-    broadcastDispatcher.dispatch(ProfileCreationBroadcast.UserCreated(User(state.name, state.surname, state.role)))
+    broadcast(ProfileCreationBroadcast.UserCreated(User(state.name, state.surname, state.role)))
     postEvent(ProfileCreationEvent.DialogConfirmationAccepted)
 }
 ```
@@ -55,7 +55,7 @@ override fun SourceSetupScope<HomeState, HomeAction, HomeEvent>.setup() {
     }
     // Passes it along to the login screen
     addSideEffect<ProfileCreationBroadcast.UserCreated> { action ->
-        broadcastDispatcher.dispatch(HomeBroadcast.UserAdded(action.user))
+        broadcast(HomeBroadcast.UserAdded(action.user))
     }
 }
 ```
@@ -105,7 +105,7 @@ In the screen that is waiting, register a listener in `onBroadcastListenerSetup`
 
 ```kotlin
 override fun onBroadcastListenerSetup() {
-    registerBroadcastListener(ProfileCreationViewModel::class.backBroadcastId) {
+    registerBroadcastListener(ProfileCreationViewModel::class) {
         val user = it as User
         updateState { copy(userList = userList + user) }
     }
@@ -128,22 +128,3 @@ calls `dispatchBroadcast(user)` so that `LoginActionViewModel` receives it when 
 
 > If the receiver reacts by showing something, store the result and post an event from `onViewResumed`, as
 > `LoginActionViewModel` does, instead of acting from the listener: the view may not be ready yet.
-
-## App-wide broadcasts
-
-For events that are not tied to a screen closing, use the app-wide `Ema.broadcastManager`. Pass it to the classes that
-need it as an `EmaBroadcastManager`, so they can receive a fake in tests.
-
-```kotlin
-class UserCreated(override val data: User) : EmaBroadcastEvent<User>
-
-// Receiver (suspends while it listens, so launch it in a coroutine)
-sideEffect {
-    broadcastManager.registerBroadcast(UserCreated::class) { user -> /* ... */ }
-}
-
-// Sender
-broadcastManager.sendBroadcastEvent(UserCreated(user))
-```
-
-Listeners must be registered before the event is sent: events are not replayed.

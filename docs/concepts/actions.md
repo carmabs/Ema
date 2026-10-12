@@ -68,7 +68,7 @@ class LoginViewModel(
 In both, the public entry point is `dispatch(action)`, so a view can only communicate through actions and cannot call
 arbitrary ViewModel functions.
 
-If you prefer not to declare actions, `EmaViewModelBasic<State, Event>` lets the view call public functions of the
+If you prefer not to declare actions, `EmaViewModelClassic<State, Event>` lets the view call public functions of the
 ViewModel, as in classic MVVM. Actions are recommended: see [ViewModel](viewmodel.md).
 
 ## Dispatching from the view

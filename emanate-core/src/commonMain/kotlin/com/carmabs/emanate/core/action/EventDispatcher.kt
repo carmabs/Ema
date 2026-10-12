@@ -15,13 +15,15 @@ import kotlinx.coroutines.flow.update
 /**
  * Created by Carlos Mateo Benito on 03/08/2026.
  *
+ * Keeps the events posted by a view model or a source until the view consumes them.
+ *
  * <p>
  * Copyright (c) 2026 by Carmabs. All rights reserved.
  * </p>
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-class DefaultEmaEventDispatcher<E : EmaEvent> : EmaEventDispatcher<E> {
+internal class EventDispatcher<E : EmaEvent> : EmaEventConsumer<E> {
 
     /**
      * Every posted event gets a unique id, so an event equal to one already delivered is still a new event

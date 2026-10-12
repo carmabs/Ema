@@ -1,5 +1,3 @@
-import com.carmabs.emanate.core.extension.checkNull
-import com.carmabs.emanate.core.extension.checkNullOrEmpty
 import com.carmabs.emanate.core.extension.constraintValue
 import com.carmabs.emanate.core.extension.emaRegexGetCharacterValue
 import com.carmabs.emanate.core.extension.emaRegexGetFloatValue
@@ -18,6 +16,8 @@ import com.carmabs.emanate.core.extension.minOrNull
 import com.carmabs.emanate.core.extension.replaceLast
 import com.carmabs.emanate.core.extension.toEmaResult
 import com.carmabs.emanate.core.extension.toEmaText
+import com.carmabs.emanate.core.extension.toNonEmpty
+import com.carmabs.emanate.core.extension.toNonNull
 import com.carmabs.emanate.core.extension.toScope
 import com.carmabs.emanate.core.extension.update
 import com.carmabs.emanate.core.manager.PermissionState
@@ -39,20 +39,20 @@ import kotlinx.coroutines.Dispatchers
 class EmaNumberExtensionsTest {
 
     @Test
-    fun `checkNull returns the value or the default`() {
-        assertEquals(3, (3 as Int?).checkNull())
-        assertEquals(0, (null as Int?).checkNull())
-        assertEquals(7, (null as Int?).checkNull(7))
-        assertEquals(1.5f, (1.5f as Float?).checkNull())
-        assertEquals(0f, (null as Float?).checkNull())
-        assertEquals(2.toShort(), (2.toShort() as Short?).checkNull())
-        assertEquals(0.toShort(), (null as Short?).checkNull())
-        assertEquals(9L, (9L as Long?).checkNull())
-        assertEquals(0L, (null as Long?).checkNull())
-        assertEquals(2.5, (2.5 as Double?).checkNull())
-        assertEquals(0.0, (null as Double?).checkNull())
-        assertTrue((true as Boolean?).checkNull())
-        assertFalse((null as Boolean?).checkNull())
+    fun `toNonNull returns the value or the default`() {
+        assertEquals(3, (3 as Int?).toNonNull())
+        assertEquals(0, (null as Int?).toNonNull())
+        assertEquals(7, (null as Int?).toNonNull(7))
+        assertEquals(1.5f, (1.5f as Float?).toNonNull())
+        assertEquals(0f, (null as Float?).toNonNull())
+        assertEquals(2.toShort(), (2.toShort() as Short?).toNonNull())
+        assertEquals(0.toShort(), (null as Short?).toNonNull())
+        assertEquals(9L, (9L as Long?).toNonNull())
+        assertEquals(0L, (null as Long?).toNonNull())
+        assertEquals(2.5, (2.5 as Double?).toNonNull())
+        assertEquals(0.0, (null as Double?).toNonNull())
+        assertTrue((true as Boolean?).toNonNull())
+        assertFalse((null as Boolean?).toNonNull())
     }
 
     @Test
@@ -141,17 +141,22 @@ class EmaBooleanAndStringExtensionsTest {
 
     @Test
     fun `string null checks`() {
-        assertEquals("a", ("a" as String?).checkNull())
-        assertEquals("", (null as String?).checkNull())
-        assertEquals("x", (null as String?).checkNull("x"))
-        assertEquals("x", ("" as String?).checkNullOrEmpty("x"))
-        assertEquals("x", (null as String?).checkNullOrEmpty("x"))
-        assertEquals("a", ("a" as String?).checkNullOrEmpty("x"))
+        assertEquals("a", ("a" as String?).toNonNull())
+        assertEquals("", (null as String?).toNonNull())
+        assertEquals("x", (null as String?).toNonNull("x"))
+        assertEquals("x", ("" as String?).toNonEmpty("x"))
+        assertEquals("x", (null as String?).toNonEmpty("x"))
+        assertEquals("a", ("a" as String?).toNonEmpty("x"))
     }
 
     @Test
     fun `replaceLast replaces the last delimiter`() {
         assertEquals("1.000,50", "1.000.50".replaceLast('.', ","))
+    }
+
+    @Test
+    fun `replaceLast keeps the string without the delimiter`() {
+        assertEquals("1000", "1000".replaceLast('.', ","))
     }
 
     @Test

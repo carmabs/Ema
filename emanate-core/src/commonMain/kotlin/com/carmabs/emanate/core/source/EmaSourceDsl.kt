@@ -16,4 +16,4 @@ package com.carmabs.emanate.core.source
  */
 @DslMarker
 @Target(AnnotationTarget.CLASS, AnnotationTarget.TYPE)
-annotation class EmaDsl
+annotation class EmaSourceDsl

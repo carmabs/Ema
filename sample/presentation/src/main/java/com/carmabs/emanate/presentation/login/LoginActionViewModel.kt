@@ -3,7 +3,6 @@ package com.carmabs.emanate.presentation.login
 import com.carmabs.domain.model.User
 import com.carmabs.domain.usecase.LoginUseCase
 import com.carmabs.emanate.core.action.EmaAction
-import com.carmabs.emanate.core.broadcast.backBroadcastId
 import com.carmabs.emanate.core.constants.STRING_EMPTY
 import com.carmabs.emanate.core.model.onFailure
 import com.carmabs.emanate.core.model.onSuccess
@@ -63,7 +62,7 @@ class LoginActionViewModel(private val loginUseCase: LoginUseCase, initialDataSt
     private var pendingUser: User? = null
 
     override fun onBroadcastListenerSetup() {
-        registerBroadcastListener(HomeActionViewModel::class.backBroadcastId) {
+        registerBroadcastListener(HomeActionViewModel::class) {
             pendingUser = it as User
         }
     }

@@ -8,7 +8,7 @@ import com.carmabs.emanate.core.constants.LONG_ZERO
 import com.carmabs.emanate.core.constants.SHORT_ZERO
 import kotlin.math.ceil
 
-/**
+/*
  * Created by Carlos Mateo Benito on 2019-11-24.
  *
  * <p>
@@ -18,10 +18,13 @@ import kotlin.math.ceil
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
 
-fun Int?.checkNull(defaultValue: Int = INT_ZERO): Int = this ?: defaultValue
+/**
+ * Returns the value, or [defaultValue] if it is null.
+ */
+fun Int?.toNonNull(defaultValue: Int = INT_ZERO): Int = this ?: defaultValue
 
 /**
- * Check if value is greater or equal than min or return null
+ * Returns the value if it is greater than or equal to [min], or null otherwise.
  */
 fun Int.minOrNull(min: Int): Int? = if (this >= min) {
     this
@@ -30,7 +33,7 @@ fun Int.minOrNull(min: Int): Int? = if (this >= min) {
 }
 
 /**
- * Check if value is smaller or equal than max or return null
+ * Returns the value if it is less than or equal to [max], or null otherwise.
  */
 fun Int.maxOrNull(max: Int): Int? = if (this <= max) {
     this
@@ -38,10 +41,13 @@ fun Int.maxOrNull(max: Int): Int? = if (this <= max) {
     null
 }
 
-fun Float?.checkNull(defaultValue: Float = FLOAT_ZERO): Float = this ?: defaultValue
+/**
+ * Returns the value, or [defaultValue] if it is null.
+ */
+fun Float?.toNonNull(defaultValue: Float = FLOAT_ZERO): Float = this ?: defaultValue
 
 /**
- * Check if value is greater or equal than min or return null
+ * Returns the value if it is greater than or equal to [min], or null otherwise.
  */
 fun Float.minOrNull(min: Float): Float? = if (this >= min) {
     this
@@ -50,7 +56,7 @@ fun Float.minOrNull(min: Float): Float? = if (this >= min) {
 }
 
 /**
- * Check if value is smaller or equal than max or return null
+ * Returns the value if it is less than or equal to [max], or null otherwise.
  */
 fun Float.maxOrNull(max: Float): Float? = if (this <= max) {
     this
@@ -58,12 +64,18 @@ fun Float.maxOrNull(max: Float): Float? = if (this <= max) {
     null
 }
 
+/**
+ * Returns true if the value has a fractional part.
+ */
 fun Float.hasDecimals(): Boolean = this != ceil(this)
 
-fun Short?.checkNull(defaultValue: Short = SHORT_ZERO): Short = this ?: defaultValue
+/**
+ * Returns the value, or [defaultValue] if it is null.
+ */
+fun Short?.toNonNull(defaultValue: Short = SHORT_ZERO): Short = this ?: defaultValue
 
 /**
- * Check if value is greater or equal than min or return null
+ * Returns the value if it is greater than or equal to [min], or null otherwise.
  */
 fun Short.minOrNull(min: Short): Short? = if (this >= min) {
     this
@@ -72,7 +84,7 @@ fun Short.minOrNull(min: Short): Short? = if (this >= min) {
 }
 
 /**
- * Check if value is smaller or equal than max or return null
+ * Returns the value if it is less than or equal to [max], or null otherwise.
  */
 fun Short.maxOrNull(max: Short): Short? = if (this <= max) {
     this
@@ -80,10 +92,13 @@ fun Short.maxOrNull(max: Short): Short? = if (this <= max) {
     null
 }
 
-fun Long?.checkNull(defaultValue: Long = LONG_ZERO): Long = this ?: defaultValue
+/**
+ * Returns the value, or [defaultValue] if it is null.
+ */
+fun Long?.toNonNull(defaultValue: Long = LONG_ZERO): Long = this ?: defaultValue
 
 /**
- * Check if value is greater or equal than min or return null
+ * Returns the value if it is greater than or equal to [min], or null otherwise.
  */
 fun Long.minOrNull(min: Long): Long? = if (this >= min) {
     this
@@ -92,7 +107,7 @@ fun Long.minOrNull(min: Long): Long? = if (this >= min) {
 }
 
 /**
- * Check if value is smaller or equal than max or return null
+ * Returns the value if it is less than or equal to [max], or null otherwise.
  */
 fun Long.maxOrNull(max: Long): Long? = if (this <= max) {
     this
@@ -100,10 +115,13 @@ fun Long.maxOrNull(max: Long): Long? = if (this <= max) {
     null
 }
 
-fun Double?.checkNull(defaultValue: Double = DOUBLE_ZERO): Double = this ?: defaultValue
+/**
+ * Returns the value, or [defaultValue] if it is null.
+ */
+fun Double?.toNonNull(defaultValue: Double = DOUBLE_ZERO): Double = this ?: defaultValue
 
 /**
- * Check if value is greater or equal than min or return null
+ * Returns the value if it is greater than or equal to [min], or null otherwise.
  */
 fun Double.minOrNull(min: Double): Double? = if (this >= min) {
     this
@@ -112,7 +130,7 @@ fun Double.minOrNull(min: Double): Double? = if (this >= min) {
 }
 
 /**
- * Check if value is smaller or equal than max or return null
+ * Returns the value if it is less than or equal to [max], or null otherwise.
  */
 fun Double.maxOrNull(max: Double): Double? = if (this <= max) {
     this
@@ -120,14 +138,25 @@ fun Double.maxOrNull(max: Double): Double? = if (this <= max) {
     null
 }
 
-fun Boolean?.checkNull(defaultValue: Boolean = false): Boolean = this ?: defaultValue
+/**
+ * Returns the value, or [defaultValue] if it is null.
+ */
+fun Boolean?.toNonNull(defaultValue: Boolean = false): Boolean = this ?: defaultValue
 
+/**
+ * Limits the value to the range from [minLimit] to [maxLimit].
+ */
 fun Float.constraintValue(minLimit: Float, maxLimit: Float): Float = coerceAtLeast(minLimit).coerceAtMost(maxLimit)
 
+/**
+ * Limits the value to the range from [minLimit] to [maxLimit].
+ */
 fun Int.constraintValue(minLimit: Int, maxLimit: Int): Int = coerceAtLeast(minLimit).coerceAtMost(maxLimit)
 
 /**
- * Method to get index interpolating from center to alternatives vector ends
+ * Returns the position in a list of [length] items of the step [index] of a walk that goes from the center to the ends,
+ * alternating sides: center, center - 1, center + 1, center - 2... The sides are swapped when [startRight] is false.
+ * An [index] out of the list returns the center.
  */
 fun iteratePositionFromCenter(index: Int, length: Int, startRight: Boolean = true): Int {
     val centerPosition = length / 2
@@ -155,7 +184,9 @@ fun iteratePositionFromCenter(index: Int, length: Int, startRight: Boolean = tru
 }
 
 /**
- * Method to get index interpolating alternatives vector ends  to center
+ * Returns the position in a list of [length] items of the step [index] of a walk that goes from the ends to the center,
+ * alternating sides: last, first, second to last, second... The sides are swapped when [startRight] is false. An
+ * [index] out of the list returns the center.
  */
 fun iteratePositionFromEnd(index: Int, length: Int, startRight: Boolean = true): Int {
     val centerPosition = length / 2
