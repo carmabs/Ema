@@ -100,6 +100,14 @@ class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
     private val scope = CoroutineScope(SupervisorJob() + dispatcher)
 
     /**
+     * Job of the side effects of [EmaAction.Lifecycle.Destroyed]. [close] doesn't cancel them, so they can finish, up
+     * to their timeout or the destroyedTimeout of the side effect configuration: it completes when they do.
+     */
+    private val destroyedJob = SupervisorJob()
+
+    private val destroyedScope = CoroutineScope(destroyedJob + dispatcher)
+
+    /**
      * Reported as the class that launches the side effects: the view model that owns the source, or the source
      */
     private val container: Any = container ?: this
@@ -146,23 +154,29 @@ class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
         }
     }
 
-    private val loop: Job = scope.launch {
-        for (step in queue) {
-            step()
+    init {
+        // Runs the steps one after another
+        scope.launch {
+            for (step in queue) {
+                step()
+            }
+            // The queue is closed in close, after the pending steps
+            scope.cancel()
+            destroyedJob.complete()
         }
-        // The queue is closed in close, after the pending steps
-        scope.cancel()
     }
 
     /**
-     * Processes the pending actions and then cancels the asynchronous work of the source. Actions dispatched after
-     * it are ignored.
-     * @return the job that completes when the source has finished
+     * Processes the pending actions and then cancels the asynchronous work of the source, except the side effects of
+     * [EmaAction.Lifecycle.Destroyed], which can finish. Actions dispatched after it are ignored.
+     * @return the job that completes when the source has finished, including the side effects of
+     * [EmaAction.Lifecycle.Destroyed]
      */
     fun close(): Job {
         broadcastJob?.cancel()
         queue.close()
-        return loop
+        // It is completed when the steps finish, and then waits for the side effects of Destroyed
+        return destroyedJob
     }
 
     final override fun dispatch(action: A) {
@@ -254,11 +268,16 @@ class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
                 sideEffect
             }
         }
+        // The source is closed right after Destroyed, so its side effects run in a scope that close doesn't cancel,
+        // with a timeout so they don't keep the source alive
+        val destroyed = action == EmaAction.Lifecycle.Destroyed
         with(sideEffect) {
+            val destroyedTimeout = Emanate.configuration.sideEffectConfig.destroyedTimeout
             launch(
                 key = key,
-                timeout = timeout,
+                timeout = if (destroyed) timeout ?: destroyedTimeout else timeout,
                 onTimeout = { sideEffectScope.onTimeout(typedAction) },
+                launchScope = if (destroyed) destroyedScope else scope,
                 block = { sideEffectScope.invoke(typedAction) }
             )
         }
@@ -268,10 +287,17 @@ class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
      * Launches asynchronous work applying the side effect configuration of Emanate.
      * @param key if work with the same key is running, it is cancelled
      * @param timeout if the work doesn't finish in this time, it is cancelled and [onTimeout] is called
+     * @param launchScope where it is launched. By default the scope of the source, cancelled by [close].
      */
-    internal fun launch(key: Any?, timeout: Duration?, onTimeout: () -> Unit, block: suspend () -> Unit): Job {
+    internal fun launch(
+        key: Any?,
+        timeout: Duration?,
+        onTimeout: () -> Unit,
+        launchScope: CoroutineScope = scope,
+        block: suspend () -> Unit
+    ): Job {
         key?.let { removeJob(it)?.cancel() }
-        val job = SideEffectResult(container = container, scope = scope) {
+        val job = SideEffectResult(container = container, scope = launchScope) {
             if (timeout == null) {
                 block()
             } else if (withTimeoutOrNull(timeout) { block() } == null) {

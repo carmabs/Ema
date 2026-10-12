@@ -54,6 +54,12 @@ interface EmaAction {
         data object Paused : Lifecycle
         data object Stopped : Lifecycle
 
+        /**
+         * The last action of the view model. The rest of its work is cancelled after it, but its side effects can
+         * finish, up to their timeout or the destroyedTimeout of the side effect configuration, 5 seconds by default:
+         * they can broadcast actions and read the state, while the actions they dispatch and the events they post are
+         * ignored, as the view model is closed.
+         */
         data object Destroyed : Lifecycle
 
         override val type: String

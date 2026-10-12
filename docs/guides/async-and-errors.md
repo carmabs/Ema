@@ -83,6 +83,7 @@ Emanate.init(
 | `ThrowExceptions`                     | Exceptions are rethrown and crash the app. Handy while developing.             |
 | `defaultSuccessAction`                | Called every time a `sideEffect` succeeds.                                     |
 | `defaultFinishAction`                 | Called every time a `sideEffect` ends.                                         |
+| `destroyedTimeout`                    | How long the side effects of `Lifecycle.Destroyed` in an `EmaViewModel` can run after it is cleared, unless they have their own `timeout`. 5 seconds by default. |
 
 The callbacks receive an `EmaReflection` (or `EmaReflectionData` / `EmaReflectionException`) with the name of the ViewModel and
 the function that launched the work, useful for logging. See [Naming the side effects](configuration.md#naming-the-side-effects).

@@ -1,7 +1,10 @@
 package com.carmabs.emanate.core.viewmodel
 
+import com.carmabs.emanate.core.Emanate
 import com.carmabs.emanate.core.action.EmaAction
 import com.carmabs.emanate.core.logging.EmaLogger
+import com.carmabs.emanate.core.model.EmaConfiguration
+import com.carmabs.emanate.core.sideeffect.EmaSideEffectConfig
 import com.carmabs.emanate.core.source.middleware.middlewareDelayOf
 import com.carmabs.emanate.core.source.reducer.reducerOf
 import com.carmabs.emanate.core.state.EmaEvent
@@ -10,6 +13,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -18,6 +22,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceTimeBy
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 
@@ -61,6 +66,40 @@ private class SenderViewModel(dispatcher: CoroutineDispatcher) :
     override fun setup() = source {
         sideEffects {
             add<TestAction.Update> { action -> broadcast(TextSent(action.text)) }
+        }
+    }
+}
+
+/**
+ * View model with a side effect for every lifecycle action
+ */
+private class LifecycleViewModel(dispatcher: CoroutineDispatcher) :
+    EmaViewModel<TestState, TestAction, TestEvent>(TestState(), dispatcher, logger = null) {
+
+    val launched = mutableListOf<String>()
+
+    override fun setup() = source {
+        sideEffects {
+            add<EmaAction.Lifecycle> { action -> launched += action::class.simpleName.orEmpty() }
+        }
+    }
+}
+
+/**
+ * View model that sends a result when it is destroyed, after [duration]
+ */
+private class ClosingViewModel(dispatcher: CoroutineDispatcher, private val duration: Duration) :
+    EmaViewModel<TestState, TestAction, TestEvent>(TestState(), dispatcher, logger = null) {
+
+    val finished = mutableListOf<String>()
+
+    override fun setup() = source {
+        sideEffects {
+            add<EmaAction.Lifecycle.Destroyed> {
+                delay(duration)
+                broadcast(TextSent("closed"))
+                finished += "destroyed"
+            }
         }
     }
 }
@@ -232,6 +271,60 @@ class EmaViewModelTest {
 
         assertEquals(listOf("initializer ${EmaAction.Initializer.EMPTY}"), viewModel.received)
         viewModel.onCleared()
+    }
+
+    @Test
+    fun `destroyed launches side effects`() = runTest {
+        val viewModel = LifecycleViewModel(testDispatcher())
+
+        viewModel.onResumeView()
+        viewModel.onCleared()
+        runCurrent()
+
+        assertEquals(listOf("Resumed", "Destroyed"), viewModel.launched)
+    }
+
+    @Test
+    fun `the side effects of destroyed can finish after the view model is cleared`() = runTest {
+        val receiver = TestViewModel(testDispatcher())
+        receiver.onCreated(null)
+        val closing = ClosingViewModel(testDispatcher(), 1.seconds)
+        closing.onCreated(null)
+
+        closing.onCleared()
+        advanceTimeBy(1500)
+        runCurrent()
+
+        assertEquals(listOf("destroyed"), closing.finished)
+        assertEquals("closed", receiver.stateFlow.value.text)
+        receiver.onCleared()
+    }
+
+    @Test
+    fun `the time of the side effects of destroyed is set in the configuration`() = runTest {
+        Emanate.initForTest(EmaConfiguration(sideEffectConfig = EmaSideEffectConfig(destroyedTimeout = 2.seconds)))
+        try {
+            val closing = ClosingViewModel(testDispatcher(), 3.seconds)
+            closing.onCreated(null)
+
+            closing.onCleared()
+            advanceUntilIdle()
+
+            assertTrue(closing.finished.isEmpty())
+        } finally {
+            Emanate.reset()
+        }
+    }
+
+    @Test
+    fun `the side effects of destroyed are cancelled after 5 seconds`() = runTest {
+        val closing = ClosingViewModel(testDispatcher(), 10.seconds)
+        closing.onCreated(null)
+
+        closing.onCleared()
+        advanceUntilIdle()
+
+        assertTrue(closing.finished.isEmpty())
     }
 
     @Test

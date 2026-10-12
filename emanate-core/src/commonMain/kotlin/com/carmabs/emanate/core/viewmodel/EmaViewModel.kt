@@ -185,7 +185,7 @@ abstract class EmaViewModel<S : EmaState, A : EmaAction, E : EmaEvent>(
 
     /**
      * Called when the view model is destroyed. The source processes [Lifecycle.Destroyed] after the pending actions
-     * and then cancels all its pending work.
+     * and then cancels its pending work, except the side effects of [Lifecycle.Destroyed], which can finish.
      */
     final override fun onCleared() {
         emaSource.dispatch(Lifecycle.Destroyed)

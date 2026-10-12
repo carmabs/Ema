@@ -98,7 +98,22 @@ and side effects handle like any other.
 | `EmaAction.Lifecycle.Resumed`     | The screen is in the foreground.                                         |
 | `EmaAction.Lifecycle.Paused`      | The screen is no longer fully visible.                                   |
 | `EmaAction.Lifecycle.Stopped`     | The screen goes to the background.                                       |
-| `EmaAction.Lifecycle.Destroyed`   | The ViewModel is cleared. Then its work is cancelled.                    |
+| `EmaAction.Lifecycle.Destroyed`   | The ViewModel is cleared. Then its work is cancelled, except its side effects. |
+
+`Destroyed` is the last action. The rest of the work of the ViewModel is cancelled after it, but its side effects can
+finish, up to their `timeout` or the `destroyedTimeout` of the
+[side effect configuration](../guides/configuration.md), 5 seconds by default, for example to send a result to the previous screen:
+
+```kotlin
+sideEffects {
+    add<EmaAction.Lifecycle.Destroyed> {
+        broadcast(EditorBroadcast.DraftClosed(state.draft))
+    }
+}
+```
+
+They can broadcast actions and read the state. The actions they dispatch and the events they post are ignored, as the
+ViewModel is closed.
 
 Loading the initial data is a side effect of the initializer:
 
@@ -206,8 +221,8 @@ its screen and survives configuration changes:
 Each screen therefore has its own ViewModel, created once. See [Dependency injection](../guides/dependency-injection.md).
 
 The ViewModel is identified by its class name (`id`). When the Android ViewModel is cleared it calls `onCleared`:
-an `EmaViewModel` processes the pending actions and `EmaAction.Lifecycle.Destroyed`, and then cancels its work; a
-classic ViewModel cancels its `scope`.
+an `EmaViewModel` processes the pending actions and `EmaAction.Lifecycle.Destroyed`, and then cancels its work,
+except the side effects of `Destroyed`; a classic ViewModel cancels its `scope`.
 
 ## Rendering before the first update
 

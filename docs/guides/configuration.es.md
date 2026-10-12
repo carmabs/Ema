@@ -22,7 +22,7 @@ class MyApplication : Application() {
 | Propiedad                     | `EmaConfiguration()` por defecto | `EmaConfiguration.Android`     | Para qué                                                  |
 |-------------------------------|------------------------------|------------------------------------|-----------------------------------------------------------|
 | `dispatchers`                 | `EmaDispatchers()`           | `main` es `Dispatchers.Main.immediate` | Dónde se ejecutan los ViewModels, los casos de uso y el trabajo de cálculo. Consulta [Dispatchers](#dispatchers). |
-| `sideEffectConfig`            | `EmaSideEffectConfig()`      | Obtiene el nombre de los métodos de las lambdas | Cómo gestiona `sideEffect` los errores y qué informa. Consulta [Trabajo asíncrono y errores](async-and-errors.es.md#errores). |
+| `sideEffectConfig`            | `EmaSideEffectConfig()`      | Obtiene el nombre de los métodos de las lambdas | Cómo gestiona `sideEffect` los errores y qué informa, y cuánto pueden ejecutarse los side effects de `Lifecycle.Destroyed` (`destroyedTimeout`, 5 segundos). Consulta [Trabajo asíncrono y errores](async-and-errors.es.md#errores). |
 | `dataClassPrinter`            | `EmaDataClassPrinter.ToString` | Imprime todos los campos, con sangría | Cómo imprime los objetos `toStringPretty()`.          |
 | `logger`                      | `EmaLogger.Println`          | `EmaLogger.Println`                | Escribe los logs de Emanate, como las acciones de cada `EmaViewModel`. Consulta [Logs](#logs). |
 

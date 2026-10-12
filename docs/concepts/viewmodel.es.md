@@ -101,7 +101,23 @@ middlewares, los reducers y los side effects gestionan como cualquier otra.
 | `EmaAction.Lifecycle.Resumed`     | La pantalla está en primer plano.                                        |
 | `EmaAction.Lifecycle.Paused`      | La pantalla deja de estar completamente visible.                         |
 | `EmaAction.Lifecycle.Stopped`     | La pantalla pasa a segundo plano.                                        |
-| `EmaAction.Lifecycle.Destroyed`   | Se destruye el ViewModel. Después se cancela su trabajo.                 |
+| `EmaAction.Lifecycle.Destroyed`   | Se destruye el ViewModel. Después se cancela su trabajo, salvo sus side effects. |
+
+`Destroyed` es la última acción. El resto del trabajo del ViewModel se cancela después de ella, pero sus side effects
+pueden terminar, hasta su `timeout` o el `destroyedTimeout` de la
+[configuración de los side effects](../guides/configuration.es.md), 5 segundos por defecto, por ejemplo para enviar un resultado a la
+pantalla anterior:
+
+```kotlin
+sideEffects {
+    add<EmaAction.Lifecycle.Destroyed> {
+        broadcast(EditorBroadcast.DraftClosed(state.draft))
+    }
+}
+```
+
+Pueden emitir acciones y leer el estado. Las acciones que despachan y los eventos que publican se ignoran, porque el
+ViewModel ya está cerrado.
 
 Cargar los datos iniciales es un side effect del inicializador:
 
@@ -211,7 +227,7 @@ Así, cada pantalla tiene su propio ViewModel, creado una sola vez. Consulta
 
 El ViewModel se identifica por el nombre de su clase (`id`). Cuando se destruye el `ViewModel` de Android, llama a
 `onCleared`: un `EmaViewModel` procesa las acciones pendientes y `EmaAction.Lifecycle.Destroyed`, y después cancela su
-trabajo; un ViewModel clásico cancela su `scope`.
+trabajo, salvo los side effects de `Destroyed`; un ViewModel clásico cancela su `scope`.
 
 ## Pintar antes de la primera actualización
 

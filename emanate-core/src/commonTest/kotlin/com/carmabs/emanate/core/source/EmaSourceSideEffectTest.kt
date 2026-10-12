@@ -8,6 +8,7 @@ import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CoroutineDispatcher
@@ -252,5 +253,26 @@ class EmaSourceSideEffectTest {
 
         assertTrue(closed.isCompleted)
         assertEquals(EffectState(), source.state)
+    }
+
+    @Test
+    fun `closing the source completes after the side effects of destroyed`() = runTest {
+        val source = EmaSource<EffectState, EffectAction, EffectEvent>(
+            EffectState(),
+            UnconfinedTestDispatcher(testScheduler)
+        ) {
+            sideEffects {
+                add<EmaAction.Lifecycle.Destroyed> { delay(1000) }
+            }
+        }
+
+        source.dispatchAction(EmaAction.Lifecycle.Destroyed)
+        val closed = source.close()
+        runCurrent()
+        assertFalse(closed.isCompleted)
+
+        advanceTimeBy(1500)
+        runCurrent()
+        assertTrue(closed.isCompleted)
     }
 }
