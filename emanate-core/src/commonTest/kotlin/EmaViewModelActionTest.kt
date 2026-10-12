@@ -8,6 +8,7 @@ import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
 import com.carmabs.emanate.core.viewmodel.EmaViewModelAction
 import com.carmabs.emanate.core.viewmodel.EmaViewModelClassic
+import kotlin.coroutines.CoroutineContext
 import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -15,10 +16,10 @@ import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -42,8 +43,8 @@ sealed interface CounterEvent : EmaEvent {
 
 data class CounterInitializer(val start: Int) : EmaAction.Initializer
 
-class CounterViewModel(scope: CoroutineScope, private val renderOnInitialization: Boolean = true) :
-    EmaViewModelAction<CounterState, CounterAction, CounterEvent>(CounterState(), scope) {
+class CounterViewModel(dispatcher: CoroutineDispatcher, private val renderOnInitialization: Boolean = true) :
+    EmaViewModelAction<CounterState, CounterAction, CounterEvent>(CounterState(), dispatcher) {
 
     val hooks = mutableListOf<String>()
 
@@ -92,8 +93,11 @@ class CounterViewModel(scope: CoroutineScope, private val renderOnInitialization
 
     fun message(allowDuplicated: Boolean = false) = postEvent(CounterEvent.Message, allowDuplicated)
 
-    fun <T> launch(logName: String? = null, block: suspend CoroutineScope.() -> T) =
-        sideEffect(logName = logName, action = block)
+    fun <T> launch(
+        logName: String? = null,
+        context: CoroutineContext = scope.coroutineContext,
+        block: suspend CoroutineScope.() -> T
+    ) = sideEffect(dispatcher = context, logName = logName, action = block)
 
     fun <T> launchSingle(id: String, block: suspend CoroutineScope.() -> T) = singleSideEffect(id, action = block)
 
@@ -113,7 +117,7 @@ class EmaViewModelActionTest {
     }
 
     private fun TestScope.createViewModel(renderOnInitialization: Boolean = true) =
-        CounterViewModel(CoroutineScope(UnconfinedTestDispatcher(testScheduler)), renderOnInitialization)
+        CounterViewModel(UnconfinedTestDispatcher(testScheduler), renderOnInitialization)
 
     @Test
     fun `initial state is exposed before any update`() = runTest {
@@ -207,7 +211,7 @@ class EmaViewModelActionTest {
 
     @Test
     fun `listeners added before the work ends are called when it ends`() = runTest {
-        val viewModel = CounterViewModel(CoroutineScope(StandardTestDispatcher(testScheduler)))
+        val viewModel = CounterViewModel(StandardTestDispatcher(testScheduler))
         var success: Int? = null
         var failure: Throwable? = null
         var finished = false
@@ -229,7 +233,7 @@ class EmaViewModelActionTest {
 
     @Test
     fun `singleSideEffect cancels the previous work with the same id without reporting an error`() = runTest {
-        val viewModel = CounterViewModel(CoroutineScope(StandardTestDispatcher(testScheduler)))
+        val viewModel = CounterViewModel(StandardTestDispatcher(testScheduler))
         val results = mutableListOf<String>()
         var errors = 0
         viewModel.launchSingle("search") {
@@ -313,24 +317,23 @@ class EmaViewModelActionTest {
             )
         )
         var uncaught: Throwable? = null
-        val scope = CoroutineScope(
-            SupervisorJob() + UnconfinedTestDispatcher(testScheduler) +
-                CoroutineExceptionHandler { _, e -> uncaught = e }
-        )
-        CounterViewModel(scope).launch<Int> { error("boom") }
+        val viewModel = CounterViewModel(UnconfinedTestDispatcher(testScheduler))
+        val handler = CoroutineExceptionHandler { _, e -> uncaught = e }
+        viewModel.launch<Int>(context = viewModel.currentScope().coroutineContext + handler) { error("boom") }
         assertIs<IllegalStateException>(uncaught)
     }
 }
 
 data class UserSent(val user: String) : EmaAction
 
-class SenderViewModel(scope: CoroutineScope) : EmaViewModelClassic<CounterState, CounterEvent>(CounterState(), scope) {
+class SenderViewModel(dispatcher: CoroutineDispatcher) :
+    EmaViewModelClassic<CounterState, CounterEvent>(CounterState(), dispatcher) {
     override fun onStateCreated(initializer: EmaAction.Initializer?) = Unit
     fun send(user: String, keepUntilReceived: Boolean = false) = broadcast(UserSent(user), keepUntilReceived)
 }
 
-class ReceiverViewModel(scope: CoroutineScope) :
-    EmaViewModelClassic<CounterState, CounterEvent>(CounterState(), scope) {
+class ReceiverViewModel(dispatcher: CoroutineDispatcher) :
+    EmaViewModelClassic<CounterState, CounterEvent>(CounterState(), dispatcher) {
     val received = mutableListOf<String>()
     override fun onStateCreated(initializer: EmaAction.Initializer?) = Unit
     override fun onBroadcastListenerSetup() {
@@ -341,7 +344,7 @@ class ReceiverViewModel(scope: CoroutineScope) :
 @OptIn(ExperimentalCoroutinesApi::class)
 class EmaClassicBroadcastTest {
 
-    private fun TestScope.newScope() = CoroutineScope(UnconfinedTestDispatcher(testScheduler))
+    private fun TestScope.newDispatcher() = UnconfinedTestDispatcher(testScheduler)
 
     @AfterTest
     fun checkBroadcasterIsClean() {
@@ -351,10 +354,10 @@ class EmaClassicBroadcastTest {
 
     @Test
     fun `the action is delivered at the moment to every receiver`() = runTest {
-        val firstReceiver = ReceiverViewModel(newScope()).apply { onCreated() }
-        val secondReceiver = ReceiverViewModel(newScope()).apply { onCreated() }
+        val firstReceiver = ReceiverViewModel(newDispatcher()).apply { onCreated() }
+        val secondReceiver = ReceiverViewModel(newDispatcher()).apply { onCreated() }
 
-        SenderViewModel(newScope()).send("Ana")
+        SenderViewModel(newDispatcher()).send("Ana")
 
         assertEquals(listOf("Ana"), firstReceiver.received)
         assertEquals(listOf("Ana"), secondReceiver.received)
@@ -364,9 +367,9 @@ class EmaClassicBroadcastTest {
 
     @Test
     fun `an action without receiver is lost`() = runTest {
-        SenderViewModel(newScope()).send("Ana")
+        SenderViewModel(newDispatcher()).send("Ana")
 
-        val receiver = ReceiverViewModel(newScope()).apply { onCreated() }
+        val receiver = ReceiverViewModel(newDispatcher()).apply { onCreated() }
 
         assertTrue(receiver.received.isEmpty())
         receiver.onCleared()
@@ -374,11 +377,11 @@ class EmaClassicBroadcastTest {
 
     @Test
     fun `a kept action is delivered only to the first receiver that registers`() = runTest {
-        SenderViewModel(newScope()).send("Ana", keepUntilReceived = true)
+        SenderViewModel(newDispatcher()).send("Ana", keepUntilReceived = true)
         assertEquals(1, Ema.actionBroadcaster.pendingCount)
 
-        val firstReceiver = ReceiverViewModel(newScope()).apply { onCreated() }
-        val secondReceiver = ReceiverViewModel(newScope()).apply { onCreated() }
+        val firstReceiver = ReceiverViewModel(newDispatcher()).apply { onCreated() }
+        val secondReceiver = ReceiverViewModel(newDispatcher()).apply { onCreated() }
 
         assertEquals(listOf("Ana"), firstReceiver.received)
         assertTrue(secondReceiver.received.isEmpty())
@@ -388,11 +391,11 @@ class EmaClassicBroadcastTest {
 
     @Test
     fun `only the last kept action of each class is delivered`() = runTest {
-        val sender = SenderViewModel(newScope())
+        val sender = SenderViewModel(newDispatcher())
         sender.send("Ana", keepUntilReceived = true)
         sender.send("Luis", keepUntilReceived = true)
 
-        val receiver = ReceiverViewModel(newScope()).apply { onCreated() }
+        val receiver = ReceiverViewModel(newDispatcher()).apply { onCreated() }
 
         assertEquals(listOf("Luis"), receiver.received)
         receiver.onCleared()
@@ -400,10 +403,10 @@ class EmaClassicBroadcastTest {
 
     @Test
     fun `the receiver stops listening when it is cleared`() = runTest {
-        val receiver = ReceiverViewModel(newScope()).apply { onCreated() }
+        val receiver = ReceiverViewModel(newDispatcher()).apply { onCreated() }
         receiver.onCleared()
 
-        SenderViewModel(newScope()).send("Ana")
+        SenderViewModel(newDispatcher()).send("Ana")
 
         assertTrue(receiver.received.isEmpty())
     }

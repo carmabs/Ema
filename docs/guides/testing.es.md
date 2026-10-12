@@ -78,7 +78,7 @@ Añade `kotlinx-coroutines-test` a tus dependencias de test:
 class CounterViewModelTest {
 
     private fun TestScope.createViewModel() =
-        CounterViewModel(CoroutineScope(UnconfinedTestDispatcher(testScheduler))).apply {
+        CounterViewModel(UnconfinedTestDispatcher(testScheduler)).apply {
             onCreated()
         }
 
@@ -110,15 +110,15 @@ entre pantallas y el ciclo de vida de la vista.
 
 ### Lo que conviene saber
 
-1. **Pasa tu propio scope.** El segundo parámetro del constructor de `EmaViewModelClassic` / `EmaViewModelAction` es el
-   `CoroutineScope`. Exponlo en el constructor de tus ViewModels, con un valor por defecto, para que los tests puedan
-   sustituirlo. El scope por defecto usa el dispatcher `main` de la configuración, `Dispatchers.Main`, que no existe
-   en los tests unitarios. Con un `UnconfinedTestDispatcher` el trabajo se ejecuta inmediatamente; con un
+1. **Pasa tu propio dispatcher.** El segundo parámetro del constructor de `EmaViewModelClassic` / `EmaViewModelAction`
+   es el `CoroutineDispatcher` donde se ejecuta el ViewModel, que crea su propio scope con él. Exponlo en el constructor
+   de tus ViewModels, con un valor por defecto, para que los tests puedan sustituirlo. El de por defecto es el
+   dispatcher `main` de la configuración, `Dispatchers.Main`, que no existe en los tests unitarios. Con un `UnconfinedTestDispatcher` el trabajo se ejecuta inmediatamente; con un
    `StandardTestDispatcher`, llama a `advanceUntilIdle()` para ejecutarlo.
 
    ```kotlin
-   class CounterViewModel(scope: CoroutineScope = CoroutineScope(SupervisorJob() + Ema.configuration.dispatchers.main)) :
-       EmaViewModelAction<CounterState, CounterAction, CounterEvent>(CounterState(), scope)
+   class CounterViewModel(dispatcher: CoroutineDispatcher = Ema.configuration.dispatchers.main) :
+       EmaViewModelAction<CounterState, CounterAction, CounterEvent>(CounterState(), dispatcher)
    ```
 2. **No hace falta configuración.** Si no se llama a `Ema.init`, se usa la configuración por defecto. No llames a
    `Ema.init` en los tests: solo se puede llamar una vez por proceso.

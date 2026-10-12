@@ -14,6 +14,7 @@ import com.carmabs.emanate.core.state.EmaState
 import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.KClass
 import kotlin.reflect.cast
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Job
@@ -28,11 +29,15 @@ import kotlinx.coroutines.launch
 /**
  * View model to handle view states.
  *
+ * @param initialDataState state of the view before any update
+ * @param dispatcher where the view model runs. By default the main dispatcher of Ema. The view model creates its own
+ * scope with it and cancels it when it is cleared.
+ *
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
 abstract class EmaViewModelClassic<S : EmaState, E : EmaEvent>(
     initialDataState: S,
-    defaultScope: CoroutineScope = CoroutineScope(SupervisorJob() + Ema.configuration.dispatchers.main)
+    dispatcher: CoroutineDispatcher = Ema.configuration.dispatchers.main
 ) : EmaViewModelContract<S, E> {
 
     private val eventDispatcher = EventDispatcher<E>()
@@ -51,9 +56,9 @@ abstract class EmaViewModelClassic<S : EmaState, E : EmaEvent>(
     private val sideEffectConfig = config.sideEffectConfig
 
     /**
-     * The scope where coroutines will be launched by default.
+     * The scope where coroutines are launched by default. It is cancelled when the view model is cleared.
      */
-    protected val scope: CoroutineScope = defaultScope
+    protected val scope: CoroutineScope = CoroutineScope(SupervisorJob() + dispatcher)
 
     /**
      * To determine if the view must be updated when view model is created automatically

@@ -78,7 +78,7 @@ Add `kotlinx-coroutines-test` to your test dependencies:
 class CounterViewModelTest {
 
     private fun TestScope.createViewModel() =
-        CounterViewModel(CoroutineScope(UnconfinedTestDispatcher(testScheduler))).apply {
+        CounterViewModel(UnconfinedTestDispatcher(testScheduler)).apply {
             onCreated()
         }
 
@@ -110,15 +110,15 @@ results between screens and the view lifecycle.
 
 ### Things to know
 
-1. **Pass your own scope.** The second constructor parameter of `EmaViewModelClassic` / `EmaViewModelAction` is the
-   `CoroutineScope`. Expose it in the constructor of your ViewModels, with a default value, so tests can replace it.
-   The default scope uses the `main` dispatcher of the configuration, `Dispatchers.Main`, which does not exist in unit
-   tests. With an `UnconfinedTestDispatcher` the work runs immediately; with a `StandardTestDispatcher`, call
+1. **Pass your own dispatcher.** The second constructor parameter of `EmaViewModelClassic` / `EmaViewModelAction` is
+   the `CoroutineDispatcher` where the ViewModel runs; it creates its own scope with it. Expose it in the constructor of
+   your ViewModels, with a default value, so tests can replace it. The default one is the `main` dispatcher of the
+   configuration, `Dispatchers.Main`, which does not exist in unit tests. With an `UnconfinedTestDispatcher` the work runs immediately; with a `StandardTestDispatcher`, call
    `advanceUntilIdle()` to run it.
 
    ```kotlin
-   class CounterViewModel(scope: CoroutineScope = CoroutineScope(SupervisorJob() + Ema.configuration.dispatchers.main)) :
-       EmaViewModelAction<CounterState, CounterAction, CounterEvent>(CounterState(), scope)
+   class CounterViewModel(dispatcher: CoroutineDispatcher = Ema.configuration.dispatchers.main) :
+       EmaViewModelAction<CounterState, CounterAction, CounterEvent>(CounterState(), dispatcher)
    ```
 2. **No configuration is needed.** If `Ema.init` is not called, the default configuration is used. Do not call
    `Ema.init` in tests: it can be called only once per process.

@@ -5,14 +5,14 @@ import com.carmabs.emanate.core.action.EmaAction
 import com.carmabs.emanate.core.action.EmaActionDispatcher
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.CoroutineDispatcher
 
 /**
  * Created by Carlos Mateo Benito on 14/04/2023.
  *
  * Viewmodel that handles actions by the method onAction(action:EmaAction).
  * It centralize the user actions on view.Based on MVI
+ * @param dispatcher where the view model runs. By default the main dispatcher of Ema.
  * <p>
  * Copyright (c) 2023 by Carmabs. All rights reserved.
  * </p>
@@ -21,8 +21,8 @@ import kotlinx.coroutines.SupervisorJob
  */
 abstract class EmaViewModelAction<S : EmaState, A : EmaAction, E : EmaEvent>(
     initialDataState: S,
-    scope: CoroutineScope = CoroutineScope(SupervisorJob() + Ema.configuration.dispatchers.main)
-) : EmaViewModelClassic<S, E>(initialDataState, scope),
+    dispatcher: CoroutineDispatcher = Ema.configuration.dispatchers.main
+) : EmaViewModelClassic<S, E>(initialDataState, dispatcher),
     EmaActionDispatcher<A> {
 
     final override fun dispatch(action: A) {

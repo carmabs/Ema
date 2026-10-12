@@ -117,8 +117,9 @@ addSideEffect<HomeInitializer> { initializer ->
 el MVVM clásico. Entre los dos, mejor `EmaViewModelAction`: su único punto de entrada, `dispatch`, y las acciones
 `sealed` hacen el código más fácil de seguir.
 
-Los dos reciben el estado inicial en el constructor y, opcionalmente, el `CoroutineScope` donde se ejecuta su trabajo
-(por defecto uno en el dispatcher principal de la [configuración](../guides/configuration.es.md)).
+Los dos reciben el estado inicial en el constructor y, opcionalmente, el `CoroutineDispatcher` donde se ejecuta su
+trabajo (por defecto el dispatcher principal de la [configuración](../guides/configuration.es.md)). Crean su propio scope
+con él y lo cancelan cuando se destruyen.
 
 ```kotlin
 class LoginViewModel(
