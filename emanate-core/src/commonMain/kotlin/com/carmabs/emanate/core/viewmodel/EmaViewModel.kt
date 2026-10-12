@@ -75,6 +75,12 @@ abstract class EmaViewModel<S : EmaState, A : EmaAction, E : EmaEvent>(
         next()
     }
 
+    /**
+     * Read when the view model is created, like the default dispatcher and logger, although the source is created
+     * later
+     */
+    private val configuration = Emanate.configuration
+
     private val mutableStateFlow = MutableStateFlow(initialDataState)
 
     final override val stateFlow: StateFlow<S> = mutableStateFlow.asStateFlow()
@@ -119,7 +125,8 @@ abstract class EmaViewModel<S : EmaState, A : EmaAction, E : EmaEvent>(
             sideEffects = sourceSetup.sideEffects,
             broadcastListeners = sourceSetup.broadcastListeners,
             container = this,
-            eventDispatcher = eventDispatcher
+            eventDispatcher = eventDispatcher,
+            configuration = configuration
         )
     }
 

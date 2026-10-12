@@ -316,6 +316,23 @@ class EmaViewModelTest {
     }
 
     @Test
+    fun `the view model reads the configuration when it is created although its source is created later`() = runTest {
+        val closing = ClosingViewModel(testDispatcher(), 3.seconds)
+        Emanate.initForTest(EmaConfiguration(destroyedTimeout = 2.seconds))
+        try {
+            // The source is created now, with the configuration of the view model: 5 seconds
+            closing.onCreated(null)
+
+            closing.onCleared()
+            advanceUntilIdle()
+
+            assertEquals(listOf("destroyed"), closing.finished)
+        } finally {
+            Emanate.reset()
+        }
+    }
+
+    @Test
     fun `the side effects of destroyed are cancelled after 5 seconds`() = runTest {
         val closing = ClosingViewModel(testDispatcher(), 10.seconds)
         closing.onCreated(null)

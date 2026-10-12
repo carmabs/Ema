@@ -104,4 +104,17 @@ class EmaSourceErrorTest {
         assertTrue(logs.any { it.startsWith("EmaSource: action BrokenReducer failed: ") && "broken reducer" in it })
         source.close()
     }
+
+    @Test
+    fun `the source keeps the configuration it had when it was created`() = runTest {
+        val source = countSource()
+        Emanate.initForTest(EmaConfiguration(errorPolicy = EmaErrorPolicy.Throw, logger = null))
+
+        source.dispatch(CountAction.BrokenReducer)
+        runCurrent()
+
+        // Caught with the policy of setUp instead of thrown
+        assertEquals("action BrokenReducer", errors.single().reflection.methodName)
+        source.close()
+    }
 }

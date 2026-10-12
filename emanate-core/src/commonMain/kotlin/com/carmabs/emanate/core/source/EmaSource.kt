@@ -9,6 +9,7 @@ import com.carmabs.emanate.core.action.EmaEventConsumer
 import com.carmabs.emanate.core.action.EventDispatcher
 import com.carmabs.emanate.core.broadcast.EmaActionBroadcaster
 import com.carmabs.emanate.core.error.runHandlingErrors
+import com.carmabs.emanate.core.model.EmaConfiguration
 import com.carmabs.emanate.core.sideeffect.SideEffectResult
 import com.carmabs.emanate.core.source.middleware.EmaMiddleware
 import com.carmabs.emanate.core.source.middleware.MiddlewareContext
@@ -44,7 +45,8 @@ import kotlinx.coroutines.withTimeoutOrNull
 /**
  * Creates a source. Its actions are of type [A], plus the ones it listens to in the broadcasts block of setup: every
  * action goes through the middlewares, the reducers and the side effects of its type. The source creates its own scope
- * with [dispatcher], so call [EmaSource.close] when it isn't needed anymore to cancel its work.
+ * with [dispatcher], so call [EmaSource.close] when it isn't needed anymore to cancel its work. It reads the
+ * configuration of Emanate when it is created.
  *
  * @param dispatcher where the source runs. By default the main dispatcher of Emanate, as the state is usually drawn by
  * the view; use cases run on their own dispatcher anyway.
@@ -65,7 +67,8 @@ fun <S : EmaState, A : EmaAction, E : EmaEvent> EmaSource(
         sideEffects = sourceSetup.sideEffects,
         broadcastListeners = sourceSetup.broadcastListeners,
         container = null,
-        eventDispatcher = EventDispatcher()
+        eventDispatcher = EventDispatcher(),
+        configuration = Emanate.configuration
     )
 }
 
@@ -91,6 +94,7 @@ class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
     broadcastListeners: List<KClass<out EmaAction>>,
     container: Any?,
     private val eventDispatcher: EventDispatcher<E>,
+    private val configuration: EmaConfiguration,
     internal val broadcaster: EmaActionBroadcaster = Emanate.actionBroadcaster
 ) : EmaEventConsumer<E>,
     EmaActionDispatcher<A> {
@@ -253,7 +257,7 @@ class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
     private fun runChain(index: Int, action: EmaAction) {
         // With Throw the exception stops the source. With Catch it is reported with the action that failed, and its
         // stack trace shows the middleware or the reducer.
-        Emanate.configuration.runHandlingErrors(container, { "action ${action::class.simpleName}" }) {
+        configuration.runHandlingErrors(container, { "action ${action::class.simpleName}" }) {
             runMiddleware(index, action)
         }
     }
@@ -289,7 +293,7 @@ class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
         // with a timeout so they don't keep the source alive
         val destroyed = action == EmaAction.Lifecycle.Destroyed
         with(sideEffect) {
-            val destroyedTimeout = Emanate.configuration.destroyedTimeout
+            val destroyedTimeout = configuration.destroyedTimeout
             launch(
                 key = key,
                 timeout = if (destroyed) timeout ?: destroyedTimeout else timeout,
@@ -314,7 +318,7 @@ class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
         block: suspend () -> Unit
     ): Job {
         key?.let { removeJob(it)?.cancel() }
-        val job = SideEffectResult(container = container, scope = launchScope) {
+        val job = SideEffectResult(container = container, scope = launchScope, configuration = configuration) {
             if (timeout == null) {
                 block()
             } else if (withTimeoutOrNull(timeout) { block() } == null) {
