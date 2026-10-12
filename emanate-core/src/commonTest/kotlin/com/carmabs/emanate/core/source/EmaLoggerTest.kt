@@ -31,8 +31,12 @@ class EmaLoggerTest {
             LoggedState(),
             UnconfinedTestDispatcher(testScheduler)
         ) {
-            addMiddleware(loggerMiddleware("Counter", EmaLogger { tag, message -> logs += "$tag: $message" }))
-            addReducer<LoggedAction.Increment> { state.copy(count = state.count + 1) }
+            middlewares {
+                +loggerMiddleware("Counter", EmaLogger { tag, message -> logs += "$tag: $message" })
+            }
+            reducers {
+                add<LoggedAction.Increment> { state.copy(count = state.count + 1) }
+            }
         }
 
         source.dispatch(LoggedAction.Increment)

@@ -25,24 +25,79 @@ acciones te permite gestionar una pantalla entera en un `when`, o una sola acci�
 
 ## Setup
 
-La source se configura una vez, en `setup` (la función `setup` de un `EmaViewModel`, o el último parámetro de
-`EmaSource(...)`). Después no se puede añadir nada.
+La source se configura una vez, en `setup` (la función `setup` de un `EmaViewModel`, que devuelve `source { }`, o el
+último parámetro de `EmaSource(...)`). Después no se puede añadir nada. Cada tipo de pieza tiene su propio bloque, en el
+orden en que las recorre una acción:
 
 ```kotlin
-override fun SourceSetupScope<CounterState, CounterAction, CounterEvent>.setup() {
-    addMiddleware<CounterAction.Reset> { /* ... */ }
-    addReducer<CounterAction> { action -> /* ... */ }
-    addSideEffect<CounterAction.Increment> { /* ... */ }
+override fun setup() = source {
+    middlewares {
+        add<CounterAction.Reset> { /* ... */ }
+        +middlewareDelayOf(CounterAction.Increment::class, 300.milliseconds)
+    }
+    reducers {
+        add<CounterAction> { action -> /* ... */ }
+        // Declarado como propiedad del ViewModel
+        +doubleReducer
+    }
+    sideEffects {
+        add<CounterAction.Increment> { /* ... */ }
+    }
+    broadcasts {
+        listen<SettingsBroadcast.CounterReset>()
+    }
 }
 ```
 
-Los middlewares se ejecutan en el orden en que se añaden, igual que los reducers: cada uno recibe el estado que ha
-devuelto el anterior. Además de con lambdas, cada pieza se puede escribir como una clase (`EmaMiddleware`, `EmaReducer` y
-`SideEffect`) o crear con `middlewareOf`, `middlewareDelayOf` y `reducerOf`, para reutilizarla o declararla como
-propiedad.
+| Bloque            | Añade                                                                                |
+|-------------------|--------------------------------------------------------------------------------------|
+| `middlewares { }` | Los [middlewares](#middlewares), que se ejecutan primero.                            |
+| `reducers { }`    | Los [reducers](#reducers).                                                           |
+| `sideEffects { }` | Los [side effects](#side-effects).                                                   |
+| `broadcasts { }`  | Los tipos de las acciones emitidas por otras sources que recibe, con `listen<Tipo>()`. Consulta [Resultados entre pantallas](../guides/results-between-screens.es.md). |
 
-Cada bloque solo alcanza lo que le pertenece: un reducer no puede añadir middlewares ni despachar, y un side effect no
+Dentro de un bloque, `add<Tipo> { }` añade una pieza para las acciones de ese tipo, y `+` añade una ya creada. Además
+de con lambdas, cada pieza se puede escribir como una clase (`EmaMiddleware`, `EmaReducer` y `SideEffect`) o crear con
+`middlewareOf`, `middlewareDelayOf` y `reducerOf`, para reutilizarla o declararla como propiedad.
+
+Los middlewares se ejecutan en el orden en que se añaden, igual que los reducers: cada uno recibe el estado que ha
+devuelto el anterior. Un bloque se puede usar más de una vez, por ejemplo para agrupar las piezas de cada
+funcionalidad: sus piezas se añaden después de las de los bloques anteriores del mismo tipo.
+
+Cada pieza solo alcanza lo que le pertenece: un reducer no puede añadir otras piezas ni despachar, y un side effect no
 puede añadir otros side effects. Las propiedades del ViewModel, como sus casos de uso, se pueden usar en todos.
+
+### Reutilizar piezas entre pantallas
+
+Para compartir un grupo de piezas entre pantallas, escribe una función de extensión de `SourceSetupScope` con sus
+bloques y llámala dentro de `source { }`. Como los bloques se pueden usar más de una vez, sus piezas se añaden en el
+punto en que se llama, junto con las de la pantalla:
+
+```kotlin
+fun <S : EmaState, A : EmaAction, E : EmaEvent> SourceSetupScope<S, A, E>.analytics(tracker: Tracker, screen: String) {
+    middlewares {
+        add<EmaAction> { action ->
+            tracker.track(action::class.simpleName.orEmpty())
+            next()
+        }
+    }
+    sideEffects {
+        add<EmaAction.Lifecycle.Resumed> { tracker.screenShown(screen) }
+    }
+}
+
+override fun setup() = source {
+    analytics(tracker, screen = "Home")
+    reducers {
+        add<HomeAction> { action -> /* ... */ }
+    }
+}
+```
+
+Una función genérica como esta la puede usar cualquier pantalla. Sus side effects solo pueden despachar acciones de
+tipo `A`, las de la pantalla que la llama, así que una función que despacha sus propias acciones se escribe para los
+tipos de una pantalla: sirve para dividir un ViewModel grande por funcionalidades. La función solo alcanza lo que
+recibe como parámetros, así que pásale los casos de uso que necesite.
 
 ## Reducers
 
@@ -50,10 +105,12 @@ Un reducer devuelve el siguiente estado para una acción. Solo lee `state`, así
 despachar acciones, publicar eventos ni lanzar trabajo. Llamar a `dispatch` dentro de un reducer no compila.
 
 ```kotlin
-addReducer<CounterAction> { action ->
-    when (action) {
-        CounterAction.Increment -> state.copy(count = state.count + 1)
-        CounterAction.Reset -> state.copy(count = 0)
+reducers {
+    add<CounterAction> { action ->
+        when (action) {
+            CounterAction.Increment -> state.copy(count = state.count + 1)
+            CounterAction.Reset -> state.copy(count = 0)
+        }
     }
 }
 ```
@@ -74,11 +131,13 @@ Un middleware recibe las acciones de su tipo antes de los reducers y decide su c
 `nextAfter` espera sin bloquear la source. Dentro de su bloque, `stop()` lo termina sin que la acción siga.
 
 ```kotlin
-addMiddleware<SearchAction.QueryWritten> { action ->
-    // Debounce: una búsqueda nueva cancela la anterior, que no sigue
-    nextAfter(id = "search", timeout = 5.seconds) {
-        delay(300)
-        if (action.query.isBlank()) stop()
+middlewares {
+    add<SearchAction.QueryWritten> { action ->
+        // Debounce: una búsqueda nueva cancela la anterior, que no sigue
+        nextAfter(id = "search", timeout = 5.seconds) {
+            delay(300)
+            if (action.query.isBlank()) stop()
+        }
     }
 }
 ```
@@ -97,10 +156,12 @@ Un side effect es la lógica de negocio que lanzan las acciones de su tipo: caso
 Se ejecuta de forma asíncrona después de los reducers de la acción, así que lee el nuevo estado.
 
 ```kotlin
-addSideEffect<LoginAction.Login>(concurrency = SideEffectConcurrency.Leading, timeout = 30.seconds) {
-    val user = loginUseCase(LoginUseCase.Input(state.userName, state.userPassword))
-    dispatch(LoginRequest.Succeeded(user))
-    postEvent(LoginEvent.LoginSuccess(user))
+sideEffects {
+    add<LoginAction.Login>(concurrency = SideEffectConcurrency.Leading, timeout = 30.seconds) {
+        val user = loginUseCase(LoginUseCase.Input(state.userName, state.userPassword))
+        dispatch(LoginRequest.Succeeded(user))
+        postEvent(LoginEvent.LoginSuccess(user))
+    }
 }
 ```
 
@@ -130,7 +191,9 @@ Una source no depende de ningún ViewModel. Créala con `EmaSource(...)`, observ
 
 ```kotlin
 val counter = EmaSource<CounterState, CounterAction, CounterEvent>(CounterState()) {
-    addReducer<CounterAction.Increment> { state.copy(count = state.count + 1) }
+    reducers {
+        add<CounterAction.Increment> { state.copy(count = state.count + 1) }
+    }
 }
 
 counter.dispatch(CounterAction.Increment)

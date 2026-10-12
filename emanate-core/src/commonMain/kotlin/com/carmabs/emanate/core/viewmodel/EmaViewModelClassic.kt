@@ -251,8 +251,8 @@ abstract class EmaViewModelClassic<S : EmaState, E : EmaEvent>(
 
     /**
      * Broadcasts any action to the view models and sources listening to its type, added with
-     * [registerBroadcastListener] or addBroadcastListener. For example, to send a result to the previous screen. It is
-     * delivered to the ones listening at the moment.
+     * [registerBroadcastListener] or in the broadcasts block of setup. For example, to send a result to the previous
+     * screen. It is delivered to the ones listening at the moment.
      * @param keepUntilReceived if nobody is listening to it, it is kept and delivered to the first one that listens to
      * its type. For example, when the previous screen is created again after the process has been killed.
      */

@@ -43,61 +43,65 @@ class EmaSourceMiddlewareTest {
         TestState(),
         UnconfinedTestDispatcher(testScheduler)
     ) {
-        addMiddleware<TestAction.Blocked> { received += "blocked" }
-        addMiddleware<TestAction.Replaced> { next(TestAction.Update("replaced")) }
-        addMiddleware(middlewareDelayOf(TestAction.Slow::class, 1.seconds))
-        addMiddleware<TestAction.NextTwice> {
-            next()
-            received += runCatching { next() }.exceptionOrNull()?.message.orEmpty()
-        }
-        addMiddleware<TestAction.NextLater> {
-            val middlewareScope = this
-            nextAfter { received += runCatching { middlewareScope.state }.exceptionOrNull()?.message.orEmpty() }
-        }
-        addMiddleware<TestAction.Search> { action ->
-            nextAfter(id = "search") {
-                delay(500)
-                received += "search ${action.query}"
+        middlewares {
+            add<TestAction.Blocked> { received += "blocked" }
+            add<TestAction.Replaced> { next(TestAction.Update("replaced")) }
+            +middlewareDelayOf(TestAction.Slow::class, 1.seconds)
+            add<TestAction.NextTwice> {
+                next()
+                received += runCatching { next() }.exceptionOrNull()?.message.orEmpty()
             }
-        }
-        addMiddleware<TestAction.Guarded> { action ->
-            nextAfter(timeout = 2.seconds, onTimeout = { dispatch(TestAction.Update("timeout")) }) {
-                dispatch(TestAction.Update("refreshing"))
-                when (action.refresh) {
-                    Refresh.OK -> delay(500)
-
-                    Refresh.FAIL -> {
-                        dispatch(TestAction.Update("expired"))
-                        stop()
-                    }
-
-                    Refresh.FAIL_CAUGHT -> {
-                        try {
-                            stop()
-                        } catch (exception: Exception) {
-                            dispatch(TestAction.Update("caught"))
-                        }
-                    }
-
-                    Refresh.HANG -> delay(5000)
+            add<TestAction.NextLater> {
+                val middlewareScope = this
+                nextAfter { received += runCatching { middlewareScope.state }.exceptionOrNull()?.message.orEmpty() }
+            }
+            add<TestAction.Search> { action ->
+                nextAfter(id = "search") {
+                    delay(500)
+                    received += "search ${action.query}"
                 }
             }
+            add<TestAction.Guarded> { action ->
+                nextAfter(timeout = 2.seconds, onTimeout = { dispatch(TestAction.Update("timeout")) }) {
+                    dispatch(TestAction.Update("refreshing"))
+                    when (action.refresh) {
+                        Refresh.OK -> delay(500)
+
+                        Refresh.FAIL -> {
+                            dispatch(TestAction.Update("expired"))
+                            stop()
+                        }
+
+                        Refresh.FAIL_CAUGHT -> {
+                            try {
+                                stop()
+                            } catch (exception: Exception) {
+                                dispatch(TestAction.Update("caught"))
+                            }
+                        }
+
+                        Refresh.HANG -> delay(5000)
+                    }
+                }
+            }
+            // Runs after the delay of Slow, to check that the chain continues where it stopped
+            add<TestAction.Slow> {
+                received += "after slow"
+                next()
+            }
+            add<EmaAction> { action ->
+                received += "last ${action::class.simpleName}"
+                next()
+            }
         }
-        // Runs after the delay of Slow, to check that the chain continues where it stopped
-        addMiddleware<TestAction.Slow> {
-            received += "after slow"
-            next()
+        reducers {
+            add<TestAction.Increment> { state.copy(count = state.count + 1) }
+            add<TestAction.Blocked> { state.copy(count = state.count + 1) }
+            add<TestAction.Guarded> { state.copy(count = state.count + 1) }
+            add<TestAction.Slow> { state.copy(count = state.count + 1) }
+            add<TestAction.Search> { action -> state.copy(text = action.query) }
+            add<TestAction.Update> { action -> state.copy(text = action.text) }
         }
-        addMiddleware<EmaAction> { action ->
-            received += "last ${action::class.simpleName}"
-            next()
-        }
-        addReducer<TestAction.Increment> { state.copy(count = state.count + 1) }
-        addReducer<TestAction.Blocked> { state.copy(count = state.count + 1) }
-        addReducer<TestAction.Guarded> { state.copy(count = state.count + 1) }
-        addReducer<TestAction.Slow> { state.copy(count = state.count + 1) }
-        addReducer<TestAction.Search> { action -> state.copy(text = action.query) }
-        addReducer<TestAction.Update> { action -> state.copy(text = action.text) }
     }
 
     @Test

@@ -32,15 +32,19 @@ En un `EmaViewModel`, declara en `setup` los reducers, los middlewares y los sid
 tipo `sealed`, un reducer gestiona todas las acciones de la pantalla en un `when` exhaustivo:
 
 ```kotlin
-override fun SourceSetupScope<LoginState, LoginAction, LoginEvent>.setup() {
-    addReducer<LoginAction> { action ->
-        when (action) {
-            is LoginAction.UserNameWritten -> state.copy(userName = action.user, userNameError = false)
-            is LoginAction.PasswordWritten -> state.copy(userPassword = action.password, passwordError = false)
-            // ...
+override fun setup() = source {
+    reducers {
+        add<LoginAction> { action ->
+            when (action) {
+                is LoginAction.UserNameWritten -> state.copy(userName = action.user, userNameError = false)
+                is LoginAction.PasswordWritten -> state.copy(userPassword = action.password, passwordError = false)
+                // ...
+            }
         }
     }
-    addSideEffect<LoginAction.Login> { /* ... */ }
+    sideEffects {
+        add<LoginAction.Login> { /* ... */ }
+    }
 }
 ```
 

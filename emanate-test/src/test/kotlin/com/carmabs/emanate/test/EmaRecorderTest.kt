@@ -3,7 +3,6 @@ package com.carmabs.emanate.test
 import com.carmabs.emanate.core.Ema
 import com.carmabs.emanate.core.action.EmaAction
 import com.carmabs.emanate.core.source.EmaSource
-import com.carmabs.emanate.core.source.SourceSetupScope
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
 import com.carmabs.emanate.core.viewmodel.EmaViewModel
@@ -37,18 +36,22 @@ private class ProfileViewModel :
         initialDataState = ProfileState(),
         logger = null
     ) {
-    override fun SourceSetupScope<ProfileState, ProfileAction, ProfileEvent>.setup() {
-        addReducer<ProfileAction> { action ->
-            when (action) {
-                ProfileAction.Load -> state.copy(loading = true)
-                is ProfileAction.Loaded -> state.copy(name = action.name, loading = false)
+    override fun setup() = source {
+        reducers {
+            add<ProfileAction> { action ->
+                when (action) {
+                    ProfileAction.Load -> state.copy(loading = true)
+                    is ProfileAction.Loaded -> state.copy(name = action.name, loading = false)
+                }
             }
         }
-        addSideEffect<ProfileAction.Load> {
-            delay(1000)
-            dispatch(ProfileAction.Loaded("Ema"))
+        sideEffects {
+            add<ProfileAction.Load> {
+                delay(1000)
+                dispatch(ProfileAction.Loaded("Ema"))
+            }
+            add<ProfileAction.Loaded> { postEvent(ProfileEvent.Welcome) }
         }
-        addSideEffect<ProfileAction.Loaded> { postEvent(ProfileEvent.Welcome) }
     }
 }
 
@@ -83,10 +86,12 @@ class EmaRecorderTest {
     @Test
     fun `records a source`() = runTest {
         val source = EmaSource<ProfileState, ProfileAction, ProfileEvent>(ProfileState()) {
-            addReducer<ProfileAction> { action ->
-                when (action) {
-                    ProfileAction.Load -> state.copy(loading = true)
-                    is ProfileAction.Loaded -> state.copy(name = action.name, loading = false)
+            reducers {
+                add<ProfileAction> { action ->
+                    when (action) {
+                        ProfileAction.Load -> state.copy(loading = true)
+                        is ProfileAction.Loaded -> state.copy(name = action.name, loading = false)
+                    }
                 }
             }
         }

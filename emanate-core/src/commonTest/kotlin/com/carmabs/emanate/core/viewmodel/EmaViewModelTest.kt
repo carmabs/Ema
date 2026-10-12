@@ -2,7 +2,6 @@ package com.carmabs.emanate.core.viewmodel
 
 import com.carmabs.emanate.core.action.EmaAction
 import com.carmabs.emanate.core.logging.EmaLogger
-import com.carmabs.emanate.core.source.SourceSetupScope
 import com.carmabs.emanate.core.source.middleware.middlewareDelayOf
 import com.carmabs.emanate.core.source.reducer.reducerOf
 import com.carmabs.emanate.core.state.EmaEvent
@@ -59,8 +58,10 @@ private class LoadUseCase {
 private class SenderViewModel(dispatcher: CoroutineDispatcher) :
     EmaViewModel<TestState, TestAction, TestEvent>(TestState(), dispatcher, logger = null) {
 
-    override fun SourceSetupScope<TestState, TestAction, TestEvent>.setup() {
-        addSideEffect<TestAction.Update> { action -> broadcast(TextSent(action.text)) }
+    override fun setup() = source {
+        sideEffects {
+            add<TestAction.Update> { action -> broadcast(TextSent(action.text)) }
+        }
     }
 }
 
@@ -81,28 +82,36 @@ private class TestViewModel(
      */
     private val decrementReducer = reducerOf(TestAction.Decrement::class) { state.copy(count = state.count - 1) }
 
-    override fun SourceSetupScope<TestState, TestAction, TestEvent>.setup() {
-        addMiddleware<EmaAction.Lifecycle> { action ->
-            received += "lifecycle ${action::class.simpleName}"
-            next()
+    override fun setup() = source {
+        middlewares {
+            add<EmaAction.Lifecycle> { action ->
+                received += "lifecycle ${action::class.simpleName}"
+                next()
+            }
+            add<EmaAction.Initializer> { action ->
+                received += "initializer $action"
+                next()
+            }
+            +middlewareDelayOf(TestAction.Slow::class, 1.seconds)
         }
-        addMiddleware<EmaAction.Initializer> { action ->
-            received += "initializer $action"
-            next()
+        reducers {
+            add<TestAction.Increment> { state.copy(count = state.count + 1) }
+            +decrementReducer
+            add<TestAction.Slow> { state.copy(count = state.count + 1) }
+            add<TestAction.Update> { action -> state.copy(text = action.text) }
+            add<TestInitializer> { action -> state.copy(text = action.text) }
+            add<EmaAction.Lifecycle.Resumed> { state.copy(resumed = true) }
+            add<TextSent> { action -> state.copy(text = action.text) }
+            add<TestAction.Load> { state.copy(text = "loading") }
         }
-        addMiddleware(middlewareDelayOf(TestAction.Slow::class, 1.seconds))
-        addReducer<TestAction.Increment> { state.copy(count = state.count + 1) }
-        addReducer(decrementReducer)
-        addReducer<TestAction.Slow> { state.copy(count = state.count + 1) }
-        addReducer<TestAction.Update> { action -> state.copy(text = action.text) }
-        addReducer<TestInitializer> { action -> state.copy(text = action.text) }
-        addReducer<EmaAction.Lifecycle.Resumed> { state.copy(resumed = true) }
-        addBroadcastListener<TextSent>()
-        addReducer<TextSent> { action -> state.copy(text = action.text) }
-        addReducer<TestAction.Load> { state.copy(text = "loading") }
-        addSideEffect<TestAction.Load> {
-            dispatch(TestAction.Update(loadUseCase()))
-            postEvent(TestEvent.Loaded)
+        sideEffects {
+            add<TestAction.Load> {
+                dispatch(TestAction.Update(loadUseCase()))
+                postEvent(TestEvent.Loaded)
+            }
+        }
+        broadcasts {
+            listen<TextSent>()
         }
     }
 }

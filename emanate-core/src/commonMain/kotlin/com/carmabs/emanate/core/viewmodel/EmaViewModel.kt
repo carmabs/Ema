@@ -9,7 +9,9 @@ import com.carmabs.emanate.core.action.EventDispatcher
 import com.carmabs.emanate.core.logging.EmaLogger
 import com.carmabs.emanate.core.source.EmaSource
 import com.carmabs.emanate.core.source.EmaSourceObserver
+import com.carmabs.emanate.core.source.SourceSetup
 import com.carmabs.emanate.core.source.SourceSetupScope
+import com.carmabs.emanate.core.source.buildSourceSetup
 import com.carmabs.emanate.core.source.middleware.loggerMiddleware
 import com.carmabs.emanate.core.source.middleware.middlewareOf
 import com.carmabs.emanate.core.state.EmaEvent
@@ -48,11 +50,17 @@ abstract class EmaViewModel<S : EmaState, A : EmaAction, E : EmaEvent>(
     final override val initialState: S = initialDataState
 
     /**
-     * Adds the middlewares, reducers, side effects and broadcast listeners of the view model. Besides the actions of
-     * type [A], they can handle the [Initializer] of the screen, its [Lifecycle] actions and the actions broadcast by
-     * other view models that it listens to.
+     * Returns the middlewares, reducers, side effects and broadcast listeners of the view model, created with [source]:
+     * `override fun setup() = source { ... }`. Besides the actions of type [A], they can handle the [Initializer] of
+     * the screen, its [Lifecycle] actions and the actions broadcast by other view models that it listens to. It is
+     * called once, when the source is first needed.
      */
-    abstract fun SourceSetupScope<S, A, E>.setup()
+    protected abstract fun setup(): SourceSetup<S, A, E>
+
+    /**
+     * Creates the setup of the view model with its types, so they don't have to be written in [setup].
+     */
+    protected fun source(setup: SourceSetupScope<S, A, E>.() -> Unit): SourceSetup<S, A, E> = buildSourceSetup(setup)
 
     /**
      * Marks the state as updated when an action of the screen or an initializer is received
@@ -77,33 +85,30 @@ abstract class EmaViewModel<S : EmaState, A : EmaAction, E : EmaEvent>(
      * observe everything. It is internal: emanate-test uses it as a friend module.
      */
     internal fun addObserver(observer: EmaSourceObserver<S, E>) {
-        source.addObserver(observer)
+        emaSource.addObserver(observer)
     }
 
     /**
      * The source is created when it is first needed, not in the constructor: [setup] can use the properties of the
      * subclass, which are assigned after the constructor of this class
      */
-    private val source: EmaSource<S, EmaAction, E> by lazy { createSource() }
+    private val emaSource: EmaSource<S, EmaAction, E> by lazy { createSource() }
 
     /**
      * The source receives the actions of the screen, the initializer and the lifecycle actions
      */
     private fun createSource(): EmaSource<S, EmaAction, E> {
-        val setupScope = SourceSetupScope<S, A, E>().apply {
-            setup()
-            build()
-        }
+        val sourceSetup = setup()
         return EmaSource(
             mutableStateFlow = mutableStateFlow,
             dispatcher = dispatcher,
             middlewares = listOfNotNull(
                 logger?.let { loggerMiddleware(this::class.simpleName.orEmpty(), it) },
                 updateTrackerMiddleware
-            ) + setupScope.middlewareList,
-            reducers = setupScope.reducerList,
-            sideEffects = setupScope.sideEffectList,
-            broadcastListeners = setupScope.broadcastListenerList,
+            ) + sourceSetup.middlewares,
+            reducers = sourceSetup.reducers,
+            sideEffects = sourceSetup.sideEffects,
+            broadcastListeners = sourceSetup.broadcastListeners,
             container = this,
             eventDispatcher = eventDispatcher
         )
@@ -129,7 +134,7 @@ abstract class EmaViewModel<S : EmaState, A : EmaAction, E : EmaEvent>(
     private var hasBeenInitialized: Boolean = false
 
     final override fun dispatch(action: A) {
-        source.dispatch(action)
+        emaSource.dispatch(action)
     }
 
     /**
@@ -139,30 +144,30 @@ abstract class EmaViewModel<S : EmaState, A : EmaAction, E : EmaEvent>(
     final override fun onCreated(initializer: Initializer?) {
         if (!hasBeenInitialized) {
             hasBeenInitialized = true
-            source.dispatch(initializer ?: Initializer.EMPTY)
+            emaSource.dispatch(initializer ?: Initializer.EMPTY)
         }
     }
 
     final override fun onStartView() {
-        source.dispatch(Lifecycle.Started)
+        emaSource.dispatch(Lifecycle.Started)
     }
 
     /**
      * Called when view is shown in foreground
      */
     final override fun onResumeView() {
-        source.dispatch(Lifecycle.Resumed)
+        emaSource.dispatch(Lifecycle.Resumed)
     }
 
     /**
      * Called when view is hidden in background
      */
     final override fun onPauseView() {
-        source.dispatch(Lifecycle.Paused)
+        emaSource.dispatch(Lifecycle.Paused)
     }
 
     final override fun onStopView() {
-        source.dispatch(Lifecycle.Stopped)
+        emaSource.dispatch(Lifecycle.Stopped)
     }
 
     final override fun consumeEvent(event: E) {
@@ -174,7 +179,7 @@ abstract class EmaViewModel<S : EmaState, A : EmaAction, E : EmaEvent>(
      * and then cancels all its pending work.
      */
     final override fun onCleared() {
-        source.dispatch(Lifecycle.Destroyed)
-        source.close()
+        emaSource.dispatch(Lifecycle.Destroyed)
+        emaSource.close()
     }
 }

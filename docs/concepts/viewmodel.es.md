@@ -20,7 +20,7 @@ a poco las pantallas existentes. Los dos tipos pueden convivir en la misma app: 
 ## EmaViewModel
 
 Extiende `EmaViewModel<State, Action, Event>`, pasa el estado inicial y declara en `setup` cómo se gestionan las
-acciones:
+acciones. `source { }` crea el setup con los tipos del ViewModel, así que no hay que volver a escribirlos:
 
 ```kotlin
 class LoginViewModel(
@@ -28,34 +28,39 @@ class LoginViewModel(
     initialDataState: LoginState
 ) : EmaViewModel<LoginState, LoginAction, LoginEvent>(initialDataState) {
 
-    override fun SourceSetupScope<LoginState, LoginAction, LoginEvent>.setup() {
-        addReducer<LoginAction> { action ->
-            when (action) {
-                is LoginAction.UserNameWritten -> state.copy(userName = action.user, userNameError = false)
-                LoginAction.Login -> state.copy(userNameError = state.userName.isBlank())
-                // ...
+    override fun setup() = source {
+        reducers {
+            add<LoginAction> { action ->
+                when (action) {
+                    is LoginAction.UserNameWritten -> state.copy(userName = action.user, userNameError = false)
+                    LoginAction.Login -> state.copy(userNameError = state.userName.isBlank())
+                    // ...
+                }
             }
         }
-
-        addSideEffect<LoginAction.Login>(concurrency = SideEffectConcurrency.Leading) {
-            if (state.userNameError) return@addSideEffect
-            dispatch(LoginRequest.Started)
-            loginUseCase(LoginUseCase.Input(state.userName, state.userPassword))
-                .onSuccess { user -> dispatch(LoginRequest.Succeeded(user)) }
-                .onFailure { dispatch(LoginRequest.Failed) }
+        sideEffects {
+            add<LoginAction.Login>(concurrency = SideEffectConcurrency.Leading) {
+                if (state.userNameError) return@add
+                dispatch(LoginRequest.Started)
+                loginUseCase(LoginUseCase.Input(state.userName, state.userPassword))
+                    .onSuccess { user -> dispatch(LoginRequest.Succeeded(user)) }
+                    .onFailure { dispatch(LoginRequest.Failed) }
+            }
+            add<LoginRequest.Succeeded> { action -> postEvent(LoginEvent.LoginSuccess(action.user)) }
         }
-
-        addSideEffect<LoginRequest.Succeeded> { action -> postEvent(LoginEvent.LoginSuccess(action.user)) }
     }
 }
 ```
 
-| En `setup`                      | Para qué                                                                      |
-|---------------------------------|-------------------------------------------------------------------------------|
-| `addReducer<Tipo> { }`          | Devuelve el siguiente estado para las acciones de ese tipo. Puro: solo lee `state`. |
-| `addMiddleware<Tipo> { }`       | Decide el camino de las acciones de ese tipo antes de los reducers: `next()`, `nextAfter { }`... |
-| `addSideEffect<Tipo> { }`       | Lógica de negocio que se ejecuta después de los reducers: casos de uso, `dispatch`, `postEvent`. |
-| `addBroadcastListener<Tipo>()`  | Recibe las acciones de ese tipo emitidas por otros ViewModels. Consulta [Resultados entre pantallas](../guides/results-between-screens.es.md). |
+| En `source { }`                    | Para qué                                                                   |
+|------------------------------------|----------------------------------------------------------------------------|
+| `reducers { add<Tipo> { } }`       | Devuelve el siguiente estado para las acciones de ese tipo. Puro: solo lee `state`. |
+| `middlewares { add<Tipo> { } }`    | Decide el camino de las acciones de ese tipo antes de los reducers: `next()`, `nextAfter { }`... |
+| `sideEffects { add<Tipo> { } }`    | Lógica de negocio que se ejecuta después de los reducers: casos de uso, `dispatch`, `postEvent`. |
+| `broadcasts { listen<Tipo>() }`    | Recibe las acciones de ese tipo emitidas por otros ViewModels. Consulta [Resultados entre pantallas](../guides/results-between-screens.es.md). |
+
+Dentro de cada bloque, `+` añade una pieza ya creada, como `+middlewareDelayOf(...)` o un reducer declarado como
+propiedad.
 
 Todo sobre reducers, middlewares y side effects está en [Source](source.es.md).
 
@@ -100,11 +105,13 @@ middlewares, los reducers y los side effects gestionan como cualquier otra.
 Cargar los datos iniciales es un side effect del inicializador:
 
 ```kotlin
-addSideEffect<HomeInitializer> { initializer ->
-    when (initializer) {
-        is HomeInitializer.HomeUser -> {
-            val friends = getUserFriendsUseCase(GetUserFriendsUseCase.Input(initializer.user))
-            dispatch(HomeFriendsLoaded(friends))
+sideEffects {
+    add<HomeInitializer> { initializer ->
+        when (initializer) {
+            is HomeInitializer.HomeUser -> {
+                val friends = getUserFriendsUseCase(GetUserFriendsUseCase.Input(initializer.user))
+                dispatch(HomeFriendsLoaded(friends))
+            }
         }
     }
 }

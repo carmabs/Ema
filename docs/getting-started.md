@@ -86,14 +86,18 @@ sealed interface CounterEvent : EmaEvent {
 class CounterViewModel :
     EmaViewModel<CounterState, CounterAction, CounterEvent>(CounterState()) {
 
-    override fun SourceSetupScope<CounterState, CounterAction, CounterEvent>.setup() {
-        addReducer<CounterAction> { action ->
-            when (action) {
-                CounterAction.Increment -> state.copy(count = state.count + 1)
+    override fun setup() = source {
+        reducers {
+            add<CounterAction> { action ->
+                when (action) {
+                    CounterAction.Increment -> state.copy(count = state.count + 1)
+                }
             }
         }
-        addSideEffect<CounterAction.Increment> {
-            if (state.count == LIMIT) postEvent(CounterEvent.LimitReached(LIMIT))
+        sideEffects {
+            add<CounterAction.Increment> {
+                if (state.count == LIMIT) postEvent(CounterEvent.LimitReached(LIMIT))
+            }
         }
     }
 

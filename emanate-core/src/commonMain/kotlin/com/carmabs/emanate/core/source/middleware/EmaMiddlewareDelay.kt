@@ -1,7 +1,6 @@
 package com.carmabs.emanate.core.source.middleware
 
 import com.carmabs.emanate.core.action.EmaAction
-import com.carmabs.emanate.core.source.SourceSetupScope
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
 import com.carmabs.emanate.core.viewmodel.EmaViewModel
@@ -49,7 +48,7 @@ fun <S : EmaState, A : EmaAction, F : EmaAction> middlewareDelayOf(
     }
 }
 
-fun <S : EmaState, A : EmaAction, E : EmaEvent, F : EmaAction> SourceSetupScope<S, A, E>.middlewareDelayOf(
+fun <S : EmaState, A : EmaAction, F : EmaAction> MiddlewareListScope<S, A>.middlewareDelayOf(
     actionType: KClass<F>,
     delay: Duration,
     onActionDelayed: (NextAfterScope<S, A>.(F) -> Unit)? = null

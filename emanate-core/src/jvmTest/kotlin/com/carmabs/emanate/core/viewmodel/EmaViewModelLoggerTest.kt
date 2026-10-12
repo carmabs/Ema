@@ -1,7 +1,6 @@
 package com.carmabs.emanate.core.viewmodel
 
 import com.carmabs.emanate.core.action.EmaAction
-import com.carmabs.emanate.core.source.SourceSetupScope
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
 import java.io.ByteArrayOutputStream
@@ -24,8 +23,10 @@ private data object IncrementAction : EmaAction
 private class DefaultLoggerViewModel(dispatcher: CoroutineDispatcher) :
     EmaViewModel<CountState, IncrementAction, EmaEvent.EMPTY>(CountState(), dispatcher) {
 
-    override fun SourceSetupScope<CountState, IncrementAction, EmaEvent.EMPTY>.setup() {
-        addReducer<IncrementAction> { state.copy(count = state.count + 1) }
+    override fun setup() = source {
+        reducers {
+            add<IncrementAction> { state.copy(count = state.count + 1) }
+        }
     }
 }
 

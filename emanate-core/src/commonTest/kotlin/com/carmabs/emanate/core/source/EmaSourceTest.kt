@@ -1,6 +1,7 @@
 package com.carmabs.emanate.core.source
 
 import com.carmabs.emanate.core.action.EmaAction
+import com.carmabs.emanate.core.source.reducer.ReducerListScope
 import com.carmabs.emanate.core.source.reducer.reducerOf
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
@@ -31,14 +32,19 @@ class EmaSourceTest {
         CounterState(),
         UnconfinedTestDispatcher(testScheduler)
     ) {
-        addReducer<CounterAction> { action ->
-            when (action) {
-                CounterAction.Increment -> state.copy(count = state.count + 1)
-                CounterAction.Decrement -> state.copy(count = state.count - 1)
-                is CounterAction.Set -> state
+        reducers {
+            add<CounterAction> { action ->
+                when (action) {
+                    CounterAction.Increment -> state.copy(count = state.count + 1)
+                    CounterAction.Decrement -> state.copy(count = state.count - 1)
+                    is CounterAction.Set -> state
+                }
             }
         }
-        addReducer(reducerOf(CounterAction.Set::class) { action -> state.copy(count = action.count) })
+        // A second block adds its reducers after the ones of the first block
+        reducers {
+            +reducerOf(CounterAction.Set::class) { action -> state.copy(count = action.count) }
+        }
     }
 
     @Test
@@ -112,15 +118,20 @@ class EmaSourceTest {
     @Test
     fun `the source can't be configured after setup`() = runTest {
         lateinit var setupScope: SourceSetupScope<CounterState, CounterAction, CounterEvent>
+        lateinit var reducerListScope: ReducerListScope<CounterState>
         val source = EmaSource<CounterState, CounterAction, CounterEvent>(
             CounterState(),
             UnconfinedTestDispatcher(testScheduler)
         ) {
             setupScope = this
+            reducers { reducerListScope = this }
         }
 
         assertFailsWith<IllegalStateException> {
-            setupScope.addReducer<CounterAction> { state }
+            setupScope.reducers { }
+        }
+        assertFailsWith<IllegalStateException> {
+            reducerListScope.add<CounterAction> { state }
         }
         source.close()
     }

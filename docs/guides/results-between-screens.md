@@ -15,8 +15,8 @@ sequenceDiagram
     participant P as ProfileCreationViewModel
     participant H as HomeViewModel
     participant L as LoginViewModel
-    Note over H: addBroadcastListener<UserCreated>()
-    Note over L: addBroadcastListener<UserAdded>()
+    Note over H: listen<UserCreated>()
+    Note over L: listen<UserAdded>()
     P->>H: broadcast(UserCreated(user))
     Note over H: reducer: adds the user to the list
     H->>L: broadcast(UserAdded(user))
@@ -36,26 +36,34 @@ sealed interface ProfileCreationBroadcast : EmaAction {
 Broadcast it with `broadcast`, available in every side effect. It accepts any action:
 
 ```kotlin
-addSideEffect<ProfileCreationAction.DialogConfirmClicked> {
-    broadcast(ProfileCreationBroadcast.UserCreated(User(state.name, state.surname, state.role)), keepUntilReceived = true)
-    postEvent(ProfileCreationEvent.DialogConfirmationAccepted)
+sideEffects {
+    add<ProfileCreationAction.DialogConfirmClicked> {
+        val user = User(state.name, state.surname, state.role)
+        broadcast(ProfileCreationBroadcast.UserCreated(user), keepUntilReceived = true)
+        postEvent(ProfileCreationEvent.DialogConfirmationAccepted)
+    }
 }
 ```
 
 ### Receive
 
-Listen to its type in `setup` and handle it like any other action:
+Listen to its type in the `broadcasts` block of `setup` and handle it like any other action:
 
 ```kotlin
-override fun SourceSetupScope<HomeState, HomeAction, HomeEvent>.setup() {
-    addBroadcastListener<ProfileCreationBroadcast.UserCreated>()
-
-    addReducer<ProfileCreationBroadcast.UserCreated> { action ->
-        state.copy(userList = state.userList + action.user)
+override fun setup() = source {
+    reducers {
+        add<ProfileCreationBroadcast.UserCreated> { action ->
+            state.copy(userList = state.userList + action.user)
+        }
     }
-    // Passes it along to the login screen
-    addSideEffect<ProfileCreationBroadcast.UserCreated> { action ->
-        broadcast(HomeBroadcast.UserAdded(action.user), keepUntilReceived = true)
+    sideEffects {
+        // Passes it along to the login screen
+        add<ProfileCreationBroadcast.UserCreated> { action ->
+            broadcast(HomeBroadcast.UserAdded(action.user), keepUntilReceived = true)
+        }
+    }
+    broadcasts {
+        listen<ProfileCreationBroadcast.UserCreated>()
     }
 }
 ```

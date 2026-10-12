@@ -1,6 +1,5 @@
 package com.carmabs.emanate.presentation.choice
 
-import com.carmabs.emanate.core.source.SourceSetupScope
 import com.carmabs.emanate.core.state.EmaState
 import com.carmabs.emanate.presentation.base.BaseViewModel
 
@@ -10,10 +9,12 @@ import com.carmabs.emanate.presentation.base.BaseViewModel
 class ImplementationChoiceViewModel(private val selector: ViewModelImplementationSelector) :
     BaseViewModel<EmaState.EMPTY, ImplementationChoiceAction, ImplementationChoiceEvent>(EmaState.EMPTY) {
 
-    override fun SourceSetupScope<EmaState.EMPTY, ImplementationChoiceAction, ImplementationChoiceEvent>.setup() {
-        addSideEffect<ImplementationChoiceAction.ImplementationSelected> { action ->
-            selector.implementation = action.implementation
-            postEvent(ImplementationChoiceEvent.ImplementationChosen)
+    override fun setup() = source {
+        sideEffects {
+            add<ImplementationChoiceAction.ImplementationSelected> { action ->
+                selector.implementation = action.implementation
+                postEvent(ImplementationChoiceEvent.ImplementationChosen)
+            }
         }
     }
 }

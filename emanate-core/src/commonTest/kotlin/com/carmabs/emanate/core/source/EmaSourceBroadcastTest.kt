@@ -41,8 +41,10 @@ class EmaSourceBroadcastTest {
         ListState(),
         UnconfinedTestDispatcher(testScheduler)
     ) {
-        addSideEffect<SenderAction.Create> { action ->
-            broadcast(UserBroadcast.Created(action.user))
+        sideEffects {
+            add<SenderAction.Create> { action ->
+                broadcast(UserBroadcast.Created(action.user))
+            }
         }
     }
 
@@ -50,18 +52,26 @@ class EmaSourceBroadcastTest {
         ListState(),
         UnconfinedTestDispatcher(testScheduler)
     ) {
-        addBroadcastListener<UserBroadcast.Created>()
-        addMiddleware<UserBroadcast> { action ->
-            received += "middleware $action"
-            next()
-        }
-        addReducer<UserBroadcast> { action ->
-            when (action) {
-                is UserBroadcast.Created -> state.copy(users = state.users + action.user)
-                is UserBroadcast.Deleted -> state.copy(users = state.users - action.user)
+        middlewares {
+            add<UserBroadcast> { action ->
+                received += "middleware $action"
+                next()
             }
         }
-        addSideEffect<UserBroadcast.Created> { action -> received += "side effect ${action.user}" }
+        reducers {
+            add<UserBroadcast> { action ->
+                when (action) {
+                    is UserBroadcast.Created -> state.copy(users = state.users + action.user)
+                    is UserBroadcast.Deleted -> state.copy(users = state.users - action.user)
+                }
+            }
+        }
+        sideEffects {
+            add<UserBroadcast.Created> { action -> received += "side effect ${action.user}" }
+        }
+        broadcasts {
+            listen<UserBroadcast.Created>()
+        }
     }
 
     @AfterTest

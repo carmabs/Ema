@@ -60,27 +60,31 @@ class EmaSourceSideEffectTest {
 
     private fun TestScope.testSource(dispatcher: CoroutineDispatcher = UnconfinedTestDispatcher(testScheduler)) =
         EmaSource<EffectState, EffectAction, EffectEvent>(EffectState(), dispatcher) {
-            addReducer<EffectAction.Load> { state.copy(text = "loading") }
-            addReducer<EffectAction.Loaded> { action -> state.copy(text = action.text) }
-            addReducer<EffectAction.Saved> { state.copy(saved = true) }
-            addSideEffect<EffectAction.Load> {
-                received += "effect sees ${state.text}"
-                delay(1000)
-                dispatch(EffectAction.Loaded("loaded"))
-                postEvent(EffectEvent.LoadedMessage)
+            reducers {
+                add<EffectAction.Load> { state.copy(text = "loading") }
+                add<EffectAction.Loaded> { action -> state.copy(text = action.text) }
+                add<EffectAction.Saved> { state.copy(saved = true) }
             }
-            addSideEffect(SaveSideEffect())
-            addSideEffect<EffectAction.Fetch>(
-                concurrency = SideEffectConcurrency.Latest,
-                timeout = 2.seconds,
-                onTimeout = { action -> received += "timeout ${action.id}" }
-            ) { action ->
-                delay(action.duration)
-                received += "fetched ${action.id}"
-            }
-            addSideEffect<EffectAction.Submit>(concurrency = SideEffectConcurrency.Leading) { action ->
-                delay(1000)
-                received += "submitted ${action.id}"
+            sideEffects {
+                add<EffectAction.Load> {
+                    received += "effect sees ${state.text}"
+                    delay(1000)
+                    dispatch(EffectAction.Loaded("loaded"))
+                    postEvent(EffectEvent.LoadedMessage)
+                }
+                +SaveSideEffect()
+                add<EffectAction.Fetch>(
+                    concurrency = SideEffectConcurrency.Latest,
+                    timeout = 2.seconds,
+                    onTimeout = { action -> received += "timeout ${action.id}" }
+                ) { action ->
+                    delay(action.duration)
+                    received += "fetched ${action.id}"
+                }
+                add<EffectAction.Submit>(concurrency = SideEffectConcurrency.Leading) { action ->
+                    delay(1000)
+                    received += "submitted ${action.id}"
+                }
             }
         }
 

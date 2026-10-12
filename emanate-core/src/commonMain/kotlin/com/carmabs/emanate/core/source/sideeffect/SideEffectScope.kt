@@ -33,8 +33,8 @@ class SideEffectScope<out S : EmaState, in A : EmaAction, in E : EmaEvent> inter
     }
 
     /**
-     * Broadcasts any action to the sources listening to its type, added with addBroadcastListener. For example, to
-     * send a result to the previous screen. It is delivered to the sources listening at the moment.
+     * Broadcasts any action to the sources listening to its type, added in the broadcasts block of setup. For
+     * example, to send a result to the previous screen. It is delivered to the sources listening at the moment.
      * @param keepUntilReceived if nobody is listening to it, it is kept and delivered to the first one that listens to
      * its type. For example, when the previous screen is created again after the process has been killed.
      */
