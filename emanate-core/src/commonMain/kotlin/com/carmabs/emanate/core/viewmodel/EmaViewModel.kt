@@ -98,10 +98,14 @@ abstract class EmaViewModel<S : EmaState, A : EmaAction, E : EmaEvent>(
     private val emaSource: EmaSource<S, EmaAction, E> by lazy { createSource() }
 
     /**
+     * What [setup] returns, created once. It is internal: emanate-test checks it as a friend module.
+     */
+    internal val sourceSetup: SourceSetup<S, A, E> by lazy { setup() }
+
+    /**
      * The source receives the actions of the screen, the initializer and the lifecycle actions
      */
     private fun createSource(): EmaSource<S, EmaAction, E> {
-        val sourceSetup = setup()
         val tag = this::class.simpleName.orEmpty()
         return EmaSource(
             mutableStateFlow = mutableStateFlow,

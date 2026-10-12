@@ -15,6 +15,7 @@ import com.carmabs.emanate.presentation.profile.creation.ProfileCreationAction
 import com.carmabs.emanate.presentation.profile.creation.ProfileCreationInitializer
 import com.carmabs.emanate.presentation.profile.creation.ProfileCreationState
 import com.carmabs.emanate.presentation.profile.creation.ProfileCreationViewModel
+import com.carmabs.emanate.test.assertSetup
 import com.carmabs.emanate.test.record
 import com.carmabs.emanate.test.resetTestDispatchers
 import com.carmabs.emanate.test.useTestDispatchers
@@ -144,5 +145,12 @@ class LoginViewModelTest {
         profileCreationViewModel.onCleared()
         homeViewModel.onCleared()
         viewModel.onCleared()
+    }
+
+    @Test
+    fun `the view models listen to the broadcast actions they handle`() {
+        loginViewModel().assertSetup()
+        HomeViewModel(GetUserFriendsUseCase(repository), HomeState.DEFAULT).assertSetup()
+        ProfileCreationViewModel(ProfileCreationState.DEFAULT).assertSetup()
     }
 }

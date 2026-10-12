@@ -30,6 +30,7 @@ Incluye `kotlinx-coroutines-test` y necesita la misma versión de `emanate-core`
 | `assertStates(...)`             | Todos los estados que devuelven los reducers.                                 |
 | `assertState(state)` / `assertState { }` | El último estado, o una condición sobre él.                          |
 | `assertEvents(...)` / `assertNoEvents()` | Los eventos publicados.                                              |
+| `viewModel.assertSetup()`       | Falla si un middleware, reducer o side effect nunca se ejecuta, como los de una acción emitida que no se escucha. Consulta [Comprobar el setup](#comprobar-el-setup). |
 
 ```kotlin
 class LoginViewModelTest {
@@ -69,6 +70,31 @@ class LoginViewModelTest {
 - **Se pueden testear varios ViewModels** juntos, por ejemplo los resultados emitidos entre pantallas: el
   `LoginViewModelTest` del sample crea los ViewModels de creación de perfil, home y login, y comprueba que el usuario
   creado en el primero llega al último.
+
+### Comprobar el setup
+
+Un reducer, middleware o side effect para una acción que el ViewModel nunca recibe no falla: simplemente no se
+ejecuta. Ocurre cuando se gestiona una acción emitida pero falta `listen<Tipo>()` en el bloque `broadcasts`.
+`assertSetup()` comprueba que cada pieza puede recibir acciones de su tipo: acciones de la pantalla, inicializadores,
+acciones del ciclo de vida o acciones emitidas que escucha.
+
+```kotlin
+@Test
+fun `the setup is complete`() {
+    HomeViewModel(GetUserFriendsUseCase(FakeRepository()), HomeState.DEFAULT).assertSetup()
+}
+```
+
+Falla con todas las piezas que nunca se ejecutan:
+
+```
+The reducer of UserCreated never runs: HomeViewModel doesn't receive UserCreated. If it is broadcast by another
+source, add listen<UserCreated>() in the broadcasts block.
+```
+
+Solo se informa de los tipos que el ViewModel seguro que no puede recibir. Una acción de la pantalla puede implementar
+cualquier interfaz, así que no se informa de una pieza para una interfaz que no está relacionada con las acciones de la
+pantalla.
 
 ## Testear los ViewModels clásicos
 

@@ -30,6 +30,7 @@ It brings `kotlinx-coroutines-test` and requires the same version of `emanate-co
 | `assertStates(...)`             | Every state returned by the reducers.                                         |
 | `assertState(state)` / `assertState { }` | The last state, or a condition on it.                               |
 | `assertEvents(...)` / `assertNoEvents()` | The posted events.                                                  |
+| `viewModel.assertSetup()`       | Fails if a middleware, reducer or side effect never runs, like the ones of a broadcast action that isn't listened to. See [Checking the setup](#checking-the-setup). |
 
 ```kotlin
 class LoginViewModelTest {
@@ -69,6 +70,30 @@ class LoginViewModelTest {
 - **Several ViewModels** can be tested together, for example the results broadcast between screens: the
   `LoginViewModelTest` of the sample creates the profile creation, home and login ViewModels and checks the user
   created in the first one reaches the last one.
+
+### Checking the setup
+
+A reducer, middleware or side effect for an action that the ViewModel never receives doesn't fail: it never runs. It
+happens when a broadcast action is handled but `listen<Type>()` is missing in the `broadcasts` block. `assertSetup()`
+checks that every piece can receive actions of its type: actions of the screen, initializers, lifecycle actions or
+broadcast actions it listens to.
+
+```kotlin
+@Test
+fun `the setup is complete`() {
+    HomeViewModel(GetUserFriendsUseCase(FakeRepository()), HomeState.DEFAULT).assertSetup()
+}
+```
+
+It fails with every piece that never runs:
+
+```
+The reducer of UserCreated never runs: HomeViewModel doesn't receive UserCreated. If it is broadcast by another
+source, add listen<UserCreated>() in the broadcasts block.
+```
+
+Only the types that the ViewModel can't receive for sure are reported. An interface can be implemented by an action of
+the screen, so a piece for an interface that isn't related to the actions of the screen is not reported.
 
 ## Testing the classic ViewModels
 
