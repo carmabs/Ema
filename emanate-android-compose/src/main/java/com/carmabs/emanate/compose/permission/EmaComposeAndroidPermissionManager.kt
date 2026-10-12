@@ -9,11 +9,12 @@ import com.carmabs.emanate.android.permission.EmaAndroidPermissionManager
 import com.carmabs.emanate.android.permission.EmaContractMultiplePermission
 import com.carmabs.emanate.android.permission.EmaContractSinglePermission
 import com.carmabs.emanate.compose.extension.activity
-import com.carmabs.emanate.compose.extension.isInPreview
+import com.carmabs.emanate.compose.utils.Compose
 import com.carmabs.emanate.core.manager.EmaPermissionManager
 import com.carmabs.emanate.core.manager.PermissionState
 import com.carmabs.emanate.core.model.EmaMultiplePermissionRequest
 import com.carmabs.emanate.core.model.EmaPermissionRequest
+import com.carmabs.emanate.core.utils.EmaUtils
 import kotlinx.coroutines.CoroutineScope
 
 /**
@@ -27,7 +28,7 @@ import kotlinx.coroutines.CoroutineScope
  */
 @Composable
 fun rememberEmaPermissionManager(): EmaPermissionManager {
-    val permissionManager: EmaPermissionManager = if (isInPreview()) {
+    val permissionManager: EmaPermissionManager = if (EmaUtils.Preview.Compose.isInPreview()) {
         EmaPreviewPermissionManager
     } else {
         val context = LocalContext.current

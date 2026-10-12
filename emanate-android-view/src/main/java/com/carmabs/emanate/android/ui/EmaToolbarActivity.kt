@@ -6,13 +6,14 @@ import android.view.View
 import androidx.appcompat.widget.Toolbar
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.viewbinding.ViewBinding
-import com.carmabs.emanate.android.extension.checkVisibility
 import com.carmabs.emanate.android.initializer.bundle.strategy.BundleSerializerStrategy
 import com.carmabs.emanate.android.navigation.EmaNavControllerNavigator
+import com.carmabs.emanate.android.utils.Android
 import com.carmabs.emanate.core.constants.FLOAT_ONE
 import com.carmabs.emanate.core.constants.FLOAT_ZERO
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
+import com.carmabs.emanate.core.utils.EmaUtils
 import com.carmabs.emanate.core.viewmodel.EmaViewModelContract
 import com.google.android.material.appbar.AppBarLayout
 
@@ -98,7 +99,7 @@ abstract class EmaToolbarActivity<B : ViewBinding, S : EmaState, VM : EmaViewMod
                 setListener(object : Animator.AnimatorListener {
 
                     override fun onAnimationEnd(p0: Animator) {
-                        toolbarLayout.visibility = checkVisibility(false, gone)
+                        toolbarLayout.visibility = EmaUtils.View.Android.visibility(false, gone)
                     }
 
                     override fun onAnimationStart(p0: Animator) {

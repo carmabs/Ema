@@ -15,8 +15,10 @@ import androidx.test.core.app.ApplicationProvider
 import com.carmabs.emanate.android.initializer.EmaInitializerBundle
 import com.carmabs.emanate.android.initializer.bundle.BundleSerializer
 import com.carmabs.emanate.android.initializer.bundle.strategy.BundleSerializerStrategy
+import com.carmabs.emanate.android.utils.Android
 import com.carmabs.emanate.core.action.EmaAction
 import com.carmabs.emanate.core.model.EmaText
+import com.carmabs.emanate.core.utils.EmaUtils
 import com.carmabs.emanate.core.value.EmaUriType
 import java.io.Serializable
 import kotlin.test.assertEquals
@@ -266,15 +268,15 @@ class EmaContextExtensionsTest {
     @Test
     fun `screen metrics and status bar`() {
         val context = ApplicationProvider.getApplicationContext<Context>()
-        assertTrue(getScreenMetrics(context).widthPixels > 0)
-        assertTrue(getScreenMetrics(context, includeInsets = true).heightPixels > 0)
+        assertTrue(EmaUtils.Screen.Android.metrics(context).widthPixels > 0)
+        assertTrue(EmaUtils.Screen.Android.metrics(context, includeInsets = true).heightPixels > 0)
         assertTrue(context.getStatusBarHeight() >= 0)
     }
 
     @Test
     fun `sizes fit proportionally`() {
-        assertEquals(50 to 100, fitInTargetMaxSizeProportionally(100, 200, 100, 100))
-        assertEquals(100 to 50, fitInTargetMaxSizeProportionally(200, 100, 100, 100))
+        assertEquals(50 to 100, EmaUtils.Size.fitInTargetMaxSizeProportionally(100, 200, 100, 100))
+        assertEquals(100 to 50, EmaUtils.Size.fitInTargetMaxSizeProportionally(200, 100, 100, 100))
         val drawable = android.R.drawable.ic_delete.getDrawable(ApplicationProvider.getApplicationContext())
         assertEquals(
             drawable.intrinsicWidth to drawable.intrinsicHeight,

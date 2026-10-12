@@ -101,8 +101,8 @@ private fun NormalPreview() {
 ```
 
 `previewRenderState` en `createComposableScreen` hace lo mismo para toda la pantalla: en una preview no se crea el
-ViewModel y la pantalla pinta ese estado. `isInPreview()` y `skipForPreview { }` te ayudan a saltarte el código que no
-puede ejecutarse en una preview. Consulta [Utilidades](utilities.es.md#previews).
+ViewModel y la pantalla pinta ese estado. `EmaUtils.Preview.Compose.isInPreview()` y `skipForPreview { }` te ayudan a
+saltarte el código que no puede ejecutarse en una preview. Consulta [Utilidades](utilities.es.md#previews).
 
 ## Usar una pantalla sin grafo de navegación
 

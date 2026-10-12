@@ -75,13 +75,38 @@ nested objects and collections, indented:
 Log.d("Login", state.toStringPretty())
 ```
 
+## `EmaUtils`
+
+The utility functions are grouped by theme in `EmaUtils`, so writing `EmaUtils.` shows them all. The Android modules
+add their own functions to the themes, under the name of the platform:
+
+| Theme                        | Module                    | Functions                                                              |
+|------------------------------|---------------------------|------------------------------------------------------------------------|
+| `EmaUtils.Coroutines`        | `emanate-core`            | `suspendCoroutineWithTimeout(duration) { }`, `requireMinDurationOf(duration) { }` |
+| `EmaUtils.Flows`             | `emanate-core`            | `singleEvent<T>()`: a `MutableSharedFlow` with no replay, for one-shot signals. |
+| `EmaUtils.Positions`         | `emanate-core`            | `iterateFromCenter(index, length)`, `iterateFromEnd(index, length)`    |
+| `EmaUtils.Size`              | `emanate-core`            | `fitInTargetMaxSizeProportionally(width, height, targetWidth, targetHeight)` |
+| `EmaUtils.Values`            | `emanate-core`            | `checkUpdate(old, new) { }`: runs the block only if the value changed. |
+| `EmaUtils.Screen.Android`    | `emanate-android`         | `metrics(context, includeInsets)`                                      |
+| `EmaUtils.Screen.Compose`    | `emanate-android-compose` | `widthDp()`, `heightDp()`, `widthPx()`, `heightPx()`                   |
+| `EmaUtils.Color.Android`     | `emanate-android`         | `fromGradient(colors, positions, value)`, `lerp(colorA, colorB, t)`    |
+| `EmaUtils.View.Android`      | `emanate-android-view`    | `visibility(visible, gone)`: `VISIBLE`, `GONE` or `INVISIBLE`.         |
+| `EmaUtils.Preview.Compose`   | `emanate-android-compose` | `isInPreview()`, `skipForPreview(previewComposable) { }`               |
+
+```kotlin
+val user = EmaUtils.Coroutines.requireMinDurationOf(1.seconds) { loginUseCase(input) }
+val metrics = EmaUtils.Screen.Android.metrics(context)
+```
+
+The platform groups, like `Android` or `Compose`, are extension properties: the IDE imports them when you autocomplete
+`EmaUtils.Screen.`.
+
 ## Other helpers
 
 | Helper                    | What it is                                                                      |
 |---------------------------|---------------------------------------------------------------------------------|
 | `EmaImage`                | An image described as `ByteArray`, `Uri` or resource `Id`, with size and tint.  |
 | `EmaUniqueSelector`       | Keeps a single option selected in a group and tells which ones were deselected. |
-| `emaFlowSingleEvent<T>()` | A `MutableSharedFlow` with no replay, for one-shot signals.                     |
 
 `emanate-core` also has extensions for numbers, strings, lists, dates and flows in `com.carmabs.emanate.core.extension`.
 
@@ -93,7 +118,7 @@ Log.d("Login", state.toStringPretty())
 |-----------------------------------------------------------|---------------------------------------------------------------------|
 | `EmaText.string(context)`, `Int.toEmaText(...)`            | Resolve and create [texts](#ematext-strings-the-viewmodel-can-hold). |
 | `Context.showToast(message, duration)` / `EmaSingleToast` | A toast that avoids overlapping when several are shown at the same time. |
-| `Int.dp`, `Int.sp`, `getScreenMetrics(context)`            | Units and screen size.                                              |
+| `Int.dp`, `Int.sp`                                         | Units.                                                              |
 | `R.drawable.x.getDrawable(context)`, `getBitmap`, `getColor`, `getDimension`, `getFont`... | Read resources from their id. |
 | `Bitmap.resizeCrop`, `resizeFitInside`, `getRoundedCornerBitmap`, `toByteArray`, `ByteArray.toBitmap` | Transform images. |
 | `EmaUriRes.getResourceId(context)`, `onDrawable`, `onString`... | Resolve a resource described by its name.                      |

@@ -8,8 +8,6 @@ import com.carmabs.emanate.core.delegate.emaStartTriggerDelegate
 import com.carmabs.emanate.core.delegate.emaSyncDelegate
 import com.carmabs.emanate.core.dialog.EmaDialogListener
 import com.carmabs.emanate.core.extension.concat
-import com.carmabs.emanate.core.extension.requireMinDurationOf
-import com.carmabs.emanate.core.extension.suspendCoroutineWithTimeout
 import com.carmabs.emanate.core.extension.until
 import com.carmabs.emanate.core.extension.untilInstanceOf
 import com.carmabs.emanate.core.extension.whileIsInstanceOf
@@ -21,7 +19,6 @@ import com.carmabs.emanate.core.model.EmaImage
 import com.carmabs.emanate.core.model.EmaMultiplePermissionRequest
 import com.carmabs.emanate.core.model.EmaPermissionRequest
 import com.carmabs.emanate.core.model.EmaResult
-import com.carmabs.emanate.core.model.emaFlowSingleEvent
 import com.carmabs.emanate.core.model.flatMap
 import com.carmabs.emanate.core.model.flatMapError
 import com.carmabs.emanate.core.model.map
@@ -37,6 +34,7 @@ import com.carmabs.emanate.core.state.EmaState
 import com.carmabs.emanate.core.usecase.EmaFlowUseCase
 import com.carmabs.emanate.core.usecase.EmaSyncUseCase
 import com.carmabs.emanate.core.usecase.EmaUseCase
+import com.carmabs.emanate.core.utils.EmaUtils
 import com.carmabs.emanate.core.value.EmaUriRes
 import com.carmabs.emanate.core.value.EmaUriType
 import com.carmabs.emanate.core.viewmodel.EmaViewModelClassic
@@ -348,7 +346,7 @@ class EmaCoroutinesTest {
 
     @Test
     fun `requireMinDurationOf waits at least the given time`() = runTest {
-        val result = requireMinDurationOf(500.milliseconds) { "done" }
+        val result = EmaUtils.Coroutines.requireMinDurationOf(500.milliseconds) { "done" }
         assertEquals("done", result)
         // The real time spent is subtracted, so the virtual delay can be a few milliseconds shorter
         assertTrue(testScheduler.currentTime >= 400)
@@ -356,9 +354,9 @@ class EmaCoroutinesTest {
 
     @Test
     fun `suspendCoroutineWithTimeout resumes or times out`() = runTest {
-        assertEquals(1, suspendCoroutineWithTimeout<Int>(100.milliseconds) { it.resume(1) })
+        assertEquals(1, EmaUtils.Coroutines.suspendCoroutineWithTimeout<Int>(100.milliseconds) { it.resume(1) })
         assertFailsWith<TimeoutCancellationException> {
-            suspendCoroutineWithTimeout<Int>(100.milliseconds) { }
+            EmaUtils.Coroutines.suspendCoroutineWithTimeout<Int>(100.milliseconds) { }
         }
     }
 
@@ -373,7 +371,7 @@ class EmaCoroutinesTest {
 
     @Test
     fun `single event flow drops old values when nobody collects`() = runTest {
-        val flow = emaFlowSingleEvent<Int>()
+        val flow = EmaUtils.Flows.singleEvent<Int>()
         assertTrue(flow.tryEmit(1))
         assertTrue(flow.tryEmit(2))
         assertEquals(0, flow.replayCache.size)

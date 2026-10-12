@@ -16,10 +16,11 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 import androidx.viewbinding.ViewBinding
 import com.carmabs.emanate.android.delegates.emaStateDelegate
-import com.carmabs.emanate.android.extension.getScreenMetrics
 import com.carmabs.emanate.android.extension.getSerializableCompat
+import com.carmabs.emanate.android.utils.Android
 import com.carmabs.emanate.core.dialog.EmaDialogData
 import com.carmabs.emanate.core.dialog.EmaDialogListener
+import com.carmabs.emanate.core.utils.EmaUtils
 
 /**
  * Base dialog class to implement dialogs
@@ -108,7 +109,7 @@ abstract class EmaDialog<B : ViewBinding, T : EmaDialogData> :
 
     private fun updateDialogSizeAndBehaviour() {
         dialog?.window?.also { win ->
-            val display = getScreenMetrics(requireContext())
+            val display = EmaUtils.Screen.Android.metrics(requireContext())
             val size = Point().apply {
                 x = display.widthPixels
                 y = display.heightPixels

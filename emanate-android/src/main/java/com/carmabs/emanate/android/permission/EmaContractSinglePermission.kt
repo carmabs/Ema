@@ -2,7 +2,7 @@ package com.carmabs.emanate.android.permission
 
 import androidx.activity.result.ActivityResultLauncher
 import com.carmabs.emanate.core.manager.PermissionState
-import com.carmabs.emanate.core.model.emaFlowSingleEvent
+import com.carmabs.emanate.core.utils.EmaUtils
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -23,7 +23,7 @@ class EmaContractSinglePermission(shouldShowRequestPermissionRationaleFunction: 
     ) {
 
     private var permissionId: String? = null
-    private var flow = emaFlowSingleEvent<PermissionState>()
+    private var flow = EmaUtils.Flows.singleEvent<PermissionState>()
 
     val contract = { granted: Boolean ->
         permissionId?.also {

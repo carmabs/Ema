@@ -1,9 +1,10 @@
 package com.carmabs.emanate.compose.extension
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalInspectionMode
+import com.carmabs.emanate.compose.utils.Compose
+import com.carmabs.emanate.core.utils.EmaUtils
 
-/**
+/*
  * Created by Carlos Mateo Benito on 13/5/23
  *
  * <p>
@@ -12,20 +13,11 @@ import androidx.compose.ui.platform.LocalInspectionMode
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
+/**
+ * Returns [value] inside a preview of the IDE, and this value otherwise.
+ */
 @Composable
-fun skipForPreview(previewComposable: (@Composable () -> Unit)? = null, skipContent: @Composable () -> Unit) {
-    if (!LocalInspectionMode.current) {
-        skipContent.invoke()
-    } else {
-        previewComposable?.invoke()
-    }
-}
-
-@Composable
-fun isInPreview() = LocalInspectionMode.current
-
-@Composable
-fun <T> T?.changeForPreview(value: T?) = if (isInPreview()) {
+fun <T> T?.changeForPreview(value: T?) = if (EmaUtils.Preview.Compose.isInPreview()) {
     value
 } else {
     this

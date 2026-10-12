@@ -17,14 +17,15 @@ import com.carmabs.emanate.android.savestate.SavedStateSupport
 import com.carmabs.emanate.compose.action.EmaImmutableActionDispatcher
 import com.carmabs.emanate.compose.action.toImmutable
 import com.carmabs.emanate.compose.extension.asActionDispatcher
-import com.carmabs.emanate.compose.extension.skipForPreview
 import com.carmabs.emanate.compose.provider.EmaScreenProvider
+import com.carmabs.emanate.compose.utils.Compose
 import com.carmabs.emanate.core.action.EmaAction
 import com.carmabs.emanate.core.action.EmaActionDispatcher
 import com.carmabs.emanate.core.action.EmaEventConsumer
 import com.carmabs.emanate.core.model.EmaBackHandlerStrategy
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
+import com.carmabs.emanate.core.utils.EmaUtils
 import com.carmabs.emanate.core.viewmodel.EmaViewModelContract
 
 @Composable
@@ -36,7 +37,7 @@ fun <S : EmaState, A : EmaAction, E : EmaEvent> EmaComposableScreen(
     onEvent: (E) -> Unit,
     previewRenderState: S? = null
 ) {
-    skipForPreview(
+    EmaUtils.Preview.Compose.skipForPreview(
         previewComposable = {
             previewRenderState?.also { previewState ->
                 screenContent.onState(
@@ -69,7 +70,7 @@ fun <A : EmaAction, S : EmaState, E : EmaEvent> EmaComposableScreen(
     saveStateSupport: SavedStateSupport<S, E>? = null,
     previewRenderState: S? = null
 ) {
-    skipForPreview(
+    EmaUtils.Preview.Compose.skipForPreview(
         previewComposable = {
             previewRenderState?.also { previewState ->
                 screenContent.onState(

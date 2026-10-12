@@ -42,12 +42,14 @@ import com.carmabs.emanate.compose.action.EmaImmutableActionDispatcher
 import com.carmabs.emanate.compose.list.toImmutable
 import com.carmabs.emanate.compose.permission.rememberEmaPermissionManager
 import com.carmabs.emanate.compose.test.R
+import com.carmabs.emanate.compose.utils.Compose
 import com.carmabs.emanate.core.manager.EmaPermissionManager
 import com.carmabs.emanate.core.manager.PermissionState
 import com.carmabs.emanate.core.model.EmaImage
 import com.carmabs.emanate.core.model.EmaMultiplePermissionRequest
 import com.carmabs.emanate.core.model.EmaPermissionRequest
 import com.carmabs.emanate.core.model.EmaText
+import com.carmabs.emanate.core.utils.EmaUtils
 import com.carmabs.emanate.core.value.EmaUriRes
 import com.carmabs.emanate.core.value.EmaUriType
 import com.carmabs.emanate.core.viewmodel.EmaViewModelAction
@@ -133,10 +135,11 @@ class EmaComposeExtensionsTest {
         var dps = emptyList<Dp>()
         var sp: TextUnit? = null
         composeRule.setContent {
-            values += screenHeightPx()
-            values += screenWidthPx()
+            values += EmaUtils.Screen.Compose.heightPx()
+            values += EmaUtils.Screen.Compose.widthPx()
             values += 10.dp.toPx()
-            dps = listOf(screenHeightDp(), screenWidthDp(), 10.pxToDp(), 10f.pxToDp())
+            dps =
+                listOf(EmaUtils.Screen.Compose.heightDp(), EmaUtils.Screen.Compose.widthDp(), 10.pxToDp(), 10f.pxToDp())
             sp = 10.dp.inSp
         }
         composeRule.waitForIdle()
@@ -206,14 +209,20 @@ class EmaComposeExtensionsTest {
     fun `the preview helpers depend on the inspection mode`() {
         val results = mutableListOf<Any?>()
         composeRule.setContent {
-            results += isInPreview()
+            results += EmaUtils.Preview.Compose.isInPreview()
             results += "real".changeForPreview("preview")
-            skipForPreview(previewComposable = { results += "preview content" }) { results += "content" }
+            EmaUtils.Preview.Compose.skipForPreview(previewComposable = { results += "preview content" }) {
+                results +=
+                    "content"
+            }
             CompositionLocalProvider(LocalInspectionMode provides true) {
-                results += isInPreview()
+                results += EmaUtils.Preview.Compose.isInPreview()
                 results += "real".changeForPreview("preview")
-                skipForPreview(previewComposable = { results += "preview content" }) { results += "content" }
-                skipForPreview { results += "not in preview" }
+                EmaUtils.Preview.Compose.skipForPreview(previewComposable = { results += "preview content" }) {
+                    results +=
+                        "content"
+                }
+                EmaUtils.Preview.Compose.skipForPreview { results += "not in preview" }
             }
         }
         composeRule.waitForIdle()

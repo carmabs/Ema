@@ -141,31 +141,6 @@ fun ImageView.setImageWithOvershot(
 }
 
 /**
- * Returns View visibility based on boolean
- * @param visibility True is VISIBLE, false INVISIBLE
- * @param gone Put this value true if visibility is false and you want to return GONE
- *
- */
-fun checkVisibility(visibility: Boolean, gone: Boolean = true): Int = when {
-    visibility -> View.VISIBLE
-    gone -> View.GONE
-    else -> View.INVISIBLE
-}
-
-/**
- * Executes an action if values are different
- *
- * @param oldValue Previous value to check update
- * @param newValue Current value to check update
- * @param action Function to execute with new value if it has changed
- */
-fun <T> checkUpdate(oldValue: T, newValue: T, action: (T) -> Unit) {
-    if (oldValue != newValue) {
-        action(newValue)
-    }
-}
-
-/**
  * Tint the progress bar with the selected color
  *
  * @param color The color tint
@@ -193,36 +168,4 @@ fun ProgressBar.setProgressGradientTintCompat(@ColorInt color: Int) {
     } else {
         progressTintList = ColorStateList.valueOf(color)
     }
-}
-
-fun getColorFromGradient(colors: IntArray, positions: FloatArray, v: Float): Int {
-    require(!(colors.size == 0 || colors.size != positions.size))
-    if (colors.size == 1) {
-        return colors[0]
-    }
-    if (v <= positions[0]) {
-        return colors[0]
-    }
-    if (v >= positions[positions.size - 1]) {
-        return colors[positions.size - 1]
-    }
-    for (i in 1 until positions.size) {
-        if (v <= positions[i]) {
-            val t =
-                (v - positions[i - 1]) / (positions[i] - positions[i - 1])
-            return lerpColor(colors[i - 1], colors[i], t)
-        }
-    }
-    throw RuntimeException()
-}
-
-fun lerpColor(colorA: Int, colorB: Int, t: Float): Int {
-    val alpha =
-        Math.floor((Color.alpha(colorA) * (1 - t) + Color.alpha(colorB) * t).toDouble()).toInt()
-    val red = Math.floor((Color.red(colorA) * (1 - t) + Color.red(colorB) * t).toDouble()).toInt()
-    val green =
-        Math.floor((Color.green(colorA) * (1 - t) + Color.green(colorB) * t).toDouble()).toInt()
-    val blue =
-        Math.floor((Color.blue(colorA) * (1 - t) + Color.blue(colorB) * t).toDouble()).toInt()
-    return Color.argb(alpha, red, green, blue)
 }

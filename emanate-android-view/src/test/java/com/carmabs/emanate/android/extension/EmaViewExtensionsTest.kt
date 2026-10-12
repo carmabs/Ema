@@ -25,8 +25,10 @@ import com.carmabs.emanate.android.delegates.emaStateDelegate
 import com.carmabs.emanate.android.idleMain
 import com.carmabs.emanate.android.initializer.EmaInitializerBundle
 import com.carmabs.emanate.android.initializer.bundle.strategy.BundleSerializerStrategy
+import com.carmabs.emanate.android.utils.Android
 import com.carmabs.emanate.core.initializer.EmaInitializerSerializer
 import com.carmabs.emanate.core.navigator.EmaNavigator
+import com.carmabs.emanate.core.utils.EmaUtils
 import com.carmabs.emanate.core.view.EmaView
 import com.carmabs.emanate.core.view.EmaViewModelTrigger
 import java.time.Duration
@@ -253,13 +255,13 @@ class EmaViewExtensionsTest {
 
     @Test
     fun `visibility and update helpers`() {
-        assertEquals(View.VISIBLE, checkVisibility(true))
-        assertEquals(View.GONE, checkVisibility(false))
-        assertEquals(View.INVISIBLE, checkVisibility(false, gone = false))
+        assertEquals(View.VISIBLE, EmaUtils.View.Android.visibility(true))
+        assertEquals(View.GONE, EmaUtils.View.Android.visibility(false))
+        assertEquals(View.INVISIBLE, EmaUtils.View.Android.visibility(false, gone = false))
 
         val updates = mutableListOf<Int>()
-        checkUpdate(1, 1) { updates += it }
-        checkUpdate(1, 2) { updates += it }
+        EmaUtils.Values.checkUpdate(1, 1) { updates += it }
+        EmaUtils.Values.checkUpdate(1, 2) { updates += it }
         assertEquals(listOf(2), updates)
     }
 
@@ -277,14 +279,19 @@ class EmaViewExtensionsTest {
         val colors = intArrayOf(Color.BLACK, Color.WHITE, Color.RED)
         val positions = floatArrayOf(0f, 0.5f, 1f)
 
-        assertEquals(Color.BLACK, getColorFromGradient(colors, positions, -1f))
-        assertEquals(Color.RED, getColorFromGradient(colors, positions, 2f))
-        assertEquals(Color.argb(255, 127, 127, 127), getColorFromGradient(colors, positions, 0.25f))
-        assertEquals(Color.WHITE, getColorFromGradient(colors, positions, 0.5f))
-        assertEquals(Color.GREEN, getColorFromGradient(intArrayOf(Color.GREEN), floatArrayOf(0.3f), 0.9f))
-        assertFailsWith<IllegalArgumentException> { getColorFromGradient(colors, floatArrayOf(0f), 0f) }
-        assertFailsWith<IllegalArgumentException> { getColorFromGradient(intArrayOf(), floatArrayOf(), 0f) }
-        assertEquals(Color.argb(255, 127, 127, 127), lerpColor(Color.BLACK, Color.WHITE, 0.5f))
+        assertEquals(Color.BLACK, EmaUtils.Color.Android.fromGradient(colors, positions, -1f))
+        assertEquals(Color.RED, EmaUtils.Color.Android.fromGradient(colors, positions, 2f))
+        assertEquals(Color.argb(255, 127, 127, 127), EmaUtils.Color.Android.fromGradient(colors, positions, 0.25f))
+        assertEquals(Color.WHITE, EmaUtils.Color.Android.fromGradient(colors, positions, 0.5f))
+        assertEquals(
+            Color.GREEN,
+            EmaUtils.Color.Android.fromGradient(intArrayOf(Color.GREEN), floatArrayOf(0.3f), 0.9f)
+        )
+        assertFailsWith<IllegalArgumentException> { EmaUtils.Color.Android.fromGradient(colors, floatArrayOf(0f), 0f) }
+        assertFailsWith<IllegalArgumentException> {
+            EmaUtils.Color.Android.fromGradient(intArrayOf(), floatArrayOf(), 0f)
+        }
+        assertEquals(Color.argb(255, 127, 127, 127), EmaUtils.Color.Android.lerp(Color.BLACK, Color.WHITE, 0.5f))
     }
 
     @Test

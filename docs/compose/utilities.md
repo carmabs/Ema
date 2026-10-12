@@ -19,8 +19,8 @@ R.color.primary.toComposeColor()        // Color
 
 | Helper                                        | What it does                                                    |
 |-----------------------------------------------|-----------------------------------------------------------------|
-| `isInPreview()`                               | `true` inside the IDE preview.                                  |
-| `skipForPreview(previewComposable) { }`       | Draws the content, or `previewComposable` inside a preview.     |
+| `EmaUtils.Preview.Compose.isInPreview()`      | `true` inside the IDE preview.                                  |
+| `EmaUtils.Preview.Compose.skipForPreview(previewComposable) { }` | Draws the content, or `previewComposable` inside a preview. |
 | `value.changeForPreview(previewValue)`        | Returns `previewValue` inside a preview, `value` otherwise.     |
 | `EmaImmutableActionDispatcher.EMPTY`          | An action dispatcher that ignores every action.                 |
 | `LoremIpsum(words).generate()`                | Placeholder text as a single `String`.                          |
@@ -29,8 +29,8 @@ R.color.primary.toComposeColor()        // Color
 
 | Helper                                          | What it does                                     |
 |-------------------------------------------------|--------------------------------------------------|
-| `screenWidthDp()`, `screenHeightDp()`           | The screen size in `Dp`.                         |
-| `screenWidthPx()`, `screenHeightPx()`           | The screen size in pixels.                       |
+| `EmaUtils.Screen.Compose.widthDp()`, `heightDp()` | The screen size in `Dp`.                       |
+| `EmaUtils.Screen.Compose.widthPx()`, `heightPx()` | The screen size in pixels.                     |
 | `10.pxToDp()`, `10.dp.toPx()`, `10.dp.inSp`     | Unit conversions with the current density.       |
 | `EmaMeasureViewWidth(viewToMeasure) { width, view -> }` | Measures a composable before drawing the content that depends on its width. |
 

@@ -13,9 +13,9 @@ The extensions of `emanate-android-view` are in `com.carmabs.emanate.android.ext
 | `imageView.setImageWithOvershot(drawable)`      | Sets the image with an overshoot rotation.                         |
 | `activity.hideKeyboard()`, `fragment.hideKeyboard()`, `view.hideKeyboard()` | Hides the soft keyboard.             |
 | `progressBar.setProgressTintCompat(color)`      | Tints a progress bar.                                              |
-| `checkVisibility(visible, gone)`                | `VISIBLE`, `GONE` or `INVISIBLE` from a boolean.                   |
-| `checkUpdate(old, new) { }`                     | Runs the block only if the value changed.                          |
-| `getColorFromGradient(colors, positions, value)`, `lerpColor(a, b, t)` | Interpolate colours.                        |
+
+`EmaUtils.View.Android.visibility(visible, gone)` returns `VISIBLE`, `GONE` or `INVISIBLE` from a boolean. See
+[`EmaUtils`](../guides/utilities.md#emautils) for the rest of the utility functions.
 
 ## Animations
 

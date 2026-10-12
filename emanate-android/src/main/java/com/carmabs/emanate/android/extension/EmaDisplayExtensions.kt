@@ -60,49 +60,6 @@ val Float.sp
         Resources.getSystem().displayMetrics
     )
 
-/**
- * Get display metrics
- */
-fun getScreenMetrics(context: Context, includeInsets: Boolean = false): DisplayMetrics {
-    val displayMetrics = context.resources.displayMetrics
-    val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-        val metrics = windowManager.currentWindowMetrics
-        // Gets all excluding insets
-        val windowInsets = metrics.windowInsets
-        val insets: Insets = windowInsets.getInsetsIgnoringVisibility(
-            WindowInsets.Type.navigationBars()
-                or WindowInsets.Type.displayCutout()
-        )
-
-        val insetsWidth: Int = insets.right + insets.left
-        val insetsHeight: Int = insets.top + insets.bottom
-
-        // Legacy size that Display#getSize reports
-        val bounds = metrics.bounds
-        val legacySize = Size(
-            bounds.width() - insetsWidth,
-            bounds.height() - insetsHeight
-        )
-        displayMetrics.apply {
-            heightPixels = legacySize.height
-            widthPixels = legacySize.width
-        }
-        // Get the application size including decoration
-        if (includeInsets) {
-            val boundsActivity = windowManager.currentWindowMetrics.bounds
-            displayMetrics.apply {
-                heightPixels = boundsActivity.height()
-                widthPixels = boundsActivity.width()
-            }
-        }
-    } else {
-        windowManager.defaultDisplay.getMetrics(displayMetrics)
-    }
-    return displayMetrics
-}
-
 fun Context.getStatusBarHeight(): Int {
     val resourceId: Int =
         resources.getIdentifier("status_bar_height", "dimen", "android")
@@ -116,28 +73,6 @@ fun Context.getStatusBarHeight(): Int {
 
 val Configuration.screenHeightPx
     get() = run { screenHeightDp.toFloat() * densityDpi / 160f }
-
-fun fitInTargetMaxSizeProportionally(
-    currentWidth: Int,
-    currentHeight: Int,
-    targetWidth: Int,
-    targetHeight: Int
-): Pair<Int, Int> {
-    val whRation = currentWidth / currentHeight.toFloat()
-    val endWidth = if (whRation < INT_ONE) {
-        targetHeight * whRation
-    } else {
-        targetWidth
-    }
-
-    val endHeight = if (whRation < INT_ONE) {
-        targetHeight
-    } else {
-        targetWidth / whRation
-    }
-
-    return Pair(endWidth.toInt(), endHeight.toInt())
-}
 
 val Configuration.screenWidthPx
     get() = run { screenWidthDp.toFloat() * densityDpi / 160f }

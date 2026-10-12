@@ -27,6 +27,7 @@ import androidx.core.graphics.drawable.toBitmap
 import com.carmabs.emanate.core.Ema
 import com.carmabs.emanate.core.constants.FLOAT_ONE
 import com.carmabs.emanate.core.constants.INT_ZERO
+import com.carmabs.emanate.core.utils.EmaUtils
 import com.carmabs.emanate.core.value.EmaUriRes
 import com.carmabs.emanate.core.value.EmaUriType
 import java.io.ByteArrayOutputStream
@@ -61,7 +62,7 @@ fun @receiver:FontRes Int.getTypeface(context: Context): Typeface = ResourcesCom
  * Will return the size to maintain the proportions, keeping the max target size possible on width or height
  */
 fun Drawable.fitInTargetMaxSizeProportionally(targetWidth: Int?, targetHeight: Int?): Pair<Int, Int> =
-    fitInTargetMaxSizeProportionally(
+    EmaUtils.Size.fitInTargetMaxSizeProportionally(
         intrinsicWidth,
         intrinsicHeight,
         targetWidth ?: intrinsicWidth,

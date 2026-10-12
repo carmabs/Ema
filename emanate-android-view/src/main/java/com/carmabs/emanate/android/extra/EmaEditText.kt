@@ -3,7 +3,7 @@ package com.carmabs.emanate.android.extra
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.EditText
-import com.carmabs.emanate.android.extension.checkUpdate
+import com.carmabs.emanate.core.utils.EmaUtils
 
 /**
  * Created by Carlos Mateo Benito on 2019-11-17.
@@ -29,7 +29,7 @@ class EmaEditText : EditText {
     ) : super(context, attrs, defStyleAttr, defStyleRes)
 
     fun setText(text: String?) {
-        checkUpdate(this.text.toString(), text) {
+        EmaUtils.Values.checkUpdate(this.text.toString(), text) {
             super.setText(text)
         }
     }

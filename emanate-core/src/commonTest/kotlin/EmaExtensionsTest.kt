@@ -7,8 +7,6 @@ import com.carmabs.emanate.core.extension.ifFalse
 import com.carmabs.emanate.core.extension.ifFalseLet
 import com.carmabs.emanate.core.extension.ifTrue
 import com.carmabs.emanate.core.extension.ifTrueLet
-import com.carmabs.emanate.core.extension.iteratePositionFromCenter
-import com.carmabs.emanate.core.extension.iteratePositionFromEnd
 import com.carmabs.emanate.core.extension.mapEachFirstLast
 import com.carmabs.emanate.core.extension.mapFirstLast
 import com.carmabs.emanate.core.extension.maxOrNull
@@ -26,6 +24,7 @@ import com.carmabs.emanate.core.manager.areAllPermissionsStateGranted
 import com.carmabs.emanate.core.manager.isPermissionGranted
 import com.carmabs.emanate.core.manager.isPermissionStateGranted
 import com.carmabs.emanate.core.model.EmaText
+import com.carmabs.emanate.core.utils.EmaUtils
 import com.carmabs.emanate.core.value.EmaUriRes
 import com.carmabs.emanate.core.value.EmaUriType
 import com.carmabs.emanate.core.value.toUriRes
@@ -95,27 +94,27 @@ class EmaNumberExtensionsTest {
     }
 
     @Test
-    fun `iteratePositionFromCenter visits every position once starting at the center`() {
-        val positions = List(7) { iteratePositionFromCenter(it, 7) }
+    fun `iterateFromCenter visits every position once starting at the center`() {
+        val positions = List(7) { EmaUtils.Positions.iterateFromCenter(it, 7) }
         assertEquals(listOf(3, 2, 4, 1, 5, 0, 6), positions)
         assertEquals((0 until 7).toSet(), positions.toSet())
 
-        val leftFirst = List(5) { iteratePositionFromCenter(it, 5, startRight = false) }
+        val leftFirst = List(5) { EmaUtils.Positions.iterateFromCenter(it, 5, startRight = false) }
         assertEquals(listOf(2, 3, 1, 4, 0), leftFirst)
     }
 
     @Test
-    fun `iteratePositionFromCenter returns the center out of range`() {
-        assertEquals(3, iteratePositionFromCenter(-1, 7))
-        assertEquals(3, iteratePositionFromCenter(7, 7))
+    fun `iterateFromCenter returns the center out of range`() {
+        assertEquals(3, EmaUtils.Positions.iterateFromCenter(-1, 7))
+        assertEquals(3, EmaUtils.Positions.iterateFromCenter(7, 7))
     }
 
     @Test
-    fun `iteratePositionFromEnd alternates both ends`() {
-        assertEquals(listOf(4, 0, 3, 1, 2), List(5) { iteratePositionFromEnd(it, 5) })
-        assertEquals(listOf(0, 4, 1, 3, 2), List(5) { iteratePositionFromEnd(it, 5, startRight = false) })
-        assertEquals(2, iteratePositionFromEnd(-1, 5))
-        assertEquals(2, iteratePositionFromEnd(5, 5))
+    fun `iterateFromEnd alternates both ends`() {
+        assertEquals(listOf(4, 0, 3, 1, 2), List(5) { EmaUtils.Positions.iterateFromEnd(it, 5) })
+        assertEquals(listOf(0, 4, 1, 3, 2), List(5) { EmaUtils.Positions.iterateFromEnd(it, 5, startRight = false) })
+        assertEquals(2, EmaUtils.Positions.iterateFromEnd(-1, 5))
+        assertEquals(2, EmaUtils.Positions.iterateFromEnd(5, 5))
     }
 }
 

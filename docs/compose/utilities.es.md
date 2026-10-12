@@ -19,8 +19,8 @@ Un `EmaImage` se pinta con `toComposableImage(contentDescription, modifier, ...)
 
 | Ayuda                                         | Qué hace                                                        |
 |-----------------------------------------------|-----------------------------------------------------------------|
-| `isInPreview()`                               | `true` dentro de la preview del IDE.                            |
-| `skipForPreview(previewComposable) { }`       | Pinta el contenido, o `previewComposable` dentro de una preview. |
+| `EmaUtils.Preview.Compose.isInPreview()`      | `true` dentro de la preview del IDE.                            |
+| `EmaUtils.Preview.Compose.skipForPreview(previewComposable) { }` | Pinta el contenido, o `previewComposable` dentro de una preview. |
 | `value.changeForPreview(previewValue)`        | Devuelve `previewValue` dentro de una preview y `value` fuera.  |
 | `EmaImmutableActionDispatcher.EMPTY`          | Un dispatcher de acciones que las ignora todas.                 |
 | `LoremIpsum(words).generate()`                | Texto de relleno como un único `String`.                        |
@@ -29,8 +29,8 @@ Un `EmaImage` se pinta con `toComposableImage(contentDescription, modifier, ...)
 
 | Ayuda                                           | Qué hace                                         |
 |-------------------------------------------------|--------------------------------------------------|
-| `screenWidthDp()`, `screenHeightDp()`           | El tamaño de la pantalla en `Dp`.                |
-| `screenWidthPx()`, `screenHeightPx()`           | El tamaño de la pantalla en píxeles.             |
+| `EmaUtils.Screen.Compose.widthDp()`, `heightDp()` | El tamaño de la pantalla en `Dp`.              |
+| `EmaUtils.Screen.Compose.widthPx()`, `heightPx()` | El tamaño de la pantalla en píxeles.           |
 | `10.pxToDp()`, `10.dp.toPx()`, `10.dp.inSp`     | Conversiones de unidades con la densidad actual. |
 | `EmaMeasureViewWidth(viewToMeasure) { width, view -> }` | Mide un composable antes de pintar el contenido que depende de su ancho. |
 
