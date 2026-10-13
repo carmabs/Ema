@@ -27,7 +27,7 @@
     
     
       
-        <title>Ema</title>
+        <title>Emanate</title>
       
     
     
@@ -78,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#ema" class="md-skip">
+        <a href="#emanate" class="md-skip">
           Skip to content
         </a>
       
@@ -98,7 +98,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="." title="Ema" class="md-header__button md-logo" aria-label="Ema" data-md-component="logo">
+    <a href="." title="Emanate" class="md-header__button md-logo" aria-label="Emanate" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -112,7 +112,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            Ema
+            Emanate
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -260,13 +260,13 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="." title="Ema" class="md-nav__button md-logo" aria-label="Ema" data-md-component="logo">
+    <a href="." title="Emanate" class="md-nav__button md-logo" aria-label="Emanate" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    Ema
+    Emanate
   </label>
   
     <div class="md-nav__source">
@@ -350,10 +350,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#why-ema" class="md-nav__link">
+  <a href="#why-emanate" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Why Ema
+        Why Emanate
       
     </span>
   </a>
@@ -596,6 +596,34 @@
     
   
     ViewModel
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="concepts/source/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Source
   
 
     
@@ -1518,10 +1546,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#why-ema" class="md-nav__link">
+  <a href="#why-emanate" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Why Ema
+        Why Emanate
       
     </span>
   </a>
@@ -1570,8 +1598,8 @@
   
 
 
-<h1 id="ema">Ema<a class="headerlink" href="#ema" title="Permanent link">&para;</a></h1>
-<p>Ema is a small library for building screens with a <strong>unidirectional, MVI-style flow</strong>.
+<h1 id="emanate">Emanate<a class="headerlink" href="#emanate" title="Permanent link">&para;</a></h1>
+<p>Emanate is a small library for building screens with a <strong>unidirectional, MVI-style flow</strong>.
 It gives you three simple building blocks and takes care of everything around them
 (lifecycle, coroutines, navigation, dialogs, process death...).</p>
 <table>
@@ -1610,13 +1638,15 @@ It gives you three simple building blocks and takes care of everything around th
     V-&gt;&gt;N: navigate(event)</code></pre>
 <p>The view <strong>renders</strong> the state and <strong>reacts</strong> to events. It never decides business logic:
 it only reports what the user did through actions.</p>
-<h2 id="why-ema">Why Ema<a class="headerlink" href="#why-ema" title="Permanent link">&para;</a></h2>
+<h2 id="why-emanate">Why Emanate<a class="headerlink" href="#why-emanate" title="Permanent link">&para;</a></h2>
 <ul>
 <li><strong>One way to do things.</strong> Every screen has the same shape, so a new teammate can read any feature.</li>
 <li><strong>State is the single source of truth.</strong> Loading, errors and dialogs are part of the state, so rotating the device or
   recreating the view never loses them.</li>
 <li><strong>Events are not state.</strong> Toasts, snackbars and "go to the next screen" are delivered exactly once and never replayed.</li>
-<li><strong>ViewModels in pure Kotlin.</strong> <code>ema-core</code> is a Kotlin Multiplatform library with no Android dependency, so the
+<li><strong>Predictable ViewModels.</strong> <code>EmaViewModel</code> handles every action with pure reducers, middlewares and side effects,
+  so every screen follows the same flow and is easy to test.</li>
+<li><strong>ViewModels in pure Kotlin.</strong> <code>emanate-core</code> is a Kotlin Multiplatform library with no Android dependency, so the
   presentation layer can be tested on the JVM and shared with other platforms.</li>
 <li><strong>Small surface.</strong> No code generation and no custom build plugins.</li>
 </ul>
@@ -1630,27 +1660,31 @@ it only reports what the user did through actions.</p>
 </thead>
 <tbody>
 <tr>
-<td><code>ema-core</code></td>
+<td><code>emanate-core</code></td>
 <td>State, actions, events, ViewModels and use cases. Pure Kotlin Multiplatform.</td>
 </tr>
 <tr>
-<td><code>ema-android</code></td>
+<td><code>emanate-android</code></td>
 <td>Android integration shared by every UI: configuration, initializers, permissions, texts, images.</td>
 </tr>
 <tr>
-<td><code>ema-compose</code></td>
+<td><code>emanate-compose</code></td>
 <td>Jetpack Compose screens, navigation and previews. <strong>The recommended way to build the UI.</strong></td>
 </tr>
 <tr>
-<td><code>ema-android-view</code></td>
+<td><code>emanate-android-view</code></td>
 <td>Fragments, Activities, dialogs and lists for the Android View system.</td>
+</tr>
+<tr>
+<td><code>emanate-test</code></td>
+<td>Utilities to test the ViewModels and the sources on the JVM. See <a href="guides/testing/">Testing</a>.</td>
 </tr>
 </tbody>
 </table>
-<p><code>ema-android-view</code> exposes <code>ema-android</code>, and both expose <code>ema-core</code>. A Compose app adds <code>ema-android</code> and <code>ema-compose</code>.</p>
+<p><code>emanate-android-view</code> exposes <code>emanate-android</code>, and both expose <code>emanate-core</code>. A Compose app adds <code>emanate-android</code> and <code>emanate-compose</code>.</p>
 <blockquote>
 <p><strong>Compose first.</strong> New screens should be written with Compose. The View system support lives in its own module,
-<code>ema-android-view</code>, and will be deprecated in favour of Compose in the future.</p>
+<code>emanate-android-view</code>, and will be deprecated in favour of Compose in the future.</p>
 </blockquote>
 <h2 id="where-to-go-next">Where to go next<a class="headerlink" href="#where-to-go-next" title="Permanent link">&para;</a></h2>
 <ol>
@@ -1661,6 +1695,7 @@ it only reports what the user did through actions.</p>
 <li><a href="concepts/actions/">Actions</a></li>
 <li><a href="concepts/events/">Events</a></li>
 <li><a href="concepts/viewmodel/">ViewModel</a></li>
+<li><a href="concepts/source/">Source</a></li>
 </ul>
 </li>
 <li><strong>Guides</strong>: everything that does not depend on the UI technology.<ul>
@@ -1685,7 +1720,7 @@ it only reports what the user did through actions.</p>
 <li><a href="compose/utilities/">Utilities</a></li>
 </ul>
 </li>
-<li><strong><a href="android-view/">Android Views</a></strong> (<code>ema-android-view</code>)</li>
+<li><strong><a href="android-view/">Android Views</a></strong> (<code>emanate-android-view</code>)</li>
 <li><a href="recommendations/">Recommendations</a>: project structure and naming conventions.</li>
 <li><a href="contributing/">Contributing</a>: building, testing and formatting the library.</li>
 </ol>

@@ -29,7 +29,7 @@
     
     
       
-        <title>Navigation - Ema</title>
+        <title>Navigation - Emanate</title>
       
     
     
@@ -100,7 +100,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="Ema" class="md-header__button md-logo" aria-label="Ema" data-md-component="logo">
+    <a href="../.." title="Emanate" class="md-header__button md-logo" aria-label="Emanate" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -114,7 +114,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            Ema
+            Emanate
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -262,13 +262,13 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="Ema" class="md-nav__button md-logo" aria-label="Ema" data-md-component="logo">
+    <a href="../.." title="Emanate" class="md-nav__button md-logo" aria-label="Emanate" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    Ema
+    Emanate
   </label>
   
     <div class="md-nav__source">
@@ -518,6 +518,34 @@
     
   
     ViewModel
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/source/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Source
   
 
     
@@ -1631,7 +1659,7 @@
 
 
 <h1 id="compose-navigation">Compose navigation<a class="headerlink" href="#compose-navigation" title="Permanent link">&para;</a></h1>
-<p>In Ema the <strong>ViewModel never navigates</strong>. It posts an <a href="../../concepts/events/">event</a> that says what happened,
+<p>In Emanate the <strong>ViewModel never navigates</strong>. It posts an <a href="../../concepts/events/">event</a> that says what happened,
 and the <code>onEvent</code> lambda of the destination hands it to a <strong>navigator</strong>, which knows how to move around.</p>
 <pre class="mermaid"><code>sequenceDiagram
     participant VM as ViewModel
@@ -1696,7 +1724,10 @@ opens a link in another app.</p>
 <span class="p">)</span>
 </code></pre></div>
 <p>Another overload receives a <code>NavOptionsBuilder</code> lambda, like <code>navigate(route) { launchSingleTop = true }</code>.</p>
-<p>The destination declares how to read it with <code>initializerSupport</code>. In routes, use the <code>kSerialization</code> strategy:</p>
+<p>The destination declares how to read it with <code>initializerSupport</code>. The initializer travels in the route as text, so
+Compose navigation reads it with kotlinx.serialization: <code>EmaInitializerSupport</code> only accepts the <code>kSerialization</code>
+strategy, and the <code>parcelable</code> and <code>serializable</code> strategies, which only work with Bundles, fail if they are used in a
+route:</p>
 <div class="highlight"><pre><span></span><code><span class="n">createComposableScreen</span><span class="p">(</span>
 <span class="w">    </span><span class="n">screenContent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ProfileCreationScreenContent</span><span class="p">(),</span>
 <span class="w">    </span><span class="n">viewModel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">get</span><span class="o">&lt;</span><span class="n">ProfileCreationViewModel</span><span class="o">&gt;</span><span class="p">()</span><span class="w"> </span><span class="p">},</span>

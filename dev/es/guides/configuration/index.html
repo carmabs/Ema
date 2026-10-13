@@ -11,7 +11,7 @@
       
       
       
-        <link rel="prev" href="../../concepts/viewmodel/">
+        <link rel="prev" href="../../concepts/source/">
       
       
         <link rel="next" href="../initializers/">
@@ -29,7 +29,7 @@
     
     
       
-        <title>Configuración - Ema</title>
+        <title>Configuración - Emanate</title>
       
     
     
@@ -100,7 +100,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Cabecera">
-    <a href="../../" title="Ema" class="md-header__button md-logo" aria-label="Ema" data-md-component="logo">
+    <a href="../../" title="Emanate" class="md-header__button md-logo" aria-label="Emanate" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -114,7 +114,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            Ema
+            Emanate
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -262,13 +262,13 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navegación" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../../" title="Ema" class="md-nav__button md-logo" aria-label="Ema" data-md-component="logo">
+    <a href="../../" title="Emanate" class="md-nav__button md-logo" aria-label="Emanate" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    Ema
+    Emanate
   </label>
   
     <div class="md-nav__source">
@@ -531,6 +531,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/source/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fuente
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -703,10 +731,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#el-broadcast-manager" class="md-nav__link">
+  <a href="#logs" class="md-nav__link">
     <span class="md-ellipsis">
       
-        El broadcast manager
+        Logs
       
     </span>
   </a>
@@ -1588,10 +1616,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#el-broadcast-manager" class="md-nav__link">
+  <a href="#logs" class="md-nav__link">
     <span class="md-ellipsis">
       
-        El broadcast manager
+        Logs
       
     </span>
   </a>
@@ -1619,12 +1647,12 @@
 
 
 <h1 id="configuración">Configuración<a class="headerlink" href="#configuración" title="Permanent link">&para;</a></h1>
-<p>Ema se configura una vez, cuando arranca la aplicación, con <code>Ema.init</code>:</p>
+<p>Emanate se configura una vez, cuando arranca la aplicación, con <code>Emanate.init</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="kd">class</span><span class="w"> </span><span class="nc">MyApplication</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Application</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
 
 <span class="w">    </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">onCreate</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
 <span class="w">        </span><span class="k">super</span><span class="p">.</span><span class="na">onCreate</span><span class="p">()</span>
-<span class="w">        </span><span class="n">Ema</span><span class="p">.</span><span class="na">init</span><span class="p">(</span><span class="n">EmaConfiguration</span><span class="p">.</span><span class="na">Android</span><span class="p">)</span>
+<span class="w">        </span><span class="n">Emanate</span><span class="p">.</span><span class="na">init</span><span class="p">(</span><span class="n">EmaConfiguration</span><span class="p">.</span><span class="na">Android</span><span class="p">(</span><span class="n">debug</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">BuildConfig</span><span class="p">.</span><span class="na">DEBUG</span><span class="p">))</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div>
@@ -1635,12 +1663,13 @@
   y en las plataformas que no son Android.</li>
 </ul>
 <h2 id="qué-se-puede-configurar">Qué se puede configurar<a class="headerlink" href="#qué-se-puede-configurar" title="Permanent link">&para;</a></h2>
+<p>Cada propiedad configura una cosa:</p>
 <table>
 <thead>
 <tr>
 <th>Propiedad</th>
 <th><code>EmaConfiguration()</code> por defecto</th>
-<th><code>EmaConfiguration.Android</code></th>
+<th><code>EmaConfiguration.Android(debug)</code></th>
 <th>Para qué</th>
 </tr>
 </thead>
@@ -1652,33 +1681,55 @@
 <td>Dónde se ejecutan los ViewModels, los casos de uso y el trabajo de cálculo. Consulta <a href="#dispatchers">Dispatchers</a>.</td>
 </tr>
 <tr>
-<td><code>sideEffectConfig</code></td>
-<td><code>EmaSideEffectConfig()</code></td>
-<td>Obtiene el nombre de los métodos de las lambdas</td>
-<td>Cómo gestiona <code>sideEffect</code> los errores y qué informa. Consulta <a href="../async-and-errors/#errores">Trabajo asíncrono y errores</a>.</td>
+<td><code>errorPolicy</code></td>
+<td><code>EmaErrorPolicy.Catch()</code></td>
+<td><code>Throw</code> en debug, <code>Catch()</code> en release</td>
+<td>Qué pasa cuando un middleware, reducer o side effect lanza una excepción. Consulta <a href="../async-and-errors/#errores">Errores</a>.</td>
 </tr>
 <tr>
-<td><code>dataClassPrinter</code></td>
+<td><code>logger</code></td>
+<td><code>EmaLogger.Println</code></td>
+<td><code>EmaLogger.Logcat</code> en debug, <code>null</code> en release</td>
+<td>Dónde van los logs de Emanate. Consulta <a href="#logs">Logs</a>.</td>
+</tr>
+<tr>
+<td><code>printer</code></td>
 <td><code>EmaDataClassPrinter.ToString</code></td>
 <td>Imprime todos los campos, con sangría</td>
-<td>Cómo imprime los objetos <code>toStringPretty()</code>.</td>
+<td>Cómo se imprimen los objetos en los logs y con <code>toStringPretty()</code>.</td>
+</tr>
+<tr>
+<td><code>destroyedTimeout</code></td>
+<td>5 segundos</td>
+<td>5 segundos</td>
+<td>Cuánto pueden ejecutarse los side effects de <code>Lifecycle.Destroyed</code> después de destruir el ViewModel, salvo que tengan su propio <code>timeout</code>.</td>
+</tr>
+<tr>
+<td><code>sideEffectListener</code></td>
+<td><code>null</code></td>
+<td><code>null</code></td>
+<td>Recibe el resultado de cada side effect, para seguirlos o medirlos.</td>
+</tr>
+<tr>
+<td><code>methodNameResolver</code></td>
+<td>Nombres genéricos</td>
+<td>Se obtienen de las lambdas</td>
+<td>El nombre de la función que lanzó un side effect, que aparece en los errores. Consulta <a href="#nombrar-los-side-effects">Nombrar los side effects</a>.</td>
 </tr>
 </tbody>
 </table>
-<p><code>EmaConfiguration</code> es una data class, así que personaliza la configuración de Android con <code>copy</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="n">Ema</span><span class="p">.</span><span class="na">init</span><span class="p">(</span>
-<span class="w">    </span><span class="n">EmaConfiguration</span><span class="p">.</span><span class="na">Android</span><span class="p">.</span><span class="na">copy</span><span class="p">(</span>
-<span class="w">        </span><span class="n">sideEffectConfig</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EmaConfiguration</span><span class="p">.</span><span class="na">Android</span><span class="p">.</span><span class="na">sideEffectConfig</span><span class="p">.</span><span class="na">copy</span><span class="p">(</span>
-<span class="w">            </span><span class="n">exceptionPolicy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EmaSideEffectConfig</span><span class="p">.</span><span class="na">ExceptionPolicy</span><span class="p">.</span><span class="na">CatchExceptions</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">error</span><span class="w"> </span><span class="o">-&gt;</span>
-<span class="w">                </span><span class="n">Log</span><span class="p">.</span><span class="na">e</span><span class="p">(</span><span class="s">"Ema"</span><span class="p">,</span><span class="w"> </span><span class="s">"</span><span class="si">${</span><span class="n">error</span><span class="p">.</span><span class="na">reflection</span><span class="p">.</span><span class="na">methodName</span><span class="si">}</span><span class="s"> failed"</span><span class="p">,</span><span class="w"> </span><span class="n">error</span><span class="p">.</span><span class="na">exception</span><span class="p">)</span>
-<span class="w">            </span><span class="p">}</span>
-<span class="w">        </span><span class="p">)</span>
+<p><code>EmaConfiguration.Android(debug)</code> está en <code>emanate-android</code> (<code>com.carmabs.emanate.android.configuration.Android</code>). Pasa
+<code>BuildConfig.DEBUG</code>: las builds de debug registran en logcat y fallan en el momento con cualquier excepción, y las de
+release no registran nada, así que el estado no llega a logcat, y siguen funcionando después de una excepción.</p>
+<p><code>EmaConfiguration</code> es una data class, así que cambia solo lo que necesites con <code>copy</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="n">Emanate</span><span class="p">.</span><span class="na">init</span><span class="p">(</span>
+<span class="w">    </span><span class="n">EmaConfiguration</span><span class="p">.</span><span class="na">Android</span><span class="p">(</span><span class="n">debug</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">BuildConfig</span><span class="p">.</span><span class="na">DEBUG</span><span class="p">).</span><span class="na">copy</span><span class="p">(</span>
+<span class="w">        </span><span class="n">errorPolicy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EmaErrorPolicy</span><span class="p">.</span><span class="na">Catch</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">error</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">crashReporter</span><span class="p">.</span><span class="na">record</span><span class="p">(</span><span class="n">error</span><span class="p">.</span><span class="na">exception</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
 <span class="w">    </span><span class="p">)</span>
 <span class="p">)</span>
 </code></pre></div>
-<p><code>EmaConfiguration.Android</code> está en <code>ema-android</code> (<code>com.carmabs.ema.android.configuration.Android</code>).</p>
 <h2 id="dispatchers">Dispatchers<a class="headerlink" href="#dispatchers" title="Permanent link">&para;</a></h2>
-<p><code>EmaDispatchers</code> agrupa los dispatchers que usa Ema por defecto:</p>
+<p><code>EmaDispatchers</code> agrupa los dispatchers que usa Emanate por defecto:</p>
 <table>
 <thead>
 <tr>
@@ -1691,7 +1742,7 @@
 <tr>
 <td><code>main</code></td>
 <td><code>Dispatchers.Main</code></td>
-<td>Los ViewModels, a través de su scope por defecto <code>EmaMainScope()</code>.</td>
+<td>Los ViewModels y las sources, por defecto.</td>
 </tr>
 <tr>
 <td><code>io</code></td>
@@ -1701,34 +1752,54 @@
 <tr>
 <td><code>default</code></td>
 <td><code>Dispatchers.Default</code></td>
-<td>El trabajo de cálculo, como procesar imágenes en <code>ema-android</code>.</td>
+<td>El trabajo de cálculo, como procesar imágenes en <code>emanate-android</code>.</td>
 </tr>
 </tbody>
 </table>
-<p><code>EmaConfiguration.Android</code> usa <code>Dispatchers.Main.immediate</code> como <code>main</code>, igual que el <code>viewModelScope</code> de Android: el
+<p><code>EmaConfiguration.Android(debug)</code> usa <code>Dispatchers.Main.immediate</code> como <code>main</code>, igual que el <code>viewModelScope</code> de Android: el
 trabajo que empieza en el hilo principal, como despachar una acción desde un clic, se ejecuta en el momento en lugar de
 esperar al siguiente frame.</p>
 <p>Cambia cualquiera de ellos con <code>copy</code>, manteniendo los demás:</p>
-<div class="highlight"><pre><span></span><code><span class="kd">val</span><span class="w"> </span><span class="nv">android</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EmaConfiguration</span><span class="p">.</span><span class="na">Android</span>
-<span class="n">Ema</span><span class="p">.</span><span class="na">init</span><span class="p">(</span><span class="n">android</span><span class="p">.</span><span class="na">copy</span><span class="p">(</span><span class="n">dispatchers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">android</span><span class="p">.</span><span class="na">dispatchers</span><span class="p">.</span><span class="na">copy</span><span class="p">(</span><span class="n">io</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">myIoDispatcher</span><span class="p">)))</span>
+<div class="highlight"><pre><span></span><code><span class="kd">val</span><span class="w"> </span><span class="nv">android</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EmaConfiguration</span><span class="p">.</span><span class="na">Android</span><span class="p">(</span><span class="n">debug</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">BuildConfig</span><span class="p">.</span><span class="na">DEBUG</span><span class="p">)</span>
+<span class="n">Emanate</span><span class="p">.</span><span class="na">init</span><span class="p">(</span><span class="n">android</span><span class="p">.</span><span class="na">copy</span><span class="p">(</span><span class="n">dispatchers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">android</span><span class="p">.</span><span class="na">dispatchers</span><span class="p">.</span><span class="na">copy</span><span class="p">(</span><span class="n">io</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">myIoDispatcher</span><span class="p">)))</span>
 </code></pre></div>
 <h2 id="nombrar-los-side-effects">Nombrar los side effects<a class="headerlink" href="#nombrar-los-side-effects" title="Permanent link">&para;</a></h2>
 <p>Cada <code>sideEffect</code> informa del nombre de la función que lo lanzó, algo útil para registrar los errores.</p>
 <ul>
-<li><code>EmaConfiguration.Android</code> lo obtiene de la clase que el compilador genera para la lambda, así que un <code>sideEffect</code> en
+<li><code>EmaConfiguration.Android(debug)</code> lo obtiene de la clase que el compilador genera para la lambda, así que un <code>sideEffect</code> en
   <code>doLogin()</code> aparece como <code>doLogin</code>.</li>
 <li>En otras plataformas el nombre es genérico. Pasa <code>logName</code> para ponerlo tú, en cualquier plataforma:</li>
 </ul>
 <div class="highlight"><pre><span></span><code><span class="n">sideEffect</span><span class="p">(</span><span class="n">logName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"login"</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">loginUseCase</span><span class="p">(</span><span class="n">input</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
 </code></pre></div>
-<p>Para decidir el nombre de otra forma, implementa <code>EmaMethodNameResolver</code> y asígnalo en <code>EmaSideEffectConfig.methodNameResolver</code>.</p>
+<p>Para decidir el nombre de otra forma, implementa <code>EmaMethodNameResolver</code> y asígnalo en <code>EmaConfiguration.methodNameResolver</code>.</p>
 <h2 id="imprimir-objetos">Imprimir objetos<a class="headerlink" href="#imprimir-objetos" title="Permanent link">&para;</a></h2>
-<p><code>toStringPretty()</code> imprime cualquier objeto con el <code>EmaDataClassPrinter</code> configurado. <code>EmaConfiguration.Android</code> usa
+<p><code>toStringPretty()</code> imprime cualquier objeto con el <code>printer</code> de la configuración. <code>EmaConfiguration.Android(debug)</code> usa
 <code>EmaAndroidDataClassPrinter</code>, que imprime los campos, los objetos anidados, las colecciones y los mapas con sangría.
 Implementa <code>EmaDataClassPrinter</code> para imprimirlos a tu manera.</p>
-<h2 id="el-broadcast-manager">El broadcast manager<a class="headerlink" href="#el-broadcast-manager" title="Permanent link">&para;</a></h2>
-<p><code>Ema.broadcastManager</code> es el <code>EmaBroadcastManager</code> global de la app. Consulta
-<a href="../results-between-screens/#broadcasts-globales">Resultados entre pantallas</a>.</p>
+<h2 id="logs">Logs<a class="headerlink" href="#logs" title="Permanent link">&para;</a></h2>
+<p>Emanate escribe sus logs con el <code>logger</code> de la configuración. Por defecto es <code>EmaLogger.Println</code>, que escribe en la
+salida estándar y añade <code>EMA_</code> delante del tag. <code>EmaConfiguration.Android(debug)</code> usa <code>EmaLogger.Logcat</code> en las builds
+de debug, que escribe con <code>Log.d</code>, y ningún logger en las de release. Los errores que captura la
+<a href="../async-and-errors/#errores">política de errores</a> también se registran.</p>
+<p>Cada <code>EmaViewModel</code> lo usa, con su nombre como tag, para registrar sus acciones:</p>
+<ul>
+<li>Una línea cuando recibe una acción, antes de los middlewares: <code>Received action: Search(query=ema)</code>. Muestra las
+  acciones que detiene un middleware, que no llegan a los reducers.</li>
+<li>Un bloque con la acción y el estado antes y después de sus reducers. Se escribe justo antes de ellos, después de todos
+  los middlewares, así que el estado después de la acción es correcto aunque un middleware la continúe más tarde con
+  <code>nextAfter</code>, y la acción es la que reciben los reducers.</li>
+</ul>
+<p>El estado puede contener datos del usuario, así que no registres nada en las builds de release, como hace
+<code>EmaConfiguration.Android(debug)</code>. Para enviar los logs a tu propio logger:</p>
+<div class="highlight"><pre><span></span><code><span class="n">Emanate</span><span class="p">.</span><span class="na">init</span><span class="p">(</span>
+<span class="w">    </span><span class="n">EmaConfiguration</span><span class="p">.</span><span class="na">Android</span><span class="p">(</span><span class="n">debug</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">BuildConfig</span><span class="p">.</span><span class="na">DEBUG</span><span class="p">).</span><span class="na">copy</span><span class="p">(</span>
+<span class="w">        </span><span class="n">logger</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">BuildConfig</span><span class="p">.</span><span class="na">DEBUG</span><span class="p">)</span><span class="w"> </span><span class="n">EmaLogger</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">tag</span><span class="p">,</span><span class="w"> </span><span class="n">message</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Timber</span><span class="p">.</span><span class="na">tag</span><span class="p">(</span><span class="n">tag</span><span class="p">).</span><span class="na">d</span><span class="p">(</span><span class="n">message</span><span class="p">)</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="kc">null</span>
+<span class="w">    </span><span class="p">)</span>
+<span class="p">)</span>
+</code></pre></div>
+<p>Un ViewModel puede pasar su propio <code>logger</code> en el constructor, o <code>null</code> para desactivar solo sus logs. Una source
+usada por sí sola no registra nada: añade <code>loggerMiddleware(tag, logger)</code> como su último middleware.</p>
 
 
 
@@ -1764,7 +1835,7 @@ Implementa <code>EmaDataClassPrinter</code> para imprimirlos a tu manera.</p>
       <nav class="md-footer__inner md-grid" aria-label="Pie" >
         
           
-          <a href="../../concepts/viewmodel/" class="md-footer__link md-footer__link--prev" aria-label="Anterior: ViewModel">
+          <a href="../../concepts/source/" class="md-footer__link md-footer__link--prev" aria-label="Anterior: Fuente">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -1774,7 +1845,7 @@ Implementa <code>EmaDataClassPrinter</code> para imprimirlos a tu manera.</p>
                 Anterior
               </span>
               <div class="md-ellipsis">
-                ViewModel
+                Fuente
               </div>
             </div>
           </a>

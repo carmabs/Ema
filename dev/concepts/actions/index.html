@@ -29,7 +29,7 @@
     
     
       
-        <title>Actions - Ema</title>
+        <title>Actions - Emanate</title>
       
     
     
@@ -100,7 +100,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="Ema" class="md-header__button md-logo" aria-label="Ema" data-md-component="logo">
+    <a href="../.." title="Emanate" class="md-header__button md-logo" aria-label="Emanate" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -114,7 +114,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            Ema
+            Emanate
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -262,13 +262,13 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="Ema" class="md-nav__button md-logo" aria-label="Ema" data-md-component="logo">
+    <a href="../.." title="Emanate" class="md-nav__button md-logo" aria-label="Emanate" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    Ema
+    Emanate
   </label>
   
     <div class="md-nav__source">
@@ -611,6 +611,34 @@
     
   
     ViewModel
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Source
   
 
     
@@ -1617,7 +1645,25 @@ Actions go from the view to the ViewModel.</p>
 <code>UserNameWritten</code> is better than <code>UpdateUserName</code>: the view reports the fact and the ViewModel decides what to do with it.</p>
 <p>Use a <code>sealed interface</code> so that <code>when</code> is exhaustive. When you add an action the compiler tells you everywhere you must handle it.</p>
 <h2 id="handling-actions">Handling actions<a class="headerlink" href="#handling-actions" title="Permanent link">&para;</a></h2>
-<p>Extend <code>EmaViewModelAction&lt;State, Action, Event&gt;</code> and implement <code>onAction</code>:</p>
+<p>In an <code>EmaViewModel</code>, declare in <code>setup</code> the reducers, middlewares and side effects of each type of action. With the
+<code>sealed</code> type, a reducer handles every action of the screen in an exhaustive <code>when</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">setup</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">source</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">reducers</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">add</span><span class="o">&lt;</span><span class="n">LoginAction</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">action</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">            </span><span class="k">when</span><span class="w"> </span><span class="p">(</span><span class="n">action</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="k">is</span><span class="w"> </span><span class="n">LoginAction</span><span class="p">.</span><span class="na">UserNameWritten</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">state</span><span class="p">.</span><span class="na">copy</span><span class="p">(</span><span class="n">userName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">action</span><span class="p">.</span><span class="na">user</span><span class="p">,</span><span class="w"> </span><span class="n">userNameError</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">)</span>
+<span class="w">                </span><span class="k">is</span><span class="w"> </span><span class="n">LoginAction</span><span class="p">.</span><span class="na">PasswordWritten</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">state</span><span class="p">.</span><span class="na">copy</span><span class="p">(</span><span class="n">userPassword</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">action</span><span class="p">.</span><span class="na">password</span><span class="p">,</span><span class="w"> </span><span class="n">passwordError</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">)</span>
+<span class="w">                </span><span class="c1">// ...</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="n">sideEffects</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">add</span><span class="o">&lt;</span><span class="n">LoginAction</span><span class="p">.</span><span class="na">Login</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/* ... */</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>See <a href="../source/">Source</a>. In a classic ViewModel, extend <code>EmaViewModelAction&lt;State, Action, Event&gt;</code> and implement
+<code>onAction</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="kd">class</span><span class="w"> </span><span class="nc">LoginViewModel</span><span class="p">(</span>
 <span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">loginUseCase</span><span class="p">:</span><span class="w"> </span><span class="n">LoginUseCase</span><span class="p">,</span>
 <span class="w">    </span><span class="n">initialDataState</span><span class="p">:</span><span class="w"> </span><span class="n">LoginState</span>
@@ -1635,9 +1681,9 @@ Actions go from the view to the ViewModel.</p>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div>
-<p><code>onAction</code> is <code>protected</code>. The public entry point is <code>dispatch(action)</code>, so a view can only communicate through
-actions and cannot call arbitrary ViewModel functions.</p>
-<p>If you prefer not to declare actions, <code>EmaViewModelBasic&lt;State, Event&gt;</code> lets the view call public functions of the
+<p>In both, the public entry point is <code>dispatch(action)</code>, so a view can only communicate through actions and cannot call
+arbitrary ViewModel functions.</p>
+<p>If you prefer not to declare actions, <code>EmaViewModelClassic&lt;State, Event&gt;</code> lets the view call public functions of the
 ViewModel, as in classic MVVM. Actions are recommended: see <a href="../viewmodel/">ViewModel</a>.</p>
 <h2 id="dispatching-from-the-view">Dispatching from the view<a class="headerlink" href="#dispatching-from-the-view" title="Permanent link">&para;</a></h2>
 <p>A Compose screen content receives an <code>EmaImmutableActionDispatcher</code>, a stable wrapper that does not cause unnecessary
@@ -1663,6 +1709,10 @@ see <a href="../../android-view/screens/#sending-actions">Android Views</a>.</p>
 <tr>
 <td><code>EmaAction.Initializer</code></td>
 <td>The data a screen starts with. See <a href="../../guides/initializers/">Initializers</a>.</td>
+</tr>
+<tr>
+<td><code>EmaAction.Lifecycle</code></td>
+<td>The lifecycle of the view, received by an <code>EmaViewModel</code>: <code>Started</code>, <code>Resumed</code>, <code>Paused</code>, <code>Stopped</code> and <code>Destroyed</code>.</td>
 </tr>
 <tr>
 <td><code>EmaAction.EMPTY</code></td>

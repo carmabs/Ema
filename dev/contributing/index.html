@@ -27,7 +27,7 @@
     
     
       
-        <title>Contributing - Ema</title>
+        <title>Contributing - Emanate</title>
       
     
     
@@ -98,7 +98,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href=".." title="Ema" class="md-header__button md-logo" aria-label="Ema" data-md-component="logo">
+    <a href=".." title="Emanate" class="md-header__button md-logo" aria-label="Emanate" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -112,7 +112,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            Ema
+            Emanate
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -260,13 +260,13 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href=".." title="Ema" class="md-nav__button md-logo" aria-label="Ema" data-md-component="logo">
+    <a href=".." title="Emanate" class="md-nav__button md-logo" aria-label="Emanate" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    Ema
+    Emanate
   </label>
   
     <div class="md-nav__source">
@@ -516,6 +516,34 @@
     
   
     ViewModel
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../concepts/source/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Source
   
 
     
@@ -1474,10 +1502,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#the-targets-of-ema-core" class="md-nav__link">
+  <a href="#the-targets-of-emanate-core" class="md-nav__link">
     <span class="md-ellipsis">
       
-        The targets of ema-core
+        The targets of emanate-core
       
     </span>
   </a>
@@ -1608,10 +1636,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#the-targets-of-ema-core" class="md-nav__link">
+  <a href="#the-targets-of-emanate-core" class="md-nav__link">
     <span class="md-ellipsis">
       
-        The targets of ema-core
+        The targets of emanate-core
       
     </span>
   </a>
@@ -1715,20 +1743,24 @@
 </thead>
 <tbody>
 <tr>
-<td><code>ema-core</code></td>
+<td><code>emanate-core</code></td>
 <td>Kotlin Multiplatform. All the code lives in <code>commonMain</code>.</td>
 </tr>
 <tr>
-<td><code>ema-android</code></td>
+<td><code>emanate-android</code></td>
 <td>Android library shared by both UI technologies.</td>
 </tr>
 <tr>
-<td><code>ema-android-compose</code></td>
-<td>Compose support, published as <code>ema-compose</code>.</td>
+<td><code>emanate-android-compose</code></td>
+<td>Compose support, published as <code>emanate-compose</code>.</td>
 </tr>
 <tr>
-<td><code>ema-android-view</code></td>
+<td><code>emanate-android-view</code></td>
 <td>Android View system support.</td>
+</tr>
+<tr>
+<td><code>emanate-test</code></td>
+<td>JVM utilities to test the ViewModels and the sources, a friend module of <code>emanate-core</code>.</td>
 </tr>
 <tr>
 <td><code>sample</code></td>
@@ -1739,12 +1771,12 @@
 <h2 id="building">Building<a class="headerlink" href="#building" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code>./gradlew<span class="w"> </span>assembleDebug
 </code></pre></div>
-<h3 id="the-targets-of-ema-core">The targets of <code>ema-core</code><a class="headerlink" href="#the-targets-of-ema-core" title="Permanent link">&para;</a></h3>
-<p><code>ema-core</code> compiles every multiplatform target by default, which is needed to publish it but slow for daily work.
-Choose the targets with the <code>ema.targets</code> property, in your <code>local.properties</code> (not versioned) or with
-<code>-Pema.targets=...</code>:</p>
+<h3 id="the-targets-of-emanate-core">The targets of <code>emanate-core</code><a class="headerlink" href="#the-targets-of-emanate-core" title="Permanent link">&para;</a></h3>
+<p><code>emanate-core</code> compiles every multiplatform target by default, which is needed to publish it but slow for daily work.
+Choose the targets with the <code>emanate.targets</code> property, in your <code>local.properties</code> (not versioned) or with
+<code>-Pemanate.targets=...</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># local.properties</span>
-<span class="na">ema.targets</span><span class="o">=</span><span class="s">jvm,js</span>
+<span class="na">emanate.targets</span><span class="o">=</span><span class="s">jvm,js</span>
 </code></pre></div>
 <p>The valid values are <code>all</code>, <code>jvm</code>, <code>js</code>, <code>wasm</code>, <code>apple</code>, <code>linux</code>, <code>windows</code> and <code>androidNative</code>, separated by commas.
 The JVM target is always compiled, because the Android modules use it.</p>
@@ -1759,24 +1791,29 @@ The JVM target is always compiled, because the Android modules use it.</p>
 </thead>
 <tbody>
 <tr>
-<td><code>ema-core</code></td>
+<td><code>emanate-core</code></td>
 <td><code>commonTest</code>, run on every enabled target</td>
-<td><code>./gradlew :ema-core:allTests</code></td>
+<td><code>./gradlew :emanate-core:allTests</code></td>
 </tr>
 <tr>
-<td><code>ema-android</code></td>
+<td><code>emanate-android</code></td>
 <td>Robolectric</td>
-<td><code>./gradlew :ema-android:testDebugUnitTest</code></td>
+<td><code>./gradlew :emanate-android:testDebugUnitTest</code></td>
 </tr>
 <tr>
-<td><code>ema-android-view</code></td>
+<td><code>emanate-android-view</code></td>
 <td>Robolectric</td>
-<td><code>./gradlew :ema-android-view:testDebugUnitTest</code></td>
+<td><code>./gradlew :emanate-android-view:testDebugUnitTest</code></td>
 </tr>
 <tr>
-<td><code>ema-android-compose</code></td>
+<td><code>emanate-android-compose</code></td>
 <td>Compose UI tests on Robolectric</td>
-<td><code>./gradlew :ema-android-compose:testDebugUnitTest</code></td>
+<td><code>./gradlew :emanate-android-compose:testDebugUnitTest</code></td>
+</tr>
+<tr>
+<td><code>emanate-test</code></td>
+<td>JUnit</td>
+<td><code>./gradlew :emanate-test:test</code></td>
 </tr>
 </tbody>
 </table>

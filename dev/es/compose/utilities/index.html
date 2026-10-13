@@ -29,7 +29,7 @@
     
     
       
-        <title>Utilidades - Ema</title>
+        <title>Utilidades - Emanate</title>
       
     
     
@@ -100,7 +100,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Cabecera">
-    <a href="../../" title="Ema" class="md-header__button md-logo" aria-label="Ema" data-md-component="logo">
+    <a href="../../" title="Emanate" class="md-header__button md-logo" aria-label="Emanate" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -114,7 +114,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            Ema
+            Emanate
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -262,13 +262,13 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navegación" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../../" title="Ema" class="md-nav__button md-logo" aria-label="Ema" data-md-component="logo">
+    <a href="../../" title="Emanate" class="md-nav__button md-logo" aria-label="Emanate" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    Ema
+    Emanate
   </label>
   
     <div class="md-nav__source">
@@ -518,6 +518,34 @@
     
   
     ViewModel
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/source/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fuente
   
 
     
@@ -1619,7 +1647,7 @@
 
 
 <h1 id="utilidades-de-compose">Utilidades de Compose<a class="headerlink" href="#utilidades-de-compose" title="Permanent link">&para;</a></h1>
-<p>Las ayudas de <code>ema-compose</code> están en <code>com.carmabs.ema.compose.extension</code>.</p>
+<p>Las ayudas de <code>emanate-compose</code> están en <code>com.carmabs.emanate.compose.extension</code>.</p>
 <h2 id="textos-y-recursos">Textos y recursos<a class="headerlink" href="#textos-y-recursos" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><span class="n">state</span><span class="p">.</span><span class="na">title</span><span class="p">.</span><span class="na">stringResource</span><span class="p">()</span><span class="w">            </span><span class="c1">// EmaText → String</span>
 <span class="n">R</span><span class="p">.</span><span class="na">string</span><span class="p">.</span><span class="na">welcome</span><span class="p">.</span><span class="na">toComposeString</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="w">  </span><span class="c1">// un string de recursos con argumentos</span>
@@ -1639,11 +1667,11 @@
 </thead>
 <tbody>
 <tr>
-<td><code>isInPreview()</code></td>
+<td><code>EmaUtils.Preview.Compose.isInPreview()</code></td>
 <td><code>true</code> dentro de la preview del IDE.</td>
 </tr>
 <tr>
-<td><code>skipForPreview(previewComposable) { }</code></td>
+<td><code>EmaUtils.Preview.Compose.skipForPreview(previewComposable) { }</code></td>
 <td>Pinta el contenido, o <code>previewComposable</code> dentro de una preview.</td>
 </tr>
 <tr>
@@ -1670,11 +1698,11 @@
 </thead>
 <tbody>
 <tr>
-<td><code>screenWidthDp()</code>, <code>screenHeightDp()</code></td>
+<td><code>EmaUtils.Screen.Compose.widthDp()</code>, <code>heightDp()</code></td>
 <td>El tamaño de la pantalla en <code>Dp</code>.</td>
 </tr>
 <tr>
-<td><code>screenWidthPx()</code>, <code>screenHeightPx()</code></td>
+<td><code>EmaUtils.Screen.Compose.widthPx()</code>, <code>heightPx()</code></td>
 <td>El tamaño de la pantalla en píxeles.</td>
 </tr>
 <tr>

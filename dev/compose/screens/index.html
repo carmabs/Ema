@@ -29,7 +29,7 @@
     
     
       
-        <title>Screens - Ema</title>
+        <title>Screens - Emanate</title>
       
     
     
@@ -100,7 +100,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="Ema" class="md-header__button md-logo" aria-label="Ema" data-md-component="logo">
+    <a href="../.." title="Emanate" class="md-header__button md-logo" aria-label="Emanate" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -114,7 +114,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            Ema
+            Emanate
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -262,13 +262,13 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="Ema" class="md-nav__button md-logo" aria-label="Ema" data-md-component="logo">
+    <a href="../.." title="Emanate" class="md-nav__button md-logo" aria-label="Emanate" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    Ema
+    Emanate
   </label>
   
     <div class="md-nav__source">
@@ -518,6 +518,34 @@
     
   
     ViewModel
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/source/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Source
   
 
     
@@ -1664,7 +1692,7 @@
 
 <h1 id="compose-screens">Compose screens<a class="headerlink" href="#compose-screens" title="Permanent link">&para;</a></h1>
 <p>Compose screens are described by an <code>EmaComposableScreenContent</code> and registered in a navigation graph with
-<code>createComposableScreen</code>. They need the <code>ema-android</code> and <code>ema-compose</code> artifacts.</p>
+<code>createComposableScreen</code>. They need the <code>emanate-android</code> and <code>emanate-compose</code> artifacts.</p>
 <h2 id="screen-content">Screen content<a class="headerlink" href="#screen-content" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><span class="kd">class</span><span class="w"> </span><span class="nc">ProfileOnBoardingScreenContent</span><span class="w"> </span><span class="p">:</span>
 <span class="w">    </span><span class="n">EmaComposableScreenContent</span><span class="o">&lt;</span><span class="n">ProfileOnBoardingState</span><span class="p">,</span><span class="w"> </span><span class="n">ProfileOnBoardingActions</span><span class="p">,</span><span class="w"> </span><span class="n">ProfileOnBoardingEvent</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
@@ -1827,10 +1855,10 @@ Anything that must survive belongs in the <a href="../../concepts/state/">state<
 <span class="p">}</span>
 </code></pre></div>
 <p><code>previewRenderState</code> in <code>createComposableScreen</code> does the same for the whole screen: in a preview, the ViewModel is not
-created and the screen draws that state. <code>isInPreview()</code> and <code>skipForPreview { }</code> help you skip code that cannot run in
-a preview. See <a href="../utilities/#previews">Utilities</a>.</p>
+created and the screen draws that state. <code>EmaUtils.Preview.Compose.isInPreview()</code> and <code>skipForPreview { }</code> help you skip
+code that cannot run in a preview. See <a href="../utilities/#previews">Utilities</a>.</p>
 <h2 id="using-a-screen-without-a-navigation-graph">Using a screen without a navigation graph<a class="headerlink" href="#using-a-screen-without-a-navigation-graph" title="Permanent link">&para;</a></h2>
-<p><code>EmaComposableScreen</code> is the composable behind <code>createComposableScreen</code>. Use it to place an Ema screen anywhere:</p>
+<p><code>EmaComposableScreen</code> is the composable behind <code>createComposableScreen</code>. Use it to place an Emanate screen anywhere:</p>
 <div class="highlight"><pre><span></span><code><span class="n">EmaComposableScreen</span><span class="p">(</span>
 <span class="w">    </span><span class="n">vm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">CounterViewModel</span><span class="p">()</span><span class="w"> </span><span class="p">},</span>
 <span class="w">    </span><span class="n">screenContent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CounterScreenContent</span><span class="p">(),</span>

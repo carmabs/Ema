@@ -29,7 +29,7 @@
     
     
       
-        <title>Architecture - Ema</title>
+        <title>Architecture - Emanate</title>
       
     
     
@@ -100,7 +100,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="Ema" class="md-header__button md-logo" aria-label="Ema" data-md-component="logo">
+    <a href="../.." title="Emanate" class="md-header__button md-logo" aria-label="Emanate" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -114,7 +114,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            Ema
+            Emanate
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -262,13 +262,13 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="Ema" class="md-nav__button md-logo" aria-label="Ema" data-md-component="logo">
+    <a href="../.." title="Emanate" class="md-nav__button md-logo" aria-label="Emanate" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    Ema
+    Emanate
   </label>
   
     <div class="md-nav__source">
@@ -600,6 +600,34 @@
     
   
     ViewModel
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Source
   
 
     
@@ -1575,7 +1603,7 @@
 
 
 <h1 id="architecture">Architecture<a class="headerlink" href="#architecture" title="Permanent link">&para;</a></h1>
-<p>Every Ema screen is made of the same five pieces.</p>
+<p>Every Emanate screen is made of the same five pieces.</p>
 <pre class="mermaid"><code>sequenceDiagram
     autonumber
     participant V as View&lt;br/&gt;(Compose screen / Fragment)
@@ -1583,9 +1611,10 @@
     participant UC as Use case
     participant N as Navigator
     V-&gt;&gt;VM: dispatch(action)
-    VM-&gt;&gt;UC: sideEffect { useCase(input) }
+    Note over VM: reducers: new state
+    VM-&gt;&gt;UC: side effect: useCase(input)
     UC--&gt;&gt;VM: result
-    VM--&gt;&gt;V: updateState / postEvent
+    VM--&gt;&gt;V: new state / postEvent
     V-&gt;&gt;N: navigate(event)</code></pre>
 <table>
 <thead>
@@ -1612,7 +1641,7 @@
 <td>No</td>
 </tr>
 <tr>
-<td><code>EmaViewModel</code></td>
+<td>ViewModel</td>
 <td>Turns actions into state changes and events. Runs the business logic.</td>
 <td>No</td>
 </tr>
@@ -1627,7 +1656,8 @@
 <ol>
 <li><strong>The view only renders and reports.</strong> It renders the state and sends actions. It never changes
    the state or holds business logic.</li>
-<li><strong>The ViewModel only changes state through <code>updateState</code>.</strong> State is replaced, never mutated.</li>
+<li><strong>The ViewModel only changes the state in its reducers</strong> (<code>updateState</code> in the classic ViewModels). State is
+   replaced, never mutated.</li>
 <li><strong>Anything that lasts belongs in the state; anything that happens once belongs in an event.</strong>
    A loading spinner or a validation error is state. A snackbar or a navigation is an event.</li>
 <li><strong>Events describe what happened, not what to do.</strong> Name them <code>LoginSuccess</code>, not <code>NavigateToHome</code>.
@@ -1698,7 +1728,7 @@
     participant V as View
     participant VM as ViewModel
     V-&gt;&gt;VM: onCreated(initializer)
-    Note over VM: onStateCreated(initializer)&lt;br/&gt;onBroadcastListenerSetup()
+    Note over VM: EmaAction.Initializer
     V-&gt;&gt;VM: onStartView()
     V-&gt;&gt;VM: onResumeView()
     V--&gt;&gt;VM: collect stateFlow and eventFlow
@@ -1706,7 +1736,8 @@
     V-&gt;&gt;VM: onStopView()
     Note over V,VM: the view stops collecting
     V-&gt;&gt;VM: onCleared() when the ViewModel is destroyed</code></pre>
-<p>The details are in <a href="../viewmodel/">ViewModel</a>.</p>
+<p>An <code>EmaViewModel</code> receives each call as an action (<code>EmaAction.Initializer</code> and <code>EmaAction.Lifecycle</code>), and a classic
+ViewModel as a hook (<code>onStateCreated</code>, <code>onViewResumed</code>...). The details are in <a href="../viewmodel/">ViewModel</a>.</p>
 
 
 

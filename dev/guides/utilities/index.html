@@ -29,7 +29,7 @@
     
     
       
-        <title>Utilities - Ema</title>
+        <title>Utilities - Emanate</title>
       
     
     
@@ -100,7 +100,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="Ema" class="md-header__button md-logo" aria-label="Ema" data-md-component="logo">
+    <a href="../.." title="Emanate" class="md-header__button md-logo" aria-label="Emanate" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -114,7 +114,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            Ema
+            Emanate
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -262,13 +262,13 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="Ema" class="md-nav__button md-logo" aria-label="Ema" data-md-component="logo">
+    <a href="../.." title="Emanate" class="md-nav__button md-logo" aria-label="Emanate" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    Ema
+    Emanate
   </label>
   
     <div class="md-nav__source">
@@ -518,6 +518,34 @@
     
   
     ViewModel
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/source/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Source
   
 
     
@@ -920,6 +948,17 @@
     <span class="md-ellipsis">
       
         Pretty printing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#emautils" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EmaUtils
       
     </span>
   </a>
@@ -1599,6 +1638,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#emautils" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EmaUtils
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#other-helpers" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1650,10 +1700,10 @@
 <span class="n">EmaText</span><span class="p">.</span><span class="na">empty</span><span class="p">()</span>
 </code></pre></div>
 <p>Resolve it where you have a context:</p>
-<div class="highlight"><pre><span></span><code><span class="n">data</span><span class="p">.</span><span class="na">title</span><span class="p">.</span><span class="na">stringResource</span><span class="p">()</span><span class="w">                 </span><span class="c1">// Compose (com.carmabs.ema.compose.extension)</span>
-<span class="n">data</span><span class="p">.</span><span class="na">title</span><span class="p">.</span><span class="na">string</span><span class="p">(</span><span class="n">context</span><span class="p">)</span><span class="w">                  </span><span class="c1">// Android (com.carmabs.ema.android.extension)</span>
+<div class="highlight"><pre><span></span><code><span class="n">data</span><span class="p">.</span><span class="na">title</span><span class="p">.</span><span class="na">stringResource</span><span class="p">()</span><span class="w">                 </span><span class="c1">// Compose (com.carmabs.emanate.compose.extension)</span>
+<span class="n">data</span><span class="p">.</span><span class="na">title</span><span class="p">.</span><span class="na">string</span><span class="p">(</span><span class="n">context</span><span class="p">)</span><span class="w">                  </span><span class="c1">// Android (com.carmabs.emanate.android.extension)</span>
 </code></pre></div>
-<p><code>R.string.x.toEmaText(args)</code> and <code>R.plurals.x.toEmaText(quantity, args)</code> are shortcuts from <code>ema-android</code>.</p>
+<p><code>R.string.x.toEmaText(args)</code> and <code>R.plurals.x.toEmaText(quantity, args)</code> are shortcuts from <code>emanate-android</code>.</p>
 <p>Two <code>EmaText</code> are equal when they describe the same text, arguments included, so a state that holds them is compared
 correctly. A text without arguments is never formatted: <code>EmaText.text("50%")</code> is shown as is.</p>
 <h2 id="emaresult"><code>EmaResult&lt;T, E&gt;</code><a class="headerlink" href="#emaresult" title="Permanent link">&para;</a></h2>
@@ -1731,11 +1781,80 @@ so failures are part of the contract:</p>
 </table>
 <p>Implement <code>useCaseFunction</code> (the protected function) and call the use case like a function: <code>loginUseCase(input)</code>.</p>
 <h2 id="pretty-printing">Pretty printing<a class="headerlink" href="#pretty-printing" title="Permanent link">&para;</a></h2>
-<p><code>toStringPretty()</code> prints any object, for example a state, with the <code>EmaDataClassPrinter</code> of the
-<a href="../configuration/#printing-objects">configuration</a>. With <code>EmaConfiguration.Android</code> it prints every field,
+<p><code>toStringPretty()</code> prints any object, for example a state, with the <code>printer</code> of the
+<a href="../configuration/#printing-objects">configuration</a>. With <code>EmaConfiguration.Android(debug)</code> it prints every field,
 nested objects and collections, indented:</p>
 <div class="highlight"><pre><span></span><code><span class="n">Log</span><span class="p">.</span><span class="na">d</span><span class="p">(</span><span class="s">"Login"</span><span class="p">,</span><span class="w"> </span><span class="n">state</span><span class="p">.</span><span class="na">toStringPretty</span><span class="p">())</span>
 </code></pre></div>
+<h2 id="emautils"><code>EmaUtils</code><a class="headerlink" href="#emautils" title="Permanent link">&para;</a></h2>
+<p>The utility functions are grouped by theme in <code>EmaUtils</code>, so writing <code>EmaUtils.</code> shows them all. The Android modules
+add their own functions to the themes, under the name of the platform:</p>
+<table>
+<thead>
+<tr>
+<th>Theme</th>
+<th>Module</th>
+<th>Functions</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>EmaUtils.Coroutines</code></td>
+<td><code>emanate-core</code></td>
+<td><code>suspendCoroutineWithTimeout(duration) { }</code>, <code>requireMinDurationOf(duration) { }</code></td>
+</tr>
+<tr>
+<td><code>EmaUtils.Flows</code></td>
+<td><code>emanate-core</code></td>
+<td><code>singleEvent&lt;T&gt;()</code>: a <code>MutableSharedFlow</code> with no replay, for one-shot signals.</td>
+</tr>
+<tr>
+<td><code>EmaUtils.Positions</code></td>
+<td><code>emanate-core</code></td>
+<td><code>iterateFromCenter(index, length)</code>, <code>iterateFromEnd(index, length)</code></td>
+</tr>
+<tr>
+<td><code>EmaUtils.Size</code></td>
+<td><code>emanate-core</code></td>
+<td><code>fitInTargetMaxSizeProportionally(width, height, targetWidth, targetHeight)</code></td>
+</tr>
+<tr>
+<td><code>EmaUtils.Values</code></td>
+<td><code>emanate-core</code></td>
+<td><code>checkUpdate(old, new) { }</code>: runs the block only if the value changed.</td>
+</tr>
+<tr>
+<td><code>EmaUtils.Screen.Android</code></td>
+<td><code>emanate-android</code></td>
+<td><code>metrics(context, includeInsets)</code></td>
+</tr>
+<tr>
+<td><code>EmaUtils.Screen.Compose</code></td>
+<td><code>emanate-android-compose</code></td>
+<td><code>widthDp()</code>, <code>heightDp()</code>, <code>widthPx()</code>, <code>heightPx()</code></td>
+</tr>
+<tr>
+<td><code>EmaUtils.Color.Android</code></td>
+<td><code>emanate-android</code></td>
+<td><code>fromGradient(colors, positions, value)</code>, <code>lerp(colorA, colorB, t)</code></td>
+</tr>
+<tr>
+<td><code>EmaUtils.View.Android</code></td>
+<td><code>emanate-android-view</code></td>
+<td><code>visibility(visible, gone)</code>: <code>VISIBLE</code>, <code>GONE</code> or <code>INVISIBLE</code>.</td>
+</tr>
+<tr>
+<td><code>EmaUtils.Preview.Compose</code></td>
+<td><code>emanate-android-compose</code></td>
+<td><code>isInPreview()</code>, <code>skipForPreview(previewComposable) { }</code></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><span class="kd">val</span><span class="w"> </span><span class="nv">user</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EmaUtils</span><span class="p">.</span><span class="na">Coroutines</span><span class="p">.</span><span class="na">requireMinDurationOf</span><span class="p">(</span><span class="m">1.</span><span class="n">seconds</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">loginUseCase</span><span class="p">(</span><span class="n">input</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+<span class="kd">val</span><span class="w"> </span><span class="nv">metrics</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EmaUtils</span><span class="p">.</span><span class="na">Screen</span><span class="p">.</span><span class="na">Android</span><span class="p">.</span><span class="na">metrics</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+</code></pre></div>
+<p>The platform groups, like <code>Android</code> or <code>Compose</code>, are extension properties: the IDE imports them when you autocomplete
+<code>EmaUtils.Screen.</code>.</p>
 <h2 id="other-helpers">Other helpers<a class="headerlink" href="#other-helpers" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -1753,15 +1872,11 @@ nested objects and collections, indented:</p>
 <td><code>EmaUniqueSelector</code></td>
 <td>Keeps a single option selected in a group and tells which ones were deselected.</td>
 </tr>
-<tr>
-<td><code>emaFlowSingleEvent&lt;T&gt;()</code></td>
-<td>A <code>MutableSharedFlow</code> with no replay, for one-shot signals.</td>
-</tr>
 </tbody>
 </table>
-<p><code>ema-core</code> also has extensions for numbers, strings, lists, dates and flows in <code>com.carmabs.ema.core.extension</code>.</p>
+<p><code>emanate-core</code> also has extensions for numbers, strings, lists, dates and flows in <code>com.carmabs.emanate.core.extension</code>.</p>
 <h2 id="android-helpers">Android helpers<a class="headerlink" href="#android-helpers" title="Permanent link">&para;</a></h2>
-<p><code>ema-android</code> has the Android helpers shared by Compose and Views:</p>
+<p><code>emanate-android</code> has the Android helpers shared by Compose and Views:</p>
 <table>
 <thead>
 <tr>
@@ -1779,8 +1894,8 @@ nested objects and collections, indented:</p>
 <td>A toast that avoids overlapping when several are shown at the same time.</td>
 </tr>
 <tr>
-<td><code>Int.dp</code>, <code>Int.sp</code>, <code>getScreenMetrics(context)</code></td>
-<td>Units and screen size.</td>
+<td><code>Int.dp</code>, <code>Int.sp</code></td>
+<td>Units.</td>
 </tr>
 <tr>
 <td><code>R.drawable.x.getDrawable(context)</code>, <code>getBitmap</code>, <code>getColor</code>, <code>getDimension</code>, <code>getFont</code>...</td>

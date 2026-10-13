@@ -11,7 +11,7 @@
       
       
       
-        <link rel="prev" href="../../concepts/viewmodel/">
+        <link rel="prev" href="../../concepts/source/">
       
       
         <link rel="next" href="../initializers/">
@@ -29,7 +29,7 @@
     
     
       
-        <title>Configuration - Ema</title>
+        <title>Configuration - Emanate</title>
       
     
     
@@ -100,7 +100,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="Ema" class="md-header__button md-logo" aria-label="Ema" data-md-component="logo">
+    <a href="../.." title="Emanate" class="md-header__button md-logo" aria-label="Emanate" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -114,7 +114,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            Ema
+            Emanate
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -262,13 +262,13 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="Ema" class="md-nav__button md-logo" aria-label="Ema" data-md-component="logo">
+    <a href="../.." title="Emanate" class="md-nav__button md-logo" aria-label="Emanate" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    Ema
+    Emanate
   </label>
   
     <div class="md-nav__source">
@@ -531,6 +531,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/source/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Source
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -703,10 +731,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#the-broadcast-manager" class="md-nav__link">
+  <a href="#logs" class="md-nav__link">
     <span class="md-ellipsis">
       
-        The broadcast manager
+        Logs
       
     </span>
   </a>
@@ -1588,10 +1616,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#the-broadcast-manager" class="md-nav__link">
+  <a href="#logs" class="md-nav__link">
     <span class="md-ellipsis">
       
-        The broadcast manager
+        Logs
       
     </span>
   </a>
@@ -1619,12 +1647,12 @@
 
 
 <h1 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h1>
-<p>Ema is configured once, when the application starts, with <code>Ema.init</code>:</p>
+<p>Emanate is configured once, when the application starts, with <code>Emanate.init</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="kd">class</span><span class="w"> </span><span class="nc">MyApplication</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Application</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
 
 <span class="w">    </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">onCreate</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
 <span class="w">        </span><span class="k">super</span><span class="p">.</span><span class="na">onCreate</span><span class="p">()</span>
-<span class="w">        </span><span class="n">Ema</span><span class="p">.</span><span class="na">init</span><span class="p">(</span><span class="n">EmaConfiguration</span><span class="p">.</span><span class="na">Android</span><span class="p">)</span>
+<span class="w">        </span><span class="n">Emanate</span><span class="p">.</span><span class="na">init</span><span class="p">(</span><span class="n">EmaConfiguration</span><span class="p">.</span><span class="na">Android</span><span class="p">(</span><span class="n">debug</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">BuildConfig</span><span class="p">.</span><span class="na">DEBUG</span><span class="p">))</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div>
@@ -1635,12 +1663,13 @@
   non-Android platforms.</li>
 </ul>
 <h2 id="what-can-be-configured">What can be configured<a class="headerlink" href="#what-can-be-configured" title="Permanent link">&para;</a></h2>
+<p>Each property configures one thing:</p>
 <table>
 <thead>
 <tr>
 <th>Property</th>
 <th>Default <code>EmaConfiguration()</code></th>
-<th><code>EmaConfiguration.Android</code></th>
+<th><code>EmaConfiguration.Android(debug)</code></th>
 <th>Purpose</th>
 </tr>
 </thead>
@@ -1652,33 +1681,55 @@
 <td>Where ViewModels, use cases and CPU-intensive work run. See <a href="#dispatchers">Dispatchers</a>.</td>
 </tr>
 <tr>
-<td><code>sideEffectConfig</code></td>
-<td><code>EmaSideEffectConfig()</code></td>
-<td>Resolves the method names from the lambdas</td>
-<td>How <code>sideEffect</code> handles errors and what it reports. See <a href="../async-and-errors/#errors">Async work and errors</a>.</td>
+<td><code>errorPolicy</code></td>
+<td><code>EmaErrorPolicy.Catch()</code></td>
+<td><code>Throw</code> in debug, <code>Catch()</code> in release</td>
+<td>What happens when a middleware, reducer or side effect throws an exception. See <a href="../async-and-errors/#errors">Errors</a>.</td>
 </tr>
 <tr>
-<td><code>dataClassPrinter</code></td>
+<td><code>logger</code></td>
+<td><code>EmaLogger.Println</code></td>
+<td><code>EmaLogger.Logcat</code> in debug, <code>null</code> in release</td>
+<td>Where the logs of Emanate go. See <a href="#logs">Logs</a>.</td>
+</tr>
+<tr>
+<td><code>printer</code></td>
 <td><code>EmaDataClassPrinter.ToString</code></td>
 <td>Prints every field, indented</td>
-<td>How <code>toStringPretty()</code> prints objects.</td>
+<td>How objects are printed in the logs and by <code>toStringPretty()</code>.</td>
+</tr>
+<tr>
+<td><code>destroyedTimeout</code></td>
+<td>5 seconds</td>
+<td>5 seconds</td>
+<td>How long the side effects of <code>Lifecycle.Destroyed</code> can run after the ViewModel is cleared, unless they have their own <code>timeout</code>.</td>
+</tr>
+<tr>
+<td><code>sideEffectListener</code></td>
+<td><code>null</code></td>
+<td><code>null</code></td>
+<td>Receives the result of every side effect, to track or measure them.</td>
+</tr>
+<tr>
+<td><code>methodNameResolver</code></td>
+<td>Generic names</td>
+<td>Resolved from the lambdas</td>
+<td>The name of the function that launched a side effect, reported in the errors. See <a href="#naming-the-side-effects">Naming the side effects</a>.</td>
 </tr>
 </tbody>
 </table>
-<p><code>EmaConfiguration</code> is a data class, so customize the Android configuration with <code>copy</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="n">Ema</span><span class="p">.</span><span class="na">init</span><span class="p">(</span>
-<span class="w">    </span><span class="n">EmaConfiguration</span><span class="p">.</span><span class="na">Android</span><span class="p">.</span><span class="na">copy</span><span class="p">(</span>
-<span class="w">        </span><span class="n">sideEffectConfig</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EmaConfiguration</span><span class="p">.</span><span class="na">Android</span><span class="p">.</span><span class="na">sideEffectConfig</span><span class="p">.</span><span class="na">copy</span><span class="p">(</span>
-<span class="w">            </span><span class="n">exceptionPolicy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EmaSideEffectConfig</span><span class="p">.</span><span class="na">ExceptionPolicy</span><span class="p">.</span><span class="na">CatchExceptions</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">error</span><span class="w"> </span><span class="o">-&gt;</span>
-<span class="w">                </span><span class="n">Log</span><span class="p">.</span><span class="na">e</span><span class="p">(</span><span class="s">"Ema"</span><span class="p">,</span><span class="w"> </span><span class="s">"</span><span class="si">${</span><span class="n">error</span><span class="p">.</span><span class="na">reflection</span><span class="p">.</span><span class="na">methodName</span><span class="si">}</span><span class="s"> failed"</span><span class="p">,</span><span class="w"> </span><span class="n">error</span><span class="p">.</span><span class="na">exception</span><span class="p">)</span>
-<span class="w">            </span><span class="p">}</span>
-<span class="w">        </span><span class="p">)</span>
+<p><code>EmaConfiguration.Android(debug)</code> is in <code>emanate-android</code> (<code>com.carmabs.emanate.android.configuration.Android</code>). Pass
+<code>BuildConfig.DEBUG</code>: debug builds log to logcat and fail at once with any exception, and release builds don't log, so
+the state doesn't reach logcat, and keep working after an exception.</p>
+<p><code>EmaConfiguration</code> is a data class, so change only what you need with <code>copy</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="n">Emanate</span><span class="p">.</span><span class="na">init</span><span class="p">(</span>
+<span class="w">    </span><span class="n">EmaConfiguration</span><span class="p">.</span><span class="na">Android</span><span class="p">(</span><span class="n">debug</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">BuildConfig</span><span class="p">.</span><span class="na">DEBUG</span><span class="p">).</span><span class="na">copy</span><span class="p">(</span>
+<span class="w">        </span><span class="n">errorPolicy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EmaErrorPolicy</span><span class="p">.</span><span class="na">Catch</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">error</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">crashReporter</span><span class="p">.</span><span class="na">record</span><span class="p">(</span><span class="n">error</span><span class="p">.</span><span class="na">exception</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
 <span class="w">    </span><span class="p">)</span>
 <span class="p">)</span>
 </code></pre></div>
-<p><code>EmaConfiguration.Android</code> is in <code>ema-android</code> (<code>com.carmabs.ema.android.configuration.Android</code>).</p>
 <h2 id="dispatchers">Dispatchers<a class="headerlink" href="#dispatchers" title="Permanent link">&para;</a></h2>
-<p><code>EmaDispatchers</code> groups the dispatchers Ema uses by default:</p>
+<p><code>EmaDispatchers</code> groups the dispatchers Emanate uses by default:</p>
 <table>
 <thead>
 <tr>
@@ -1691,7 +1742,7 @@
 <tr>
 <td><code>main</code></td>
 <td><code>Dispatchers.Main</code></td>
-<td>ViewModels, through their default scope <code>EmaMainScope()</code>.</td>
+<td>ViewModels and sources, by default.</td>
 </tr>
 <tr>
 <td><code>io</code></td>
@@ -1701,34 +1752,54 @@
 <tr>
 <td><code>default</code></td>
 <td><code>Dispatchers.Default</code></td>
-<td>CPU-intensive work, such as processing images in <code>ema-android</code>.</td>
+<td>CPU-intensive work, such as processing images in <code>emanate-android</code>.</td>
 </tr>
 </tbody>
 </table>
-<p><code>EmaConfiguration.Android</code> uses <code>Dispatchers.Main.immediate</code> as <code>main</code>, as the <code>viewModelScope</code> of Android does: the
+<p><code>EmaConfiguration.Android(debug)</code> uses <code>Dispatchers.Main.immediate</code> as <code>main</code>, as the <code>viewModelScope</code> of Android does: the
 work started from the main thread, such as dispatching an action from a click, runs at once instead of waiting for the
 next frame.</p>
 <p>Change any of them with <code>copy</code>, keeping the others:</p>
-<div class="highlight"><pre><span></span><code><span class="kd">val</span><span class="w"> </span><span class="nv">android</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EmaConfiguration</span><span class="p">.</span><span class="na">Android</span>
-<span class="n">Ema</span><span class="p">.</span><span class="na">init</span><span class="p">(</span><span class="n">android</span><span class="p">.</span><span class="na">copy</span><span class="p">(</span><span class="n">dispatchers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">android</span><span class="p">.</span><span class="na">dispatchers</span><span class="p">.</span><span class="na">copy</span><span class="p">(</span><span class="n">io</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">myIoDispatcher</span><span class="p">)))</span>
+<div class="highlight"><pre><span></span><code><span class="kd">val</span><span class="w"> </span><span class="nv">android</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EmaConfiguration</span><span class="p">.</span><span class="na">Android</span><span class="p">(</span><span class="n">debug</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">BuildConfig</span><span class="p">.</span><span class="na">DEBUG</span><span class="p">)</span>
+<span class="n">Emanate</span><span class="p">.</span><span class="na">init</span><span class="p">(</span><span class="n">android</span><span class="p">.</span><span class="na">copy</span><span class="p">(</span><span class="n">dispatchers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">android</span><span class="p">.</span><span class="na">dispatchers</span><span class="p">.</span><span class="na">copy</span><span class="p">(</span><span class="n">io</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">myIoDispatcher</span><span class="p">)))</span>
 </code></pre></div>
 <h2 id="naming-the-side-effects">Naming the side effects<a class="headerlink" href="#naming-the-side-effects" title="Permanent link">&para;</a></h2>
 <p>Every <code>sideEffect</code> reports the name of the function that launched it, which is useful for logging errors.</p>
 <ul>
-<li><code>EmaConfiguration.Android</code> reads it from the class the compiler generates for the lambda, so a <code>sideEffect</code> in
+<li><code>EmaConfiguration.Android(debug)</code> reads it from the class the compiler generates for the lambda, so a <code>sideEffect</code> in
   <code>doLogin()</code> is reported as <code>doLogin</code>.</li>
 <li>On other platforms the name is generic. Pass <code>logName</code> to set it yourself, on any platform:</li>
 </ul>
 <div class="highlight"><pre><span></span><code><span class="n">sideEffect</span><span class="p">(</span><span class="n">logName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"login"</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">loginUseCase</span><span class="p">(</span><span class="n">input</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
 </code></pre></div>
-<p>To decide the name differently, implement <code>EmaMethodNameResolver</code> and set it in <code>EmaSideEffectConfig.methodNameResolver</code>.</p>
+<p>To decide the name differently, implement <code>EmaMethodNameResolver</code> and set it in <code>EmaConfiguration.methodNameResolver</code>.</p>
 <h2 id="printing-objects">Printing objects<a class="headerlink" href="#printing-objects" title="Permanent link">&para;</a></h2>
-<p><code>toStringPretty()</code> prints any object with the configured <code>EmaDataClassPrinter</code>. <code>EmaConfiguration.Android</code> uses
+<p><code>toStringPretty()</code> prints any object with the <code>printer</code> of the configuration. <code>EmaConfiguration.Android(debug)</code> uses
 <code>EmaAndroidDataClassPrinter</code>, which prints the fields, nested objects, collections and maps with indentation.
 Implement <code>EmaDataClassPrinter</code> to print them your own way.</p>
-<h2 id="the-broadcast-manager">The broadcast manager<a class="headerlink" href="#the-broadcast-manager" title="Permanent link">&para;</a></h2>
-<p><code>Ema.broadcastManager</code> is the app-wide <code>EmaBroadcastManager</code>. See
-<a href="../results-between-screens/#app-wide-broadcasts">Results between screens</a>.</p>
+<h2 id="logs">Logs<a class="headerlink" href="#logs" title="Permanent link">&para;</a></h2>
+<p>Emanate writes its logs with the <code>logger</code> of the configuration. By default it is <code>EmaLogger.Println</code>, which writes to
+the standard output and adds <code>EMA_</code> before the tag. <code>EmaConfiguration.Android(debug)</code> uses <code>EmaLogger.Logcat</code> in debug
+builds, which writes with <code>Log.d</code>, and no logger in release builds. The errors caught by the
+<a href="../async-and-errors/#errors">error policy</a> are also logged.</p>
+<p>Every <code>EmaViewModel</code> uses it, with its name as tag, to log its actions:</p>
+<ul>
+<li>One line when an action is received, before the middlewares: <code>Received action: Search(query=ema)</code>. It shows the
+  actions that a middleware stops, which don't reach the reducers.</li>
+<li>A block with the action and the state before and after its reducers. It is written right before them, after all the
+  middlewares, so the state after the action is correct even if a middleware continues it later with <code>nextAfter</code>, and
+  the action is the one the reducers receive.</li>
+</ul>
+<p>The state may contain data of the user, so don't log in release builds, as <code>EmaConfiguration.Android(debug)</code> does. To
+send the logs to your own logger:</p>
+<div class="highlight"><pre><span></span><code><span class="n">Emanate</span><span class="p">.</span><span class="na">init</span><span class="p">(</span>
+<span class="w">    </span><span class="n">EmaConfiguration</span><span class="p">.</span><span class="na">Android</span><span class="p">(</span><span class="n">debug</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">BuildConfig</span><span class="p">.</span><span class="na">DEBUG</span><span class="p">).</span><span class="na">copy</span><span class="p">(</span>
+<span class="w">        </span><span class="n">logger</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">BuildConfig</span><span class="p">.</span><span class="na">DEBUG</span><span class="p">)</span><span class="w"> </span><span class="n">EmaLogger</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">tag</span><span class="p">,</span><span class="w"> </span><span class="n">message</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Timber</span><span class="p">.</span><span class="na">tag</span><span class="p">(</span><span class="n">tag</span><span class="p">).</span><span class="na">d</span><span class="p">(</span><span class="n">message</span><span class="p">)</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="kc">null</span>
+<span class="w">    </span><span class="p">)</span>
+<span class="p">)</span>
+</code></pre></div>
+<p>A ViewModel can still pass its own <code>logger</code> in the constructor, or <code>null</code> to disable only its logs. A source used on
+its own doesn't log: add <code>loggerMiddleware(tag, logger)</code> as its last middleware.</p>
 
 
 
@@ -1764,7 +1835,7 @@ Implement <code>EmaDataClassPrinter</code> to print them your own way.</p>
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../../concepts/viewmodel/" class="md-footer__link md-footer__link--prev" aria-label="Previous: ViewModel">
+          <a href="../../concepts/source/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Source">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -1774,7 +1845,7 @@ Implement <code>EmaDataClassPrinter</code> to print them your own way.</p>
                 Previous
               </span>
               <div class="md-ellipsis">
-                ViewModel
+                Source
               </div>
             </div>
           </a>

@@ -29,7 +29,7 @@
     
     
       
-        <title>Primeros pasos - Ema</title>
+        <title>Primeros pasos - Emanate</title>
       
     
     
@@ -100,7 +100,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Cabecera">
-    <a href="../" title="Ema" class="md-header__button md-logo" aria-label="Ema" data-md-component="logo">
+    <a href="../" title="Emanate" class="md-header__button md-logo" aria-label="Emanate" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -114,7 +114,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            Ema
+            Emanate
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -262,13 +262,13 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navegación" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../" title="Ema" class="md-nav__button md-logo" aria-label="Ema" data-md-component="logo">
+    <a href="../" title="Emanate" class="md-nav__button md-logo" aria-label="Emanate" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    Ema
+    Emanate
   </label>
   
     <div class="md-nav__source">
@@ -401,10 +401,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#inicializar-ema" class="md-nav__link">
+  <a href="#inicializar-emanate" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Inicializar Ema
+        Inicializar Emanate
       
     </span>
   </a>
@@ -637,6 +637,34 @@
     
   
     ViewModel
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../concepts/source/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fuente
   
 
     
@@ -1581,10 +1609,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#inicializar-ema" class="md-nav__link">
+  <a href="#inicializar-emanate" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Inicializar Ema
+        Inicializar Emanate
       
     </span>
   </a>
@@ -1668,38 +1696,40 @@
 <span class="p">}</span>
 </code></pre></div>
 <p>Añade las dependencias de tu tecnología de UI:</p>
-<div class="highlight"><pre><span></span><code><span class="kd">val</span><span class="w"> </span><span class="nv">emaVersion</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"7.0.0"</span>
+<div class="highlight"><pre><span></span><code><span class="kd">val</span><span class="w"> </span><span class="nv">emanateVersion</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"7.0.0"</span>
 
 <span class="n">dependencies</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="c1">// Compose (recomendado)</span>
-<span class="w">    </span><span class="n">implementation</span><span class="p">(</span><span class="s">"com.github.carmabs.ema:ema-android:</span><span class="si">$</span><span class="n">emaVersion</span><span class="s">"</span><span class="p">)</span>
-<span class="w">    </span><span class="n">implementation</span><span class="p">(</span><span class="s">"com.github.carmabs.ema:ema-compose:</span><span class="si">$</span><span class="n">emaVersion</span><span class="s">"</span><span class="p">)</span>
+<span class="w">    </span><span class="n">implementation</span><span class="p">(</span><span class="s">"com.github.carmabs.ema:emanate-android:</span><span class="si">$</span><span class="n">emanateVersion</span><span class="s">"</span><span class="p">)</span>
+<span class="w">    </span><span class="n">implementation</span><span class="p">(</span><span class="s">"com.github.carmabs.ema:emanate-compose:</span><span class="si">$</span><span class="n">emanateVersion</span><span class="s">"</span><span class="p">)</span>
 
 <span class="w">    </span><span class="c1">// Vistas de Android: Fragments y Activities</span>
-<span class="w">    </span><span class="n">implementation</span><span class="p">(</span><span class="s">"com.github.carmabs.ema:ema-android-view:</span><span class="si">$</span><span class="n">emaVersion</span><span class="s">"</span><span class="p">)</span>
+<span class="w">    </span><span class="n">implementation</span><span class="p">(</span><span class="s">"com.github.carmabs.ema:emanate-android-view:</span><span class="si">$</span><span class="n">emanateVersion</span><span class="s">"</span><span class="p">)</span>
 <span class="p">}</span>
 </code></pre></div>
-<p>En un módulo de Kotlin puro, como un módulo <code>presentation</code> con los ViewModels, añade solo el núcleo:</p>
+<p>En un módulo de Kotlin puro, como un módulo <code>presentation</code> con los ViewModels, añade solo el núcleo, y <code>emanate-test</code> para
+testearlos:</p>
 <div class="highlight"><pre><span></span><code><span class="n">dependencies</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="n">implementation</span><span class="p">(</span><span class="s">"com.github.carmabs.ema:ema-core:</span><span class="si">$</span><span class="n">emaVersion</span><span class="s">"</span><span class="p">)</span>
+<span class="w">    </span><span class="n">implementation</span><span class="p">(</span><span class="s">"com.github.carmabs.ema:emanate-core:</span><span class="si">$</span><span class="n">emanateVersion</span><span class="s">"</span><span class="p">)</span>
+<span class="w">    </span><span class="n">testImplementation</span><span class="p">(</span><span class="s">"com.github.carmabs.ema:emanate-test:</span><span class="si">$</span><span class="n">emanateVersion</span><span class="s">"</span><span class="p">)</span>
 <span class="p">}</span>
 </code></pre></div>
-<p><code>ema-core</code> es una librería Kotlin Multiplatform, así que también se puede usar desde el <code>commonMain</code> de un módulo
+<p><code>emanate-core</code> es una librería Kotlin Multiplatform, así que también se puede usar desde el <code>commonMain</code> de un módulo
 multiplataforma. Consulta <a href="../guides/multiplatform/">Kotlin Multiplatform</a>.</p>
-<h2 id="inicializar-ema">Inicializar Ema<a class="headerlink" href="#inicializar-ema" title="Permanent link">&para;</a></h2>
-<p>Llama a <code>Ema.init</code> una vez, cuando arranca la aplicación y antes de crear ningún ViewModel.
-<code>EmaConfiguration.Android</code> es la configuración para apps Android:</p>
+<h2 id="inicializar-emanate">Inicializar Emanate<a class="headerlink" href="#inicializar-emanate" title="Permanent link">&para;</a></h2>
+<p>Llama a <code>Emanate.init</code> una vez, cuando arranca la aplicación y antes de crear ningún ViewModel.
+<code>EmaConfiguration.Android(debug)</code> es la configuración para apps Android:</p>
 <div class="highlight"><pre><span></span><code><span class="kd">class</span><span class="w"> </span><span class="nc">MyApplication</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Application</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
 
 <span class="w">    </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">onCreate</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
 <span class="w">        </span><span class="k">super</span><span class="p">.</span><span class="na">onCreate</span><span class="p">()</span>
-<span class="w">        </span><span class="n">Ema</span><span class="p">.</span><span class="na">init</span><span class="p">(</span><span class="n">EmaConfiguration</span><span class="p">.</span><span class="na">Android</span><span class="p">)</span>
+<span class="w">        </span><span class="n">Emanate</span><span class="p">.</span><span class="na">init</span><span class="p">(</span><span class="n">EmaConfiguration</span><span class="p">.</span><span class="na">Android</span><span class="p">(</span><span class="n">debug</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">BuildConfig</span><span class="p">.</span><span class="na">DEBUG</span><span class="p">))</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div>
 <p>Registra la aplicación en el <code>AndroidManifest.xml</code> (<code>android:name=".MyApplication"</code>).
-La configuración decide los dispatchers, cómo se gestionan los errores dentro de <code>sideEffect</code> y cómo se imprimen los
-objetos en los logs. Consulta <a href="../guides/configuration/">Configuración</a>.</p>
+La configuración decide los dispatchers, qué pasa con las excepciones y dónde van los logs: con <code>BuildConfig.DEBUG</code>,
+las builds de debug registran y fallan en el momento, y las de release no registran nada y siguen funcionando. Consulta <a href="../guides/configuration/">Configuración</a>.</p>
 <h2 id="tu-primera-pantalla">Tu primera pantalla<a class="headerlink" href="#tu-primera-pantalla" title="Permanent link">&para;</a></h2>
 <p>Una pantalla se compone de un <strong>estado</strong>, las <strong>acciones</strong> que puede realizar el usuario, los <strong>eventos</strong> que puede emitir
 y un <strong>ViewModel</strong> que los conecta. Esto es un contador.</p>
@@ -1714,14 +1744,18 @@ y un <strong>ViewModel</strong> que los conecta. Esto es un contador.</p>
 <span class="p">}</span>
 
 <span class="kd">class</span><span class="w"> </span><span class="nc">CounterViewModel</span><span class="w"> </span><span class="p">:</span>
-<span class="w">    </span><span class="n">EmaViewModelAction</span><span class="o">&lt;</span><span class="n">CounterState</span><span class="p">,</span><span class="w"> </span><span class="n">CounterAction</span><span class="p">,</span><span class="w"> </span><span class="n">CounterEvent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">CounterState</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">EmaViewModel</span><span class="o">&lt;</span><span class="n">CounterState</span><span class="p">,</span><span class="w"> </span><span class="n">CounterAction</span><span class="p">,</span><span class="w"> </span><span class="n">CounterEvent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">CounterState</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
 
-<span class="w">    </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">onStateCreated</span><span class="p">(</span><span class="n">initializer</span><span class="p">:</span><span class="w"> </span><span class="n">EmaAction</span><span class="p">.</span><span class="na">Initializer</span><span class="o">?</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">Unit</span>
-
-<span class="w">    </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">onAction</span><span class="p">(</span><span class="n">action</span><span class="p">:</span><span class="w"> </span><span class="n">CounterAction</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="k">when</span><span class="w"> </span><span class="p">(</span><span class="n">action</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="n">CounterAction</span><span class="p">.</span><span class="na">Increment</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                </span><span class="n">updateState</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">copy</span><span class="p">(</span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">count</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="m">1</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">setup</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">source</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">reducers</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">add</span><span class="o">&lt;</span><span class="n">CounterAction</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">action</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">                </span><span class="k">when</span><span class="w"> </span><span class="p">(</span><span class="n">action</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="n">CounterAction</span><span class="p">.</span><span class="na">Increment</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">state</span><span class="p">.</span><span class="na">copy</span><span class="p">(</span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">state</span><span class="p">.</span><span class="na">count</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="m">1</span><span class="p">)</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="n">sideEffects</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">add</span><span class="o">&lt;</span><span class="n">CounterAction</span><span class="p">.</span><span class="na">Increment</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
 <span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">state</span><span class="p">.</span><span class="na">count</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">LIMIT</span><span class="p">)</span><span class="w"> </span><span class="n">postEvent</span><span class="p">(</span><span class="n">CounterEvent</span><span class="p">.</span><span class="na">LimitReached</span><span class="p">(</span><span class="n">LIMIT</span><span class="p">))</span>
 <span class="w">            </span><span class="p">}</span>
 <span class="w">        </span><span class="p">}</span>
@@ -1733,10 +1767,13 @@ y un <strong>ViewModel</strong> que los conecta. Esto es un contador.</p>
 <span class="p">}</span>
 </code></pre></div>
 <ul>
-<li><code>updateState { copy(...) }</code> crea el siguiente estado y avisa a la vista.</li>
-<li><code>postEvent(...)</code> envía un evento de un solo uso a la vista.</li>
+<li>El reducer devuelve el siguiente estado para cada acción, y se avisa a la vista.</li>
+<li>El side effect se ejecuta después del reducer, con el nuevo estado, y <code>postEvent(...)</code> envía un evento de un solo uso a
+  la vista.</li>
 <li>El ViewModel nunca toca clases de Android, así que se puede testear en la JVM.</li>
 </ul>
+<p><code>EmaViewModel</code> es el ViewModel recomendado. También está disponible el clásico <code>EmaViewModelAction</code>, que actualiza el
+estado de forma imperativa en <code>onAction</code>: consulta <a href="../concepts/viewmodel/">ViewModel</a>.</p>
 <h3 id="la-pantalla">La pantalla<a class="headerlink" href="#la-pantalla" title="Permanent link">&para;</a></h3>
 <p>Una pantalla Compose se describe con un <code>EmaComposableScreenContent</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="kd">class</span><span class="w"> </span><span class="nc">CounterScreenContent</span><span class="w"> </span><span class="p">:</span>
@@ -1798,9 +1835,9 @@ como arriba: consulta <a href="../guides/dependency-injection/">Inyección de de
 <h2 id="qué-ha-pasado">Qué ha pasado<a class="headerlink" href="#qué-ha-pasado" title="Permanent link">&para;</a></h2>
 <ol>
 <li>El usuario pulsa el botón: la pantalla llama a <code>actions.dispatch(Increment)</code>.</li>
-<li>El ViewModel calcula el siguiente estado con <code>updateState</code>.</li>
+<li>El reducer del ViewModel calcula el siguiente estado.</li>
 <li>La pantalla recibe el nuevo estado y se recompone.</li>
-<li>En la décima pulsación el ViewModel además publica <code>LimitReached</code>, que la pantalla muestra una vez y consume.</li>
+<li>En la décima pulsación el side effect además publica <code>LimitReached</code>, que la pantalla muestra una vez y consume.</li>
 </ol>
 <p>Sigue con <a href="../concepts/architecture/">Arquitectura</a>.</p>
 

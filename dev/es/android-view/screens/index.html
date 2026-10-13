@@ -29,7 +29,7 @@
     
     
       
-        <title>Fragments y Activities - Ema</title>
+        <title>Fragments y Activities - Emanate</title>
       
     
     
@@ -100,7 +100,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Cabecera">
-    <a href="../../" title="Ema" class="md-header__button md-logo" aria-label="Ema" data-md-component="logo">
+    <a href="../../" title="Emanate" class="md-header__button md-logo" aria-label="Emanate" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -114,7 +114,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            Ema
+            Emanate
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -262,13 +262,13 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navegación" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../../" title="Ema" class="md-nav__button md-logo" aria-label="Ema" data-md-component="logo">
+    <a href="../../" title="Emanate" class="md-nav__button md-logo" aria-label="Emanate" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    Ema
+    Emanate
   </label>
   
     <div class="md-nav__source">
@@ -518,6 +518,34 @@
     
   
     ViewModel
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/source/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fuente
   
 
     
@@ -1828,7 +1856,7 @@ campo:</p>
 <blockquote>
 <p><code>bindForUpdate</code> encuentra el valor anterior por reflexión, a partir del nombre del campo. Si activas R8 o ProGuard,
 conserva los campos de tus clases de estado (por ejemplo,
-<code>-keepclassmembers class * implements com.carmabs.ema.core.state.EmaState { *; }</code>).</p>
+<code>-keepclassmembers class * implements com.carmabs.emanate.core.state.EmaState { *; }</code>).</p>
 </blockquote>
 <h2 id="enviar-acciones">Enviar acciones<a class="headerlink" href="#enviar-acciones" title="Permanent link">&para;</a></h2>
 <p>Llama a <code>viewModel.dispatch(...)</code>:</p>
@@ -1857,7 +1885,7 @@ del estado, el campo se reescribe porque ya no coincide. <code>EmaEditText</code
 <thead>
 <tr>
 <th>Callback de la vista</th>
-<th>Lo que hace Ema</th>
+<th>Lo que hace Emanate</th>
 </tr>
 </thead>
 <tbody>
@@ -1900,13 +1928,13 @@ Activity:</p>
 </code></pre></div>
 <p>Los Fragments de la misma Activity que usan la misma clase de ViewModel reciben entonces la misma instancia.</p>
 <h2 id="activities">Activities<a class="headerlink" href="#activities" title="Permanent link">&para;</a></h2>
-<p>Una Activity que solo aloja fragments usa <code>EmaViewModel.EMPTY</code> y un navigator dueño del grafo de navegación:</p>
+<p>Una Activity que solo aloja fragments usa <code>EmaViewModelContract.EMPTY</code> y un navigator dueño del grafo de navegación:</p>
 <div class="highlight"><pre><span></span><code><span class="kd">class</span><span class="w"> </span><span class="nc">SplashActivity</span><span class="w"> </span><span class="p">:</span>
-<span class="w">    </span><span class="n">EmaToolbarActivity</span><span class="o">&lt;</span><span class="n">SplashActivityBinding</span><span class="p">,</span><span class="w"> </span><span class="n">EmaState</span><span class="p">.</span><span class="na">EMPTY</span><span class="p">,</span><span class="w"> </span><span class="n">EmaViewModel</span><span class="p">.</span><span class="na">EMPTY</span><span class="p">,</span><span class="w"> </span><span class="n">EmaEvent</span><span class="p">.</span><span class="na">EMPTY</span><span class="o">&gt;</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">EmaToolbarActivity</span><span class="o">&lt;</span><span class="n">SplashActivityBinding</span><span class="p">,</span><span class="w"> </span><span class="n">EmaState</span><span class="p">.</span><span class="na">EMPTY</span><span class="p">,</span><span class="w"> </span><span class="n">EmaViewModelContract</span><span class="p">.</span><span class="na">EMPTY</span><span class="p">,</span><span class="w"> </span><span class="n">EmaEvent</span><span class="p">.</span><span class="na">EMPTY</span><span class="o">&gt;</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
 
 <span class="w">    </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">createViewBinding</span><span class="p">(</span><span class="n">inflater</span><span class="p">:</span><span class="w"> </span><span class="n">LayoutInflater</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SplashActivityBinding</span><span class="p">.</span><span class="na">inflate</span><span class="p">(</span><span class="n">inflater</span><span class="p">)</span>
 
-<span class="w">    </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">provideViewModel</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EmaViewModel</span><span class="p">.</span><span class="na">EMPTY</span>
+<span class="w">    </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">provideViewModel</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EmaViewModelContract</span><span class="p">.</span><span class="na">EMPTY</span>
 
 <span class="w">    </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="n">SplashActivityBinding</span><span class="p">.</span><span class="nf">onState</span><span class="p">(</span><span class="n">data</span><span class="p">:</span><span class="w"> </span><span class="n">EmaState</span><span class="p">.</span><span class="na">EMPTY</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">Unit</span>
 

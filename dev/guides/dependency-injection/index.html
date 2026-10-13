@@ -29,7 +29,7 @@
     
     
       
-        <title>Dependency injection - Ema</title>
+        <title>Dependency injection - Emanate</title>
       
     
     
@@ -100,7 +100,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="Ema" class="md-header__button md-logo" aria-label="Ema" data-md-component="logo">
+    <a href="../.." title="Emanate" class="md-header__button md-logo" aria-label="Emanate" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -114,7 +114,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            Ema
+            Emanate
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -262,13 +262,13 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="Ema" class="md-nav__button md-logo" aria-label="Ema" data-md-component="logo">
+    <a href="../.." title="Emanate" class="md-nav__button md-logo" aria-label="Emanate" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    Ema
+    Emanate
   </label>
   
     <div class="md-nav__source">
@@ -518,6 +518,34 @@
     
   
     ViewModel
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/source/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Source
   
 
     
@@ -1575,7 +1603,7 @@
 
 
 <h1 id="dependency-injection">Dependency injection<a class="headerlink" href="#dependency-injection" title="Permanent link">&para;</a></h1>
-<p>Ema does not depend on any dependency injection framework. Wherever it needs a ViewModel, it asks you for it with a
+<p>Emanate does not depend on any dependency injection framework. Wherever it needs a ViewModel, it asks you for it with a
 function, so you can use Koin, Hilt, Kodein, a manual container or plain constructors.</p>
 <div class="highlight"><pre><span></span><code><span class="c1">// Compose</span>
 <span class="n">createComposableScreen</span><span class="p">(</span>
@@ -1588,17 +1616,17 @@ function, so you can use Koin, Hilt, Kodein, a manual container or plain constru
 <span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">provideViewModel</span><span class="p">():</span><span class="w"> </span><span class="n">LoginViewModel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">LoginViewModel</span><span class="p">(</span><span class="n">loginUseCase</span><span class="p">,</span><span class="w"> </span><span class="n">LoginState</span><span class="p">.</span><span class="na">DEFAULT</span><span class="p">)</span>
 </code></pre></div>
 <h2 id="one-viewmodel-per-screen">One ViewModel per screen<a class="headerlink" href="#one-viewmodel-per-screen" title="Permanent link">&para;</a></h2>
-<p>Ema calls the function once, when the screen is opened for the first time, and keeps the ViewModel while the screen
+<p>Emanate calls the function once, when the screen is opened for the first time, and keeps the ViewModel while the screen
 exists: see <a href="../../concepts/viewmodel/#how-the-viewmodel-is-kept-alive">How the ViewModel is kept alive</a>.
 The function must create the ViewModel, not return one that already exists, so each screen gets its own. A singleton
 would be shared by every screen of that type and would keep the state of a screen that was already closed.</p>
 <h2 id="with-koin">With Koin<a class="headerlink" href="#with-koin" title="Permanent link">&para;</a></h2>
-<p>This is how the <code>sample/</code> app does it. Start Koin after initializing Ema:</p>
+<p>This is how the <code>sample/</code> app does it. Start Koin after initializing Emanate:</p>
 <div class="highlight"><pre><span></span><code><span class="kd">class</span><span class="w"> </span><span class="nc">EmaSampleApplication</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Application</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
 
 <span class="w">    </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">onCreate</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
 <span class="w">        </span><span class="k">super</span><span class="p">.</span><span class="na">onCreate</span><span class="p">()</span>
-<span class="w">        </span><span class="n">Ema</span><span class="p">.</span><span class="na">init</span><span class="p">(</span><span class="n">EmaConfiguration</span><span class="p">.</span><span class="na">Android</span><span class="p">)</span>
+<span class="w">        </span><span class="n">Emanate</span><span class="p">.</span><span class="na">init</span><span class="p">(</span><span class="n">EmaConfiguration</span><span class="p">.</span><span class="na">Android</span><span class="p">(</span><span class="n">debug</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">BuildConfig</span><span class="p">.</span><span class="na">DEBUG</span><span class="p">))</span>
 <span class="w">        </span><span class="n">startKoin</span><span class="w"> </span><span class="p">{</span>
 <span class="w">            </span><span class="n">androidContext</span><span class="p">(</span><span class="k">this</span><span class="nd">@EmaSampleApplication</span><span class="p">)</span>
 <span class="w">            </span><span class="n">modules</span><span class="p">(</span><span class="n">dataModule</span><span class="p">,</span><span class="w"> </span><span class="n">useCaseModule</span><span class="p">,</span><span class="w"> </span><span class="n">uiModule</span><span class="p">)</span>

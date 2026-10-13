@@ -29,7 +29,7 @@
     
     
       
-        <title>Utilities - Ema</title>
+        <title>Utilities - Emanate</title>
       
     
     
@@ -100,7 +100,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="Ema" class="md-header__button md-logo" aria-label="Ema" data-md-component="logo">
+    <a href="../.." title="Emanate" class="md-header__button md-logo" aria-label="Emanate" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -114,7 +114,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            Ema
+            Emanate
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -262,13 +262,13 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="Ema" class="md-nav__button md-logo" aria-label="Ema" data-md-component="logo">
+    <a href="../.." title="Emanate" class="md-nav__button md-logo" aria-label="Emanate" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    Ema
+    Emanate
   </label>
   
     <div class="md-nav__source">
@@ -518,6 +518,34 @@
     
   
     ViewModel
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/source/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Source
   
 
     
@@ -1641,7 +1669,7 @@
 
 
 <h1 id="view-utilities">View utilities<a class="headerlink" href="#view-utilities" title="Permanent link">&para;</a></h1>
-<p>The extensions of <code>ema-android-view</code> are in <code>com.carmabs.ema.android.extension</code>.</p>
+<p>The extensions of <code>emanate-android-view</code> are in <code>com.carmabs.emanate.android.extension</code>.</p>
 <h2 id="views">Views<a class="headerlink" href="#views" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -1679,20 +1707,10 @@
 <td><code>progressBar.setProgressTintCompat(color)</code></td>
 <td>Tints a progress bar.</td>
 </tr>
-<tr>
-<td><code>checkVisibility(visible, gone)</code></td>
-<td><code>VISIBLE</code>, <code>GONE</code> or <code>INVISIBLE</code> from a boolean.</td>
-</tr>
-<tr>
-<td><code>checkUpdate(old, new) { }</code></td>
-<td>Runs the block only if the value changed.</td>
-</tr>
-<tr>
-<td><code>getColorFromGradient(colors, positions, value)</code>, <code>lerpColor(a, b, t)</code></td>
-<td>Interpolate colours.</td>
-</tr>
 </tbody>
 </table>
+<p><code>EmaUtils.View.Android.visibility(visible, gone)</code> returns <code>VISIBLE</code>, <code>GONE</code> or <code>INVISIBLE</code> from a boolean. See
+<a href="../../guides/utilities/#emautils"><code>EmaUtils</code></a> for the rest of the utility functions.</p>
 <h2 id="animations">Animations<a class="headerlink" href="#animations" title="Permanent link">&para;</a></h2>
 <p><code>animator.pauseAll()</code>, <code>resumeAll()</code>, <code>endAll()</code>, <code>cancelAll()</code> and <code>isSomeRunning()</code> act on an <code>AnimatorSet</code> and all its
 children.</p>

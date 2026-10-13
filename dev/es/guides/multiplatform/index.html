@@ -29,7 +29,7 @@
     
     
       
-        <title>Kotlin Multiplatform - Ema</title>
+        <title>Kotlin Multiplatform - Emanate</title>
       
     
     
@@ -100,7 +100,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Cabecera">
-    <a href="../../" title="Ema" class="md-header__button md-logo" aria-label="Ema" data-md-component="logo">
+    <a href="../../" title="Emanate" class="md-header__button md-logo" aria-label="Emanate" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -114,7 +114,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            Ema
+            Emanate
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -262,13 +262,13 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navegación" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../../" title="Ema" class="md-nav__button md-logo" aria-label="Ema" data-md-component="logo">
+    <a href="../../" title="Emanate" class="md-nav__button md-logo" aria-label="Emanate" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    Ema
+    Emanate
   </label>
   
     <div class="md-nav__source">
@@ -518,6 +518,34 @@
     
   
     ViewModel
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/source/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fuente
   
 
     
@@ -1553,7 +1581,7 @@
 
 
 <h1 id="kotlin-multiplatform">Kotlin Multiplatform<a class="headerlink" href="#kotlin-multiplatform" title="Permanent link">&para;</a></h1>
-<p><code>ema-core</code> es una librería Kotlin Multiplatform. Todo su código está en <code>commonMain</code>, así que los estados, las acciones,
+<p><code>emanate-core</code> es una librería Kotlin Multiplatform. Todo su código está en <code>commonMain</code>, así que los estados, las acciones,
 los eventos, los ViewModels, los casos de uso, <code>EmaResult</code>, <code>EmaText</code> y el resto del núcleo están disponibles en todos
 los targets:</p>
 <table>
@@ -1587,11 +1615,11 @@ los targets:</p>
 </tbody>
 </table>
 <h2 id="compartir-la-capa-de-presentación">Compartir la capa de presentación<a class="headerlink" href="#compartir-la-capa-de-presentación" title="Permanent link">&para;</a></h2>
-<p>Pon los ViewModels en el <code>commonMain</code> de un módulo multiplataforma que dependa de <code>ema-core</code>:</p>
+<p>Pon los ViewModels en el <code>commonMain</code> de un módulo multiplataforma que dependa de <code>emanate-core</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="n">kotlin</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="n">sourceSets</span><span class="w"> </span><span class="p">{</span>
 <span class="w">        </span><span class="n">commonMain</span><span class="p">.</span><span class="na">dependencies</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="n">implementation</span><span class="p">(</span><span class="s">"com.github.carmabs.ema:ema-core:</span><span class="si">$</span><span class="n">emaVersion</span><span class="s">"</span><span class="p">)</span>
+<span class="w">            </span><span class="n">implementation</span><span class="p">(</span><span class="s">"com.github.carmabs.ema:emanate-core:</span><span class="si">$</span><span class="n">emanateVersion</span><span class="s">"</span><span class="p">)</span>
 <span class="w">        </span><span class="p">}</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
@@ -1600,7 +1628,7 @@ los targets:</p>
 En cualquier otra plataforma basta con recoger <code>stateFlow</code> y <code>eventFlow</code> y enviar acciones con <code>dispatch</code>.</p>
 <h2 id="lo-que-no-está-disponible-en-todas-partes">Lo que no está disponible en todas partes<a class="headerlink" href="#lo-que-no-está-disponible-en-todas-partes" title="Permanent link">&para;</a></h2>
 <ul>
-<li><strong>Configuración.</strong> <code>EmaConfiguration.Android</code> está en <code>ema-android</code>. En otras plataformas llama a <code>Ema.init</code> con una
+<li><strong>Configuración.</strong> <code>EmaConfiguration.Android(debug)</code> está en <code>emanate-android</code>. En otras plataformas llama a <code>Emanate.init</code> con una
   <code>EmaConfiguration</code> hecha para ellas, o usa la configuración por defecto. Consulta <a href="../configuration/">Configuración</a>.</li>
 <li><strong>Nombres de función en los logs.</strong> Solo la configuración de Android obtiene el nombre de la función que lanzó un
   <code>sideEffect</code>. En el resto, pasa <code>logName</code>.</li>

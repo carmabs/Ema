@@ -29,7 +29,7 @@
     
     
       
-        <title>Acciones - Ema</title>
+        <title>Acciones - Emanate</title>
       
     
     
@@ -100,7 +100,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Cabecera">
-    <a href="../../" title="Ema" class="md-header__button md-logo" aria-label="Ema" data-md-component="logo">
+    <a href="../../" title="Emanate" class="md-header__button md-logo" aria-label="Emanate" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -114,7 +114,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            Ema
+            Emanate
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -262,13 +262,13 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navegación" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../../" title="Ema" class="md-nav__button md-logo" aria-label="Ema" data-md-component="logo">
+    <a href="../../" title="Emanate" class="md-nav__button md-logo" aria-label="Emanate" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    Ema
+    Emanate
   </label>
   
     <div class="md-nav__source">
@@ -611,6 +611,34 @@
     
   
     ViewModel
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fuente
   
 
     
@@ -1618,7 +1646,25 @@ Las acciones van de la vista al ViewModel.</p>
 <p>Usa una <code>sealed interface</code> para que el <code>when</code> sea exhaustivo. Al añadir una acción, el compilador te indica todos los
 sitios donde tienes que gestionarla.</p>
 <h2 id="gestionar-las-acciones">Gestionar las acciones<a class="headerlink" href="#gestionar-las-acciones" title="Permanent link">&para;</a></h2>
-<p>Hereda de <code>EmaViewModelAction&lt;State, Action, Event&gt;</code> e implementa <code>onAction</code>:</p>
+<p>En un <code>EmaViewModel</code>, declara en <code>setup</code> los reducers, los middlewares y los side effects de cada tipo de acción. Con el
+tipo <code>sealed</code>, un reducer gestiona todas las acciones de la pantalla en un <code>when</code> exhaustivo:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">setup</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">source</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">reducers</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">add</span><span class="o">&lt;</span><span class="n">LoginAction</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">action</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">            </span><span class="k">when</span><span class="w"> </span><span class="p">(</span><span class="n">action</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="k">is</span><span class="w"> </span><span class="n">LoginAction</span><span class="p">.</span><span class="na">UserNameWritten</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">state</span><span class="p">.</span><span class="na">copy</span><span class="p">(</span><span class="n">userName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">action</span><span class="p">.</span><span class="na">user</span><span class="p">,</span><span class="w"> </span><span class="n">userNameError</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">)</span>
+<span class="w">                </span><span class="k">is</span><span class="w"> </span><span class="n">LoginAction</span><span class="p">.</span><span class="na">PasswordWritten</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">state</span><span class="p">.</span><span class="na">copy</span><span class="p">(</span><span class="n">userPassword</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">action</span><span class="p">.</span><span class="na">password</span><span class="p">,</span><span class="w"> </span><span class="n">passwordError</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">)</span>
+<span class="w">                </span><span class="c1">// ...</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="n">sideEffects</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">add</span><span class="o">&lt;</span><span class="n">LoginAction</span><span class="p">.</span><span class="na">Login</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/* ... */</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Consulta <a href="../source/">Source</a>. En un ViewModel clásico, hereda de <code>EmaViewModelAction&lt;State, Action, Event&gt;</code> e
+implementa <code>onAction</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="kd">class</span><span class="w"> </span><span class="nc">LoginViewModel</span><span class="p">(</span>
 <span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">loginUseCase</span><span class="p">:</span><span class="w"> </span><span class="n">LoginUseCase</span><span class="p">,</span>
 <span class="w">    </span><span class="n">initialDataState</span><span class="p">:</span><span class="w"> </span><span class="n">LoginState</span>
@@ -1636,9 +1682,9 @@ sitios donde tienes que gestionarla.</p>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div>
-<p><code>onAction</code> es <code>protected</code>. El punto de entrada público es <code>dispatch(action)</code>, así que la vista solo puede comunicarse
-mediante acciones y no puede llamar a funciones arbitrarias del ViewModel.</p>
-<p>Si prefieres no declarar acciones, <code>EmaViewModelBasic&lt;State, Event&gt;</code> permite que la vista llame a funciones públicas del
+<p>En los dos, el punto de entrada público es <code>dispatch(action)</code>, así que la vista solo puede comunicarse mediante acciones
+y no puede llamar a funciones arbitrarias del ViewModel.</p>
+<p>Si prefieres no declarar acciones, <code>EmaViewModelClassic&lt;State, Event&gt;</code> permite que la vista llame a funciones públicas del
 ViewModel, como en el MVVM clásico. Se recomiendan las acciones: consulta <a href="../viewmodel/">ViewModel</a>.</p>
 <h2 id="enviarlas-desde-la-vista">Enviarlas desde la vista<a class="headerlink" href="#enviarlas-desde-la-vista" title="Permanent link">&para;</a></h2>
 <p>El contenido de una pantalla Compose recibe un <code>EmaImmutableActionDispatcher</code>, un envoltorio estable que no provoca
@@ -1664,6 +1710,10 @@ consulta <a href="../../android-view/screens/#enviar-acciones">Vistas de Android
 <tr>
 <td><code>EmaAction.Initializer</code></td>
 <td>Los datos con los que empieza una pantalla. Consulta <a href="../../guides/initializers/">Inicializadores</a>.</td>
+</tr>
+<tr>
+<td><code>EmaAction.Lifecycle</code></td>
+<td>El ciclo de vida de la vista, que recibe un <code>EmaViewModel</code>: <code>Started</code>, <code>Resumed</code>, <code>Paused</code>, <code>Stopped</code> y <code>Destroyed</code>.</td>
 </tr>
 <tr>
 <td><code>EmaAction.EMPTY</code></td>

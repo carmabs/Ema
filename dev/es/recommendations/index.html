@@ -29,7 +29,7 @@
     
     
       
-        <title>Recomendaciones - Ema</title>
+        <title>Recomendaciones - Emanate</title>
       
     
     
@@ -100,7 +100,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Cabecera">
-    <a href="../" title="Ema" class="md-header__button md-logo" aria-label="Ema" data-md-component="logo">
+    <a href="../" title="Emanate" class="md-header__button md-logo" aria-label="Emanate" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -114,7 +114,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            Ema
+            Emanate
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -262,13 +262,13 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navegación" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../" title="Ema" class="md-nav__button md-logo" aria-label="Ema" data-md-component="logo">
+    <a href="../" title="Emanate" class="md-nav__button md-logo" aria-label="Emanate" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    Ema
+    Emanate
   </label>
   
     <div class="md-nav__source">
@@ -518,6 +518,34 @@
     
   
     ViewModel
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../concepts/source/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fuente
   
 
     
@@ -1661,7 +1689,7 @@
 
 
 <h1 id="recomendaciones">Recomendaciones<a class="headerlink" href="#recomendaciones" title="Permanent link">&para;</a></h1>
-<p>Nada de esto lo exige Ema, pero así está organizada la app <code>sample/</code> y funciona bien.</p>
+<p>Nada de esto lo exige Emanate, pero así está organizada la app <code>sample/</code> y funciona bien.</p>
 <h2 id="divide-la-app-en-módulos">Divide la app en módulos<a class="headerlink" href="#divide-la-app-en-módulos" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -1683,7 +1711,7 @@
 <td><code>ui</code></td>
 <td>Composables, fragments, activities, navigators, adapters, diálogos, tema y recursos.</td>
 <td>Librería Android</td>
-<td><code>presentation</code>, <code>android-utils</code>, <code>ema-compose</code>, <code>ema-android-view</code></td>
+<td><code>presentation</code>, <code>android-utils</code>, <code>emanate-compose</code>, <code>emanate-android-view</code></td>
 </tr>
 <tr>
 <td><code>presentation</code></td>
@@ -1695,7 +1723,7 @@
 <td><code>domain</code></td>
 <td>Modelos, casos de uso e interfaces de los repositorios.</td>
 <td><strong>Kotlin puro</strong></td>
-<td><code>ema-core</code></td>
+<td><code>emanate-core</code></td>
 </tr>
 <tr>
 <td><code>data</code></td>
@@ -1718,13 +1746,13 @@ flowchart LR
     ui --&gt; presentation
     presentation --&gt; domain
     data --&gt; domain
-    domain --&gt; ema-core</code></pre>
+    domain --&gt; emanate-core</code></pre>
 <p>El diagrama no incluye <code>android-utils</code>, que usan <code>ui</code> y <code>data</code>.</p>
 <p>Mantener <code>presentation</code> sin Android tiene dos ventajas:</p>
 <ul>
 <li><strong>El compilador hace cumplir la arquitectura.</strong> Un ViewModel no puede usar <code>Context</code>, recursos ni vistas por error,
   porque el módulo no los tiene.</li>
-<li><strong>Está preparado para Kotlin Multiplatform.</strong> <code>ema-core</code> es multiplataforma, así que <code>presentation</code> y <code>domain</code> pueden
+<li><strong>Está preparado para Kotlin Multiplatform.</strong> <code>emanate-core</code> es multiplataforma, así que <code>presentation</code> y <code>domain</code> pueden
   convertirse en módulos multiplataforma y compartir los ViewModels con otras plataformas. Consulta
   <a href="../guides/multiplatform/">Kotlin Multiplatform</a>.</li>
 </ul>
@@ -1812,7 +1840,7 @@ sus pantallas de Compose, que pinta los diálogos que necesitan todas, y un <cod
 <span class="p">}</span>
 </code></pre></div>
 <div class="highlight"><pre><span></span><code><span class="kd">abstract</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">BaseViewModel</span><span class="o">&lt;</span><span class="n">S</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">EmaState</span><span class="p">,</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">EmaAction</span><span class="p">,</span><span class="w"> </span><span class="n">E</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">EmaEvent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">initialDataState</span><span class="p">:</span><span class="w"> </span><span class="n">S</span><span class="p">)</span><span class="w"> </span><span class="p">:</span>
-<span class="w">    </span><span class="n">EmaViewModelAction</span><span class="o">&lt;</span><span class="n">S</span><span class="p">,</span><span class="w"> </span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">E</span><span class="o">&gt;</span><span class="p">(</span><span class="n">initialDataState</span><span class="p">)</span>
+<span class="w">    </span><span class="n">EmaViewModel</span><span class="o">&lt;</span><span class="n">S</span><span class="p">,</span><span class="w"> </span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">E</span><span class="o">&gt;</span><span class="p">(</span><span class="n">initialDataState</span><span class="p">)</span>
 </code></pre></div>
 <p>Un <code>BaseViewModel</code>, aunque esté vacío, te da un único sitio donde añadir algo más adelante. Con las vistas de Android,
 un <code>BaseFragment</code> cumple el mismo papel que <code>BaseScreenComposable</code>, con los proveedores de diálogos y los mensajes.</p>
@@ -1824,6 +1852,7 @@ un <code>BaseFragment</code> cumple el mismo papel que <code>BaseScreenComposabl
 <li>Los casos de uso tienen una sola responsabilidad y reciben una única data class <code>Input</code>.</li>
 <li>Pon los valores derivados en el estado (<code>val showCreateButton get() = ...</code>), no en la vista.</li>
 <li>La vista no llama a más funciones del ViewModel que <code>dispatch</code>.</li>
+<li>En un <code>EmaViewModel</code>, los reducers solo calculan el estado: la lógica de negocio va en los side effects.</li>
 </ul>
 <h2 id="comparte-una-paleta">Comparte una paleta<a class="headerlink" href="#comparte-una-paleta" title="Permanent link">&para;</a></h2>
 <p>Mientras una app tenga pantallas en Compose y con vistas, define los colores una vez en los recursos y léelos desde los

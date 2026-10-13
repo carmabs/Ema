@@ -29,7 +29,7 @@
     
     
       
-        <title>Pantallas - Ema</title>
+        <title>Pantallas - Emanate</title>
       
     
     
@@ -100,7 +100,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Cabecera">
-    <a href="../../" title="Ema" class="md-header__button md-logo" aria-label="Ema" data-md-component="logo">
+    <a href="../../" title="Emanate" class="md-header__button md-logo" aria-label="Emanate" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -114,7 +114,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            Ema
+            Emanate
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -262,13 +262,13 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navegación" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../../" title="Ema" class="md-nav__button md-logo" aria-label="Ema" data-md-component="logo">
+    <a href="../../" title="Emanate" class="md-nav__button md-logo" aria-label="Emanate" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    Ema
+    Emanate
   </label>
   
     <div class="md-nav__source">
@@ -518,6 +518,34 @@
     
   
     ViewModel
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/source/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fuente
   
 
     
@@ -1664,7 +1692,7 @@
 
 <h1 id="pantallas-de-compose">Pantallas de Compose<a class="headerlink" href="#pantallas-de-compose" title="Permanent link">&para;</a></h1>
 <p>Las pantallas de Compose se describen con un <code>EmaComposableScreenContent</code> y se registran en un grafo de navegación con
-<code>createComposableScreen</code>. Necesitan los artefactos <code>ema-android</code> y <code>ema-compose</code>.</p>
+<code>createComposableScreen</code>. Necesitan los artefactos <code>emanate-android</code> y <code>emanate-compose</code>.</p>
 <h2 id="contenido-de-la-pantalla">Contenido de la pantalla<a class="headerlink" href="#contenido-de-la-pantalla" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><span class="kd">class</span><span class="w"> </span><span class="nc">ProfileOnBoardingScreenContent</span><span class="w"> </span><span class="p">:</span>
 <span class="w">    </span><span class="n">EmaComposableScreenContent</span><span class="o">&lt;</span><span class="n">ProfileOnBoardingState</span><span class="p">,</span><span class="w"> </span><span class="n">ProfileOnBoardingActions</span><span class="p">,</span><span class="w"> </span><span class="n">ProfileOnBoardingEvent</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
@@ -1827,10 +1855,10 @@ Todo lo que tenga que sobrevivir va en el <a href="../../concepts/state/">estado
 <span class="p">}</span>
 </code></pre></div>
 <p><code>previewRenderState</code> en <code>createComposableScreen</code> hace lo mismo para toda la pantalla: en una preview no se crea el
-ViewModel y la pantalla pinta ese estado. <code>isInPreview()</code> y <code>skipForPreview { }</code> te ayudan a saltarte el código que no
-puede ejecutarse en una preview. Consulta <a href="../utilities/#previews">Utilidades</a>.</p>
+ViewModel y la pantalla pinta ese estado. <code>EmaUtils.Preview.Compose.isInPreview()</code> y <code>skipForPreview { }</code> te ayudan a
+saltarte el código que no puede ejecutarse en una preview. Consulta <a href="../utilities/#previews">Utilidades</a>.</p>
 <h2 id="usar-una-pantalla-sin-grafo-de-navegación">Usar una pantalla sin grafo de navegación<a class="headerlink" href="#usar-una-pantalla-sin-grafo-de-navegación" title="Permanent link">&para;</a></h2>
-<p><code>EmaComposableScreen</code> es el composable que hay detrás de <code>createComposableScreen</code>. Úsalo para colocar una pantalla de Ema
+<p><code>EmaComposableScreen</code> es el composable que hay detrás de <code>createComposableScreen</code>. Úsalo para colocar una pantalla de Emanate
 en cualquier sitio:</p>
 <div class="highlight"><pre><span></span><code><span class="n">EmaComposableScreen</span><span class="p">(</span>
 <span class="w">    </span><span class="n">vm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">CounterViewModel</span><span class="p">()</span><span class="w"> </span><span class="p">},</span>
