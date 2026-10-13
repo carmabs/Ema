@@ -21,13 +21,25 @@ import kotlinx.coroutines.flow.onSubscription
  * unless it is broadcast with keepUntilReceived: then it is kept, the last one of each class, and delivered to the
  * first one that listens to it.
  *
+ * Each [com.carmabs.emanate.core.model.EmaConfiguration] has one. By default it is [Shared], used by the whole
+ * process, so every view model and source can broadcast to each other. Create a new one to isolate the ones that use
+ * it, for example the view models of a library from the ones of the application, or the ones of a test from the ones of
+ * the tests running in parallel.
+ *
  * <p>
  * Copyright (c) 2026 by Carmabs. All rights reserved.
  * </p>
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-internal class EmaActionBroadcaster {
+class EmaActionBroadcaster {
+
+    companion object {
+        /**
+         * The broadcaster of the default configuration, shared by the whole process
+         */
+        val Shared: EmaActionBroadcaster = EmaActionBroadcaster()
+    }
 
     /**
      * Someone collecting [listen]. The identity tells apart two listeners of the same types.
@@ -49,13 +61,13 @@ internal class EmaActionBroadcaster {
     /**
      * Number of listeners, to check that they stop when they are closed
      */
-    val listenerCount: Int
+    internal val listenerCount: Int
         get() = state.load().listeners.size
 
     /**
      * Number of actions kept until someone listens to them
      */
-    val pendingCount: Int
+    internal val pendingCount: Int
         get() = state.load().pendingActions.size
 
     /**
@@ -63,7 +75,7 @@ internal class EmaActionBroadcaster {
      * @param keepUntilReceived if nobody is listening to it, it is kept and delivered to the first listener of its
      * type, replacing the previous pending action of the same class
      */
-    fun broadcast(action: EmaAction, keepUntilReceived: Boolean = false) {
+    internal fun broadcast(action: EmaAction, keepUntilReceived: Boolean = false) {
         if (!keepUntilReceived) {
             actions.tryEmit(action)
             return
@@ -83,7 +95,7 @@ internal class EmaActionBroadcaster {
     /**
      * Receives the actions of [actionTypes]: first the pending ones and then the ones broadcast while it is collected.
      */
-    fun listen(actionTypes: List<KClass<out EmaAction>>): Flow<EmaAction> = flow {
+    internal fun listen(actionTypes: List<KClass<out EmaAction>>): Flow<EmaAction> = flow {
         val listener = Listener(actionTypes)
         try {
             actions
@@ -99,7 +111,7 @@ internal class EmaActionBroadcaster {
     /**
      * Removes the pending actions, so they don't pass from one test to another
      */
-    fun clearPendingActions() {
+    internal fun clearPendingActions() {
         updateState { it.copy(pendingActions = emptyList()) }
     }
 

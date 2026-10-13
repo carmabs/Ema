@@ -30,25 +30,24 @@ import kotlinx.coroutines.launch
  * View model to handle view states.
  *
  * @param initialDataState state of the view before any update
- * @param dispatcher where the view model runs. By default the main dispatcher of Emanate. The view model creates its
- * own scope with it and cancels it when it is cleared.
+ * @param configuration applied by the view model. By default the one of [Emanate], read when the view model is
+ * created; pass one to configure this view model without depending on [Emanate.init], for example in a library or in
+ * a test.
+ * @param dispatcher where the view model runs. By default the main dispatcher of [configuration]. The view model
+ * creates its own scope with it and cancels it when it is cleared.
  *
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
 abstract class EmaViewModelClassic<S : EmaState, E : EmaEvent>(
     initialDataState: S,
-    dispatcher: CoroutineDispatcher = Emanate.configuration.dispatchers.main
+    private val configuration: EmaConfiguration = Emanate.configuration,
+    dispatcher: CoroutineDispatcher = configuration.dispatchers.main
 ) : EmaViewModelContract<S, E> {
 
     private val eventDispatcher = EventDispatcher<E>()
     private val singleSideEffectMap by lazy {
         hashMapOf<String, Job>()
     }
-
-    /**
-     * Emanate configuration
-     */
-    private val config: EmaConfiguration = Emanate.configuration
 
     /**
      * The scope where coroutines are launched by default. It is cancelled when the view model is cleared.
@@ -183,7 +182,7 @@ abstract class EmaViewModelClassic<S : EmaState, E : EmaEvent>(
         scope = scope,
         dispatcher = dispatcher,
         logName = logName,
-        configuration = config,
+        configuration = configuration,
         throwException = throwException,
         action = action
     )
@@ -201,7 +200,7 @@ abstract class EmaViewModelClassic<S : EmaState, E : EmaEvent>(
         return handler
     }
 
-    private fun shouldThrowException() = config.errorPolicy is EmaErrorPolicy.Throw
+    private fun shouldThrowException() = configuration.errorPolicy is EmaErrorPolicy.Throw
 
     /**
      * Method to override onCleared ViewModel method
@@ -252,7 +251,7 @@ abstract class EmaViewModelClassic<S : EmaState, E : EmaEvent>(
      * its type. For example, when the previous screen is created again after the process has been killed.
      */
     protected fun broadcast(action: EmaAction, keepUntilReceived: Boolean = false) {
-        Emanate.actionBroadcaster.broadcast(action, keepUntilReceived)
+        configuration.broadcaster.broadcast(action, keepUntilReceived)
     }
 
     /**
@@ -270,7 +269,7 @@ abstract class EmaViewModelClassic<S : EmaState, E : EmaEvent>(
     @PublishedApi
     internal fun <A : EmaAction> registerBroadcastListener(actionType: KClass<A>, receiver: (A) -> Unit) {
         scope.launch(start = CoroutineStart.UNDISPATCHED) {
-            Emanate.actionBroadcaster.listen(listOf(actionType)).collect { action ->
+            configuration.broadcaster.listen(listOf(actionType)).collect { action ->
                 // With Catch the listener keeps receiving after an error
                 handlingErrors("broadcast listener of ${actionType.simpleName}") { receiver(actionType.cast(action)) }
             }
@@ -291,6 +290,6 @@ abstract class EmaViewModelClassic<S : EmaState, E : EmaEvent>(
      * Catch the error is reported as thrown in [where], and the changes made in the state before it are kept.
      */
     internal fun handlingErrors(where: String, block: () -> Unit) {
-        config.runHandlingErrors(this, { where }, block)
+        configuration.runHandlingErrors(this, { where }, block)
     }
 }

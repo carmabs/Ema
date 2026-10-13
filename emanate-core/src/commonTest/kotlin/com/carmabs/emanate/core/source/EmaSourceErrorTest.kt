@@ -9,7 +9,6 @@ import com.carmabs.emanate.core.model.EmaConfiguration
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
 import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -33,25 +32,24 @@ class EmaSourceErrorTest {
     private val errors = mutableListOf<EmaError>()
     private val logs = mutableListOf<String>()
 
-    @BeforeTest
-    fun setUp() {
-        Emanate.initForTest(
-            EmaConfiguration(
-                errorPolicy = EmaErrorPolicy.Catch { errors += it },
-                logger = EmaLogger { tag, message -> logs += "$tag: $message" }
-            )
-        )
-    }
+    private val configuration = EmaConfiguration(
+        errorPolicy = EmaErrorPolicy.Catch { errors += it },
+        logger = EmaLogger { tag, message -> logs += "$tag: $message" }
+    )
 
     @AfterTest
     fun tearDown() {
         Emanate.reset()
     }
 
-    private fun TestScope.countSource() = EmaSource<CountState, CountAction, EmaEvent.EMPTY>(
+    private fun TestScope.countSource() = EmaSource(
         CountState(),
-        UnconfinedTestDispatcher(testScheduler)
-    ) {
+        configuration,
+        UnconfinedTestDispatcher(testScheduler),
+        countSetup
+    )
+
+    private val countSetup: SourceSetupScope<CountState, CountAction, EmaEvent.EMPTY>.() -> Unit = {
         middlewares {
             add<CountAction.BrokenMiddleware> { error("broken middleware") }
         }
@@ -106,14 +104,28 @@ class EmaSourceErrorTest {
     }
 
     @Test
-    fun `the source keeps the configuration it had when it was created`() = runTest {
+    fun `the configuration of the source is used instead of the one of Emanate`() = runTest {
+        Emanate.initForTest(EmaConfiguration(errorPolicy = EmaErrorPolicy.Throw, logger = null))
         val source = countSource()
+
+        source.dispatch(CountAction.BrokenReducer)
+        runCurrent()
+
+        // Caught with the policy of the source instead of thrown
+        assertEquals("action BrokenReducer", errors.single().reflection.methodName)
+        source.close()
+    }
+
+    @Test
+    fun `by default the source keeps the configuration of Emanate it had when it was created`() = runTest {
+        Emanate.initForTest(configuration)
+        val source = EmaSource(CountState(), dispatcher = UnconfinedTestDispatcher(testScheduler), setup = countSetup)
         Emanate.initForTest(EmaConfiguration(errorPolicy = EmaErrorPolicy.Throw, logger = null))
 
         source.dispatch(CountAction.BrokenReducer)
         runCurrent()
 
-        // Caught with the policy of setUp instead of thrown
+        // Caught with the policy it had when it was created instead of thrown
         assertEquals("action BrokenReducer", errors.single().reflection.methodName)
         source.close()
     }

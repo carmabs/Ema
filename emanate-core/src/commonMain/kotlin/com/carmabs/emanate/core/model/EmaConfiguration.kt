@@ -1,5 +1,6 @@
 package com.carmabs.emanate.core.model
 
+import com.carmabs.emanate.core.broadcast.EmaActionBroadcaster
 import com.carmabs.emanate.core.concurrency.EmaDispatchers
 import com.carmabs.emanate.core.error.EmaErrorPolicy
 import com.carmabs.emanate.core.logging.EmaDataClassPrinter
@@ -10,8 +11,8 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 /**
- * Configuration of Emanate, set with [com.carmabs.emanate.core.Emanate.init]. Each property configures one thing, so
- * customize the one you need with copy.
+ * Configuration of Emanate, set for the whole application with [com.carmabs.emanate.core.Emanate.init] or passed to
+ * a ViewModel or a source. Each property configures one thing, so customize the one you need with copy.
  *
  * @param dispatchers where ViewModels ([EmaDispatchers.main]), use cases ([EmaDispatchers.io]) and CPU-intensive work
  * ([EmaDispatchers.default]) run by default
@@ -24,6 +25,9 @@ import kotlin.time.Duration.Companion.seconds
  * @param sideEffectListener receives the result of every side effect, to track or measure them
  * @param methodNameResolver resolves the name of the function that launched a side effect, reported in the errors,
  * when no logName is given
+ * @param broadcaster sends the actions broadcast by the view models and sources to the ones listening to their type,
+ * if they use the same broadcaster. By default [EmaActionBroadcaster.Shared], used by the whole process; create a new
+ * one to isolate the view models and sources of this configuration, for example in a library.
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
@@ -34,7 +38,8 @@ data class EmaConfiguration(
     val printer: EmaDataClassPrinter = EmaDataClassPrinter.ToString,
     val destroyedTimeout: Duration = 5.seconds,
     val sideEffectListener: EmaSideEffectListener? = null,
-    val methodNameResolver: EmaMethodNameResolver = EmaMethodNameResolver.Default
+    val methodNameResolver: EmaMethodNameResolver = EmaMethodNameResolver.Default,
+    val broadcaster: EmaActionBroadcaster = EmaActionBroadcaster.Shared
 ) {
     // Empty, so other modules can add predefined configurations as extensions, like EmaConfiguration.Android
     companion object

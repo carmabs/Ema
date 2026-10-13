@@ -26,7 +26,7 @@ private data object IncrementAction : EmaAction
  * View model that doesn't pass a logger, to check the one of the configuration
  */
 private class DefaultLoggerViewModel(dispatcher: CoroutineDispatcher) :
-    EmaViewModel<CountState, IncrementAction, EmaEvent.EMPTY>(CountState(), dispatcher) {
+    EmaViewModel<CountState, IncrementAction, EmaEvent.EMPTY>(CountState(), dispatcher = dispatcher) {
 
     override fun setup() = source {
         reducers {

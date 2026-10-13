@@ -7,6 +7,7 @@ import com.carmabs.emanate.core.action.EmaAction.Lifecycle
 import com.carmabs.emanate.core.action.EmaActionDispatcher
 import com.carmabs.emanate.core.action.EventDispatcher
 import com.carmabs.emanate.core.logging.EmaLogger
+import com.carmabs.emanate.core.model.EmaConfiguration
 import com.carmabs.emanate.core.source.EmaSource
 import com.carmabs.emanate.core.source.EmaSourceObserver
 import com.carmabs.emanate.core.source.SourceSetup
@@ -32,10 +33,13 @@ import kotlinx.coroutines.flow.asStateFlow
  * view model.
  *
  * @param initialDataState state of the view before any action
- * @param dispatcher where the view model runs. By default the main dispatcher of Emanate.
+ * @param configuration applied by the view model and its source. By default the one of [Emanate], read when the view
+ * model is created; pass one to configure this view model without depending on [Emanate.init], for example in a
+ * library or in a test.
+ * @param dispatcher where the view model runs. By default the main dispatcher of [configuration].
  * @param logger logs every action with the state before and after it, and in one line when it is received, so the
- * actions stopped by a middleware are also logged. By default the logger of the configuration of Emanate. Null to
- * disable the logs of this view model.
+ * actions stopped by a middleware are also logged. By default the logger of [configuration]. Null to disable the logs
+ * of this view model.
  *
  * <p>
  * Copyright (c) 2026 by Carmabs. All rights reserved.
@@ -45,8 +49,9 @@ import kotlinx.coroutines.flow.asStateFlow
  */
 abstract class EmaViewModel<S : EmaState, A : EmaAction, E : EmaEvent>(
     initialDataState: S,
-    private val dispatcher: CoroutineDispatcher = Emanate.configuration.dispatchers.main,
-    private val logger: EmaLogger? = Emanate.configuration.logger
+    private val configuration: EmaConfiguration = Emanate.configuration,
+    private val dispatcher: CoroutineDispatcher = configuration.dispatchers.main,
+    private val logger: EmaLogger? = configuration.logger
 ) : EmaViewModelContract<S, E>,
     EmaActionDispatcher<A> {
 
@@ -74,12 +79,6 @@ abstract class EmaViewModel<S : EmaState, A : EmaAction, E : EmaEvent>(
         }
         next()
     }
-
-    /**
-     * Read when the view model is created, like the default dispatcher and logger, although the source is created
-     * later
-     */
-    private val configuration = Emanate.configuration
 
     private val mutableStateFlow = MutableStateFlow(initialDataState)
 
@@ -120,7 +119,9 @@ abstract class EmaViewModel<S : EmaState, A : EmaAction, E : EmaEvent>(
             middlewares = listOfNotNull(
                 logger?.let { receivedActionLoggerMiddleware(tag, it) },
                 updateTrackerMiddleware
-            ) + sourceSetup.middlewares + listOfNotNull(logger?.let { loggerMiddleware(tag, it) }),
+            ) + sourceSetup.middlewares + listOfNotNull(
+                logger?.let { loggerMiddleware(tag, it, configuration.printer) }
+            ),
             reducers = sourceSetup.reducers,
             sideEffects = sourceSetup.sideEffects,
             broadcastListeners = sourceSetup.broadcastListeners,

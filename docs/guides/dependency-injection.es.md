@@ -82,3 +82,47 @@ val useCaseModule = module {
 
 Los ViewModels reciben los casos de uso en el constructor, así que en los [tests](testing.es.md) pueden recibir
 implementaciones falsas.
+
+## Inyectar la configuración
+
+Por defecto los ViewModels usan la configuración fijada con `Emanate.init`, así que no necesitan recibirla. Para
+inyectarla, por ejemplo en una librería que no puede llamar a `Emanate.init` o en un módulo con su propia configuración,
+recíbela en el constructor y pásasela al ViewModel. Consulta
+[Configuración explícita](configuration.es.md#configuración-explícita).
+
+```kotlin
+class LoginViewModel(
+    private val loginUseCase: LoginUseCase,
+    configuration: EmaConfiguration
+) : EmaViewModel<LoginState, LoginAction, LoginEvent>(LoginState.DEFAULT, configuration)
+```
+
+Con Koin, declárala como `single`:
+
+```kotlin
+val uiModule = module {
+    single { EmaConfiguration.Android(debug = BuildConfig.DEBUG) }
+    factoryOf(::LoginViewModel)
+}
+```
+
+Con Hilt, proporciónala desde un módulo y añade `@Inject` al constructor del ViewModel:
+
+```kotlin
+@Module
+@InstallIn(SingletonComponent::class)
+object EmanateModule {
+
+    @Provides
+    @Singleton
+    fun provideConfiguration(): EmaConfiguration = EmaConfiguration.Android(debug = BuildConfig.DEBUG)
+}
+```
+
+Los casos de uso solo reciben el dispatcher `io` de la configuración, en el constructor:
+
+```kotlin
+val useCaseModule = module {
+    factory { LoginUseCase(get(), get<EmaConfiguration>().dispatchers.io) }
+}
+```

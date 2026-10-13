@@ -41,7 +41,7 @@ class EmaSourceMiddlewareTest {
 
     private fun TestScope.testSource() = EmaSource<TestState, TestAction, TestEvent>(
         TestState(),
-        UnconfinedTestDispatcher(testScheduler)
+        dispatcher = UnconfinedTestDispatcher(testScheduler)
     ) {
         middlewares {
             add<TestAction.Blocked> { received += "blocked" }

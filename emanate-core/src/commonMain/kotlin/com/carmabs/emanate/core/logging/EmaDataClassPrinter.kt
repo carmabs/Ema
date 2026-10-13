@@ -21,6 +21,9 @@ fun interface EmaDataClassPrinter {
 }
 
 /**
- * Prints the object with the [EmaDataClassPrinter] of the current Emanate configuration.
+ * Prints the object with [printer].
+ *
+ * @param printer by default the one of the current Emanate configuration. Pass the one of your own configuration, for
+ * example in a library.
  */
-fun Any?.toStringPretty(): String = Emanate.configuration.printer.print(this)
+fun Any?.toStringPretty(printer: EmaDataClassPrinter = Emanate.configuration.printer): String = printer.print(this)

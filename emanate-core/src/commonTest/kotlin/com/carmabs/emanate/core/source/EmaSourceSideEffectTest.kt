@@ -60,7 +60,7 @@ class EmaSourceSideEffectTest {
     private val received = mutableListOf<String>()
 
     private fun TestScope.testSource(dispatcher: CoroutineDispatcher = UnconfinedTestDispatcher(testScheduler)) =
-        EmaSource<EffectState, EffectAction, EffectEvent>(EffectState(), dispatcher) {
+        EmaSource<EffectState, EffectAction, EffectEvent>(EffectState(), dispatcher = dispatcher) {
             reducers {
                 add<EffectAction.Load> { state.copy(text = "loading") }
                 add<EffectAction.Loaded> { action -> state.copy(text = action.text) }
@@ -259,7 +259,7 @@ class EmaSourceSideEffectTest {
     fun `closing the source completes after the side effects of destroyed`() = runTest {
         val source = EmaSource<EffectState, EffectAction, EffectEvent>(
             EffectState(),
-            UnconfinedTestDispatcher(testScheduler)
+            dispatcher = UnconfinedTestDispatcher(testScheduler)
         ) {
             sideEffects {
                 add<EmaAction.Lifecycle.Destroyed> { delay(1000) }

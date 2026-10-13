@@ -25,6 +25,7 @@ It brings `kotlinx-coroutines-test` and requires the same version of `emanate-co
 |---------------------------------|-------------------------------------------------------------------------------|
 | `useTestDispatchers()`          | Runs the ViewModels, sources and use cases created after it on the dispatcher of the test, also as `Dispatchers.Main`. Call it before each test. |
 | `resetTestDispatchers()`        | Restores the dispatchers and the configuration of Emanate. Call it after each test. |
+| `testConfiguration(dispatcher)` | A configuration that runs on the dispatcher of the test, to pass it to the ViewModels instead of calling `useTestDispatchers()`. See [Without changing the configuration of Emanate](#without-changing-the-configuration-of-emanate). |
 | `viewModel.record()`            | Records in order the actions, states and events of a ViewModel or a source.  |
 | `assertActions(...)`            | The recorded actions, including the ones blocked by a middleware.            |
 | `assertStates(...)`             | Every state returned by the reducers.                                         |
@@ -70,6 +71,44 @@ class LoginViewModelTest {
 - **Several ViewModels** can be tested together, for example the results broadcast between screens: the
   `LoginViewModelTest` of the sample creates the profile creation, home and login ViewModels and checks the user
   created in the first one reaches the last one.
+
+### Without changing the configuration of Emanate
+
+`useTestDispatchers()` changes the configuration of Emanate and `Dispatchers.Main`, which are shared by the whole
+process, so the tests that use it can't run in parallel in the same JVM. If your ViewModels receive the configuration in
+the constructor (see [Explicit configuration](configuration.md#explicit-configuration)), pass them
+`testConfiguration(dispatcher)` instead: it doesn't change anything shared, so there is nothing to reset.
+
+```kotlin
+class LoginViewModel(
+    private val loginUseCase: LoginUseCase,
+    initialState: LoginState,
+    configuration: EmaConfiguration = Emanate.configuration
+) : EmaViewModel<LoginState, LoginAction, LoginEvent>(initialState, configuration)
+
+class LoginViewModelTest {
+
+    @Test
+    fun `the right credentials log in the user`() = runTest {
+        val viewModel = LoginViewModel(
+            LoginUseCase(FakeRepository()),
+            LoginState.DEFAULT,
+            testConfiguration(UnconfinedTestDispatcher(testScheduler))
+        )
+        val recorder = viewModel.record()
+        // ...
+    }
+}
+```
+
+- **Create the dispatcher with `testScheduler`**, the scheduler of `runTest`, so `advanceUntilIdle()` runs the work of
+  the ViewModel. `Dispatchers.Main` isn't replaced, so `runTest` doesn't take it from there.
+- The rest of the configuration is the default `EmaConfiguration()`, not the one of Emanate. Pass another one as the
+  second parameter to change it: `testConfiguration(dispatcher, EmaConfiguration(logger = null))`.
+- The [use cases](utilities.md#use-cases) run on the `io` dispatcher of the configuration of Emanate unless they receive
+  another one in the constructor: fake them, or pass them the dispatcher of the test.
+- **Each `testConfiguration` has its own broadcaster**, so the actions broadcast in a test don't reach the others. The
+  ViewModels of a test that send results to each other must receive the same configuration: create it once.
 
 ### Checking the setup
 
@@ -135,16 +174,19 @@ results between screens and the view lifecycle.
 
 ### Things to know
 
-1. **Pass your own dispatcher.** The second constructor parameter of `EmaViewModelClassic` / `EmaViewModelAction` is
-   the `CoroutineDispatcher` where the ViewModel runs; it creates its own scope with it. Expose it in the constructor of
+1. **Pass your own dispatcher.** The `dispatcher` parameter of `EmaViewModelClassic` / `EmaViewModelAction` is the
+   `CoroutineDispatcher` where the ViewModel runs; it creates its own scope with it. Expose it in the constructor of
    your ViewModels, with a default value, so tests can replace it. The default one is the `main` dispatcher of the
-   configuration, `Dispatchers.Main`, which does not exist in unit tests. With an `UnconfinedTestDispatcher` the work runs immediately; with a `StandardTestDispatcher`, call
-   `advanceUntilIdle()` to run it.
+   configuration, `Dispatchers.Main`, which does not exist in unit tests. With an `UnconfinedTestDispatcher` the work
+   runs immediately; with a `StandardTestDispatcher`, call `advanceUntilIdle()` to run it.
 
    ```kotlin
    class CounterViewModel(dispatcher: CoroutineDispatcher = Emanate.configuration.dispatchers.main) :
-       EmaViewModelAction<CounterState, CounterAction, CounterEvent>(CounterState(), dispatcher)
+       EmaViewModelAction<CounterState, CounterAction, CounterEvent>(CounterState(), dispatcher = dispatcher)
    ```
+
+   The second parameter is the [configuration](configuration.md#explicit-configuration), so pass the dispatcher by
+   name, or expose the whole configuration instead.
 2. **No configuration is needed.** If `Emanate.init` is not called, the default configuration is used. Do not call
    `Emanate.init` in tests: it can be called only once per process.
 3. **Call `onCreated()`** to run `onStateCreated(initializer)`. Pass an initializer if the screen needs one:

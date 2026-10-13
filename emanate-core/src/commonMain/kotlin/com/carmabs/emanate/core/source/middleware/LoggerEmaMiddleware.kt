@@ -1,6 +1,8 @@
 package com.carmabs.emanate.core.source.middleware
 
+import com.carmabs.emanate.core.Emanate
 import com.carmabs.emanate.core.action.EmaAction
+import com.carmabs.emanate.core.logging.EmaDataClassPrinter
 import com.carmabs.emanate.core.logging.EmaLogger
 import com.carmabs.emanate.core.logging.toStringPretty
 import com.carmabs.emanate.core.state.EmaState
@@ -12,9 +14,14 @@ import kotlin.math.absoluteValue
  * continued the action later with nextAfter. The actions that a middleware stops don't reach it.
  *
  * @param tag of the logs
+ * @param printer prints the action and the states. By default the one of the configuration of Emanate, read when the
+ * middleware is created.
  */
-fun loggerMiddleware(tag: String, logger: EmaLogger): EmaMiddleware<EmaState, Nothing, EmaAction> =
-    LoggerEmaMiddleware(tag, logger)
+fun loggerMiddleware(
+    tag: String,
+    logger: EmaLogger,
+    printer: EmaDataClassPrinter = Emanate.configuration.printer
+): EmaMiddleware<EmaState, Nothing, EmaAction> = LoggerEmaMiddleware(tag, logger, printer)
 
 /**
  * Logs in one line every action that enters the source. Added as the first middleware, together with
@@ -40,6 +47,7 @@ internal fun receivedActionLoggerMiddleware(
 internal class LoggerEmaMiddleware(
     private val tag: String,
     private val logger: EmaLogger,
+    private val printer: EmaDataClassPrinter,
     private val lineLength: Int = 80
 ) : EmaMiddleware<EmaState, Nothing, EmaAction> {
 
@@ -54,7 +62,7 @@ internal class LoggerEmaMiddleware(
             info(printLine('*', "", sideCharacterLimit = 2))
             info(printLine('|', "Dispatched action", textPadding = padding))
             info(printLine('|', "", sideCharacterLimit = 2))
-            action.toStringPretty().lines().forEach {
+            action.toStringPretty(printer).lines().forEach {
                 info(
                     printLine(
                         '|',
@@ -68,7 +76,7 @@ internal class LoggerEmaMiddleware(
             info(printLine('|', "State before apply action", textPadding = padding))
             info(printLine('|', "", sideCharacterLimit = 2))
 
-            state.toStringPretty().lines().forEach {
+            state.toStringPretty(printer).lines().forEach {
                 info(
                     printLine(
                         '|',
@@ -83,7 +91,7 @@ internal class LoggerEmaMiddleware(
             next()
             info(printLine('|', "State after apply action", textPadding = padding))
             info(printLine('|', "", sideCharacterLimit = 2))
-            state.toStringPretty().lines().forEach {
+            state.toStringPretty(printer).lines().forEach {
                 info(
                     printLine(
                         '|',

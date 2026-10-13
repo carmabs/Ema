@@ -59,11 +59,12 @@ result
 
 | Class                          | Use it for                                                                       |
 |--------------------------------|----------------------------------------------------------------------------------|
-| `EmaUseCase<I, O>`             | A `suspend` operation. Runs on the background dispatcher of the [configuration](configuration.md) (`Dispatchers.IO` on Android) unless you pass another one. |
-| `EmaFlowUseCase<I, O>`         | An operation that emits values over time (`Flow<O>`), collected on the background dispatcher. |
+| `EmaUseCase<I, O>`             | A `suspend` operation. Runs on the background dispatcher it receives in the constructor, by default the `io` one of the [configuration](configuration.md) (`Dispatchers.IO` on Android). |
+| `EmaFlowUseCase<I, O>`         | An operation that emits values over time (`Flow<O>`), collected on the background dispatcher it receives in the constructor. |
 | `EmaSyncUseCase<I, O>`         | A fast, synchronous operation.                                                   |
 
-Implement `useCaseFunction` (the protected function) and call the use case like a function: `loginUseCase(input)`.
+Implement `useCaseFunction` (the protected function) and call the use case like a function: `loginUseCase(input)`. To
+run it once on another dispatcher, pass it when invoking it: `loginUseCase(input, dispatcher)`.
 
 ## Pretty printing
 
@@ -74,6 +75,8 @@ nested objects and collections, indented:
 ```kotlin
 Log.d("Login", state.toStringPretty())
 ```
+
+Pass another printer to print with it, for example the one of your own configuration: `state.toStringPretty(printer)`.
 
 ## `EmaUtils`
 

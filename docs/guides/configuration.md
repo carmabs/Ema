@@ -1,6 +1,6 @@
 # Configuration
 
-Emanate is configured once, when the application starts, with `Emanate.init`:
+Emanate has a configuration for the whole application, set once, when it starts, with `Emanate.init`:
 
 ```kotlin
 class MyApplication : Application() {
@@ -17,6 +17,9 @@ class MyApplication : Application() {
 - If it is never called, the default `EmaConfiguration()` is used. That is the usual case in unit tests and in
   non-Android platforms.
 
+A ViewModel or a source can also receive its own configuration, which is used instead of the one of the application.
+See [Explicit configuration](#explicit-configuration).
+
 ## What can be configured
 
 Each property configures one thing:
@@ -30,6 +33,7 @@ Each property configures one thing:
 | `destroyedTimeout`   | 5 seconds                      | 5 seconds                                     | How long the side effects of `Lifecycle.Destroyed` can run after the ViewModel is cleared, unless they have their own `timeout`. |
 | `sideEffectListener` | `null`                         | `null`                                        | Receives the result of every side effect, to track or measure them. |
 | `methodNameResolver` | Generic names                  | Resolved from the lambdas                     | The name of the function that launched a side effect, reported in the errors. See [Naming the side effects](#naming-the-side-effects). |
+| `broadcaster`        | `EmaActionBroadcaster.Shared`  | `EmaActionBroadcaster.Shared`                 | Sends the actions broadcast between ViewModels. See [Libraries and SDKs](#libraries-and-sdks). |
 
 `EmaConfiguration.Android(debug)` is in `emanate-android` (`com.carmabs.emanate.android.configuration.Android`). Pass
 `BuildConfig.DEBUG`: debug builds log to logcat and fail at once with any exception, and release builds don't log, so
@@ -114,3 +118,76 @@ Emanate.init(
 
 A ViewModel can still pass its own `logger` in the constructor, or `null` to disable only its logs. A source used on
 its own doesn't log: add `loggerMiddleware(tag, logger)` as its last middleware.
+
+## Explicit configuration
+
+`Emanate.configuration` is shared by the whole process. `EmaViewModel`, `EmaViewModelClassic`, `EmaViewModelAction` and
+`EmaSource(...)` read it when they are created, as the default value of their `configuration` parameter, which goes
+right after the initial state. Pass one to use it instead:
+
+```kotlin
+class LoginViewModel(
+    private val loginUseCase: LoginUseCase,
+    configuration: EmaConfiguration = Emanate.configuration
+) : EmaViewModel<LoginState, LoginAction, LoginEvent>(LoginState.DEFAULT, configuration) {
+    // ...
+}
+```
+
+The `dispatcher` and `logger` parameters take their default value from it, and can still be passed by name to change
+only them. The configuration is kept by the ViewModel and its source, so its error policy, side effect listener,
+`destroyedTimeout` and broadcaster are the ones of the configuration they received.
+
+**Use `Emanate.init`** in an application: it configures every ViewModel in one place, and they don't need any
+parameter. **Pass the configuration** when the one of the application isn't enough or can't be relied on:
+
+- **Libraries and SDKs.** `Emanate.init` can be called only once and belongs to the application. A library built with
+  Emanate passes its own configuration to its ViewModels, so it doesn't clash with an application that also uses
+  Emanate, nor depend on whether it was initialized. See [Libraries and SDKs](#libraries-and-sdks).
+- **A module with a different configuration**, for example its own logger or error policy.
+- **Dependency injection.** The configuration is one more dependency, provided by Hilt or Koin. See
+  [Dependency injection](dependency-injection.md#injecting-the-configuration).
+- **Tests.** Each test passes its configuration, with the dispatchers of the test, without changing the one of Emanate,
+  so the tests can run in parallel. See [Testing](testing.md#without-changing-the-configuration-of-emanate).
+
+The [use cases](utilities.md#use-cases) don't receive the whole configuration, only a dispatcher in the constructor:
+by default the `io` dispatcher of the configuration of Emanate, so pass the `io` dispatcher of yours. `toStringPretty()`
+prints with the `printer` of the configuration of Emanate unless it receives another one.
+
+## Libraries and SDKs
+
+A library built with Emanate can be used by an application that also uses Emanate and calls `Emanate.init`. To keep
+them apart, the library doesn't call `Emanate.init` nor use the configuration of Emanate: it creates its own and passes
+it to all its pieces.
+
+```kotlin
+internal object MyLibraryEmanate {
+    val configuration = EmaConfiguration.Android(debug = BuildConfig.DEBUG).copy(
+        logger = if (BuildConfig.DEBUG) EmaLogger(prefix = "MYLIB_") { tag, message -> Log.d(tag, message) } else null,
+        broadcaster = EmaActionBroadcaster()
+    )
+}
+
+internal class PayUseCase(private val repository: PaymentRepository) :
+    EmaUseCase<Payment, Receipt>(MyLibraryEmanate.configuration.dispatchers.io) {
+    // ...
+}
+
+internal class PaymentViewModel(private val payUseCase: PayUseCase) :
+    EmaViewModel<PaymentState, PaymentAction, PaymentEvent>(PaymentState(), MyLibraryEmanate.configuration) {
+    // ...
+}
+```
+
+- **ViewModels and sources** receive the configuration of the library as their `configuration` parameter.
+- **Use cases** receive its `io` dispatcher.
+- **Printing objects:** `toStringPretty(MyLibraryEmanate.configuration.printer)`.
+- **Broadcast actions.** With its own `EmaActionBroadcaster`, the ViewModels of the library only receive the actions
+  broadcast by each other, and the ones of the application don't receive theirs. Keep the shared one,
+  `EmaActionBroadcaster.Shared`, if the library and the application send results to each other.
+
+If the application must be able to change something, like the logger, add a function to the library that receives it
+before any of its screens is opened, instead of using `Emanate.init`.
+
+The application and the library use the same `emanate-core`: the version that Gradle resolves for both. Keep the library
+on a version compatible with the applications that use it.

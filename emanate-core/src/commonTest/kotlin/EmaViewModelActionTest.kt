@@ -1,5 +1,6 @@
 import com.carmabs.emanate.core.Emanate
 import com.carmabs.emanate.core.action.EmaAction
+import com.carmabs.emanate.core.broadcast.EmaActionBroadcaster
 import com.carmabs.emanate.core.error.EmaErrorPolicy
 import com.carmabs.emanate.core.logging.EmaLogger
 import com.carmabs.emanate.core.model.EmaConfiguration
@@ -47,7 +48,7 @@ sealed interface CounterEvent : EmaEvent {
 data class CounterInitializer(val start: Int) : EmaAction.Initializer
 
 class CounterViewModel(dispatcher: CoroutineDispatcher, private val renderOnInitialization: Boolean = true) :
-    EmaViewModelAction<CounterState, CounterAction, CounterEvent>(CounterState(), dispatcher) {
+    EmaViewModelAction<CounterState, CounterAction, CounterEvent>(CounterState(), dispatcher = dispatcher) {
 
     val hooks = mutableListOf<String>()
 
@@ -334,13 +335,13 @@ class EmaViewModelActionTest {
 data class UserSent(val user: String) : EmaAction
 
 class SenderViewModel(dispatcher: CoroutineDispatcher) :
-    EmaViewModelClassic<CounterState, CounterEvent>(CounterState(), dispatcher) {
+    EmaViewModelClassic<CounterState, CounterEvent>(CounterState(), dispatcher = dispatcher) {
     override fun onStateCreated(initializer: EmaAction.Initializer?) = Unit
     fun send(user: String, keepUntilReceived: Boolean = false) = broadcast(UserSent(user), keepUntilReceived)
 }
 
 class ReceiverViewModel(dispatcher: CoroutineDispatcher) :
-    EmaViewModelClassic<CounterState, CounterEvent>(CounterState(), dispatcher) {
+    EmaViewModelClassic<CounterState, CounterEvent>(CounterState(), dispatcher = dispatcher) {
     val received = mutableListOf<String>()
     override fun onStateCreated(initializer: EmaAction.Initializer?) = Unit
     override fun onBroadcastListenerSetup() {
@@ -355,8 +356,8 @@ class EmaClassicBroadcastTest {
 
     @AfterTest
     fun checkBroadcasterIsClean() {
-        assertEquals(0, Emanate.actionBroadcaster.listenerCount)
-        assertEquals(0, Emanate.actionBroadcaster.pendingCount)
+        assertEquals(0, EmaActionBroadcaster.Shared.listenerCount)
+        assertEquals(0, EmaActionBroadcaster.Shared.pendingCount)
     }
 
     @Test
@@ -385,7 +386,7 @@ class EmaClassicBroadcastTest {
     @Test
     fun `a kept action is delivered only to the first receiver that registers`() = runTest {
         SenderViewModel(newDispatcher()).send("Ana", keepUntilReceived = true)
-        assertEquals(1, Emanate.actionBroadcaster.pendingCount)
+        assertEquals(1, EmaActionBroadcaster.Shared.pendingCount)
 
         val firstReceiver = ReceiverViewModel(newDispatcher()).apply { onCreated() }
         val secondReceiver = ReceiverViewModel(newDispatcher()).apply { onCreated() }

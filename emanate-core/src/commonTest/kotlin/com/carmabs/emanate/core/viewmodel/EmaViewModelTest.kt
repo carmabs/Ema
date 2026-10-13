@@ -2,6 +2,7 @@ package com.carmabs.emanate.core.viewmodel
 
 import com.carmabs.emanate.core.Emanate
 import com.carmabs.emanate.core.action.EmaAction
+import com.carmabs.emanate.core.concurrency.EmaDispatchers
 import com.carmabs.emanate.core.logging.EmaLogger
 import com.carmabs.emanate.core.model.EmaConfiguration
 import com.carmabs.emanate.core.source.middleware.middlewareDelayOf
@@ -60,7 +61,7 @@ private class LoadUseCase {
  * View model of other screen that sends a result
  */
 private class SenderViewModel(dispatcher: CoroutineDispatcher) :
-    EmaViewModel<TestState, TestAction, TestEvent>(TestState(), dispatcher, logger = null) {
+    EmaViewModel<TestState, TestAction, TestEvent>(TestState(), dispatcher = dispatcher, logger = null) {
 
     override fun setup() = source {
         sideEffects {
@@ -73,7 +74,7 @@ private class SenderViewModel(dispatcher: CoroutineDispatcher) :
  * View model with a side effect for every lifecycle action
  */
 private class LifecycleViewModel(dispatcher: CoroutineDispatcher) :
-    EmaViewModel<TestState, TestAction, TestEvent>(TestState(), dispatcher, logger = null) {
+    EmaViewModel<TestState, TestAction, TestEvent>(TestState(), dispatcher = dispatcher, logger = null) {
 
     val launched = mutableListOf<String>()
 
@@ -87,8 +88,11 @@ private class LifecycleViewModel(dispatcher: CoroutineDispatcher) :
 /**
  * View model that sends a result when it is destroyed, after [duration]
  */
-private class ClosingViewModel(dispatcher: CoroutineDispatcher, private val duration: Duration) :
-    EmaViewModel<TestState, TestAction, TestEvent>(TestState(), dispatcher, logger = null) {
+private class ClosingViewModel(
+    dispatcher: CoroutineDispatcher,
+    private val duration: Duration,
+    configuration: EmaConfiguration = Emanate.configuration
+) : EmaViewModel<TestState, TestAction, TestEvent>(TestState(), configuration, dispatcher, logger = null) {
 
     val finished = mutableListOf<String>()
 
@@ -108,7 +112,7 @@ private class TestViewModel(
     private val loadUseCase: LoadUseCase = LoadUseCase(),
     logger: EmaLogger? = null,
     private val renderOnInitialization: Boolean = true
-) : EmaViewModel<TestState, TestAction, TestEvent>(TestState(), dispatcher, logger) {
+) : EmaViewModel<TestState, TestAction, TestEvent>(TestState(), dispatcher = dispatcher, logger = logger) {
 
     val received = mutableListOf<String>()
 
@@ -301,18 +305,59 @@ class EmaViewModelTest {
 
     @Test
     fun `the time of the side effects of destroyed is set in the configuration`() = runTest {
-        Emanate.initForTest(EmaConfiguration(destroyedTimeout = 2.seconds))
-        try {
-            val closing = ClosingViewModel(testDispatcher(), 3.seconds)
-            closing.onCreated(null)
+        val closing = ClosingViewModel(testDispatcher(), 3.seconds, EmaConfiguration(destroyedTimeout = 2.seconds))
+        closing.onCreated(null)
 
-            closing.onCleared()
-            advanceUntilIdle()
+        closing.onCleared()
+        advanceUntilIdle()
 
-            assertTrue(closing.finished.isEmpty())
-        } finally {
-            Emanate.reset()
+        assertTrue(closing.finished.isEmpty())
+    }
+
+    @Test
+    fun `the logs print the action and the states with the printer of the configuration of the view model`() = runTest {
+        val logs = mutableListOf<String>()
+        val configuration = EmaConfiguration(
+            dispatchers = EmaDispatchers(main = testDispatcher()),
+            logger = EmaLogger { _, message -> logs += message },
+            printer = { "printed ${it!!::class.simpleName}" }
+        )
+        val viewModel = object : EmaViewModel<TestState, TestAction, TestEvent>(TestState(), configuration) {
+            override fun setup() = source {
+                reducers {
+                    add<TestAction.Increment> { state.copy(count = state.count + 1) }
+                }
+            }
         }
+
+        viewModel.dispatch(TestAction.Increment)
+
+        assertTrue(logs.any { "printed Increment" in it })
+        assertEquals(2, logs.count { "printed TestState" in it })
+        viewModel.onCleared()
+    }
+
+    @Test
+    fun `the dispatcher and the logger are taken from the configuration of the view model`() = runTest {
+        val logs = mutableListOf<String>()
+        val configuration = EmaConfiguration(
+            dispatchers = EmaDispatchers(main = testDispatcher()),
+            logger = EmaLogger { tag, _ -> logs += tag }
+        )
+        val viewModel = object : EmaViewModel<TestState, TestAction, TestEvent>(TestState(), configuration) {
+            override fun setup() = source {
+                reducers {
+                    add<TestAction.Increment> { state.copy(count = state.count + 1) }
+                }
+            }
+        }
+
+        viewModel.dispatch(TestAction.Increment)
+
+        // Run by the test dispatcher of the configuration and logged by its logger, not by the ones of Emanate
+        assertEquals(1, viewModel.stateFlow.value.count)
+        assertTrue(logs.isNotEmpty())
+        viewModel.onCleared()
     }
 
     @Test

@@ -77,6 +77,9 @@ override fun setup() = source {
 - **The listener is removed when the ViewModel is cleared**, together with the rest of its work.
 - **It is typed.** The result is a data class, with no casts.
 - **It lives in memory.** It is not saved if the process is killed.
+- **It goes through the broadcaster of the configuration.** By default every ViewModel uses the same one. The ones
+  whose configuration has its own broadcaster only send and receive actions between them, for example the ones of a
+  [library](configuration.md#libraries-and-sdks).
 
 ### Keep it until it is received
 
@@ -88,7 +91,8 @@ It covers the screen that is not created yet: after the process is killed, Andro
 the ViewModel of the previous one is created only when the user goes back to it. Without keeping the result, it would
 be lost. It doesn't cover a process killed after the result is broadcast: it is kept in memory too.
 
-In tests, `resetTestDispatchers` of `emanate-test` removes the kept actions that nobody received.
+In tests, `resetTestDispatchers` of `emanate-test` removes the kept actions of the shared broadcaster that nobody
+received. Each `testConfiguration` has its own broadcaster, so its kept actions don't reach other tests.
 
 > If the receiver shows something, post an event: it waits until the view consumes it, so it is shown when the
 > screen is visible again.

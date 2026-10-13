@@ -1,11 +1,13 @@
 package com.carmabs.emanate.core
 
-import com.carmabs.emanate.core.broadcast.EmaActionBroadcaster
 import com.carmabs.emanate.core.model.EmaConfiguration
 
 /**
  * Entry point to configure Emanate. Call [init] once, when the application starts, before any ViewModel
  * is created. If it is not called, the default [EmaConfiguration] is used.
+ *
+ * The ViewModels and sources use it unless they receive their own configuration, for example in a library, which
+ * can't call [init] as it belongs to the application, or in a test.
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
@@ -20,11 +22,6 @@ object Emanate {
         get() = initializedConfiguration ?: defaultConfiguration
 
     private val defaultConfiguration by lazy { EmaConfiguration() }
-
-    /**
-     * Sends the actions broadcast by the side effects to the sources listening to their type.
-     */
-    internal val actionBroadcaster: EmaActionBroadcaster by lazy { EmaActionBroadcaster() }
 
     /**
      * Sets the configuration of Emanate. It can be called only once.

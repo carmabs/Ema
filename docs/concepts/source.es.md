@@ -200,5 +200,5 @@ counter.dispatch(CounterAction.Increment)
 counter.close()
 ```
 
-Por defecto se ejecuta en el dispatcher `main` de la [configuración](../guides/configuration.es.md); pasa otro en el
-parámetro `dispatcher`.
+Por defecto usa la [configuración](../guides/configuration.es.md) de Emanate y se ejecuta en su dispatcher `main`; pasa
+otra en los parámetros `configuration` o `dispatcher`.
