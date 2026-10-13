@@ -11,13 +11,35 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 
 /**
+ * Returns [configuration] running on [dispatcher], to pass it to the view models and sources of a test instead of
+ * calling [useTestDispatchers]. It doesn't change the configuration of Emanate or `Dispatchers.Main`, so the tests that
+ * use it can run in parallel and don't need to reset anything.
+ *
+ * Create [dispatcher] with the scheduler of runTest, so advanceUntilIdle runs the work of the view models, delays
+ * included: `testConfiguration(UnconfinedTestDispatcher(testScheduler))`.
+ *
+ * @param dispatcher where the view models, sources and use cases run. With an UnconfinedTestDispatcher the actions are
+ * processed as soon as they are dispatched; with a StandardTestDispatcher, when the test advances.
+ * @param configuration the rest of the configuration. By default the default one, not the one of Emanate, so the test
+ * doesn't depend on [Emanate.init].
+ *
+ * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
+ */
+fun testConfiguration(
+    dispatcher: TestDispatcher,
+    configuration: EmaConfiguration = EmaConfiguration()
+): EmaConfiguration =
+    configuration.copy(dispatchers = EmaDispatchers(main = dispatcher, io = dispatcher, default = dispatcher))
+
+/**
  * Configuration of Emanate before [useTestDispatchers], restored by [resetTestDispatchers]
  */
 private var configurationBeforeTest: EmaConfiguration? = null
 
 /**
- * Runs the view models, sources and use cases created after it on [dispatcher]. Call it before each test, for example in
- * a function annotated with BeforeTest, and [resetTestDispatchers] after it.
+ * Runs the view models, sources and use cases created after it on [dispatcher]. Call it before each test, for example
+ * in a function annotated with BeforeTest, and [resetTestDispatchers] after it. It changes the configuration of
+ * Emanate, shared by the whole process, so the tests that use it can't run in parallel; [testConfiguration] doesn't.
  *
  * It also sets [dispatcher] as `Dispatchers.Main`, so runTest uses its scheduler: advanceUntilIdle runs the work of the
  * view models, delays included.

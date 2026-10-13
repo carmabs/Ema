@@ -2,6 +2,7 @@ package com.carmabs.emanate.test
 
 import com.carmabs.emanate.core.Emanate
 import com.carmabs.emanate.core.action.EmaAction
+import com.carmabs.emanate.core.model.EmaConfiguration
 import com.carmabs.emanate.core.source.EmaSource
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
@@ -17,6 +18,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestDispatcher
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 
@@ -31,9 +33,10 @@ private sealed interface ProfileEvent : EmaEvent {
     data object Welcome : ProfileEvent
 }
 
-private class ProfileViewModel :
+private class ProfileViewModel(configuration: EmaConfiguration = Emanate.configuration) :
     EmaViewModel<ProfileState, ProfileAction, ProfileEvent>(
         initialDataState = ProfileState(),
+        configuration = configuration,
         logger = null
     ) {
     override fun setup() = source {
@@ -165,6 +168,48 @@ class EmaRecorderStandardDispatcherTest {
 
         resetTestDispatchers()
 
+        assertNotSame(dispatcher, Emanate.configuration.dispatchers.main)
+    }
+}
+
+/**
+ * Without useTestDispatchers: the view models receive the configuration of the test
+ */
+@OptIn(ExperimentalCoroutinesApi::class)
+class TestConfigurationTest {
+
+    @Test
+    fun `a view model with the test configuration runs on the scheduler of the test`() = runTest {
+        val viewModel = ProfileViewModel(testConfiguration(UnconfinedTestDispatcher(testScheduler)))
+        val recorder = viewModel.record()
+
+        viewModel.dispatch(ProfileAction.Load)
+        recorder.assertActions(ProfileAction.Load)
+
+        advanceUntilIdle()
+        recorder.assertActions(ProfileAction.Load, ProfileAction.Loaded("Ema"))
+        recorder.assertEvents(ProfileEvent.Welcome)
+    }
+
+    @Test
+    fun `with a standard dispatcher the actions run when the test advances`() = runTest {
+        val viewModel = ProfileViewModel(testConfiguration(StandardTestDispatcher(testScheduler)))
+        val recorder = viewModel.record()
+
+        viewModel.dispatch(ProfileAction.Load)
+        recorder.assertActions()
+
+        advanceUntilIdle()
+        recorder.assertActions(ProfileAction.Load, ProfileAction.Loaded("Ema"))
+    }
+
+    @Test
+    fun `the test configuration doesn't change the configuration of Emanate`() {
+        val dispatcher = StandardTestDispatcher()
+        val configuration = testConfiguration(dispatcher, EmaConfiguration(logger = null))
+
+        assertSame(dispatcher, configuration.dispatchers.io)
+        assertEquals(null, configuration.logger)
         assertNotSame(dispatcher, Emanate.configuration.dispatchers.main)
     }
 }
