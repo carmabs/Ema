@@ -14,10 +14,11 @@ apply from: 'build-system/config.gradle'
 
 // Coverage report of the published modules: ./gradlew koverHtmlReport (build/reports/kover/html)
 dependencies {
-    kover project(':ema-core')
-    kover project(':ema-android')
-    kover project(':ema-android-view')
-    kover project(':ema-android-compose')
+    kover project(':emanate-core')
+    kover project(':emanate-android')
+    kover project(':emanate-android-view')
+    kover project(':emanate-android-compose')
+    kover project(':emanate-test')
 }
 
 kover {
@@ -34,11 +35,11 @@ kover {
 // Code format of the library: ./gradlew spotlessApply (the rules are in .editorconfig)
 spotless {
     kotlin {
-        target 'ema-*/src/**/*.kt'
+        target 'emanate-*/src/**/*.kt'
         ktlint(libs.versions.ktlint.get())
     }
     format 'misc', {
-        target '*.gradle', 'ema-*/*.gradle', 'build-system/*.gradle', 'gradle/*.toml', '*.md', '.editorconfig', '.gitignore'
+        target '*.gradle', 'emanate-*/*.gradle', 'build-system/*.gradle', 'gradle/*.toml', '*.md', '.editorconfig', '.gitignore'
         trimTrailingWhitespace()
         leadingTabsToSpaces()
         endWithNewline()

@@ -1,6 +1,6 @@
 package ${packageName}
 
-import com.carmabs.ema.android.viewmodel.EmaViewModel
+import com.carmabs.emanate.android.viewmodel.EmaViewModel
 
 
 class ${functionalityName}ViewModel: EmaViewModel<${functionalityName}State,<#if navigator?has_content>${navigator}<#else>${functionalityName}Navigator</#if>.Navigation>(){

@@ -1,13 +1,13 @@
 # Configuración
 
-Ema se configura una vez, cuando arranca la aplicación, con `Ema.init`:
+Emanate se configura una vez, cuando arranca la aplicación, con `Emanate.init`:
 
 ```kotlin
 class MyApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        Ema.init(EmaConfiguration.Android)
+        Emanate.init(EmaConfiguration.Android(debug = BuildConfig.DEBUG))
     }
 }
 ```
@@ -19,54 +19,58 @@ class MyApplication : Application() {
 
 ## Qué se puede configurar
 
-| Propiedad                     | `EmaConfiguration()` por defecto | `EmaConfiguration.Android`     | Para qué                                                  |
-|-------------------------------|------------------------------|------------------------------------|-----------------------------------------------------------|
-| `dispatchers`                 | `EmaDispatchers()`           | `main` es `Dispatchers.Main.immediate` | Dónde se ejecutan los ViewModels, los casos de uso y el trabajo de cálculo. Consulta [Dispatchers](#dispatchers). |
-| `sideEffectConfig`            | `EmaSideEffectConfig()`      | Obtiene el nombre de los métodos de las lambdas | Cómo gestiona `sideEffect` los errores y qué informa. Consulta [Trabajo asíncrono y errores](async-and-errors.es.md#errores). |
-| `dataClassPrinter`            | `EmaDataClassPrinter.ToString` | Imprime todos los campos, con sangría | Cómo imprime los objetos `toStringPretty()`.          |
+Cada propiedad configura una cosa:
 
-`EmaConfiguration` es una data class, así que personaliza la configuración de Android con `copy`:
+| Propiedad            | `EmaConfiguration()` por defecto | `EmaConfiguration.Android(debug)`             | Para qué |
+|----------------------|----------------------------------|-----------------------------------------------|----------|
+| `dispatchers`        | `EmaDispatchers()`               | `main` es `Dispatchers.Main.immediate`        | Dónde se ejecutan los ViewModels, los casos de uso y el trabajo de cálculo. Consulta [Dispatchers](#dispatchers). |
+| `errorPolicy`        | `EmaErrorPolicy.Catch()`         | `Throw` en debug, `Catch()` en release        | Qué pasa cuando un middleware, reducer o side effect lanza una excepción. Consulta [Errores](async-and-errors.es.md#errores). |
+| `logger`             | `EmaLogger.Println`              | `EmaLogger.Logcat` en debug, `null` en release | Dónde van los logs de Emanate. Consulta [Logs](#logs). |
+| `printer`            | `EmaDataClassPrinter.ToString`   | Imprime todos los campos, con sangría         | Cómo se imprimen los objetos en los logs y con `toStringPretty()`. |
+| `destroyedTimeout`   | 5 segundos                       | 5 segundos                                    | Cuánto pueden ejecutarse los side effects de `Lifecycle.Destroyed` después de destruir el ViewModel, salvo que tengan su propio `timeout`. |
+| `sideEffectListener` | `null`                           | `null`                                        | Recibe el resultado de cada side effect, para seguirlos o medirlos. |
+| `methodNameResolver` | Nombres genéricos                | Se obtienen de las lambdas                    | El nombre de la función que lanzó un side effect, que aparece en los errores. Consulta [Nombrar los side effects](#nombrar-los-side-effects). |
+
+`EmaConfiguration.Android(debug)` está en `emanate-android` (`com.carmabs.emanate.android.configuration.Android`). Pasa
+`BuildConfig.DEBUG`: las builds de debug registran en logcat y fallan en el momento con cualquier excepción, y las de
+release no registran nada, así que el estado no llega a logcat, y siguen funcionando después de una excepción.
+
+`EmaConfiguration` es una data class, así que cambia solo lo que necesites con `copy`:
 
 ```kotlin
-Ema.init(
-    EmaConfiguration.Android.copy(
-        sideEffectConfig = EmaConfiguration.Android.sideEffectConfig.copy(
-            exceptionPolicy = EmaSideEffectConfig.ExceptionPolicy.CatchExceptions { error ->
-                Log.e("Ema", "${error.reflection.methodName} failed", error.exception)
-            }
-        )
+Emanate.init(
+    EmaConfiguration.Android(debug = BuildConfig.DEBUG).copy(
+        errorPolicy = EmaErrorPolicy.Catch { error -> crashReporter.record(error.exception) }
     )
 )
 ```
 
-`EmaConfiguration.Android` está en `ema-android` (`com.carmabs.ema.android.configuration.Android`).
-
 ## Dispatchers
 
-`EmaDispatchers` agrupa los dispatchers que usa Ema por defecto:
+`EmaDispatchers` agrupa los dispatchers que usa Emanate por defecto:
 
-| Dispatcher | Por defecto                                                                  | Lo usan                                                                   |
-|------------|------------------------------------------------------------------------------|---------------------------------------------------------------------------|
-| `main`     | `Dispatchers.Main`                                                           | Los ViewModels, a través de su scope por defecto `EmaMainScope()`.        |
-| `io`       | `Dispatchers.IO`, o `Dispatchers.Default` en JS y Wasm                       | Los [casos de uso](utilities.es.md#casos-de-uso): red, disco y trabajo bloqueante. |
-| `default`  | `Dispatchers.Default`                                                        | El trabajo de cálculo, como procesar imágenes en `ema-android`.           |
+| Dispatcher | Por defecto                                            | Lo usan                                                                            |
+|------------|--------------------------------------------------------|------------------------------------------------------------------------------------|
+| `main`     | `Dispatchers.Main`                                     | Los ViewModels y las sources, por defecto.                                         |
+| `io`       | `Dispatchers.IO`, o `Dispatchers.Default` en JS y Wasm | Los [casos de uso](utilities.es.md#casos-de-uso): red, disco y trabajo bloqueante. |
+| `default`  | `Dispatchers.Default`                                  | El trabajo de cálculo, como procesar imágenes en `emanate-android`.                |
 
-`EmaConfiguration.Android` usa `Dispatchers.Main.immediate` como `main`, igual que el `viewModelScope` de Android: el
+`EmaConfiguration.Android(debug)` usa `Dispatchers.Main.immediate` como `main`, igual que el `viewModelScope` de Android: el
 trabajo que empieza en el hilo principal, como despachar una acción desde un clic, se ejecuta en el momento en lugar de
 esperar al siguiente frame.
 
 Cambia cualquiera de ellos con `copy`, manteniendo los demás:
 
 ```kotlin
-val android = EmaConfiguration.Android
-Ema.init(android.copy(dispatchers = android.dispatchers.copy(io = myIoDispatcher)))
+val android = EmaConfiguration.Android(debug = BuildConfig.DEBUG)
+Emanate.init(android.copy(dispatchers = android.dispatchers.copy(io = myIoDispatcher)))
 ```
 
 ## Nombrar los side effects
 
 Cada `sideEffect` informa del nombre de la función que lo lanzó, algo útil para registrar los errores.
 
-- `EmaConfiguration.Android` lo obtiene de la clase que el compilador genera para la lambda, así que un `sideEffect` en
+- `EmaConfiguration.Android(debug)` lo obtiene de la clase que el compilador genera para la lambda, así que un `sideEffect` en
   `doLogin()` aparece como `doLogin`.
 - En otras plataformas el nombre es genérico. Pasa `logName` para ponerlo tú, en cualquier plataforma:
 
@@ -74,15 +78,39 @@ Cada `sideEffect` informa del nombre de la función que lo lanzó, algo útil pa
 sideEffect(logName = "login") { loginUseCase(input) }
 ```
 
-Para decidir el nombre de otra forma, implementa `EmaMethodNameResolver` y asígnalo en `EmaSideEffectConfig.methodNameResolver`.
+Para decidir el nombre de otra forma, implementa `EmaMethodNameResolver` y asígnalo en `EmaConfiguration.methodNameResolver`.
 
 ## Imprimir objetos
 
-`toStringPretty()` imprime cualquier objeto con el `EmaDataClassPrinter` configurado. `EmaConfiguration.Android` usa
+`toStringPretty()` imprime cualquier objeto con el `printer` de la configuración. `EmaConfiguration.Android(debug)` usa
 `EmaAndroidDataClassPrinter`, que imprime los campos, los objetos anidados, las colecciones y los mapas con sangría.
 Implementa `EmaDataClassPrinter` para imprimirlos a tu manera.
 
-## El broadcast manager
+## Logs
 
-`Ema.broadcastManager` es el `EmaBroadcastManager` global de la app. Consulta
-[Resultados entre pantallas](results-between-screens.es.md#broadcasts-globales).
+Emanate escribe sus logs con el `logger` de la configuración. Por defecto es `EmaLogger.Println`, que escribe en la
+salida estándar y añade `EMA_` delante del tag. `EmaConfiguration.Android(debug)` usa `EmaLogger.Logcat` en las builds
+de debug, que escribe con `Log.d`, y ningún logger en las de release. Los errores que captura la
+[política de errores](async-and-errors.es.md#errores) también se registran.
+
+Cada `EmaViewModel` lo usa, con su nombre como tag, para registrar sus acciones:
+
+- Una línea cuando recibe una acción, antes de los middlewares: `Received action: Search(query=ema)`. Muestra las
+  acciones que detiene un middleware, que no llegan a los reducers.
+- Un bloque con la acción y el estado antes y después de sus reducers. Se escribe justo antes de ellos, después de todos
+  los middlewares, así que el estado después de la acción es correcto aunque un middleware la continúe más tarde con
+  `nextAfter`, y la acción es la que reciben los reducers.
+
+El estado puede contener datos del usuario, así que no registres nada en las builds de release, como hace
+`EmaConfiguration.Android(debug)`. Para enviar los logs a tu propio logger:
+
+```kotlin
+Emanate.init(
+    EmaConfiguration.Android(debug = BuildConfig.DEBUG).copy(
+        logger = if (BuildConfig.DEBUG) EmaLogger { tag, message -> Timber.tag(tag).d(message) } else null
+    )
+)
+```
+
+Un ViewModel puede pasar su propio `logger` en el constructor, o `null` para desactivar solo sus logs. Una source
+usada por sí sola no registra nada: añade `loggerMiddleware(tag, logger)` como su último middleware.

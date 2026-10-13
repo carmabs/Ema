@@ -5,8 +5,8 @@ import com.carmabs.domain.model.LoginRequest
 import com.carmabs.domain.model.Role
 import com.carmabs.domain.model.User
 import com.carmabs.domain.repository.Repository
-import com.carmabs.ema.core.model.EmaResult
-import com.carmabs.ema.core.model.onSuccess
+import com.carmabs.emanate.core.model.EmaResult
+import com.carmabs.emanate.core.model.onSuccess
 import kotlinx.coroutines.delay
 
 /**

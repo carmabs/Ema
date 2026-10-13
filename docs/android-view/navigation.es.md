@@ -1,6 +1,6 @@
 # Navegación y botón atrás
 
-En Ema **el ViewModel nunca navega**. Publica un [evento](../concepts/events.es.md) que dice lo que ha pasado, y la vista
+En Emanate **el ViewModel nunca navega**. Publica un [evento](../concepts/events.es.md) que dice lo que ha pasado, y la vista
 se lo pasa a un **navigator**, que sabe cómo moverse.
 
 ```mermaid
@@ -79,7 +79,7 @@ override val navigator: EmaNavigator<EmaEvent.EMPTY> = EmaActivityNavControllerH
 )
 ```
 
-Ema asigna el grafo en `onPostCreate`, con el inicializador del intent de la activity como argumentos del destino
+Emanate asigna el grafo en `onPostCreate`, con el inicializador del intent de la activity como argumentos del destino
 inicial. Para empezarlo con otro inicializador, sobrescribe `overrideDestinationInitializer()`.
 Cuando el back stack se queda vacío, `navigateBack` cierra la activity.
 
@@ -112,9 +112,17 @@ override val initializerStrategy: BundleSerializerStrategy
 El inicializador llega a `onStateCreated` del ViewModel. Fuera del grafo de navegación,
 `fragment.setInitializer(initializer, strategy)` lo mete en los argumentos de un Fragment.
 
+El inicializador viaja en un Bundle, así que funciona cualquiera de las estrategias de `BundleSerializerStrategy`:
+
+| Estrategia                       | El inicializador es                                          |
+|----------------------------------|--------------------------------------------------------------|
+| `kSerialization(serializer)`     | Una clase `@Serializable`, guardada como JSON. También funciona en las rutas de Compose. |
+| `parcelable<Initializer>()`      | `Parcelable`.                                                 |
+| `serializable<Initializer>()`    | `java.io.Serializable`.                                       |
+
 ## Resultados
 
-La forma habitual de devolver un resultado a la pantalla anterior es un back broadcast entre ViewModels, que funciona
+La forma habitual de devolver un resultado a la pantalla anterior es emitir una acción entre ViewModels, que funciona
 igual en Compose y en las vistas. Consulta [Resultados entre pantallas](../guides/results-between-screens.es.md).
 
 Un Fragment sin navigator también puede devolver un resultado al Fragment anterior con `navigateBack(result)`. El anterior

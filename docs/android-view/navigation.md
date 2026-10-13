@@ -1,6 +1,6 @@
 # Navigation and back handling
 
-In Ema the **ViewModel never navigates**. It posts an [event](../concepts/events.md) that says what happened,
+In Emanate the **ViewModel never navigates**. It posts an [event](../concepts/events.md) that says what happened,
 and the view hands that event to a **navigator**, which knows how to move around.
 
 ```mermaid
@@ -79,7 +79,7 @@ override val navigator: EmaNavigator<EmaEvent.EMPTY> = EmaActivityNavControllerH
 )
 ```
 
-Ema sets the graph in `onPostCreate`, with the initializer of the activity intent as the arguments of the start
+Emanate sets the graph in `onPostCreate`, with the initializer of the activity intent as the arguments of the start
 destination. To start it with another initializer, override `overrideDestinationInitializer()`.
 When the back stack is empty, `navigateBack` finishes the activity.
 
@@ -112,10 +112,18 @@ override val initializerStrategy: BundleSerializerStrategy
 The initializer reaches `onStateCreated` of the ViewModel. Outside the navigation graph, `fragment.setInitializer(initializer, strategy)`
 puts it in the arguments of a Fragment.
 
+The initializer travels in a Bundle, so any of the strategies of `BundleSerializerStrategy` works:
+
+| Strategy                         | The initializer is                                           |
+|----------------------------------|--------------------------------------------------------------|
+| `kSerialization(serializer)`     | A `@Serializable` class, saved as JSON. It also works in the routes of Compose. |
+| `parcelable<Initializer>()`      | `Parcelable`.                                                 |
+| `serializable<Initializer>()`    | `java.io.Serializable`.                                       |
+
 ## Results
 
-The usual way to return a result to the previous screen is a back broadcast between ViewModels, which works the same in
-Compose and in Views. See [Results between screens](../guides/results-between-screens.md).
+The usual way to return a result to the previous screen is to broadcast an action between ViewModels, which works the
+same in Compose and in Views. See [Results between screens](../guides/results-between-screens.md).
 
 A Fragment without navigator can also return a result to the previous Fragment with `navigateBack(result)`. The previous
 one receives it with `setEmaResultListener`:

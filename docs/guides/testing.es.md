@@ -8,13 +8,103 @@ Todo el contrato de estado y eventos es observable:
 - `stateFlow.value` es el estado.
 - `eventFlow` contiene los eventos pendientes.
 
+## Testear un EmaViewModel con emanate-test
+
+`emanate-test` tiene las utilidades para testear los ViewModels hechos con `EmaViewModel` y las
+[sources](../concepts/source.es.md). Es una librería JVM, así que añádela a los tests de un módulo JVM o Android:
+
+```kotlin
+dependencies {
+    testImplementation("com.github.carmabs.ema:emanate-test:$emanateVersion")
+}
+```
+
+Incluye `kotlinx-coroutines-test` y necesita la misma versión de `emanate-core` con la que se compiló.
+
+| Utilidad                        | Para qué                                                                      |
+|---------------------------------|-------------------------------------------------------------------------------|
+| `useTestDispatchers()`          | Ejecuta los ViewModels, las sources y los casos de uso creados después en el dispatcher del test, también como `Dispatchers.Main`. Llámalo antes de cada test. |
+| `resetTestDispatchers()`        | Restaura los dispatchers y la configuración de Emanate. Llámalo después de cada test. |
+| `viewModel.record()`            | Graba en orden las acciones, los estados y los eventos de un ViewModel o una source. |
+| `assertActions(...)`            | Las acciones grabadas, incluidas las que bloquea un middleware.               |
+| `assertStates(...)`             | Todos los estados que devuelven los reducers.                                 |
+| `assertState(state)` / `assertState { }` | El último estado, o una condición sobre él.                          |
+| `assertEvents(...)` / `assertNoEvents()` | Los eventos publicados.                                              |
+| `viewModel.assertSetup()`       | Falla si un middleware, reducer o side effect nunca se ejecuta, como los de una acción emitida que no se escucha. Consulta [Comprobar el setup](#comprobar-el-setup). |
+
+```kotlin
+class LoginViewModelTest {
+
+    @BeforeTest
+    fun setUp() {
+        useTestDispatchers()
+    }
+
+    @AfterTest
+    fun tearDown() {
+        resetTestDispatchers()
+    }
+
+    @Test
+    fun `the right credentials log in the user`() = runTest {
+        val viewModel = LoginViewModel(LoginUseCase(FakeRepository()), LoginState.DEFAULT)
+        val recorder = viewModel.record()
+
+        viewModel.dispatch(LoginAction.UserNameWritten("Admin"))
+        viewModel.dispatch(LoginAction.PasswordWritten("1234"))
+        viewModel.dispatch(LoginAction.Login)
+        advanceUntilIdle()
+
+        recorder.assertState { !it.isLoading }
+        recorder.assertEvents(LoginEvent.Message("Carmabs"), LoginEvent.LoginSuccess(admin))
+    }
+}
+```
+
+- **Crea el ViewModel después de `useTestDispatchers`**, para que se ejecute en el dispatcher del test. Por defecto es
+  un `UnconfinedTestDispatcher`, que procesa las acciones en cuanto se despachan; pasa un `StandardTestDispatcher` para
+  procesarlas cuando avance el test.
+- **Graba antes de la primera acción** para grabarlo todo.
+- **`advanceUntilIdle()`** ejecuta los side effects, retardos incluidos, porque `runTest` usa el scheduler del
+  dispatcher del test.
+- **Se pueden testear varios ViewModels** juntos, por ejemplo los resultados emitidos entre pantallas: el
+  `LoginViewModelTest` del sample crea los ViewModels de creación de perfil, home y login, y comprueba que el usuario
+  creado en el primero llega al último.
+
+### Comprobar el setup
+
+Un reducer, middleware o side effect para una acción que el ViewModel nunca recibe no falla: simplemente no se
+ejecuta. Ocurre cuando se gestiona una acción emitida pero falta `listen<Tipo>()` en el bloque `broadcasts`.
+`assertSetup()` comprueba que cada pieza puede recibir acciones de su tipo: acciones de la pantalla, inicializadores,
+acciones del ciclo de vida o acciones emitidas que escucha.
+
+```kotlin
+@Test
+fun `the setup is complete`() {
+    HomeViewModel(GetUserFriendsUseCase(FakeRepository()), HomeState.DEFAULT).assertSetup()
+}
+```
+
+Falla con todas las piezas que nunca se ejecutan:
+
+```
+The reducer of UserCreated never runs: HomeViewModel doesn't receive UserCreated. If it is broadcast by another
+source, add listen<UserCreated>() in the broadcasts block.
+```
+
+Solo se informa de los tipos que el ViewModel seguro que no puede recibir. Una acción de la pantalla puede implementar
+cualquier interfaz, así que no se informa de una pieza para una interfaz que no está relacionada con las acciones de la
+pantalla.
+
+## Testear los ViewModels clásicos
+
 Añade `kotlinx-coroutines-test` a tus dependencias de test:
 
 ```kotlin
 class CounterViewModelTest {
 
     private fun TestScope.createViewModel() =
-        CounterViewModel(CoroutineScope(UnconfinedTestDispatcher(testScheduler))).apply {
+        CounterViewModel(UnconfinedTestDispatcher(testScheduler)).apply {
             onCreated()
         }
 
@@ -41,23 +131,23 @@ class CounterViewModelTest {
 }
 ```
 
-Los tests de la propia librería, en `ema-core/src/commonTest`, tienen más ejemplos: side effects, eventos, resultados
+Los tests de la propia librería, en `emanate-core/src/commonTest`, tienen más ejemplos: side effects, eventos, resultados
 entre pantallas y el ciclo de vida de la vista.
 
-## Lo que conviene saber
+### Lo que conviene saber
 
-1. **Pasa tu propio scope.** El segundo parámetro del constructor de `EmaViewModelBasic` / `EmaViewModelAction` es el
-   `CoroutineScope`. Exponlo en el constructor de tus ViewModels, con un valor por defecto, para que los tests puedan
-   sustituirlo. El scope por defecto usa el dispatcher `main` de la configuración, `Dispatchers.Main`, que no existe
-   en los tests unitarios. Con un `UnconfinedTestDispatcher` el trabajo se ejecuta inmediatamente; con un
+1. **Pasa tu propio dispatcher.** El segundo parámetro del constructor de `EmaViewModelClassic` / `EmaViewModelAction`
+   es el `CoroutineDispatcher` donde se ejecuta el ViewModel, que crea su propio scope con él. Exponlo en el constructor
+   de tus ViewModels, con un valor por defecto, para que los tests puedan sustituirlo. El de por defecto es el
+   dispatcher `main` de la configuración, `Dispatchers.Main`, que no existe en los tests unitarios. Con un `UnconfinedTestDispatcher` el trabajo se ejecuta inmediatamente; con un
    `StandardTestDispatcher`, llama a `advanceUntilIdle()` para ejecutarlo.
 
    ```kotlin
-   class CounterViewModel(scope: CoroutineScope = EmaMainScope()) :
-       EmaViewModelAction<CounterState, CounterAction, CounterEvent>(CounterState(), scope)
+   class CounterViewModel(dispatcher: CoroutineDispatcher = Emanate.configuration.dispatchers.main) :
+       EmaViewModelAction<CounterState, CounterAction, CounterEvent>(CounterState(), dispatcher)
    ```
-2. **No hace falta configuración.** Si no se llama a `Ema.init`, se usa la configuración por defecto. No llames a
-   `Ema.init` en los tests: solo se puede llamar una vez por proceso.
+2. **No hace falta configuración.** Si no se llama a `Emanate.init`, se usa la configuración por defecto. No llames a
+   `Emanate.init` en los tests: solo se puede llamar una vez por proceso.
 3. **Llama a `onCreated()`** para ejecutar `onStateCreated(initializer)`. Pasa un inicializador si la pantalla lo
    necesita: `viewModel.onCreated(MyInitializer.Default("x"))`.
 4. **Usa casos de uso falsos.** Son clases normales: pasa una implementación falsa, o usa tu librería de mocks.

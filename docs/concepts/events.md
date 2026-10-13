@@ -93,5 +93,5 @@ See the table in [Architecture](architecture.md#state-or-event).
 
 ## Screens with no events
 
-Use `EmaEvent.EMPTY` as the event type, and `EmaViewModel.EMPTY` for a screen with no state, actions or events,
+Use `EmaEvent.EMPTY` as the event type, and `EmaViewModelContract.EMPTY` for a screen with no state, actions or events,
 like an activity that only hosts other screens.

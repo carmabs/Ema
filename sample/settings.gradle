@@ -19,7 +19,7 @@ dependencyResolutionManagement {
         }
     }
 }
-rootProject.name = "Ema"
+rootProject.name = "Emanate"
 include ':app',
         ':ui',
         ':presentation',
@@ -28,14 +28,17 @@ include ':app',
         ':android-utils'
 
 
-include(':ema-core')
-project(':ema-core').projectDir = new File("../ema-core")
+include(':emanate-core')
+project(':emanate-core').projectDir = new File("../emanate-core")
 
-include(':ema-android')
-project(':ema-android').projectDir = new File("../ema-android")
+include(':emanate-android')
+project(':emanate-android').projectDir = new File("../emanate-android")
 
-include(':ema-android-view')
-project(':ema-android-view').projectDir = new File("../ema-android-view")
+include(':emanate-android-view')
+project(':emanate-android-view').projectDir = new File("../emanate-android-view")
 
-include(':ema-android-compose')
-project(':ema-android-compose').projectDir = new File("../ema-android-compose")
+include(':emanate-android-compose')
+project(':emanate-android-compose').projectDir = new File("../emanate-android-compose")
+
+include(':emanate-test')
+project(':emanate-test').projectDir = new File("../emanate-test")

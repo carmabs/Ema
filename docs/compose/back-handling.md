@@ -8,7 +8,7 @@ override fun onBack(state: ProfileCreationState): ProfileCreationAction? =
     if (state.overlap == null) ProfileCreationAction.OnBack else null
 ```
 
-Ema installs a single `BackHandler`, enabled only when `onBack` returns an action. Returning `null` in some states is how you
+Emanate installs a single `BackHandler`, enabled only when `onBack` returns an action. Returning `null` in some states is how you
 turn the interception off.
 
 - A dialog drawn with `AlertDialog` or `Dialog` handles back itself, so return `null` while it is on screen.

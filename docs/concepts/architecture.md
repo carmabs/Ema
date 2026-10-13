@@ -1,6 +1,6 @@
 # Architecture
 
-Every Ema screen is made of the same five pieces.
+Every Emanate screen is made of the same five pieces.
 
 ```mermaid
 sequenceDiagram
@@ -10,9 +10,10 @@ sequenceDiagram
     participant UC as Use case
     participant N as Navigator
     V->>VM: dispatch(action)
-    VM->>UC: sideEffect { useCase(input) }
+    Note over VM: reducers: new state
+    VM->>UC: side effect: useCase(input)
     UC-->>VM: result
-    VM-->>V: updateState / postEvent
+    VM-->>V: new state / postEvent
     V->>N: navigate(event)
 ```
 
@@ -21,14 +22,15 @@ sequenceDiagram
 | `EmaState`    | What the screen looks like right now.                                          | No                   |
 | `EmaAction`   | What the user did.                                                             | No                   |
 | `EmaEvent`    | What happened and must be shown or handled once.                               | No                   |
-| `EmaViewModel`| Turns actions into state changes and events. Runs the business logic.          | No                   |
+| ViewModel     | Turns actions into state changes and events. Runs the business logic.          | No                   |
 | View          | Renders the state, handles events and sends actions.                           | Yes                  |
 
 ## The rules
 
 1. **The view only renders and reports.** It renders the state and sends actions. It never changes
    the state or holds business logic.
-2. **The ViewModel only changes state through `updateState`.** State is replaced, never mutated.
+2. **The ViewModel only changes the state in its reducers** (`updateState` in the classic ViewModels). State is
+   replaced, never mutated.
 3. **Anything that lasts belongs in the state; anything that happens once belongs in an event.**
    A loading spinner or a validation error is state. A snackbar or a navigation is an event.
 4. **Events describe what happened, not what to do.** Name them `LoginSuccess`, not `NavigateToHome`.
@@ -63,7 +65,7 @@ sequenceDiagram
     participant V as View
     participant VM as ViewModel
     V->>VM: onCreated(initializer)
-    Note over VM: onStateCreated(initializer)<br/>onBroadcastListenerSetup()
+    Note over VM: EmaAction.Initializer
     V->>VM: onStartView()
     V->>VM: onResumeView()
     V-->>VM: collect stateFlow and eventFlow
@@ -73,4 +75,5 @@ sequenceDiagram
     V->>VM: onCleared() when the ViewModel is destroyed
 ```
 
-The details are in [ViewModel](viewmodel.md).
+An `EmaViewModel` receives each call as an action (`EmaAction.Initializer` and `EmaAction.Lifecycle`), and a classic
+ViewModel as a hook (`onStateCreated`, `onViewResumed`...). The details are in [ViewModel](viewmodel.md).

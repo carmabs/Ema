@@ -1,6 +1,6 @@
 # Navegación en Compose
 
-En Ema **el ViewModel nunca navega**. Publica un [evento](../concepts/events.es.md) que dice lo que ha pasado, y la
+En Emanate **el ViewModel nunca navega**. Publica un [evento](../concepts/events.es.md) que dice lo que ha pasado, y la
 lambda `onEvent` del destino se lo pasa a un **navigator**, que sabe cómo moverse.
 
 ```mermaid
@@ -85,7 +85,10 @@ navController.navigate(
 
 Otra sobrecarga recibe una lambda `NavOptionsBuilder`, como `navigate(route) { launchSingleTop = true }`.
 
-El destino declara cómo leerlo con `initializerSupport`. En las rutas, usa la estrategia `kSerialization`:
+El destino declara cómo leerlo con `initializerSupport`. El inicializador viaja en la ruta como texto, así que la
+navegación de Compose lo lee con kotlinx.serialization: `EmaInitializerSupport` solo acepta la estrategia
+`kSerialization`, y las estrategias `parcelable` y `serializable`, que solo funcionan con Bundles, fallan si se usan en
+una ruta:
 
 ```kotlin
 createComposableScreen(

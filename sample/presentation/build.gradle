@@ -5,4 +5,7 @@ plugins {
 
 dependencies {
     api project(path: ':domain')
+
+    testImplementation project(rootProject.emanateLibraries.emanateTest)
+    testImplementation libs.kotlin.test
 }

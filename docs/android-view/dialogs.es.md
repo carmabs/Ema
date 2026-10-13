@@ -22,7 +22,7 @@ Como es estado, el diálogo se restaura después de una rotación y el ViewModel
 
 ## Crear un diálogo
 
-Ema da la maquinaria para mostrar diálogos como `DialogFragment`s sin duplicados después de una rotación. Tú aportas tres
+Emanate da la maquinaria para mostrar diálogos como `DialogFragment`s sin duplicados después de una rotación. Tú aportas tres
 cosas.
 
 **1. Los datos del diálogo.** Una clase que implementa `EmaDialogData`:

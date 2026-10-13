@@ -1,7 +1,7 @@
 # Pantallas de Compose
 
 Las pantallas de Compose se describen con un `EmaComposableScreenContent` y se registran en un grafo de navegación con
-`createComposableScreen`. Necesitan los artefactos `ema-android` y `ema-compose`.
+`createComposableScreen`. Necesitan los artefactos `emanate-android` y `emanate-compose`.
 
 ## Contenido de la pantalla
 
@@ -101,12 +101,12 @@ private fun NormalPreview() {
 ```
 
 `previewRenderState` en `createComposableScreen` hace lo mismo para toda la pantalla: en una preview no se crea el
-ViewModel y la pantalla pinta ese estado. `isInPreview()` y `skipForPreview { }` te ayudan a saltarte el código que no
-puede ejecutarse en una preview. Consulta [Utilidades](utilities.es.md#previews).
+ViewModel y la pantalla pinta ese estado. `EmaUtils.Preview.Compose.isInPreview()` y `skipForPreview { }` te ayudan a
+saltarte el código que no puede ejecutarse en una preview. Consulta [Utilidades](utilities.es.md#previews).
 
 ## Usar una pantalla sin grafo de navegación
 
-`EmaComposableScreen` es el composable que hay detrás de `createComposableScreen`. Úsalo para colocar una pantalla de Ema
+`EmaComposableScreen` es el composable que hay detrás de `createComposableScreen`. Úsalo para colocar una pantalla de Emanate
 en cualquier sitio:
 
 ```kotlin

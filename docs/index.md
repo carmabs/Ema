@@ -1,6 +1,6 @@
-# Ema
+# Emanate
 
-Ema is a small library for building screens with a **unidirectional, MVI-style flow**.
+Emanate is a small library for building screens with a **unidirectional, MVI-style flow**.
 It gives you three simple building blocks and takes care of everything around them
 (lifecycle, coroutines, navigation, dialogs, process death...).
 
@@ -24,29 +24,32 @@ sequenceDiagram
 The view **renders** the state and **reacts** to events. It never decides business logic:
 it only reports what the user did through actions.
 
-## Why Ema
+## Why Emanate
 
 - **One way to do things.** Every screen has the same shape, so a new teammate can read any feature.
 - **State is the single source of truth.** Loading, errors and dialogs are part of the state, so rotating the device or
   recreating the view never loses them.
 - **Events are not state.** Toasts, snackbars and "go to the next screen" are delivered exactly once and never replayed.
-- **ViewModels in pure Kotlin.** `ema-core` is a Kotlin Multiplatform library with no Android dependency, so the
+- **Predictable ViewModels.** `EmaViewModel` handles every action with pure reducers, middlewares and side effects,
+  so every screen follows the same flow and is easy to test.
+- **ViewModels in pure Kotlin.** `emanate-core` is a Kotlin Multiplatform library with no Android dependency, so the
   presentation layer can be tested on the JVM and shared with other platforms.
 - **Small surface.** No code generation and no custom build plugins.
 
 ## Modules
 
-| Artifact           | Use it for                                                                                   |
-|--------------------|----------------------------------------------------------------------------------------------|
-| `ema-core`         | State, actions, events, ViewModels and use cases. Pure Kotlin Multiplatform.                 |
-| `ema-android`      | Android integration shared by every UI: configuration, initializers, permissions, texts, images. |
-| `ema-compose`      | Jetpack Compose screens, navigation and previews. **The recommended way to build the UI.**  |
-| `ema-android-view` | Fragments, Activities, dialogs and lists for the Android View system.                       |
+| Artifact               | Use it for                                                                                       |
+|------------------------|--------------------------------------------------------------------------------------------------|
+| `emanate-core`         | State, actions, events, ViewModels and use cases. Pure Kotlin Multiplatform.                     |
+| `emanate-android`      | Android integration shared by every UI: configuration, initializers, permissions, texts, images. |
+| `emanate-compose`      | Jetpack Compose screens, navigation and previews. **The recommended way to build the UI.**       |
+| `emanate-android-view` | Fragments, Activities, dialogs and lists for the Android View system.                            |
+| `emanate-test`         | Utilities to test the ViewModels and the sources on the JVM. See [Testing](guides/testing.md).   |
 
-`ema-android-view` exposes `ema-android`, and both expose `ema-core`. A Compose app adds `ema-android` and `ema-compose`.
+`emanate-android-view` exposes `emanate-android`, and both expose `emanate-core`. A Compose app adds `emanate-android` and `emanate-compose`.
 
 > **Compose first.** New screens should be written with Compose. The View system support lives in its own module,
-> `ema-android-view`, and will be deprecated in favour of Compose in the future.
+> `emanate-android-view`, and will be deprecated in favour of Compose in the future.
 
 ## Where to go next
 
@@ -57,6 +60,7 @@ it only reports what the user did through actions.
     - [Actions](concepts/actions.md)
     - [Events](concepts/events.md)
     - [ViewModel](concepts/viewmodel.md)
+    - [Source](concepts/source.md)
 3. **Guides**: everything that does not depend on the UI technology.
     - [Configuration](guides/configuration.md)
     - [Initializers: passing data to a screen](guides/initializers.md)
@@ -75,7 +79,7 @@ it only reports what the user did through actions.
     - [Saving state across process death](compose/save-state.md)
     - [Permissions](compose/permissions.md)
     - [Utilities](compose/utilities.md)
-5. **[Android Views](android-view/index.md)** (`ema-android-view`)
+5. **[Android Views](android-view/index.md)** (`emanate-android-view`)
 6. [Recommendations](recommendations.md): project structure and naming conventions.
 7. [Contributing](contributing.md): building, testing and formatting the library.
 

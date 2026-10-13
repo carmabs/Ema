@@ -1,7 +1,7 @@
 # Compose screens
 
 Compose screens are described by an `EmaComposableScreenContent` and registered in a navigation graph with
-`createComposableScreen`. They need the `ema-android` and `ema-compose` artifacts.
+`createComposableScreen`. They need the `emanate-android` and `emanate-compose` artifacts.
 
 ## Screen content
 
@@ -101,12 +101,12 @@ private fun NormalPreview() {
 ```
 
 `previewRenderState` in `createComposableScreen` does the same for the whole screen: in a preview, the ViewModel is not
-created and the screen draws that state. `isInPreview()` and `skipForPreview { }` help you skip code that cannot run in
-a preview. See [Utilities](utilities.md#previews).
+created and the screen draws that state. `EmaUtils.Preview.Compose.isInPreview()` and `skipForPreview { }` help you skip
+code that cannot run in a preview. See [Utilities](utilities.md#previews).
 
 ## Using a screen without a navigation graph
 
-`EmaComposableScreen` is the composable behind `createComposableScreen`. Use it to place an Ema screen anywhere:
+`EmaComposableScreen` is the composable behind `createComposableScreen`. Use it to place an Emanate screen anywhere:
 
 ```kotlin
 EmaComposableScreen(

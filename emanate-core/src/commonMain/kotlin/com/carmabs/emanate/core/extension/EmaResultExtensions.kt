@@ -1,0 +1,24 @@
+package com.carmabs.emanate.core.extension
+
+import com.carmabs.emanate.core.model.EmaResult
+
+/*
+ *  *<p>
+ * Copyright (c) 2023, Carmabs. All rights reserved.
+ * </p>
+ *
+ * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
+ *
+ * Created by: Carlos Mateo Benito on 03/05/23.
+ */
+
+/**
+ * Converts the [Result] into an [EmaResult]. The exception of a failure is converted with [failureParser].
+ */
+fun <S, F> Result<S>.toEmaResult(failureParser: (Throwable) -> F): EmaResult<S, F> = try {
+    getOrThrow().let {
+        EmaResult.success(it)
+    }
+} catch (exception: Throwable) {
+    EmaResult.failure(failureParser.invoke(exception))
+}

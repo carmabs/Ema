@@ -1,0 +1,43 @@
+package com.carmabs.emanate.android.permission
+
+import androidx.activity.result.ActivityResultLauncher
+import com.carmabs.emanate.core.manager.PermissionState
+import com.carmabs.emanate.core.utils.EmaUtils
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.first
+
+/**
+ * Created by Carlos Mateo Benito on 2022-08-12.
+ *
+ * <p>
+ * Copyright (c) 2022 by Carmabs. All rights reserved.
+ * </p>
+ *
+ * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
+ */
+class EmaContractSinglePermission(shouldShowRequestPermissionRationaleFunction: (String) -> Boolean) :
+    EmaContractPermission(
+        shouldShowRequestPermissionRationaleFunction
+    ) {
+
+    private var permissionId: String? = null
+    private var flow = EmaUtils.Flows.singleEvent<PermissionState>()
+
+    val contract = { granted: Boolean ->
+        permissionId?.also {
+            flow.tryEmit(granted.toState(shouldShowRequestPermissionRationale(it)))
+        }
+        Unit
+    }
+
+    suspend fun launch(permission: String, permissionRequest: ActivityResultLauncher<String>): PermissionState =
+        coroutineScope {
+            // Subscribe before launching: the result can arrive synchronously, like when the system cancels the request
+            val result = async(start = CoroutineStart.UNDISPATCHED) { flow.first() }
+            permissionId = permission
+            permissionRequest.launch(permission)
+            result.await()
+        }
+}

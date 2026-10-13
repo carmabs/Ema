@@ -1,0 +1,70 @@
+package com.carmabs.emanate.core.source.sideeffect
+
+import com.carmabs.emanate.core.action.EmaAction
+import com.carmabs.emanate.core.state.EmaEvent
+import com.carmabs.emanate.core.state.EmaState
+import kotlin.reflect.KClass
+import kotlin.time.Duration
+
+/**
+ * Created by Carlos Mateo Benito on 11/10/2026.
+ *
+ * Business logic launched by the actions of type [F]: use cases, requests, navigation... It runs asynchronously
+ * after the reducers of the action and reacts dispatching new actions or posting events. Unlike a middleware, it
+ * can't decide the path of the action.
+ *
+ * <p>
+ * Copyright (c) 2026 by Carmabs. All rights reserved.
+ * </p>
+ *
+ * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
+ */
+interface SideEffect<in S : EmaState, out A : EmaAction, out E : EmaEvent, F : EmaAction> {
+
+    /**
+     * Type of the actions that launch it. Use EmaAction::class to launch it with every action.
+     */
+    val actionType: KClass<F>
+
+    /**
+     * What happens when an action launches it while it is still running.
+     */
+    val concurrency: SideEffectConcurrency
+        get() = SideEffectConcurrency.Every
+
+    /**
+     * If the side effect doesn't finish in this time, it is cancelled and [onTimeout] is called.
+     */
+    val timeout: Duration?
+        get() = null
+
+    /**
+     * Called when the side effect doesn't finish before [timeout].
+     */
+    fun SideEffectScope<S, A, E>.onTimeout(action: F) = Unit
+
+    suspend fun SideEffectScope<S, A, E>.invoke(action: F)
+}
+
+internal fun <S : EmaState, A : EmaAction, E : EmaEvent, F : EmaAction> sideEffectOf(
+    actionType: KClass<F>,
+    concurrency: SideEffectConcurrency,
+    timeout: Duration?,
+    onTimeout: (SideEffectScope<S, A, E>.(F) -> Unit)?,
+    effect: suspend SideEffectScope<S, A, E>.(F) -> Unit
+): SideEffect<S, A, E, F> = object : SideEffect<S, A, E, F> {
+
+    override val actionType: KClass<F> = actionType
+
+    override val concurrency: SideEffectConcurrency = concurrency
+
+    override val timeout: Duration? = timeout
+
+    override fun SideEffectScope<S, A, E>.onTimeout(action: F) {
+        onTimeout?.invoke(this, action)
+    }
+
+    override suspend fun SideEffectScope<S, A, E>.invoke(action: F) {
+        effect(action)
+    }
+}

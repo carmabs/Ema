@@ -1,23 +1,24 @@
 // Library-wide configuration. Dependency and plugin versions live in gradle/libs.versions.toml
 rootProject.ext {
 
-    emaVersioning = [
+    emanateVersioning = [
             minSdk                 : 24,
             compileSdk             : 37,
             targetSdk              : 37,
             versionCode            : 18,
             versionName            : "7.0.0-SNAPSHOT",
             groupId                : 'com.github.carmabs',
-            artifactCoreId         : 'ema-core',
-            artifactAndroidId      : 'ema-android',
-            artifactComposeId      : 'ema-compose',
-            artifactAndroidViewId  : 'ema-android-view',
+            artifactCoreId         : 'emanate-core',
+            artifactAndroidId      : 'emanate-android',
+            artifactComposeId      : 'emanate-compose',
+            artifactAndroidViewId  : 'emanate-android-view',
+            artifactTestId         : 'emanate-test',
             javaVersion            : JavaVersion.VERSION_21,
             kotlinJvmTarget        : "21",
             testRunner             : "androidx.test.runner.AndroidJUnitRunner",
-            resourceExclusions     : ['META-INF/kotlinx-io.kotlin_module', 'META-INF/ema-android_debug.kotlin_module'],
-            namespaceAndroid       : 'com.carmabs.ema.android',
-            namespaceCompose       : 'com.carmabs.ema.compose',
-            namespaceAndroidView   : 'com.carmabs.ema.android.view'
+            resourceExclusions     : ['META-INF/kotlinx-io.kotlin_module', 'META-INF/emanate-android_debug.kotlin_module'],
+            namespaceAndroid       : 'com.carmabs.emanate.android',
+            namespaceCompose       : 'com.carmabs.emanate.compose',
+            namespaceAndroidView   : 'com.carmabs.emanate.android.view'
     ]
 }

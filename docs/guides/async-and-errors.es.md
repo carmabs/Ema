@@ -1,6 +1,11 @@
 # Trabajo asíncrono y errores
 
-Ejecuta trabajo suspendido en el ViewModel con `sideEffect`:
+En un `EmaViewModel`, el trabajo suspendido se ejecuta en los side effects declarados en `setup`: los lanzan las acciones
+de su tipo y comunican su resultado despachando acciones, como se explica en [Source](../concepts/source.es.md). Siguen
+la misma configuración que el `sideEffect` de los ViewModels clásicos que se describe aquí: las acciones por defecto, la
+política de excepciones y los casos de uso ejecutándose en el dispatcher de segundo plano.
+
+En un ViewModel clásico, ejecuta trabajo suspendido con `sideEffect`:
 
 ```kotlin
 private fun doLogin() {
@@ -55,32 +60,42 @@ singleSideEffect("search") {
 
 ## Errores
 
-**Por defecto, las excepciones lanzadas dentro de `sideEffect` se capturan y se ignoran**, salvo que uses `onError` o
-configures una acción por defecto. Elige una política en el `sideEffectConfig` de la [configuración](configuration.es.md):
+La `errorPolicy` de la [configuración](configuration.es.md) decide qué pasa cuando un side effect lanza una excepción, y
+también un middleware o un reducer de un `EmaViewModel` o una `EmaSource`. Con `Catch`, la acción de un middleware o un
+reducer que falla se descarta, sin cambiar el estado, y las siguientes acciones se procesan con normalidad:
+
+| `EmaErrorPolicy`  | Efecto |
+|-------------------|--------|
+| `Catch(onError)`  | **Por defecto, y en las builds de release con `EmaConfiguration.Android(debug)`.** La excepción se captura y se escribe en el `logger`, y el ViewModel sigue funcionando. `onError` también recibe cada una. |
+| `Throw`           | La excepción se relanza y la app falla en el momento. **En las builds de debug con `EmaConfiguration.Android(debug)`.** |
 
 ```kotlin
-Ema.init(
-    EmaConfiguration.Android.copy(
-        sideEffectConfig = EmaConfiguration.Android.sideEffectConfig.copy(
-            exceptionPolicy = EmaSideEffectConfig.ExceptionPolicy.CatchExceptions(
-                defaultAction = { error -> Log.e("Ema", "${error.reflection.methodName} failed", error.exception) }
-            ),
-            defaultSuccessAction = { success -> /* por ejemplo, analítica */ },
-            defaultFinishAction = { reflection -> /* ... */ }
-        )
+Emanate.init(
+    EmaConfiguration.Android(debug = BuildConfig.DEBUG).copy(
+        errorPolicy = EmaErrorPolicy.Catch { error -> crashReporter.record(error.exception) }
     )
 )
 ```
 
-| Opción                                | Efecto                                                                         |
-|---------------------------------------|--------------------------------------------------------------------------------|
-| `CatchExceptions(defaultAction)`      | **Por defecto.** Las excepciones se capturan. Se llama a `defaultAction` con cada una. |
-| `ThrowExceptions`                     | Las excepciones se relanzan y la app falla. Útil mientras desarrollas.         |
-| `defaultSuccessAction`                | Se llama cada vez que un `sideEffect` termina bien.                            |
-| `defaultFinishAction`                 | Se llama cada vez que un `sideEffect` termina.                                 |
+`onError` recibe un `EmaError` con la excepción y su `reflection`: el nombre del ViewModel y de la función que lanzó el
+trabajo. Consulta [Nombrar los side effects](configuration.es.md#nombrar-los-side-effects).
 
-Los callbacks reciben un `EmaReflection` (o `EmaReflectionData` / `EmaReflectionException`) con el nombre del ViewModel y
-de la función que lanzó el trabajo, útil para los logs. Consulta [Nombrar los side effects](configuration.es.md#nombrar-los-side-effects).
+Para seguir cada side effect, por ejemplo para medirlos, asigna un `sideEffectListener`. Se llama a su `onSuccess` y su
+`onFinish` cuando termina cada uno:
+
+```kotlin
+EmaConfiguration.Android(debug = BuildConfig.DEBUG).copy(
+    sideEffectListener = object : EmaSideEffectListener {
+        override fun onFinish(reflection: Reflection) = analytics.track(reflection.methodName)
+    }
+)
+```
+
+En los ViewModels clásicos también se aplica a `onAction`, a los métodos del ciclo de vida, como `onStateCreated` u
+`onViewResumed`, y a los listeners de `registerBroadcastListener`, que siguen recibiendo después de un error.
+`onAction` cambia el estado de forma imperativa, así que con `Catch` se mantienen los cambios hechos antes de la
+excepción. La vista llama directamente a las funciones públicas de un `EmaViewModelClassic`, así que Emanate no puede
+capturar sus excepciones: lanza con `sideEffect` el trabajo que pueda fallar.
 
 `sideEffect(throwException = true) { }` relanza las excepciones de un único side effect, sea cual sea la política.
 

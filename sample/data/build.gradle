@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    compileSdk = rootProject.emaVersioning.compileSdk
+    compileSdk = rootProject.emanateVersioning.compileSdk
 
     defaultConfig {
-        minSdk = rootProject.emaVersioning.minSdk
-        targetSdk = rootProject.emaVersioning.targetSdk
+        minSdk = rootProject.emanateVersioning.minSdk
+        targetSdk = rootProject.emanateVersioning.targetSdk
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles 'consumer-rules.pro'
@@ -21,7 +21,7 @@ android {
     }
 
 
-    def javaVersion = rootProject.emaVersioning.javaVersion
+    def javaVersion = rootProject.emanateVersioning.javaVersion
 
     compileOptions {
         sourceCompatibility = javaVersion
@@ -30,11 +30,11 @@ android {
 
     kotlin {
         compilerOptions {
-            jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.fromTarget(rootProject.emaVersioning.kotlinJvmTarget)
+            jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.fromTarget(rootProject.emanateVersioning.kotlinJvmTarget)
         }
     }
 
-    namespace = 'com.carmabs.ema.sample.data'
+    namespace = 'com.carmabs.emanate.sample.data'
 
 }
 

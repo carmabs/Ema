@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    compileSdk = rootProject.emaVersioning.compileSdk
+    compileSdk = rootProject.emanateVersioning.compileSdk
 
     defaultConfig {
-        minSdk = rootProject.emaVersioning.minSdk
-        targetSdk = rootProject.emaVersioning.targetSdk
+        minSdk = rootProject.emanateVersioning.minSdk
+        targetSdk = rootProject.emanateVersioning.targetSdk
         testInstrumentationRunner = "android.support.test.runner.AndroidJUnitRunner"
     }
     flavorDimensions = ["default"]
@@ -27,7 +27,7 @@ android {
         compose = true
     }
 
-    def javaVersion = rootProject.emaVersioning.javaVersion
+    def javaVersion = rootProject.emanateVersioning.javaVersion
 
     compileOptions {
         sourceCompatibility = javaVersion
@@ -36,7 +36,7 @@ android {
 
     kotlin {
         compilerOptions {
-            jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.fromTarget(rootProject.emaVersioning.kotlinJvmTarget)
+            jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.fromTarget(rootProject.emanateVersioning.kotlinJvmTarget)
         }
     }
 
@@ -46,7 +46,7 @@ android {
         }
     }
 
-    namespace = 'com.carmabs.ema.sample.ema'
+    namespace = 'com.carmabs.emanate.sample.ui'
     buildFeatures {
         viewBinding = true
     }
@@ -55,9 +55,9 @@ android {
 dependencies {
     implementation project(path: ':presentation')
     implementation project(path: ':android-utils')
-    implementation project(rootProject.emaLibraries.emaAndroidCompose)
-    implementation project(rootProject.emaLibraries.emaAndroid)
-    implementation project(rootProject.emaLibraries.emaAndroidView)
+    implementation project(rootProject.emanateLibraries.emanateAndroidCompose)
+    implementation project(rootProject.emanateLibraries.emanateAndroid)
+    implementation project(rootProject.emanateLibraries.emanateAndroidView)
     implementation libs.koin.android
     implementation libs.material
     implementation libs.androidx.compose.material3

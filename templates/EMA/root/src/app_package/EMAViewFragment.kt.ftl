@@ -1,8 +1,8 @@
 package ${packageName}
 
-import com.carmabs.ema.android.ui.EmaFragment
-import com.carmabs.ema.android.navigation.EmaNavigator
-import com.carmabs.ema.core.state.EmaExtraData
+import com.carmabs.emanate.android.ui.EmaFragment
+import com.carmabs.emanate.android.navigation.EmaNavigator
+import com.carmabs.emanate.core.state.EmaExtraData
 
 
 import org.koin.android.ext.android.inject

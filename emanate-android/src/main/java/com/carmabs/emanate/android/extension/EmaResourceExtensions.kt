@@ -1,0 +1,185 @@
+package com.carmabs.emanate.android.extension
+
+import android.content.ContentResolver
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.PorterDuff
+import android.graphics.Typeface
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
+import android.net.Uri
+import android.util.TypedValue
+import androidx.annotation.AnyRes
+import androidx.annotation.AttrRes
+import androidx.annotation.ColorInt
+import androidx.annotation.ColorRes
+import androidx.annotation.DimenRes
+import androidx.annotation.DrawableRes
+import androidx.annotation.FontRes
+import androidx.annotation.PluralsRes
+import androidx.annotation.StringRes
+import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.drawable.toBitmap
+import com.carmabs.emanate.core.Emanate
+import com.carmabs.emanate.core.constants.FLOAT_ONE
+import com.carmabs.emanate.core.constants.INT_ZERO
+import com.carmabs.emanate.core.utils.EmaUtils
+import com.carmabs.emanate.core.value.EmaUriRes
+import com.carmabs.emanate.core.value.EmaUriType
+import java.io.ByteArrayOutputStream
+import kotlinx.coroutines.withContext
+
+/*
+ * <p>
+ * Copyright (c) 2020, Carmabs. All rights reserved.
+ * </p>
+ *
+ * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
+ *
+ * Created by: Carlos Mateo Benito on 20/1/19.
+ */
+
+/**
+ * Get a string through a @StringRes formatted with  params
+ * @param context Application context
+ * @param data Params to be set on the string.
+ *
+ * Example: Hello world %d -> data = 1 -> Hello wworld 1
+ */
+fun @receiver:StringRes Int.getFormattedString(context: Context, vararg data: Any?): String =
+    String.format(context.getString(this), *data)
+
+fun @receiver:PluralsRes Int.getFormattedPluralsString(context: Context, times: Int, vararg data: Any?): String =
+    context.resources.getQuantityString(this, times, *data)
+
+fun @receiver:FontRes Int.getTypeface(context: Context): Typeface = ResourcesCompat.getFont(context, this)!!
+
+/**
+ * Will return the size to maintain the proportions, keeping the max target size possible on width or height
+ */
+fun Drawable.fitInTargetMaxSizeProportionally(targetWidth: Int?, targetHeight: Int?): Pair<Int, Int> =
+    EmaUtils.Size.fitInTargetMaxSizeProportionally(
+        intrinsicWidth,
+        intrinsicHeight,
+        targetWidth ?: intrinsicWidth,
+        targetHeight ?: intrinsicHeight
+    )
+
+/**
+ * Get color from a @ColorRes
+ * @param context Application context
+ */
+
+fun @receiver:ColorRes Int.getColor(context: Context): Int = ContextCompat.getColor(context, this)
+
+fun @receiver:AttrRes Int.getAttributeDimenValue(context: Context): Int {
+    val tv = TypedValue()
+    return if (context.theme.resolveAttribute(this, tv, true)) {
+        TypedValue.complexToDimensionPixelSize(tv.data, context.resources.displayMetrics)
+    } else {
+        INT_ZERO
+    }
+}
+
+fun @receiver:DrawableRes Int.getDrawable(context: Context): Drawable = ContextCompat.getDrawable(context, this)!!
+
+fun @receiver:DimenRes Int.getDimension(context: Context): Float = context.resources.getDimension(this)
+
+fun @receiver:FontRes Int.getFont(context: Context): Typeface = ResourcesCompat.getFont(context, this)!!
+
+fun @receiver:DrawableRes Int.getBitmap(context: Context, width: Int? = null, height: Int? = null): Bitmap = when {
+    width != null && height != null -> {
+        ContextCompat.getDrawable(context, this)!!.toBitmap(width = width, height = height)
+    }
+
+    width != null -> {
+        ContextCompat.getDrawable(context, this)!!.toBitmap(width = width)
+    }
+
+    height != null -> {
+        ContextCompat.getDrawable(context, this)!!.toBitmap(height = height)
+    }
+
+    else -> {
+        ContextCompat.getDrawable(context, this)!!.toBitmap()
+    }
+}
+
+fun @receiver:DrawableRes Int.getByteArray(context: Context): ByteArray {
+    val drawable = getDrawable(context)
+    val bitmap = (drawable as BitmapDrawable).bitmap
+    val stream = ByteArrayOutputStream()
+    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+    return stream.toByteArray()
+}
+
+fun @receiver:ColorInt Int.toHex(): String = String.format("#%06X", (0xFFFFFF and this))
+
+suspend fun @receiver:DrawableRes Int.getBitmapFromResource(
+    context: Context,
+    width: Int? = null,
+    height: Int? = null,
+    @ColorInt color: Int? = null
+): Bitmap = withContext(Emanate.configuration.dispatchers.default) {
+    ContextCompat.getDrawable(context, this@getBitmapFromResource)?.let {
+        val drawable: Drawable = it
+        val bitmap: Bitmap = Bitmap.createBitmap(
+            width ?: drawable.intrinsicWidth,
+            height ?: drawable.intrinsicHeight,
+            Bitmap.Config.ARGB_8888
+        )
+        val canvas = Canvas(bitmap)
+        // TO ANTIALIAS //
+        val ratio = drawable.intrinsicWidth / drawable.intrinsicHeight.toFloat()
+        val boundWidth = when {
+            ratio < FLOAT_ONE -> bitmap.height * ratio
+            else -> bitmap.width.toFloat()
+        }
+        val boundHeight = when {
+            ratio < FLOAT_ONE -> bitmap.height.toFloat()
+            else -> bitmap.width / ratio
+        }
+        canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
+        drawable.setBounds(
+            (bitmap.width / 2f - boundWidth / 2f).toInt(),
+            (bitmap.height / 2f - boundHeight / 2f).toInt(),
+            (bitmap.width / 2f + boundWidth / 2f).toInt(),
+            (bitmap.height / 2f + boundHeight / 2f).toInt()
+        )
+        color?.also { col -> drawable.setTint(col) }
+        drawable.draw(canvas)
+        bitmap
+    } ?: throw Exception("Drawable not found")
+}
+
+suspend fun @receiver:DrawableRes Int.getBitmapCropFromResource(
+    context: Context,
+    width: Int? = null,
+    height: Int? = null
+): Bitmap = withContext(Emanate.configuration.dispatchers.default) {
+    val bitmap: Bitmap =
+        BitmapFactory.decodeResource(context.resources, this@getBitmapCropFromResource)
+    bitmap.resizeCropSquare()
+}
+
+fun @receiver:AnyRes Int.toUriRes(context: Context, type: EmaUriType): EmaUriRes {
+    val resources = context.resources
+    val uriResource = Uri.Builder()
+        .scheme(ContentResolver.SCHEME_ANDROID_RESOURCE)
+        .authority(context.packageName) // Look up the resources in the application with its splits loaded
+        .appendPath(resources.getResourceTypeName(this))
+        .appendPath(
+            String.format(
+                "%s:%s",
+                resources.getResourcePackageName(this), // Look up the dynamic resource in the split namespace.
+                resources.getResourceEntryName(this)
+            )
+        )
+        .build()
+
+    return EmaUriRes(uriResource.toString(), type)
+}

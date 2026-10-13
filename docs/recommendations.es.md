@@ -1,17 +1,17 @@
 # Recomendaciones
 
-Nada de esto lo exige Ema, pero así está organizada la app `sample/` y funciona bien.
+Nada de esto lo exige Emanate, pero así está organizada la app `sample/` y funciona bien.
 
 ## Divide la app en módulos
 
-| Módulo          | Contiene                                                                         | Tipo          | Depende de                         |
-|-----------------|----------------------------------------------------------------------------------|---------------|------------------------------------|
-| `app`           | La `Application`, la configuración de la inyección de dependencias y el manifest. | App Android  | Todo                               |
-| `ui`            | Composables, fragments, activities, navigators, adapters, diálogos, tema y recursos. | Librería Android | `presentation`, `android-utils`, `ema-compose`, `ema-android-view` |
-| `presentation`  | Estado, acciones, eventos, inicializadores y ViewModels.                         | **Kotlin puro** | `domain`                         |
-| `domain`        | Modelos, casos de uso e interfaces de los repositorios.                          | **Kotlin puro** | `ema-core`                       |
-| `data`          | Implementaciones de los repositorios, red y almacenamiento.                      | Librería Android | `domain`, `android-utils`       |
-| `android-utils` | Ayudas de Android compartidas por varios módulos.                                | Librería Android |                                 |
+| Módulo          | Contiene                                                                             | Tipo             | Depende de                                                                 |
+|-----------------|--------------------------------------------------------------------------------------|------------------|----------------------------------------------------------------------------|
+| `app`           | La `Application`, la configuración de la inyección de dependencias y el manifest.    | App Android      | Todo                                                                       |
+| `ui`            | Composables, fragments, activities, navigators, adapters, diálogos, tema y recursos. | Librería Android | `presentation`, `android-utils`, `emanate-compose`, `emanate-android-view` |
+| `presentation`  | Estado, acciones, eventos, inicializadores y ViewModels.                             | **Kotlin puro**  | `domain`                                                                   |
+| `domain`        | Modelos, casos de uso e interfaces de los repositorios.                              | **Kotlin puro**  | `emanate-core`                                                             |
+| `data`          | Implementaciones de los repositorios, red y almacenamiento.                          | Librería Android | `domain`, `android-utils`                                                  |
+| `android-utils` | Ayudas de Android compartidas por varios módulos.                                    | Librería Android |                                                                            |
 
 ```mermaid
 %%{init: {"flowchart": {"curve": "step"}}}%%
@@ -21,7 +21,7 @@ flowchart LR
     ui --> presentation
     presentation --> domain
     data --> domain
-    domain --> ema-core
+    domain --> emanate-core
 ```
 
 El diagrama no incluye `android-utils`, que usan `ui` y `data`.
@@ -30,7 +30,7 @@ Mantener `presentation` sin Android tiene dos ventajas:
 
 - **El compilador hace cumplir la arquitectura.** Un ViewModel no puede usar `Context`, recursos ni vistas por error,
   porque el módulo no los tiene.
-- **Está preparado para Kotlin Multiplatform.** `ema-core` es multiplataforma, así que `presentation` y `domain` pueden
+- **Está preparado para Kotlin Multiplatform.** `emanate-core` es multiplataforma, así que `presentation` y `domain` pueden
   convertirse en módulos multiplataforma y compartir los ViewModels con otras plataformas. Consulta
   [Kotlin Multiplatform](guides/multiplatform.es.md).
 
@@ -84,7 +84,7 @@ abstract class BaseScreenComposable<S : EmaState, A : EmaAction, E : EmaEvent> :
 
 ```kotlin
 abstract class BaseViewModel<S : EmaState, A : EmaAction, E : EmaEvent>(initialDataState: S) :
-    EmaViewModelAction<S, A, E>(initialDataState)
+    EmaViewModel<S, A, E>(initialDataState)
 ```
 
 Un `BaseViewModel`, aunque esté vacío, te da un único sitio donde añadir algo más adelante. Con las vistas de Android,
@@ -98,6 +98,7 @@ un `BaseFragment` cumple el mismo papel que `BaseScreenComposable`, con los prov
 - Los casos de uso tienen una sola responsabilidad y reciben una única data class `Input`.
 - Pon los valores derivados en el estado (`val showCreateButton get() = ...`), no en la vista.
 - La vista no llama a más funciones del ViewModel que `dispatch`.
+- En un `EmaViewModel`, los reducers solo calculan el estado: la lógica de negocio va en los side effects.
 
 ## Comparte una paleta
 

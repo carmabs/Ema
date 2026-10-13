@@ -95,5 +95,5 @@ Consulta la tabla de [Arquitectura](architecture.es.md#estado-o-evento).
 
 ## Pantallas sin eventos
 
-Usa `EmaEvent.EMPTY` como tipo de evento, y `EmaViewModel.EMPTY` en una pantalla sin estado, acciones ni eventos,
+Usa `EmaEvent.EMPTY` como tipo de evento, y `EmaViewModelContract.EMPTY` en una pantalla sin estado, acciones ni eventos,
 como una activity que solo aloja otras pantallas.

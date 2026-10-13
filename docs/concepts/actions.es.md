@@ -28,7 +28,28 @@ sitios donde tienes que gestionarla.
 
 ## Gestionar las acciones
 
-Hereda de `EmaViewModelAction<State, Action, Event>` e implementa `onAction`:
+En un `EmaViewModel`, declara en `setup` los reducers, los middlewares y los side effects de cada tipo de acción. Con el
+tipo `sealed`, un reducer gestiona todas las acciones de la pantalla en un `when` exhaustivo:
+
+```kotlin
+override fun setup() = source {
+    reducers {
+        add<LoginAction> { action ->
+            when (action) {
+                is LoginAction.UserNameWritten -> state.copy(userName = action.user, userNameError = false)
+                is LoginAction.PasswordWritten -> state.copy(userPassword = action.password, passwordError = false)
+                // ...
+            }
+        }
+    }
+    sideEffects {
+        add<LoginAction.Login> { /* ... */ }
+    }
+}
+```
+
+Consulta [Source](source.es.md). En un ViewModel clásico, hereda de `EmaViewModelAction<State, Action, Event>` e
+implementa `onAction`:
 
 ```kotlin
 class LoginViewModel(
@@ -49,10 +70,10 @@ class LoginViewModel(
 }
 ```
 
-`onAction` es `protected`. El punto de entrada público es `dispatch(action)`, así que la vista solo puede comunicarse
-mediante acciones y no puede llamar a funciones arbitrarias del ViewModel.
+En los dos, el punto de entrada público es `dispatch(action)`, así que la vista solo puede comunicarse mediante acciones
+y no puede llamar a funciones arbitrarias del ViewModel.
 
-Si prefieres no declarar acciones, `EmaViewModelBasic<State, Event>` permite que la vista llame a funciones públicas del
+Si prefieres no declarar acciones, `EmaViewModelClassic<State, Event>` permite que la vista llame a funciones públicas del
 ViewModel, como en el MVVM clásico. Se recomiendan las acciones: consulta [ViewModel](viewmodel.es.md).
 
 ## Enviarlas desde la vista
@@ -74,4 +95,5 @@ consulta [Vistas de Android](../android-view/screens.es.md#enviar-acciones).
 |---------------------------|-------------------------------------------------------------------|
 | `EmaAction`               | Las acciones de una pantalla. Tus acciones heredan de este tipo.  |
 | `EmaAction.Initializer`   | Los datos con los que empieza una pantalla. Consulta [Inicializadores](../guides/initializers.es.md). |
+| `EmaAction.Lifecycle`     | El ciclo de vida de la vista, que recibe un `EmaViewModel`: `Started`, `Resumed`, `Paused`, `Stopped` y `Destroyed`. |
 | `EmaAction.EMPTY`         | El tipo de acción de una pantalla sin acciones.                   |

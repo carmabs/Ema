@@ -1,6 +1,6 @@
 # Compose navigation
 
-In Ema the **ViewModel never navigates**. It posts an [event](../concepts/events.md) that says what happened,
+In Emanate the **ViewModel never navigates**. It posts an [event](../concepts/events.md) that says what happened,
 and the `onEvent` lambda of the destination hands it to a **navigator**, which knows how to move around.
 
 ```mermaid
@@ -85,7 +85,10 @@ navController.navigate(
 
 Another overload receives a `NavOptionsBuilder` lambda, like `navigate(route) { launchSingleTop = true }`.
 
-The destination declares how to read it with `initializerSupport`. In routes, use the `kSerialization` strategy:
+The destination declares how to read it with `initializerSupport`. The initializer travels in the route as text, so
+Compose navigation reads it with kotlinx.serialization: `EmaInitializerSupport` only accepts the `kSerialization`
+strategy, and the `parcelable` and `serializable` strategies, which only work with Bundles, fail if they are used in a
+route:
 
 ```kotlin
 createComposableScreen(

@@ -3,7 +3,7 @@ package com.carmabs.domain.repository
 import com.carmabs.domain.exception.LoginException
 import com.carmabs.domain.model.LoginRequest
 import com.carmabs.domain.model.User
-import com.carmabs.ema.core.model.EmaResult
+import com.carmabs.emanate.core.model.EmaResult
 
 /**
  *  *<p>

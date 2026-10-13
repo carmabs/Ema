@@ -77,7 +77,7 @@ override fun LoginFragmentBinding.onState(state: LoginState) {
 
 > `bindForUpdate` encuentra el valor anterior por reflexión, a partir del nombre del campo. Si activas R8 o ProGuard,
 > conserva los campos de tus clases de estado (por ejemplo,
-> `-keepclassmembers class * implements com.carmabs.ema.core.state.EmaState { *; }`).
+> `-keepclassmembers class * implements com.carmabs.emanate.core.state.EmaState { *; }`).
 
 ## Enviar acciones
 
@@ -115,13 +115,13 @@ del estado, el campo se reescribe porque ya no coincide. `EmaEditText` hace la c
 
 ## Ciclo de vida
 
-| Callback de la vista | Lo que hace Ema                                                                 |
-|----------------------|---------------------------------------------------------------------------------|
-| `onViewCreated` (Fragment) / `onCreate` (Activity) | `viewModel.onCreated(initializer)`                |
-| `onStart`            | `viewModel.onStartView()`                                                       |
-| `onResume`           | Empieza a recoger el estado y los eventos (una vez) y llama a `viewModel.onResumeView()`. |
-| `onPause`            | `viewModel.onPauseView()`                                                       |
-| `onStop`             | Deja de recoger y llama a `viewModel.onStopView()`.                             |
+| Callback de la vista                               | Lo que hace Emanate                                                                       |
+|----------------------------------------------------|-------------------------------------------------------------------------------------------|
+| `onViewCreated` (Fragment) / `onCreate` (Activity) | `viewModel.onCreated(initializer)`                                                        |
+| `onStart`                                          | `viewModel.onStartView()`                                                                 |
+| `onResume`                                         | Empieza a recoger el estado y los eventos (una vez) y llama a `viewModel.onResumeView()`. |
+| `onPause`                                          | `viewModel.onPauseView()`                                                                 |
+| `onStop`                                           | Deja de recoger y llama a `viewModel.onStopView()`.                                       |
 
 El estado se recoge en `onResume` y no antes porque los diálogos y los fragments no se pueden mostrar de forma segura
 antes de que se haya restaurado el estado guardado.
@@ -151,15 +151,15 @@ Los Fragments de la misma Activity que usan la misma clase de ViewModel reciben 
 
 ## Activities
 
-Una Activity que solo aloja fragments usa `EmaViewModel.EMPTY` y un navigator dueño del grafo de navegación:
+Una Activity que solo aloja fragments usa `EmaViewModelContract.EMPTY` y un navigator dueño del grafo de navegación:
 
 ```kotlin
 class SplashActivity :
-    EmaToolbarActivity<SplashActivityBinding, EmaState.EMPTY, EmaViewModel.EMPTY, EmaEvent.EMPTY>() {
+    EmaToolbarActivity<SplashActivityBinding, EmaState.EMPTY, EmaViewModelContract.EMPTY, EmaEvent.EMPTY>() {
 
     override fun createViewBinding(inflater: LayoutInflater) = SplashActivityBinding.inflate(inflater)
 
-    override fun provideViewModel() = EmaViewModel.EMPTY
+    override fun provideViewModel() = EmaViewModelContract.EMPTY
 
     override fun SplashActivityBinding.onState(data: EmaState.EMPTY) = Unit
 

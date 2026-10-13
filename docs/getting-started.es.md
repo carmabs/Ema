@@ -23,47 +23,49 @@ dependencyResolutionManagement {
 Añade las dependencias de tu tecnología de UI:
 
 ```kotlin
-val emaVersion = "7.0.0"
+val emanateVersion = "7.0.0"
 
 dependencies {
     // Compose (recomendado)
-    implementation("com.github.carmabs.ema:ema-android:$emaVersion")
-    implementation("com.github.carmabs.ema:ema-compose:$emaVersion")
+    implementation("com.github.carmabs.ema:emanate-android:$emanateVersion")
+    implementation("com.github.carmabs.ema:emanate-compose:$emanateVersion")
 
     // Vistas de Android: Fragments y Activities
-    implementation("com.github.carmabs.ema:ema-android-view:$emaVersion")
+    implementation("com.github.carmabs.ema:emanate-android-view:$emanateVersion")
 }
 ```
 
-En un módulo de Kotlin puro, como un módulo `presentation` con los ViewModels, añade solo el núcleo:
+En un módulo de Kotlin puro, como un módulo `presentation` con los ViewModels, añade solo el núcleo, y `emanate-test` para
+testearlos:
 
 ```kotlin
 dependencies {
-    implementation("com.github.carmabs.ema:ema-core:$emaVersion")
+    implementation("com.github.carmabs.ema:emanate-core:$emanateVersion")
+    testImplementation("com.github.carmabs.ema:emanate-test:$emanateVersion")
 }
 ```
 
-`ema-core` es una librería Kotlin Multiplatform, así que también se puede usar desde el `commonMain` de un módulo
+`emanate-core` es una librería Kotlin Multiplatform, así que también se puede usar desde el `commonMain` de un módulo
 multiplataforma. Consulta [Kotlin Multiplatform](guides/multiplatform.es.md).
 
-## Inicializar Ema
+## Inicializar Emanate
 
-Llama a `Ema.init` una vez, cuando arranca la aplicación y antes de crear ningún ViewModel.
-`EmaConfiguration.Android` es la configuración para apps Android:
+Llama a `Emanate.init` una vez, cuando arranca la aplicación y antes de crear ningún ViewModel.
+`EmaConfiguration.Android(debug)` es la configuración para apps Android:
 
 ```kotlin
 class MyApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        Ema.init(EmaConfiguration.Android)
+        Emanate.init(EmaConfiguration.Android(debug = BuildConfig.DEBUG))
     }
 }
 ```
 
 Registra la aplicación en el `AndroidManifest.xml` (`android:name=".MyApplication"`).
-La configuración decide los dispatchers, cómo se gestionan los errores dentro de `sideEffect` y cómo se imprimen los
-objetos en los logs. Consulta [Configuración](guides/configuration.es.md).
+La configuración decide los dispatchers, qué pasa con las excepciones y dónde van los logs: con `BuildConfig.DEBUG`,
+las builds de debug registran y fallan en el momento, y las de release no registran nada y siguen funcionando. Consulta [Configuración](guides/configuration.es.md).
 
 ## Tu primera pantalla
 
@@ -82,14 +84,18 @@ sealed interface CounterEvent : EmaEvent {
 }
 
 class CounterViewModel :
-    EmaViewModelAction<CounterState, CounterAction, CounterEvent>(CounterState()) {
+    EmaViewModel<CounterState, CounterAction, CounterEvent>(CounterState()) {
 
-    override fun onStateCreated(initializer: EmaAction.Initializer?) = Unit
-
-    override fun onAction(action: CounterAction) {
-        when (action) {
-            CounterAction.Increment -> {
-                updateState { copy(count = count + 1) }
+    override fun setup() = source {
+        reducers {
+            add<CounterAction> { action ->
+                when (action) {
+                    CounterAction.Increment -> state.copy(count = state.count + 1)
+                }
+            }
+        }
+        sideEffects {
+            add<CounterAction.Increment> {
                 if (state.count == LIMIT) postEvent(CounterEvent.LimitReached(LIMIT))
             }
         }
@@ -101,9 +107,13 @@ class CounterViewModel :
 }
 ```
 
-- `updateState { copy(...) }` crea el siguiente estado y avisa a la vista.
-- `postEvent(...)` envía un evento de un solo uso a la vista.
+- El reducer devuelve el siguiente estado para cada acción, y se avisa a la vista.
+- El side effect se ejecuta después del reducer, con el nuevo estado, y `postEvent(...)` envía un evento de un solo uso a
+  la vista.
 - El ViewModel nunca toca clases de Android, así que se puede testear en la JVM.
+
+`EmaViewModel` es el ViewModel recomendado. También está disponible el clásico `EmaViewModelAction`, que actualiza el
+estado de forma imperativa en `onAction`: consulta [ViewModel](concepts/viewmodel.es.md).
 
 ### La pantalla
 
@@ -175,8 +185,8 @@ Si construyes la UI con Fragments y Activities, la misma pantalla se escribe com
 ## Qué ha pasado
 
 1. El usuario pulsa el botón: la pantalla llama a `actions.dispatch(Increment)`.
-2. El ViewModel calcula el siguiente estado con `updateState`.
+2. El reducer del ViewModel calcula el siguiente estado.
 3. La pantalla recibe el nuevo estado y se recompone.
-4. En la décima pulsación el ViewModel además publica `LimitReached`, que la pantalla muestra una vez y consume.
+4. En la décima pulsación el side effect además publica `LimitReached`, que la pantalla muestra una vez y consume.
 
 Sigue con [Arquitectura](concepts/architecture.es.md).

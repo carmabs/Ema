@@ -1,6 +1,6 @@
 # Kotlin Multiplatform
 
-`ema-core` es una librería Kotlin Multiplatform. Todo su código está en `commonMain`, así que los estados, las acciones,
+`emanate-core` es una librería Kotlin Multiplatform. Todo su código está en `commonMain`, así que los estados, las acciones,
 los eventos, los ViewModels, los casos de uso, `EmaResult`, `EmaText` y el resto del núcleo están disponibles en todos
 los targets:
 
@@ -14,13 +14,13 @@ los targets:
 
 ## Compartir la capa de presentación
 
-Pon los ViewModels en el `commonMain` de un módulo multiplataforma que dependa de `ema-core`:
+Pon los ViewModels en el `commonMain` de un módulo multiplataforma que dependa de `emanate-core`:
 
 ```kotlin
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation("com.github.carmabs.ema:ema-core:$emaVersion")
+            implementation("com.github.carmabs.ema:emanate-core:$emanateVersion")
         }
     }
 }
@@ -31,7 +31,7 @@ En cualquier otra plataforma basta con recoger `stateFlow` y `eventFlow` y envia
 
 ## Lo que no está disponible en todas partes
 
-- **Configuración.** `EmaConfiguration.Android` está en `ema-android`. En otras plataformas llama a `Ema.init` con una
+- **Configuración.** `EmaConfiguration.Android(debug)` está en `emanate-android`. En otras plataformas llama a `Emanate.init` con una
   `EmaConfiguration` hecha para ellas, o usa la configuración por defecto. Consulta [Configuración](configuration.es.md).
 - **Nombres de función en los logs.** Solo la configuración de Android obtiene el nombre de la función que lanzó un
   `sideEffect`. En el resto, pasa `logName`.

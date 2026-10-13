@@ -1,6 +1,6 @@
 # Dependency injection
 
-Ema does not depend on any dependency injection framework. Wherever it needs a ViewModel, it asks you for it with a
+Emanate does not depend on any dependency injection framework. Wherever it needs a ViewModel, it asks you for it with a
 function, so you can use Koin, Hilt, Kodein, a manual container or plain constructors.
 
 ```kotlin
@@ -17,21 +17,21 @@ override fun provideViewModel(): LoginViewModel = LoginViewModel(loginUseCase, L
 
 ## One ViewModel per screen
 
-Ema calls the function once, when the screen is opened for the first time, and keeps the ViewModel while the screen
+Emanate calls the function once, when the screen is opened for the first time, and keeps the ViewModel while the screen
 exists: see [How the ViewModel is kept alive](../concepts/viewmodel.md#how-the-viewmodel-is-kept-alive).
 The function must create the ViewModel, not return one that already exists, so each screen gets its own. A singleton
 would be shared by every screen of that type and would keep the state of a screen that was already closed.
 
 ## With Koin
 
-This is how the `sample/` app does it. Start Koin after initializing Ema:
+This is how the `sample/` app does it. Start Koin after initializing Emanate:
 
 ```kotlin
 class EmaSampleApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        Ema.init(EmaConfiguration.Android)
+        Emanate.init(EmaConfiguration.Android(debug = BuildConfig.DEBUG))
         startKoin {
             androidContext(this@EmaSampleApplication)
             modules(dataModule, useCaseModule, uiModule)

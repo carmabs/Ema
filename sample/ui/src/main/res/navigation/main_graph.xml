@@ -2,11 +2,22 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    app:startDestination="@id/splashFragment">
-    
+    app:startDestination="@id/implementationChoiceFragment">
+
+    <!-- It stays in the back stack, so going back from the login lets choose the other implementation -->
+    <fragment
+        android:id="@+id/implementationChoiceFragment"
+        android:name="com.carmabs.emanate.ui.choice.ImplementationChoiceFragment"
+        android:label="ImplementationChoiceFragment"
+        tools:layout="@layout/implementation_choice_fragment">
+        <action
+            android:id="@+id/action_implementationChoiceFragment_to_splashFragment"
+            app:destination="@id/splashFragment" />
+    </fragment>
+
     <fragment
         android:id="@+id/splashFragment"
-        android:name="com.carmabs.ema.ui.splash.SplashFragment"
+        android:name="com.carmabs.emanate.ui.splash.SplashFragment"
         android:label="SplashFragment"
         tools:layout="@layout/splash_fragment">
         <action
@@ -17,7 +28,7 @@
     </fragment>
     <fragment
         android:id="@+id/loginFragment"
-        android:name="com.carmabs.ema.ui.login.LoginFragment"
+        android:name="com.carmabs.emanate.ui.login.LoginFragment"
         android:label="LoginFragment"
         tools:layout="@layout/login_fragment">
         <action
@@ -27,11 +38,11 @@
 
     <activity
         android:id="@+id/profileActivity"
-        android:name="com.carmabs.ema.ui.profile.ProfileActivity"
+        android:name="com.carmabs.emanate.ui.profile.ProfileActivity"
         android:label="ProfileActivity" />
     <fragment
         android:id="@+id/homeFragment"
-        android:name="com.carmabs.ema.ui.home.HomeFragment"
+        android:name="com.carmabs.emanate.ui.home.HomeFragment"
         android:label="HomeFragment"
         tools:layout="@layout/home_fragment">
         <action

@@ -1,9 +1,9 @@
 package ${packageName}
 
 import androidx.navigation.NavController
-import com.carmabs.ema.android.navigation.EmaNavigator
-import com.carmabs.ema.core.navigator.EmaBaseNavigator
-import com.carmabs.ema.core.navigator.EmaNavigationState
+import com.carmabs.emanate.android.navigation.EmaNavigator
+import com.carmabs.emanate.core.navigator.EmaBaseNavigator
+import com.carmabs.emanate.core.navigator.EmaNavigationState
 
 class ${functionalityName}Navigator(override val navController: NavController) : EmaNavigator<${functionalityName}Navigator.Navigation> {
 
