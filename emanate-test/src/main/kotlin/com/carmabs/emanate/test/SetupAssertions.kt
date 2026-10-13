@@ -1,6 +1,7 @@
 package com.carmabs.emanate.test
 
 import com.carmabs.emanate.core.action.EmaAction
+import com.carmabs.emanate.core.savestate.EmaRestoreState
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
 import com.carmabs.emanate.core.viewmodel.EmaViewModel
@@ -11,17 +12,22 @@ import kotlin.reflect.KClass
 
 /**
  * Checks that every middleware, reducer and side effect of the view model can receive the actions of its type: actions
- * of the screen, initializers, lifecycle actions or broadcast actions it listens to. A piece for a broadcast action
- * that isn't listened to in the broadcasts block never runs, and nothing fails at runtime, so this assertion catches a
- * forgotten listen. Only the types that the view model can't receive for sure are reported: two interfaces may be
- * implemented by the same action, so they are considered compatible.
+ * of the screen, initializers, lifecycle actions, the restore of the saved state or broadcast actions it listens to. A
+ * piece for a broadcast action that isn't listened to in the broadcasts block never runs, and nothing fails at runtime,
+ * so this assertion catches a forgotten listen. Only the types that the view model can't receive for sure are
+ * reported: two interfaces may be implemented by the same action, so they are considered compatible.
  *
  * @throws AssertionError with every piece that never runs
  */
 fun <S : EmaState, A : EmaAction, E : EmaEvent> EmaViewModel<S, A, E>.assertSetup() {
     val setup = sourceSetup
     val listened = setup.broadcastListeners.map { it.java }
-    val received = listOf(actionClass(), EmaAction.Initializer::class.java, EmaAction.Lifecycle::class.java) + listened
+    val received = listOf(
+        actionClass(),
+        EmaAction.Initializer::class.java,
+        EmaAction.Lifecycle::class.java,
+        EmaRestoreState::class.java
+    ) + listened
     val pieces = setup.middlewares.map { "middleware" to it.actionType } +
         setup.reducers.map { "reducer" to it.actionType } +
         setup.sideEffects.map { "side effect" to it.actionType }
