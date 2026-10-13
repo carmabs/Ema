@@ -91,7 +91,7 @@ in the constructor and pass it to the ViewModel. See [Explicit configuration](co
 ```kotlin
 class LoginViewModel(
     private val loginUseCase: LoginUseCase,
-    private val configuration: EmaConfiguration
+    configuration: EmaConfiguration
 ) : EmaViewModel<LoginState, LoginAction, LoginEvent>(LoginState.DEFAULT, configuration)
 ```
 
@@ -117,5 +117,10 @@ object EmanateModule {
 }
 ```
 
-The use cases run on the `io` dispatcher of the configuration of Emanate unless they receive another one, so pass it
-when they must use the injected configuration: `loginUseCase(input, configuration.dispatchers.io)`.
+The use cases only receive the `io` dispatcher of the configuration, in the constructor:
+
+```kotlin
+val useCaseModule = module {
+    factory { LoginUseCase(get(), get<EmaConfiguration>().dispatchers.io) }
+}
+```

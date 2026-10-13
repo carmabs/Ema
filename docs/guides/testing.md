@@ -106,9 +106,9 @@ class LoginViewModelTest {
 - The rest of the configuration is the default `EmaConfiguration()`, not the one of Emanate. Pass another one as the
   second parameter to change it: `testConfiguration(dispatcher, EmaConfiguration(logger = null))`.
 - The [use cases](utilities.md#use-cases) run on the `io` dispatcher of the configuration of Emanate unless they receive
-  another one, and the actions broadcast between ViewModels go through a broadcaster shared by the whole process.
-  Fake the use cases, or pass them the dispatcher, and don't run in parallel the tests of ViewModels that broadcast
-  actions to each other.
+  another one in the constructor: fake them, or pass them the dispatcher of the test.
+- **Each `testConfiguration` has its own broadcaster**, so the actions broadcast in a test don't reach the others. The
+  ViewModels of a test that send results to each other must receive the same configuration: create it once.
 
 ### Checking the setup
 

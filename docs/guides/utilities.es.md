@@ -60,11 +60,12 @@ result
 
 | Clase                          | Para                                                                             |
 |--------------------------------|----------------------------------------------------------------------------------|
-| `EmaUseCase<I, O>`             | Una operación `suspend`. Se ejecuta en el dispatcher de segundo plano de la [configuración](configuration.es.md) (`Dispatchers.IO` en Android), salvo que pases otro. |
-| `EmaFlowUseCase<I, O>`         | Una operación que emite valores a lo largo del tiempo (`Flow<O>`), recogida en el dispatcher de segundo plano. |
+| `EmaUseCase<I, O>`             | Una operación `suspend`. Se ejecuta en el dispatcher de segundo plano que recibe en el constructor, por defecto el `io` de la [configuración](configuration.es.md) (`Dispatchers.IO` en Android). |
+| `EmaFlowUseCase<I, O>`         | Una operación que emite valores a lo largo del tiempo (`Flow<O>`), recogida en el dispatcher de segundo plano que recibe en el constructor. |
 | `EmaSyncUseCase<I, O>`         | Una operación rápida y síncrona.                                                 |
 
 Implementa `useCaseFunction` (la función protegida) y llama al caso de uso como si fuera una función: `loginUseCase(input)`.
+Para ejecutarlo una vez en otro dispatcher, pásaselo al llamarlo: `loginUseCase(input, dispatcher)`.
 
 ## Imprimir objetos
 
@@ -75,6 +76,8 @@ los objetos anidados y las colecciones, con sangría:
 ```kotlin
 Log.d("Login", state.toStringPretty())
 ```
+
+Pasa otro printer para imprimir con él, por ejemplo el de tu propia configuración: `state.toStringPretty(printer)`.
 
 ## `EmaUtils`
 

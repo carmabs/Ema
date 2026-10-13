@@ -77,6 +77,9 @@ override fun setup() = source {
 - **El listener se elimina cuando se destruye el ViewModel**, junto con el resto de su trabajo.
 - **Tiene tipo.** El resultado es una data class, sin casts.
 - **Vive en memoria.** No se guarda si se mata el proceso.
+- **Pasa por el broadcaster de la configuración.** Por defecto todos los ViewModels usan el mismo. Los que tienen una
+  configuración con su propio broadcaster solo envían y reciben acciones entre ellos, por ejemplo los de una
+  [librería](configuration.es.md#librerías-y-sdks).
 
 ### Guardarla hasta que se reciba
 
@@ -87,7 +90,9 @@ Cubre la pantalla que todavía no se ha creado: después de que se mate el proce
 pero el ViewModel de la anterior solo se crea cuando el usuario vuelve a ella. Sin guardar el resultado, se perdería. No
 cubre un proceso que muere después de emitir el resultado: también se guarda en memoria.
 
-En los tests, `resetTestDispatchers` de `emanate-test` elimina las acciones guardadas que nadie ha recibido.
+En los tests, `resetTestDispatchers` de `emanate-test` elimina las acciones guardadas en el broadcaster compartido que
+nadie ha recibido. Cada `testConfiguration` tiene su propio broadcaster, así que sus acciones guardadas no llegan a
+otros tests.
 
 > Si el receptor muestra algo, publica un evento: espera hasta que la vista lo consume, así que se muestra cuando la
 > pantalla vuelve a estar visible.
