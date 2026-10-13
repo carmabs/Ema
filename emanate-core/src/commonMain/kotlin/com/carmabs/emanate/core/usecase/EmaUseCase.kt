@@ -11,15 +11,19 @@ import kotlinx.coroutines.withContext
  *
  * @param I Input. Must be the model object that the use case can use to make the request
  * @param O Output.Must be the model object that the use case must return
+ * @param dispatcher where the use case runs unless another one is passed when it is invoked. By default the io
+ * dispatcher of the configuration of Emanate, read when the use case is created; pass the io dispatcher of your own
+ * configuration, for example in a library.
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo</a>
  */
-abstract class EmaUseCase<I, O> {
+abstract class EmaUseCase<I, O>(private val dispatcher: CoroutineDispatcher = Emanate.configuration.dispatchers.io) {
 
     /**
      * Executes a function inside a background thread provided by dispatcher
+     * @param dispatcher by default the one of the use case
      * @return the object with the return value
      */
-    suspend operator fun invoke(input: I, dispatcher: CoroutineDispatcher = Emanate.configuration.dispatchers.io): O =
+    suspend operator fun invoke(input: I, dispatcher: CoroutineDispatcher = this.dispatcher): O =
         withContext(dispatcher) { useCaseFunction(input) }
 
     /**

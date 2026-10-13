@@ -58,6 +58,7 @@ import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
@@ -163,6 +164,21 @@ class EmaModelTest {
 
         assertSame(main, viewModel.interceptor)
         assertSame(io, useCase(Unit))
+    }
+
+    @Test
+    fun `use cases run on the dispatcher they receive instead of the one of the configuration`() = runTest {
+        val io = StandardTestDispatcher(testScheduler)
+        val useCase = object : EmaUseCase<Unit, ContinuationInterceptor?>(io) {
+            override suspend fun useCaseFunction(input: Unit) = currentCoroutineContext()[ContinuationInterceptor]
+        }
+        val flowUseCase = object : EmaFlowUseCase<Unit, ContinuationInterceptor?>(io) {
+            override fun useCaseFunction(input: Unit) =
+                flow { emit(currentCoroutineContext()[ContinuationInterceptor]) }
+        }
+
+        assertSame(io, useCase(Unit))
+        assertSame(io, flowUseCase(Unit).first())
     }
 
     @Test
