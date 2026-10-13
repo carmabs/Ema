@@ -1,6 +1,6 @@
 # Configuration
 
-Emanate is configured once, when the application starts, with `Emanate.init`:
+Emanate has a configuration for the whole application, set once, when it starts, with `Emanate.init`:
 
 ```kotlin
 class MyApplication : Application() {
@@ -16,6 +16,9 @@ class MyApplication : Application() {
 - It can be called **only once**. A second call throws `IllegalStateException`.
 - If it is never called, the default `EmaConfiguration()` is used. That is the usual case in unit tests and in
   non-Android platforms.
+
+A ViewModel or a source can also receive its own configuration, which is used instead of the one of the application.
+See [Explicit configuration](#explicit-configuration).
 
 ## What can be configured
 
@@ -114,3 +117,38 @@ Emanate.init(
 
 A ViewModel can still pass its own `logger` in the constructor, or `null` to disable only its logs. A source used on
 its own doesn't log: add `loggerMiddleware(tag, logger)` as its last middleware.
+
+## Explicit configuration
+
+`Emanate.configuration` is shared by the whole process. `EmaViewModel`, `EmaViewModelClassic`, `EmaViewModelAction` and
+`EmaSource(...)` read it when they are created, as the default value of their `configuration` parameter, which goes
+right after the initial state. Pass one to use it instead:
+
+```kotlin
+class LoginViewModel(
+    private val loginUseCase: LoginUseCase,
+    configuration: EmaConfiguration = Emanate.configuration
+) : EmaViewModel<LoginState, LoginAction, LoginEvent>(LoginState.DEFAULT, configuration) {
+    // ...
+}
+```
+
+The `dispatcher` and `logger` parameters take their default value from it, and can still be passed by name to change
+only them. The configuration is kept by the ViewModel and its source, so its error policy, side effect listener and
+`destroyedTimeout` are the ones of the configuration they received.
+
+**Use `Emanate.init`** in an application: it configures every ViewModel in one place, and they don't need any
+parameter. **Pass the configuration** when the one of the application isn't enough or can't be relied on:
+
+- **Libraries and SDKs.** `Emanate.init` can be called only once and belongs to the application. A library built with
+  Emanate passes its own configuration to its ViewModels, so it doesn't clash with an application that also uses
+  Emanate, nor depend on whether it was initialized.
+- **A module with a different configuration**, for example its own logger or error policy.
+- **Dependency injection.** The configuration is one more dependency, provided by Hilt or Koin. See
+  [Dependency injection](dependency-injection.md#injecting-the-configuration).
+- **Tests.** Each test passes its configuration, with the dispatchers of the test, without changing the one of Emanate,
+  so the tests can run in parallel. See [Testing](testing.md#without-changing-the-configuration-of-emanate).
+
+Some parts of Emanate always use the configuration of the application: the [use cases](utilities.md#use-cases), unless
+they receive a `dispatcher`; `toStringPretty()`; and in `emanate-android`, the processing of images and `EmaJobService`.
+The actions broadcast between ViewModels also go through a single broadcaster, shared by the whole process.

@@ -1,6 +1,6 @@
 # Configuración
 
-Emanate se configura una vez, cuando arranca la aplicación, con `Emanate.init`:
+Emanate tiene una configuración para toda la aplicación, que se fija una vez, cuando arranca, con `Emanate.init`:
 
 ```kotlin
 class MyApplication : Application() {
@@ -16,6 +16,9 @@ class MyApplication : Application() {
 - Solo se puede llamar **una vez**. Una segunda llamada lanza `IllegalStateException`.
 - Si no se llama nunca, se usa la configuración por defecto, `EmaConfiguration()`. Es lo habitual en los tests unitarios
   y en las plataformas que no son Android.
+
+Un ViewModel o una source también pueden recibir su propia configuración, que se usa en lugar de la de la aplicación.
+Consulta [Configuración explícita](#configuración-explícita).
 
 ## Qué se puede configurar
 
@@ -114,3 +117,39 @@ Emanate.init(
 
 Un ViewModel puede pasar su propio `logger` en el constructor, o `null` para desactivar solo sus logs. Una source
 usada por sí sola no registra nada: añade `loggerMiddleware(tag, logger)` como su último middleware.
+
+## Configuración explícita
+
+`Emanate.configuration` es compartida por todo el proceso. `EmaViewModel`, `EmaViewModelClassic`, `EmaViewModelAction`
+y `EmaSource(...)` la leen al crearse, como valor por defecto de su parámetro `configuration`, que va justo después del
+estado inicial. Pásales una para que la usen en su lugar:
+
+```kotlin
+class LoginViewModel(
+    private val loginUseCase: LoginUseCase,
+    configuration: EmaConfiguration = Emanate.configuration
+) : EmaViewModel<LoginState, LoginAction, LoginEvent>(LoginState.DEFAULT, configuration) {
+    // ...
+}
+```
+
+Los parámetros `dispatcher` y `logger` toman de ella su valor por defecto, y se pueden seguir pasando por nombre para
+cambiar solo esos. El ViewModel y su source guardan la configuración, así que su política de errores, su listener de
+side effects y su `destroyedTimeout` son los de la configuración que recibieron.
+
+**Usa `Emanate.init`** en una aplicación: configura todos los ViewModels en un solo sitio y no necesitan ningún
+parámetro. **Pasa la configuración** cuando la de la aplicación no basta o no se puede contar con ella:
+
+- **Librerías y SDKs.** `Emanate.init` solo se puede llamar una vez y le corresponde a la aplicación. Una librería hecha
+  con Emanate pasa su propia configuración a sus ViewModels, así no choca con una aplicación que también use Emanate ni
+  depende de que se haya inicializado.
+- **Un módulo con otra configuración**, por ejemplo con su propio logger o su propia política de errores.
+- **Inyección de dependencias.** La configuración es una dependencia más, que proporcionan Hilt o Koin. Consulta
+  [Inyección de dependencias](dependency-injection.es.md#inyectar-la-configuración).
+- **Tests.** Cada test pasa su configuración, con los dispatchers del test, sin cambiar la de Emanate, así que los tests
+  se pueden ejecutar en paralelo. Consulta [Testing](testing.es.md#sin-cambiar-la-configuración-de-emanate).
+
+Algunas partes de Emanate siempre usan la configuración de la aplicación: los
+[casos de uso](utilities.es.md#casos-de-uso), salvo que reciban un `dispatcher`; `toStringPretty()`; y en
+`emanate-android`, el procesado de imágenes y `EmaJobService`. Las acciones que se emiten entre ViewModels también pasan
+por un único broadcaster, compartido por todo el proceso.
