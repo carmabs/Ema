@@ -195,6 +195,7 @@ class EmaModelTest {
         assertEquals("null", EmaDataClassPrinter.ToString.print(null))
         Emanate.init(EmaConfiguration(printer = { "printed $it" }))
         assertEquals("printed 1", 1.toStringPretty())
+        assertEquals("passed 1", 1.toStringPretty(EmaDataClassPrinter { "passed $it" }))
     }
 
     @Test

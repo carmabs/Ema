@@ -119,7 +119,9 @@ abstract class EmaViewModel<S : EmaState, A : EmaAction, E : EmaEvent>(
             middlewares = listOfNotNull(
                 logger?.let { receivedActionLoggerMiddleware(tag, it) },
                 updateTrackerMiddleware
-            ) + sourceSetup.middlewares + listOfNotNull(logger?.let { loggerMiddleware(tag, it) }),
+            ) + sourceSetup.middlewares + listOfNotNull(
+                logger?.let { loggerMiddleware(tag, it, configuration.printer) }
+            ),
             reducers = sourceSetup.reducers,
             sideEffects = sourceSetup.sideEffects,
             broadcastListeners = sourceSetup.broadcastListeners,

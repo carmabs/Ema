@@ -315,6 +315,29 @@ class EmaViewModelTest {
     }
 
     @Test
+    fun `the logs print the action and the states with the printer of the configuration of the view model`() = runTest {
+        val logs = mutableListOf<String>()
+        val configuration = EmaConfiguration(
+            dispatchers = EmaDispatchers(main = testDispatcher()),
+            logger = EmaLogger { _, message -> logs += message },
+            printer = { "printed ${it!!::class.simpleName}" }
+        )
+        val viewModel = object : EmaViewModel<TestState, TestAction, TestEvent>(TestState(), configuration) {
+            override fun setup() = source {
+                reducers {
+                    add<TestAction.Increment> { state.copy(count = state.count + 1) }
+                }
+            }
+        }
+
+        viewModel.dispatch(TestAction.Increment)
+
+        assertTrue(logs.any { "printed Increment" in it })
+        assertEquals(2, logs.count { "printed TestState" in it })
+        viewModel.onCleared()
+    }
+
+    @Test
     fun `the dispatcher and the logger are taken from the configuration of the view model`() = runTest {
         val logs = mutableListOf<String>()
         val configuration = EmaConfiguration(
