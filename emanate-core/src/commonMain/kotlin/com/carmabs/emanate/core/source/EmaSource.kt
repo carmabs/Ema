@@ -45,17 +45,18 @@ import kotlinx.coroutines.withTimeoutOrNull
 /**
  * Creates a source. Its actions are of type [A], plus the ones it listens to in the broadcasts block of setup: every
  * action goes through the middlewares, the reducers and the side effects of its type. The source creates its own scope
- * with [dispatcher], so call [EmaSource.close] when it isn't needed anymore to cancel its work. It reads the
- * configuration of Emanate when it is created.
+ * with [dispatcher], so call [EmaSource.close] when it isn't needed anymore to cancel its work.
  *
- * @param dispatcher where the source runs. By default the main dispatcher of Emanate, as the state is usually drawn by
- * the view; use cases run on their own dispatcher anyway.
+ * @param configuration applied by the source. By default the one of [Emanate], read when the source is created.
+ * @param dispatcher where the source runs. By default the main dispatcher of [configuration], as the state is usually
+ * drawn by the view; use cases run on their own dispatcher anyway.
  * @param setup adds the middlewares, reducers, side effects and broadcast listeners of the source
  */
 @Suppress("FunctionName") // Factory named like the class
 fun <S : EmaState, A : EmaAction, E : EmaEvent> EmaSource(
     initialState: S,
-    dispatcher: CoroutineDispatcher = Emanate.configuration.dispatchers.main,
+    configuration: EmaConfiguration = Emanate.configuration,
+    dispatcher: CoroutineDispatcher = configuration.dispatchers.main,
     setup: SourceSetupScope<S, A, E>.() -> Unit
 ): EmaSource<S, A, E> {
     val sourceSetup = buildSourceSetup(setup)
@@ -68,7 +69,7 @@ fun <S : EmaState, A : EmaAction, E : EmaEvent> EmaSource(
         broadcastListeners = sourceSetup.broadcastListeners,
         container = null,
         eventDispatcher = EventDispatcher(),
-        configuration = Emanate.configuration
+        configuration = configuration
     )
 }
 

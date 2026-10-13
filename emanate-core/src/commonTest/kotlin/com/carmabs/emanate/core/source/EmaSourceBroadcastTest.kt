@@ -39,7 +39,7 @@ class EmaSourceBroadcastTest {
 
     private fun TestScope.senderSource() = EmaSource<ListState, SenderAction, NoEvent>(
         ListState(),
-        UnconfinedTestDispatcher(testScheduler)
+        dispatcher = UnconfinedTestDispatcher(testScheduler)
     ) {
         sideEffects {
             add<SenderAction.Create> { action ->
@@ -50,7 +50,7 @@ class EmaSourceBroadcastTest {
 
     private fun TestScope.receiverSource() = EmaSource<ListState, ReceiverAction, NoEvent>(
         ListState(),
-        UnconfinedTestDispatcher(testScheduler)
+        dispatcher = UnconfinedTestDispatcher(testScheduler)
     ) {
         middlewares {
             add<UserBroadcast> { action ->

@@ -30,7 +30,7 @@ class EmaSourceTest {
 
     private fun TestScope.counterSource() = EmaSource<CounterState, CounterAction, CounterEvent>(
         CounterState(),
-        UnconfinedTestDispatcher(testScheduler)
+        dispatcher = UnconfinedTestDispatcher(testScheduler)
     ) {
         reducers {
             add<CounterAction> { action ->
@@ -121,7 +121,7 @@ class EmaSourceTest {
         lateinit var reducerListScope: ReducerListScope<CounterState>
         val source = EmaSource<CounterState, CounterAction, CounterEvent>(
             CounterState(),
-            UnconfinedTestDispatcher(testScheduler)
+            dispatcher = UnconfinedTestDispatcher(testScheduler)
         ) {
             setupScope = this
             reducers { reducerListScope = this }

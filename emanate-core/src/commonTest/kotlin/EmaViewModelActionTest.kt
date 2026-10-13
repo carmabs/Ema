@@ -47,7 +47,7 @@ sealed interface CounterEvent : EmaEvent {
 data class CounterInitializer(val start: Int) : EmaAction.Initializer
 
 class CounterViewModel(dispatcher: CoroutineDispatcher, private val renderOnInitialization: Boolean = true) :
-    EmaViewModelAction<CounterState, CounterAction, CounterEvent>(CounterState(), dispatcher) {
+    EmaViewModelAction<CounterState, CounterAction, CounterEvent>(CounterState(), dispatcher = dispatcher) {
 
     val hooks = mutableListOf<String>()
 
@@ -334,13 +334,13 @@ class EmaViewModelActionTest {
 data class UserSent(val user: String) : EmaAction
 
 class SenderViewModel(dispatcher: CoroutineDispatcher) :
-    EmaViewModelClassic<CounterState, CounterEvent>(CounterState(), dispatcher) {
+    EmaViewModelClassic<CounterState, CounterEvent>(CounterState(), dispatcher = dispatcher) {
     override fun onStateCreated(initializer: EmaAction.Initializer?) = Unit
     fun send(user: String, keepUntilReceived: Boolean = false) = broadcast(UserSent(user), keepUntilReceived)
 }
 
 class ReceiverViewModel(dispatcher: CoroutineDispatcher) :
-    EmaViewModelClassic<CounterState, CounterEvent>(CounterState(), dispatcher) {
+    EmaViewModelClassic<CounterState, CounterEvent>(CounterState(), dispatcher = dispatcher) {
     val received = mutableListOf<String>()
     override fun onStateCreated(initializer: EmaAction.Initializer?) = Unit
     override fun onBroadcastListenerSetup() {

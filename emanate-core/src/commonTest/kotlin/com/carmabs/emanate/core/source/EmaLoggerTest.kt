@@ -29,7 +29,7 @@ class EmaLoggerTest {
         val logs = mutableListOf<String>()
         val source = EmaSource<LoggedState, LoggedAction, LoggedEvent>(
             LoggedState(),
-            UnconfinedTestDispatcher(testScheduler)
+            dispatcher = UnconfinedTestDispatcher(testScheduler)
         ) {
             middlewares {
                 +loggerMiddleware("Counter", EmaLogger { tag, message -> logs += "$tag: $message" })

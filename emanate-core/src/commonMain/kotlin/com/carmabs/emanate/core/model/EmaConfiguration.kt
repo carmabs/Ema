@@ -10,8 +10,8 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 /**
- * Configuration of Emanate, set with [com.carmabs.emanate.core.Emanate.init]. Each property configures one thing, so
- * customize the one you need with copy.
+ * Configuration of Emanate, set for the whole application with [com.carmabs.emanate.core.Emanate.init] or passed to
+ * a ViewModel or a source. Each property configures one thing, so customize the one you need with copy.
  *
  * @param dispatchers where ViewModels ([EmaDispatchers.main]), use cases ([EmaDispatchers.io]) and CPU-intensive work
  * ([EmaDispatchers.default]) run by default

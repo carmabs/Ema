@@ -1,12 +1,10 @@
 package com.carmabs.emanate.core.source
 
-import com.carmabs.emanate.core.Emanate
 import com.carmabs.emanate.core.action.EmaAction
 import com.carmabs.emanate.core.error.EmaErrorPolicy
 import com.carmabs.emanate.core.model.EmaConfiguration
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
-import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -31,19 +29,15 @@ private data object SlowAction : EmaAction
 @OptIn(ExperimentalCoroutinesApi::class)
 class EmaSourceThrowTest {
 
-    @AfterTest
-    fun tearDown() {
-        Emanate.reset()
-    }
+    private val throwErrors = EmaConfiguration(errorPolicy = EmaErrorPolicy.Throw, logger = null)
 
     @Test
     fun `the Throw policy throws the exception of a reducer again`() {
-        Emanate.initForTest(EmaConfiguration(errorPolicy = EmaErrorPolicy.Throw, logger = null))
-
         val exception = assertFailsWith<IllegalStateException> {
             runTest {
                 val source = EmaSource<ThrowState, BrokenAction, EmaEvent.EMPTY>(
                     ThrowState(),
+                    throwErrors,
                     UnconfinedTestDispatcher(testScheduler)
                 ) {
                     reducers {
@@ -60,13 +54,13 @@ class EmaSourceThrowTest {
 
     @Test
     fun `a source stopped by an exception with the Throw policy cancels its work`() {
-        Emanate.initForTest(EmaConfiguration(errorPolicy = EmaErrorPolicy.Throw, logger = null))
         var finished = false
 
         assertFailsWith<IllegalStateException> {
             runTest {
                 val source = EmaSource<ThrowState, EmaAction, EmaEvent.EMPTY>(
                     ThrowState(),
+                    throwErrors,
                     UnconfinedTestDispatcher(testScheduler)
                 ) {
                     reducers {
