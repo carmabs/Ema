@@ -1797,6 +1797,9 @@ reducers and side effects of that type.</p>
 <li><strong>The listener is removed when the ViewModel is cleared</strong>, together with the rest of its work.</li>
 <li><strong>It is typed.</strong> The result is a data class, with no casts.</li>
 <li><strong>It lives in memory.</strong> It is not saved if the process is killed.</li>
+<li><strong>It goes through the broadcaster of the configuration.</strong> By default every ViewModel uses the same one. The ones
+  whose configuration has its own broadcaster only send and receive actions between them, for example the ones of a
+  <a href="../configuration/#libraries-and-sdks">library</a>.</li>
 </ul>
 <h3 id="keep-it-until-it-is-received">Keep it until it is received<a class="headerlink" href="#keep-it-until-it-is-received" title="Permanent link">&para;</a></h3>
 <p>With <code>keepUntilReceived = true</code>, an action that nobody is listening to is kept and delivered to the <strong>first</strong> ViewModel
@@ -1805,7 +1808,8 @@ moment, as always.</p>
 <p>It covers the screen that is not created yet: after the process is killed, Android restores the current screen, but
 the ViewModel of the previous one is created only when the user goes back to it. Without keeping the result, it would
 be lost. It doesn't cover a process killed after the result is broadcast: it is kept in memory too.</p>
-<p>In tests, <code>resetTestDispatchers</code> of <code>emanate-test</code> removes the kept actions that nobody received.</p>
+<p>In tests, <code>resetTestDispatchers</code> of <code>emanate-test</code> removes the kept actions of the shared broadcaster that nobody
+received. Each <code>testConfiguration</code> has its own broadcaster, so its kept actions don't reach other tests.</p>
 <blockquote>
 <p>If the receiver shows something, post an event: it waits until the view consumes it, so it is shown when the
 screen is visible again.</p>

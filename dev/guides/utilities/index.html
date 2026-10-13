@@ -1767,11 +1767,11 @@ so failures are part of the contract:</p>
 <tbody>
 <tr>
 <td><code>EmaUseCase&lt;I, O&gt;</code></td>
-<td>A <code>suspend</code> operation. Runs on the background dispatcher of the <a href="../configuration/">configuration</a> (<code>Dispatchers.IO</code> on Android) unless you pass another one.</td>
+<td>A <code>suspend</code> operation. Runs on the background dispatcher it receives in the constructor, by default the <code>io</code> one of the <a href="../configuration/">configuration</a> (<code>Dispatchers.IO</code> on Android).</td>
 </tr>
 <tr>
 <td><code>EmaFlowUseCase&lt;I, O&gt;</code></td>
-<td>An operation that emits values over time (<code>Flow&lt;O&gt;</code>), collected on the background dispatcher.</td>
+<td>An operation that emits values over time (<code>Flow&lt;O&gt;</code>), collected on the background dispatcher it receives in the constructor.</td>
 </tr>
 <tr>
 <td><code>EmaSyncUseCase&lt;I, O&gt;</code></td>
@@ -1779,13 +1779,15 @@ so failures are part of the contract:</p>
 </tr>
 </tbody>
 </table>
-<p>Implement <code>useCaseFunction</code> (the protected function) and call the use case like a function: <code>loginUseCase(input)</code>.</p>
+<p>Implement <code>useCaseFunction</code> (the protected function) and call the use case like a function: <code>loginUseCase(input)</code>. To
+run it once on another dispatcher, pass it when invoking it: <code>loginUseCase(input, dispatcher)</code>.</p>
 <h2 id="pretty-printing">Pretty printing<a class="headerlink" href="#pretty-printing" title="Permanent link">&para;</a></h2>
 <p><code>toStringPretty()</code> prints any object, for example a state, with the <code>printer</code> of the
 <a href="../configuration/#printing-objects">configuration</a>. With <code>EmaConfiguration.Android(debug)</code> it prints every field,
 nested objects and collections, indented:</p>
 <div class="highlight"><pre><span></span><code><span class="n">Log</span><span class="p">.</span><span class="na">d</span><span class="p">(</span><span class="s">"Login"</span><span class="p">,</span><span class="w"> </span><span class="n">state</span><span class="p">.</span><span class="na">toStringPretty</span><span class="p">())</span>
 </code></pre></div>
+<p>Pass another printer to print with it, for example the one of your own configuration: <code>state.toStringPretty(printer)</code>.</p>
 <h2 id="emautils"><code>EmaUtils</code><a class="headerlink" href="#emautils" title="Permanent link">&para;</a></h2>
 <p>The utility functions are grouped by theme in <code>EmaUtils</code>, so writing <code>EmaUtils.</code> shows them all. The Android modules
 add their own functions to the themes, under the name of the platform:</p>

@@ -741,6 +741,28 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#configuración-explícita" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuración explícita
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#librerías-y-sdks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Librerías y SDKs
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1626,6 +1648,28 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#configuración-explícita" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuración explícita
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#librerías-y-sdks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Librerías y SDKs
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1647,7 +1691,7 @@
 
 
 <h1 id="configuración">Configuración<a class="headerlink" href="#configuración" title="Permanent link">&para;</a></h1>
-<p>Emanate se configura una vez, cuando arranca la aplicación, con <code>Emanate.init</code>:</p>
+<p>Emanate tiene una configuración para toda la aplicación, que se fija una vez, cuando arranca, con <code>Emanate.init</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="kd">class</span><span class="w"> </span><span class="nc">MyApplication</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Application</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
 
 <span class="w">    </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">onCreate</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
@@ -1662,6 +1706,8 @@
 <li>Si no se llama nunca, se usa la configuración por defecto, <code>EmaConfiguration()</code>. Es lo habitual en los tests unitarios
   y en las plataformas que no son Android.</li>
 </ul>
+<p>Un ViewModel o una source también pueden recibir su propia configuración, que se usa en lugar de la de la aplicación.
+Consulta <a href="#configuración-explícita">Configuración explícita</a>.</p>
 <h2 id="qué-se-puede-configurar">Qué se puede configurar<a class="headerlink" href="#qué-se-puede-configurar" title="Permanent link">&para;</a></h2>
 <p>Cada propiedad configura una cosa:</p>
 <table>
@@ -1715,6 +1761,12 @@
 <td>Nombres genéricos</td>
 <td>Se obtienen de las lambdas</td>
 <td>El nombre de la función que lanzó un side effect, que aparece en los errores. Consulta <a href="#nombrar-los-side-effects">Nombrar los side effects</a>.</td>
+</tr>
+<tr>
+<td><code>broadcaster</code></td>
+<td><code>EmaActionBroadcaster.Shared</code></td>
+<td><code>EmaActionBroadcaster.Shared</code></td>
+<td>Envía las acciones que se emiten entre ViewModels. Consulta <a href="#librerías-y-sdks">Librerías y SDKs</a>.</td>
 </tr>
 </tbody>
 </table>
@@ -1800,6 +1852,68 @@ de debug, que escribe con <code>Log.d</code>, y ningún logger en las de release
 </code></pre></div>
 <p>Un ViewModel puede pasar su propio <code>logger</code> en el constructor, o <code>null</code> para desactivar solo sus logs. Una source
 usada por sí sola no registra nada: añade <code>loggerMiddleware(tag, logger)</code> como su último middleware.</p>
+<h2 id="configuración-explícita">Configuración explícita<a class="headerlink" href="#configuración-explícita" title="Permanent link">&para;</a></h2>
+<p><code>Emanate.configuration</code> es compartida por todo el proceso. <code>EmaViewModel</code>, <code>EmaViewModelClassic</code>, <code>EmaViewModelAction</code>
+y <code>EmaSource(...)</code> la leen al crearse, como valor por defecto de su parámetro <code>configuration</code>, que va justo después del
+estado inicial. Pásales una para que la usen en su lugar:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">class</span><span class="w"> </span><span class="nc">LoginViewModel</span><span class="p">(</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">loginUseCase</span><span class="p">:</span><span class="w"> </span><span class="n">LoginUseCase</span><span class="p">,</span>
+<span class="w">    </span><span class="n">configuration</span><span class="p">:</span><span class="w"> </span><span class="n">EmaConfiguration</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Emanate</span><span class="p">.</span><span class="na">configuration</span>
+<span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">EmaViewModel</span><span class="o">&lt;</span><span class="n">LoginState</span><span class="p">,</span><span class="w"> </span><span class="n">LoginAction</span><span class="p">,</span><span class="w"> </span><span class="n">LoginEvent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">LoginState</span><span class="p">.</span><span class="na">DEFAULT</span><span class="p">,</span><span class="w"> </span><span class="n">configuration</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// ...</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Los parámetros <code>dispatcher</code> y <code>logger</code> toman de ella su valor por defecto, y se pueden seguir pasando por nombre para
+cambiar solo esos. El ViewModel y su source guardan la configuración, así que su política de errores, su listener de
+side effects, su <code>destroyedTimeout</code> y su broadcaster son los de la configuración que recibieron.</p>
+<p><strong>Usa <code>Emanate.init</code></strong> en una aplicación: configura todos los ViewModels en un solo sitio y no necesitan ningún
+parámetro. <strong>Pasa la configuración</strong> cuando la de la aplicación no basta o no se puede contar con ella:</p>
+<ul>
+<li><strong>Librerías y SDKs.</strong> <code>Emanate.init</code> solo se puede llamar una vez y le corresponde a la aplicación. Una librería hecha
+  con Emanate pasa su propia configuración a sus ViewModels, así no choca con una aplicación que también use Emanate ni
+  depende de que se haya inicializado. Consulta <a href="#librerías-y-sdks">Librerías y SDKs</a>.</li>
+<li><strong>Un módulo con otra configuración</strong>, por ejemplo con su propio logger o su propia política de errores.</li>
+<li><strong>Inyección de dependencias.</strong> La configuración es una dependencia más, que proporcionan Hilt o Koin. Consulta
+  <a href="../dependency-injection/#inyectar-la-configuración">Inyección de dependencias</a>.</li>
+<li><strong>Tests.</strong> Cada test pasa su configuración, con los dispatchers del test, sin cambiar la de Emanate, así que los tests
+  se pueden ejecutar en paralelo. Consulta <a href="../testing/#sin-cambiar-la-configuración-de-emanate">Testing</a>.</li>
+</ul>
+<p>Los <a href="../utilities/#casos-de-uso">casos de uso</a> no reciben la configuración entera, solo un dispatcher en el
+constructor: por defecto el dispatcher <code>io</code> de la configuración de Emanate, así que pásales el <code>io</code> de la tuya.
+<code>toStringPretty()</code> imprime con el <code>printer</code> de la configuración de Emanate salvo que reciba otro.</p>
+<h2 id="librerías-y-sdks">Librerías y SDKs<a class="headerlink" href="#librerías-y-sdks" title="Permanent link">&para;</a></h2>
+<p>Una librería hecha con Emanate puede usarla una aplicación que también usa Emanate y llama a <code>Emanate.init</code>. Para
+mantenerlas separadas, la librería no llama a <code>Emanate.init</code> ni usa la configuración de Emanate: crea la suya y se la
+pasa a todas sus piezas.</p>
+<div class="highlight"><pre><span></span><code><span class="kd">internal</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">MyLibraryEmanate</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">configuration</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EmaConfiguration</span><span class="p">.</span><span class="na">Android</span><span class="p">(</span><span class="n">debug</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">BuildConfig</span><span class="p">.</span><span class="na">DEBUG</span><span class="p">).</span><span class="na">copy</span><span class="p">(</span>
+<span class="w">        </span><span class="n">logger</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">BuildConfig</span><span class="p">.</span><span class="na">DEBUG</span><span class="p">)</span><span class="w"> </span><span class="n">EmaLogger</span><span class="p">(</span><span class="n">prefix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"MYLIB_"</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">tag</span><span class="p">,</span><span class="w"> </span><span class="n">message</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Log</span><span class="p">.</span><span class="na">d</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span><span class="w"> </span><span class="n">message</span><span class="p">)</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">        </span><span class="n">broadcaster</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EmaActionBroadcaster</span><span class="p">()</span>
+<span class="w">    </span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">internal</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">PayUseCase</span><span class="p">(</span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">repository</span><span class="p">:</span><span class="w"> </span><span class="n">PaymentRepository</span><span class="p">)</span><span class="w"> </span><span class="p">:</span>
+<span class="w">    </span><span class="n">EmaUseCase</span><span class="o">&lt;</span><span class="n">Payment</span><span class="p">,</span><span class="w"> </span><span class="n">Receipt</span><span class="o">&gt;</span><span class="p">(</span><span class="n">MyLibraryEmanate</span><span class="p">.</span><span class="na">configuration</span><span class="p">.</span><span class="na">dispatchers</span><span class="p">.</span><span class="na">io</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// ...</span>
+<span class="p">}</span>
+
+<span class="kd">internal</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">PaymentViewModel</span><span class="p">(</span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">payUseCase</span><span class="p">:</span><span class="w"> </span><span class="n">PayUseCase</span><span class="p">)</span><span class="w"> </span><span class="p">:</span>
+<span class="w">    </span><span class="n">EmaViewModel</span><span class="o">&lt;</span><span class="n">PaymentState</span><span class="p">,</span><span class="w"> </span><span class="n">PaymentAction</span><span class="p">,</span><span class="w"> </span><span class="n">PaymentEvent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">PaymentState</span><span class="p">(),</span><span class="w"> </span><span class="n">MyLibraryEmanate</span><span class="p">.</span><span class="na">configuration</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// ...</span>
+<span class="p">}</span>
+</code></pre></div>
+<ul>
+<li><strong>Los ViewModels y las sources</strong> reciben la configuración de la librería en su parámetro <code>configuration</code>.</li>
+<li><strong>Los casos de uso</strong> reciben su dispatcher <code>io</code>.</li>
+<li><strong>Para imprimir objetos:</strong> <code>toStringPretty(MyLibraryEmanate.configuration.printer)</code>.</li>
+<li><strong>Las acciones emitidas.</strong> Con su propio <code>EmaActionBroadcaster</code>, los ViewModels de la librería solo reciben las
+  acciones que se emiten entre ellos, y los de la aplicación no reciben las suyas. Deja el compartido,
+  <code>EmaActionBroadcaster.Shared</code>, si la librería y la aplicación se envían resultados.</li>
+</ul>
+<p>Si la aplicación tiene que poder cambiar algo, como el logger, añade a la librería una función que lo reciba antes de
+abrir ninguna de sus pantallas, en lugar de usar <code>Emanate.init</code>.</p>
+<p>La aplicación y la librería usan el mismo <code>emanate-core</code>: la versión que Gradle resuelve para las dos. Mantén la
+librería en una versión compatible con las aplicaciones que la usan.</p>
 
 
 

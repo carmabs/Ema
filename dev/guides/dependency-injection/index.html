@@ -831,6 +831,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#injecting-the-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Injecting the configuration
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1582,6 +1593,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#injecting-the-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Injecting the configuration
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1666,6 +1688,36 @@ keeps the default state in one place:</p>
 <span class="p">}</span>
 </code></pre></div>
 <p>The ViewModels receive the use cases in the constructor, so they can receive fakes in the <a href="../testing/">tests</a>.</p>
+<h2 id="injecting-the-configuration">Injecting the configuration<a class="headerlink" href="#injecting-the-configuration" title="Permanent link">&para;</a></h2>
+<p>By default the ViewModels use the configuration set with <code>Emanate.init</code>, so they don't need to receive it. To inject it
+instead, for example in a library that can't call <code>Emanate.init</code> or in a module with its own configuration, receive it
+in the constructor and pass it to the ViewModel. See <a href="../configuration/#explicit-configuration">Explicit configuration</a>.</p>
+<div class="highlight"><pre><span></span><code><span class="kd">class</span><span class="w"> </span><span class="nc">LoginViewModel</span><span class="p">(</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">loginUseCase</span><span class="p">:</span><span class="w"> </span><span class="n">LoginUseCase</span><span class="p">,</span>
+<span class="w">    </span><span class="n">configuration</span><span class="p">:</span><span class="w"> </span><span class="n">EmaConfiguration</span>
+<span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">EmaViewModel</span><span class="o">&lt;</span><span class="n">LoginState</span><span class="p">,</span><span class="w"> </span><span class="n">LoginAction</span><span class="p">,</span><span class="w"> </span><span class="n">LoginEvent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">LoginState</span><span class="p">.</span><span class="na">DEFAULT</span><span class="p">,</span><span class="w"> </span><span class="n">configuration</span><span class="p">)</span>
+</code></pre></div>
+<p>With Koin, declare it as a <code>single</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">val</span><span class="w"> </span><span class="nv">uiModule</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">module</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">single</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">EmaConfiguration</span><span class="p">.</span><span class="na">Android</span><span class="p">(</span><span class="n">debug</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">BuildConfig</span><span class="p">.</span><span class="na">DEBUG</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="n">factoryOf</span><span class="p">(</span><span class="o">::</span><span class="n">LoginViewModel</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>With Hilt, provide it from a module, and add <code>@Inject</code> to the constructor of the ViewModel:</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@Module</span>
+<span class="nd">@InstallIn</span><span class="p">(</span><span class="n">SingletonComponent</span><span class="o">::</span><span class="n">class</span><span class="p">)</span>
+<span class="kd">object</span><span class="w"> </span><span class="nc">EmanateModule</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">    </span><span class="nd">@Provides</span>
+<span class="w">    </span><span class="nd">@Singleton</span>
+<span class="w">    </span><span class="kd">fun</span><span class="w"> </span><span class="nf">provideConfiguration</span><span class="p">():</span><span class="w"> </span><span class="n">EmaConfiguration</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EmaConfiguration</span><span class="p">.</span><span class="na">Android</span><span class="p">(</span><span class="n">debug</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">BuildConfig</span><span class="p">.</span><span class="na">DEBUG</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>The use cases only receive the <code>io</code> dispatcher of the configuration, in the constructor:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">val</span><span class="w"> </span><span class="nv">useCaseModule</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">module</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">factory</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">LoginUseCase</span><span class="p">(</span><span class="k">get</span><span class="p">(),</span><span class="w"> </span><span class="k">get</span><span class="o">&lt;</span><span class="n">EmaConfiguration</span><span class="o">&gt;</span><span class="p">().</span><span class="na">dispatchers</span><span class="p">.</span><span class="na">io</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
 
 
 

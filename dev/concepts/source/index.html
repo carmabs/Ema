@@ -1940,8 +1940,8 @@ call <code>close()</code> when it isn't needed anymore: it processes the pending
 <span class="n">counter</span><span class="p">.</span><span class="na">dispatch</span><span class="p">(</span><span class="n">CounterAction</span><span class="p">.</span><span class="na">Increment</span><span class="p">)</span>
 <span class="n">counter</span><span class="p">.</span><span class="na">close</span><span class="p">()</span>
 </code></pre></div>
-<p>By default it runs on the <code>main</code> dispatcher of the <a href="../../guides/configuration/">configuration</a>; pass another one as
-the <code>dispatcher</code> parameter.</p>
+<p>By default it uses the <a href="../../guides/configuration/">configuration</a> of Emanate and runs on its <code>main</code> dispatcher; pass
+another one in the <code>configuration</code> or <code>dispatcher</code> parameters.</p>
 
 
 

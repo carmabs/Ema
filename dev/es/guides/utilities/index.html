@@ -1768,11 +1768,11 @@ los casos de uso, para que los fallos formen parte del contrato:</p>
 <tbody>
 <tr>
 <td><code>EmaUseCase&lt;I, O&gt;</code></td>
-<td>Una operación <code>suspend</code>. Se ejecuta en el dispatcher de segundo plano de la <a href="../configuration/">configuración</a> (<code>Dispatchers.IO</code> en Android), salvo que pases otro.</td>
+<td>Una operación <code>suspend</code>. Se ejecuta en el dispatcher de segundo plano que recibe en el constructor, por defecto el <code>io</code> de la <a href="../configuration/">configuración</a> (<code>Dispatchers.IO</code> en Android).</td>
 </tr>
 <tr>
 <td><code>EmaFlowUseCase&lt;I, O&gt;</code></td>
-<td>Una operación que emite valores a lo largo del tiempo (<code>Flow&lt;O&gt;</code>), recogida en el dispatcher de segundo plano.</td>
+<td>Una operación que emite valores a lo largo del tiempo (<code>Flow&lt;O&gt;</code>), recogida en el dispatcher de segundo plano que recibe en el constructor.</td>
 </tr>
 <tr>
 <td><code>EmaSyncUseCase&lt;I, O&gt;</code></td>
@@ -1780,13 +1780,15 @@ los casos de uso, para que los fallos formen parte del contrato:</p>
 </tr>
 </tbody>
 </table>
-<p>Implementa <code>useCaseFunction</code> (la función protegida) y llama al caso de uso como si fuera una función: <code>loginUseCase(input)</code>.</p>
+<p>Implementa <code>useCaseFunction</code> (la función protegida) y llama al caso de uso como si fuera una función: <code>loginUseCase(input)</code>.
+Para ejecutarlo una vez en otro dispatcher, pásaselo al llamarlo: <code>loginUseCase(input, dispatcher)</code>.</p>
 <h2 id="imprimir-objetos">Imprimir objetos<a class="headerlink" href="#imprimir-objetos" title="Permanent link">&para;</a></h2>
 <p><code>toStringPretty()</code> imprime cualquier objeto, por ejemplo un estado, con el <code>printer</code> de la
 <a href="../configuration/#imprimir-objetos">configuración</a>. Con <code>EmaConfiguration.Android(debug)</code> imprime todos los campos,
 los objetos anidados y las colecciones, con sangría:</p>
 <div class="highlight"><pre><span></span><code><span class="n">Log</span><span class="p">.</span><span class="na">d</span><span class="p">(</span><span class="s">"Login"</span><span class="p">,</span><span class="w"> </span><span class="n">state</span><span class="p">.</span><span class="na">toStringPretty</span><span class="p">())</span>
 </code></pre></div>
+<p>Pasa otro printer para imprimir con él, por ejemplo el de tu propia configuración: <code>state.toStringPretty(printer)</code>.</p>
 <h2 id="emautils"><code>EmaUtils</code><a class="headerlink" href="#emautils" title="Permanent link">&para;</a></h2>
 <p>Las funciones de utilidad están agrupadas por temática en <code>EmaUtils</code>, así que escribiendo <code>EmaUtils.</code> aparecen todas.
 Los módulos de Android añaden sus propias funciones a las temáticas, bajo el nombre de la plataforma:</p>

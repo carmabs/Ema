@@ -867,6 +867,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#without-changing-the-configuration-of-emanate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Without changing the configuration of Emanate
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#checking-the-setup" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1607,6 +1618,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#without-changing-the-configuration-of-emanate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Without changing the configuration of Emanate
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#checking-the-setup" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1726,6 +1748,10 @@ The whole state/event contract is observable:</p>
 <td>Restores the dispatchers and the configuration of Emanate. Call it after each test.</td>
 </tr>
 <tr>
+<td><code>testConfiguration(dispatcher)</code></td>
+<td>A configuration that runs on the dispatcher of the test, to pass it to the ViewModels instead of calling <code>useTestDispatchers()</code>. See <a href="#without-changing-the-configuration-of-emanate">Without changing the configuration of Emanate</a>.</td>
+</tr>
+<tr>
 <td><code>viewModel.record()</code></td>
 <td>Records in order the actions, states and events of a ViewModel or a source.</td>
 </tr>
@@ -1789,6 +1815,41 @@ The whole state/event contract is observable:</p>
   <code>LoginViewModelTest</code> of the sample creates the profile creation, home and login ViewModels and checks the user
   created in the first one reaches the last one.</li>
 </ul>
+<h3 id="without-changing-the-configuration-of-emanate">Without changing the configuration of Emanate<a class="headerlink" href="#without-changing-the-configuration-of-emanate" title="Permanent link">&para;</a></h3>
+<p><code>useTestDispatchers()</code> changes the configuration of Emanate and <code>Dispatchers.Main</code>, which are shared by the whole
+process, so the tests that use it can't run in parallel in the same JVM. If your ViewModels receive the configuration in
+the constructor (see <a href="../configuration/#explicit-configuration">Explicit configuration</a>), pass them
+<code>testConfiguration(dispatcher)</code> instead: it doesn't change anything shared, so there is nothing to reset.</p>
+<div class="highlight"><pre><span></span><code><span class="kd">class</span><span class="w"> </span><span class="nc">LoginViewModel</span><span class="p">(</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">loginUseCase</span><span class="p">:</span><span class="w"> </span><span class="n">LoginUseCase</span><span class="p">,</span>
+<span class="w">    </span><span class="n">initialState</span><span class="p">:</span><span class="w"> </span><span class="n">LoginState</span><span class="p">,</span>
+<span class="w">    </span><span class="n">configuration</span><span class="p">:</span><span class="w"> </span><span class="n">EmaConfiguration</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Emanate</span><span class="p">.</span><span class="na">configuration</span>
+<span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">EmaViewModel</span><span class="o">&lt;</span><span class="n">LoginState</span><span class="p">,</span><span class="w"> </span><span class="n">LoginAction</span><span class="p">,</span><span class="w"> </span><span class="n">LoginEvent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">initialState</span><span class="p">,</span><span class="w"> </span><span class="n">configuration</span><span class="p">)</span>
+
+<span class="kd">class</span><span class="w"> </span><span class="nc">LoginViewModelTest</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">    </span><span class="nd">@Test</span>
+<span class="w">    </span><span class="kd">fun</span><span class="w"> </span><span class="nf">`the right credentials log in the user`</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">runTest</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">val</span><span class="w"> </span><span class="nv">viewModel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">LoginViewModel</span><span class="p">(</span>
+<span class="w">            </span><span class="n">LoginUseCase</span><span class="p">(</span><span class="n">FakeRepository</span><span class="p">()),</span>
+<span class="w">            </span><span class="n">LoginState</span><span class="p">.</span><span class="na">DEFAULT</span><span class="p">,</span>
+<span class="w">            </span><span class="n">testConfiguration</span><span class="p">(</span><span class="n">UnconfinedTestDispatcher</span><span class="p">(</span><span class="n">testScheduler</span><span class="p">))</span>
+<span class="w">        </span><span class="p">)</span>
+<span class="w">        </span><span class="kd">val</span><span class="w"> </span><span class="nv">recorder</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">viewModel</span><span class="p">.</span><span class="na">record</span><span class="p">()</span>
+<span class="w">        </span><span class="c1">// ...</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<ul>
+<li><strong>Create the dispatcher with <code>testScheduler</code></strong>, the scheduler of <code>runTest</code>, so <code>advanceUntilIdle()</code> runs the work of
+  the ViewModel. <code>Dispatchers.Main</code> isn't replaced, so <code>runTest</code> doesn't take it from there.</li>
+<li>The rest of the configuration is the default <code>EmaConfiguration()</code>, not the one of Emanate. Pass another one as the
+  second parameter to change it: <code>testConfiguration(dispatcher, EmaConfiguration(logger = null))</code>.</li>
+<li>The <a href="../utilities/#use-cases">use cases</a> run on the <code>io</code> dispatcher of the configuration of Emanate unless they receive
+  another one in the constructor: fake them, or pass them the dispatcher of the test.</li>
+<li><strong>Each <code>testConfiguration</code> has its own broadcaster</strong>, so the actions broadcast in a test don't reach the others. The
+  ViewModels of a test that send results to each other must receive the same configuration: create it once.</li>
+</ul>
 <h3 id="checking-the-setup">Checking the setup<a class="headerlink" href="#checking-the-setup" title="Permanent link">&para;</a></h3>
 <p>A reducer, middleware or side effect for an action that the ViewModel never receives doesn't fail: it never runs. It
 happens when a broadcast action is handled but <code>listen&lt;Type&gt;()</code> is missing in the <code>broadcasts</code> block. <code>assertSetup()</code>
@@ -1840,15 +1901,17 @@ the screen, so a piece for an interface that isn't related to the actions of the
 results between screens and the view lifecycle.</p>
 <h3 id="things-to-know">Things to know<a class="headerlink" href="#things-to-know" title="Permanent link">&para;</a></h3>
 <ol>
-<li><strong>Pass your own dispatcher.</strong> The second constructor parameter of <code>EmaViewModelClassic</code> / <code>EmaViewModelAction</code> is
-   the <code>CoroutineDispatcher</code> where the ViewModel runs; it creates its own scope with it. Expose it in the constructor of
+<li><strong>Pass your own dispatcher.</strong> The <code>dispatcher</code> parameter of <code>EmaViewModelClassic</code> / <code>EmaViewModelAction</code> is the
+   <code>CoroutineDispatcher</code> where the ViewModel runs; it creates its own scope with it. Expose it in the constructor of
    your ViewModels, with a default value, so tests can replace it. The default one is the <code>main</code> dispatcher of the
-   configuration, <code>Dispatchers.Main</code>, which does not exist in unit tests. With an <code>UnconfinedTestDispatcher</code> the work runs immediately; with a <code>StandardTestDispatcher</code>, call
-   <code>advanceUntilIdle()</code> to run it.</li>
+   configuration, <code>Dispatchers.Main</code>, which does not exist in unit tests. With an <code>UnconfinedTestDispatcher</code> the work
+   runs immediately; with a <code>StandardTestDispatcher</code>, call <code>advanceUntilIdle()</code> to run it.</li>
 </ol>
-<p><div class="highlight"><pre><span></span><code><span class="kd">class</span><span class="w"> </span><span class="nc">CounterViewModel</span><span class="p">(</span><span class="n">dispatcher</span><span class="p">:</span><span class="w"> </span><span class="n">CoroutineDispatcher</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Emanate</span><span class="p">.</span><span class="na">configuration</span><span class="p">.</span><span class="na">dispatchers</span><span class="p">.</span><span class="na">main</span><span class="p">)</span><span class="w"> </span><span class="p">:</span>
-<span class="w">    </span><span class="n">EmaViewModelAction</span><span class="o">&lt;</span><span class="n">CounterState</span><span class="p">,</span><span class="w"> </span><span class="n">CounterAction</span><span class="p">,</span><span class="w"> </span><span class="n">CounterEvent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">CounterState</span><span class="p">(),</span><span class="w"> </span><span class="n">dispatcher</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><span class="kd">class</span><span class="w"> </span><span class="nc">CounterViewModel</span><span class="p">(</span><span class="n">dispatcher</span><span class="p">:</span><span class="w"> </span><span class="n">CoroutineDispatcher</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Emanate</span><span class="p">.</span><span class="na">configuration</span><span class="p">.</span><span class="na">dispatchers</span><span class="p">.</span><span class="na">main</span><span class="p">)</span><span class="w"> </span><span class="p">:</span>
+<span class="w">    </span><span class="n">EmaViewModelAction</span><span class="o">&lt;</span><span class="n">CounterState</span><span class="p">,</span><span class="w"> </span><span class="n">CounterAction</span><span class="p">,</span><span class="w"> </span><span class="n">CounterEvent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">CounterState</span><span class="p">(),</span><span class="w"> </span><span class="n">dispatcher</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dispatcher</span><span class="p">)</span>
 </code></pre></div>
+<p>The second parameter is the <a href="../configuration/#explicit-configuration">configuration</a>, so pass the dispatcher by
+   name, or expose the whole configuration instead.
 2. <strong>No configuration is needed.</strong> If <code>Emanate.init</code> is not called, the default configuration is used. Do not call
    <code>Emanate.init</code> in tests: it can be called only once per process.
 3. <strong>Call <code>onCreated()</code></strong> to run <code>onStateCreated(initializer)</code>. Pass an initializer if the screen needs one:
