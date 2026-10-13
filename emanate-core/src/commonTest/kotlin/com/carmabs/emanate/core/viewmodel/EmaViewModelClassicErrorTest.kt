@@ -2,6 +2,7 @@ package com.carmabs.emanate.core.viewmodel
 
 import com.carmabs.emanate.core.Emanate
 import com.carmabs.emanate.core.action.EmaAction
+import com.carmabs.emanate.core.broadcast.EmaActionBroadcaster
 import com.carmabs.emanate.core.error.EmaError
 import com.carmabs.emanate.core.error.EmaErrorPolicy
 import com.carmabs.emanate.core.model.EmaConfiguration
@@ -96,12 +97,26 @@ class EmaViewModelClassicErrorTest {
         val viewModel = brokenViewModel()
         viewModel.onCreated(null)
 
-        Emanate.actionBroadcaster.broadcast(Ping(1, broken = true))
-        Emanate.actionBroadcaster.broadcast(Ping(2))
+        EmaActionBroadcaster.Shared.broadcast(Ping(1, broken = true))
+        EmaActionBroadcaster.Shared.broadcast(Ping(2))
         runCurrent()
 
         assertEquals(listOf("ping 2"), viewModel.received)
         assertEquals("broadcast listener of Ping", errors.last().reflection.methodName)
+        viewModel.onCleared()
+    }
+
+    @Test
+    fun `a broadcast listener receives the actions of the broadcaster of its configuration`() = runTest {
+        val broadcaster = EmaActionBroadcaster()
+        val viewModel = brokenViewModel(catchErrors.copy(broadcaster = broadcaster))
+        viewModel.onCreated(null)
+
+        EmaActionBroadcaster.Shared.broadcast(Ping(1))
+        broadcaster.broadcast(Ping(2))
+        runCurrent()
+
+        assertEquals(listOf("ping 2"), viewModel.received)
         viewModel.onCleared()
     }
 

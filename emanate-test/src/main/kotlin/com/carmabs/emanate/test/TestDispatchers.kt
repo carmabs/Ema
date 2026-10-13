@@ -1,6 +1,7 @@
 package com.carmabs.emanate.test
 
 import com.carmabs.emanate.core.Emanate
+import com.carmabs.emanate.core.broadcast.EmaActionBroadcaster
 import com.carmabs.emanate.core.concurrency.EmaDispatchers
 import com.carmabs.emanate.core.model.EmaConfiguration
 import kotlinx.coroutines.Dispatchers
@@ -15,6 +16,10 @@ import kotlinx.coroutines.test.setMain
  * calling [useTestDispatchers]. It doesn't change the configuration of Emanate or `Dispatchers.Main`, so the tests that
  * use it can run in parallel and don't need to reset anything.
  *
+ * If [configuration] uses the shared broadcaster, it gets a new one, so the actions broadcast in the test don't reach
+ * the other tests. The view models and sources of a test that broadcast actions to each other have to receive the same
+ * configuration.
+ *
  * Create [dispatcher] with the scheduler of runTest, so advanceUntilIdle runs the work of the view models, delays
  * included: `testConfiguration(UnconfinedTestDispatcher(testScheduler))`.
  *
@@ -28,8 +33,10 @@ import kotlinx.coroutines.test.setMain
 fun testConfiguration(
     dispatcher: TestDispatcher,
     configuration: EmaConfiguration = EmaConfiguration()
-): EmaConfiguration =
-    configuration.copy(dispatchers = EmaDispatchers(main = dispatcher, io = dispatcher, default = dispatcher))
+): EmaConfiguration = configuration.copy(
+    dispatchers = EmaDispatchers(main = dispatcher, io = dispatcher, default = dispatcher),
+    broadcaster = configuration.broadcaster.takeUnless { it === EmaActionBroadcaster.Shared } ?: EmaActionBroadcaster()
+)
 
 /**
  * Configuration of Emanate before [useTestDispatchers], restored by [resetTestDispatchers]
@@ -64,13 +71,13 @@ fun useTestDispatchers(dispatcher: TestDispatcher = UnconfinedTestDispatcher()):
 
 /**
  * Undoes [useTestDispatchers]: restores `Dispatchers.Main` and the configuration of Emanate, and removes the actions
- * broadcast with keepUntilReceived that nobody received, so they don't reach the next test. Call it after each test,
- * for example in a function annotated with AfterTest.
+ * broadcast with keepUntilReceived through the shared broadcaster that nobody received, so they don't reach the next
+ * test. Call it after each test, for example in a function annotated with AfterTest.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 fun resetTestDispatchers() {
     Dispatchers.resetMain()
     configurationBeforeTest?.let { Emanate.initForTest(it) }
     configurationBeforeTest = null
-    Emanate.actionBroadcaster.clearPendingActions()
+    EmaActionBroadcaster.Shared.clearPendingActions()
 }

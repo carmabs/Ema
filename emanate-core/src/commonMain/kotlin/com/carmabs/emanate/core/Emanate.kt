@@ -1,6 +1,5 @@
 package com.carmabs.emanate.core
 
-import com.carmabs.emanate.core.broadcast.EmaActionBroadcaster
 import com.carmabs.emanate.core.model.EmaConfiguration
 
 /**
@@ -23,11 +22,6 @@ object Emanate {
         get() = initializedConfiguration ?: defaultConfiguration
 
     private val defaultConfiguration by lazy { EmaConfiguration() }
-
-    /**
-     * Sends the actions broadcast by the side effects to the sources listening to their type.
-     */
-    internal val actionBroadcaster: EmaActionBroadcaster by lazy { EmaActionBroadcaster() }
 
     /**
      * Sets the configuration of Emanate. It can be called only once.

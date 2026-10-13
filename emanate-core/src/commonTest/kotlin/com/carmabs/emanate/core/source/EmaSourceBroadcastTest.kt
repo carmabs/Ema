@@ -2,6 +2,8 @@ package com.carmabs.emanate.core.source
 
 import com.carmabs.emanate.core.Emanate
 import com.carmabs.emanate.core.action.EmaAction
+import com.carmabs.emanate.core.broadcast.EmaActionBroadcaster
+import com.carmabs.emanate.core.model.EmaConfiguration
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
 import kotlin.test.AfterTest
@@ -37,47 +39,51 @@ class EmaSourceBroadcastTest {
 
     private val received = mutableListOf<String>()
 
-    private fun TestScope.senderSource() = EmaSource<ListState, SenderAction, NoEvent>(
-        ListState(),
-        dispatcher = UnconfinedTestDispatcher(testScheduler)
-    ) {
-        sideEffects {
-            add<SenderAction.Create> { action ->
-                broadcast(UserBroadcast.Created(action.user))
-            }
-        }
-    }
-
-    private fun TestScope.receiverSource() = EmaSource<ListState, ReceiverAction, NoEvent>(
-        ListState(),
-        dispatcher = UnconfinedTestDispatcher(testScheduler)
-    ) {
-        middlewares {
-            add<UserBroadcast> { action ->
-                received += "middleware $action"
-                next()
-            }
-        }
-        reducers {
-            add<UserBroadcast> { action ->
-                when (action) {
-                    is UserBroadcast.Created -> state.copy(users = state.users + action.user)
-                    is UserBroadcast.Deleted -> state.copy(users = state.users - action.user)
+    private fun TestScope.senderSource(configuration: EmaConfiguration = Emanate.configuration) =
+        EmaSource<ListState, SenderAction, NoEvent>(
+            ListState(),
+            configuration,
+            UnconfinedTestDispatcher(testScheduler)
+        ) {
+            sideEffects {
+                add<SenderAction.Create> { action ->
+                    broadcast(UserBroadcast.Created(action.user))
                 }
             }
         }
-        sideEffects {
-            add<UserBroadcast.Created> { action -> received += "side effect ${action.user}" }
+
+    private fun TestScope.receiverSource(configuration: EmaConfiguration = Emanate.configuration) =
+        EmaSource<ListState, ReceiverAction, NoEvent>(
+            ListState(),
+            configuration,
+            UnconfinedTestDispatcher(testScheduler)
+        ) {
+            middlewares {
+                add<UserBroadcast> { action ->
+                    received += "middleware $action"
+                    next()
+                }
+            }
+            reducers {
+                add<UserBroadcast> { action ->
+                    when (action) {
+                        is UserBroadcast.Created -> state.copy(users = state.users + action.user)
+                        is UserBroadcast.Deleted -> state.copy(users = state.users - action.user)
+                    }
+                }
+            }
+            sideEffects {
+                add<UserBroadcast.Created> { action -> received += "side effect ${action.user}" }
+            }
+            broadcasts {
+                listen<UserBroadcast.Created>()
+            }
         }
-        broadcasts {
-            listen<UserBroadcast.Created>()
-        }
-    }
 
     @AfterTest
     fun checkBroadcasterIsClean() {
-        assertEquals(0, Emanate.actionBroadcaster.listenerCount)
-        assertEquals(0, Emanate.actionBroadcaster.pendingCount)
+        assertEquals(0, EmaActionBroadcaster.Shared.listenerCount)
+        assertEquals(0, EmaActionBroadcaster.Shared.pendingCount)
     }
 
     @Test
@@ -98,8 +104,8 @@ class EmaSourceBroadcastTest {
     fun `only the actions of the listened type are received`() = runTest {
         val receiver = receiverSource()
 
-        Emanate.actionBroadcaster.broadcast(UserBroadcast.Created("Ana"))
-        Emanate.actionBroadcaster.broadcast(UserBroadcast.Deleted("Ana"))
+        EmaActionBroadcaster.Shared.broadcast(UserBroadcast.Created("Ana"))
+        EmaActionBroadcaster.Shared.broadcast(UserBroadcast.Deleted("Ana"))
         runCurrent()
 
         assertEquals(ListState(users = listOf("Ana")), receiver.state)
@@ -127,13 +133,13 @@ class EmaSourceBroadcastTest {
     fun `the listener is removed when the source is closed`() = runTest {
         val sender = senderSource()
         val receiver = receiverSource()
-        assertEquals(1, Emanate.actionBroadcaster.listenerCount)
+        assertEquals(1, EmaActionBroadcaster.Shared.listenerCount)
 
         receiver.close()
         sender.dispatch(SenderAction.Create("Ana"))
         runCurrent()
 
-        assertEquals(0, Emanate.actionBroadcaster.listenerCount)
+        assertEquals(0, EmaActionBroadcaster.Shared.listenerCount)
         assertEquals(ListState(), receiver.state)
         assertTrue(received.isEmpty())
         sender.close()
@@ -141,7 +147,7 @@ class EmaSourceBroadcastTest {
 
     @Test
     fun `a kept action without listener is delivered to the first source that listens to it`() = runTest {
-        Emanate.actionBroadcaster.broadcast(UserBroadcast.Created("Ana"), keepUntilReceived = true)
+        EmaActionBroadcaster.Shared.broadcast(UserBroadcast.Created("Ana"), keepUntilReceived = true)
 
         val firstReceiver = receiverSource()
         val secondReceiver = receiverSource()
@@ -157,11 +163,11 @@ class EmaSourceBroadcastTest {
     fun `a kept action with listeners is delivered at the moment and not kept`() = runTest {
         val receiver = receiverSource()
 
-        Emanate.actionBroadcaster.broadcast(UserBroadcast.Created("Ana"), keepUntilReceived = true)
+        EmaActionBroadcaster.Shared.broadcast(UserBroadcast.Created("Ana"), keepUntilReceived = true)
         runCurrent()
 
         assertEquals(listOf("Ana"), receiver.state.users)
-        assertEquals(0, Emanate.actionBroadcaster.pendingCount)
+        assertEquals(0, EmaActionBroadcaster.Shared.pendingCount)
         receiver.close()
     }
 
@@ -169,10 +175,28 @@ class EmaSourceBroadcastTest {
     fun `a kept action of a type not listened to is still kept`() = runTest {
         val receiver = receiverSource()
 
-        Emanate.actionBroadcaster.broadcast(UserBroadcast.Deleted("Ana"), keepUntilReceived = true)
+        EmaActionBroadcaster.Shared.broadcast(UserBroadcast.Deleted("Ana"), keepUntilReceived = true)
 
-        assertEquals(1, Emanate.actionBroadcaster.pendingCount)
-        Emanate.actionBroadcaster.clearPendingActions()
+        assertEquals(1, EmaActionBroadcaster.Shared.pendingCount)
+        EmaActionBroadcaster.Shared.clearPendingActions()
         receiver.close()
+    }
+
+    @Test
+    fun `the sources with their own broadcaster only receive the actions broadcast through it`() = runTest {
+        val isolated = EmaConfiguration(broadcaster = EmaActionBroadcaster())
+        val sharedSender = senderSource()
+        val isolatedSender = senderSource(isolated)
+        val sharedReceiver = receiverSource()
+        val isolatedReceiver = receiverSource(isolated)
+
+        sharedSender.dispatch(SenderAction.Create("Ana"))
+        isolatedSender.dispatch(SenderAction.Create("Eva"))
+        runCurrent()
+
+        assertEquals(listOf("Ana"), sharedReceiver.state.users)
+        assertEquals(listOf("Eva"), isolatedReceiver.state.users)
+        listOf(sharedSender, isolatedSender).forEach { it.close() }
+        listOf(sharedReceiver, isolatedReceiver).forEach { it.close() }
     }
 }

@@ -2,6 +2,7 @@ package com.carmabs.emanate.test
 
 import com.carmabs.emanate.core.Emanate
 import com.carmabs.emanate.core.action.EmaAction
+import com.carmabs.emanate.core.broadcast.EmaActionBroadcaster
 import com.carmabs.emanate.core.model.EmaConfiguration
 import com.carmabs.emanate.core.source.EmaSource
 import com.carmabs.emanate.core.state.EmaEvent
@@ -211,5 +212,15 @@ class TestConfigurationTest {
         assertSame(dispatcher, configuration.dispatchers.io)
         assertEquals(null, configuration.logger)
         assertNotSame(dispatcher, Emanate.configuration.dispatchers.main)
+    }
+
+    @Test
+    fun `each test configuration has its own broadcaster unless it is given one`() {
+        val broadcaster = EmaActionBroadcaster()
+        val dispatcher = StandardTestDispatcher()
+
+        assertNotSame(EmaActionBroadcaster.Shared, testConfiguration(dispatcher).broadcaster)
+        assertNotSame(testConfiguration(dispatcher).broadcaster, testConfiguration(dispatcher).broadcaster)
+        assertSame(broadcaster, testConfiguration(dispatcher, EmaConfiguration(broadcaster = broadcaster)).broadcaster)
     }
 }

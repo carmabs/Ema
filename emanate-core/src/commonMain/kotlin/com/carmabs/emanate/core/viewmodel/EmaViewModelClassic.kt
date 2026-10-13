@@ -251,7 +251,7 @@ abstract class EmaViewModelClassic<S : EmaState, E : EmaEvent>(
      * its type. For example, when the previous screen is created again after the process has been killed.
      */
     protected fun broadcast(action: EmaAction, keepUntilReceived: Boolean = false) {
-        Emanate.actionBroadcaster.broadcast(action, keepUntilReceived)
+        configuration.broadcaster.broadcast(action, keepUntilReceived)
     }
 
     /**
@@ -269,7 +269,7 @@ abstract class EmaViewModelClassic<S : EmaState, E : EmaEvent>(
     @PublishedApi
     internal fun <A : EmaAction> registerBroadcastListener(actionType: KClass<A>, receiver: (A) -> Unit) {
         scope.launch(start = CoroutineStart.UNDISPATCHED) {
-            Emanate.actionBroadcaster.listen(listOf(actionType)).collect { action ->
+            configuration.broadcaster.listen(listOf(actionType)).collect { action ->
                 // With Catch the listener keeps receiving after an error
                 handlingErrors("broadcast listener of ${actionType.simpleName}") { receiver(actionType.cast(action)) }
             }

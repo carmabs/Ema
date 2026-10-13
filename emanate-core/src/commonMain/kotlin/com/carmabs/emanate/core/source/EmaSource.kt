@@ -95,8 +95,7 @@ class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
     broadcastListeners: List<KClass<out EmaAction>>,
     container: Any?,
     private val eventDispatcher: EventDispatcher<E>,
-    private val configuration: EmaConfiguration,
-    internal val broadcaster: EmaActionBroadcaster = Emanate.actionBroadcaster
+    private val configuration: EmaConfiguration
 ) : EmaEventConsumer<E>,
     EmaActionDispatcher<A> {
 
@@ -132,6 +131,11 @@ class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
     private val middlewareContext = MiddlewareContext(this)
 
     private val sideEffectScope = SideEffectScope<S, A, E>(this)
+
+    /**
+     * Sends and receives the broadcast actions: the one of the configuration
+     */
+    internal val broadcaster: EmaActionBroadcaster = configuration.broadcaster
 
     /**
      * Asynchronous work running with a key: the id of a nextAfter or a side effect that isn't launched for every
