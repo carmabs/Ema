@@ -38,8 +38,7 @@ private sealed interface ProfileEvent : EmaEvent {
 private class ProfileViewModel(configuration: EmaConfiguration = Emanate.configuration) :
     EmaViewModel<ProfileState, ProfileAction, ProfileEvent>(
         initialDataState = ProfileState(),
-        configuration = configuration,
-        logger = null
+        configuration = configuration.copy(logger = null)
     ) {
     override fun setup() = source {
         reducers {

@@ -1,5 +1,6 @@
 package com.carmabs.emanate.test
 
+import com.carmabs.emanate.core.Emanate
 import com.carmabs.emanate.core.action.EmaAction
 import com.carmabs.emanate.core.initializer.EmaInitializer
 import com.carmabs.emanate.core.state.EmaEvent
@@ -27,7 +28,8 @@ private data class CouponApplied(val code: String) : EmaAction
  */
 private interface TrackedAction : EmaAction
 
-private class CartViewModel : EmaViewModel<CartState, CartAction, EmaEvent.EMPTY>(CartState(), logger = null) {
+private class CartViewModel :
+    EmaViewModel<CartState, CartAction, EmaEvent.EMPTY>(CartState(), Emanate.configuration.copy(logger = null)) {
 
     override fun setup() = source {
         middlewares {
@@ -51,7 +53,8 @@ private class CartViewModel : EmaViewModel<CartState, CartAction, EmaEvent.EMPTY
 /**
  * Forgets to listen to the broadcast actions it handles
  */
-private class ForgetfulCartViewModel : EmaViewModel<CartState, CartAction, EmaEvent.EMPTY>(CartState(), logger = null) {
+private class ForgetfulCartViewModel :
+    EmaViewModel<CartState, CartAction, EmaEvent.EMPTY>(CartState(), Emanate.configuration.copy(logger = null)) {
 
     override fun setup() = source {
         reducers {
@@ -64,7 +67,7 @@ private class ForgetfulCartViewModel : EmaViewModel<CartState, CartAction, EmaEv
 }
 
 private abstract class BaseViewModel<S : EmaState, A : EmaAction>(initialState: S) :
-    EmaViewModel<S, A, EmaEvent.EMPTY>(initialState, logger = null)
+    EmaViewModel<S, A, EmaEvent.EMPTY>(initialState, Emanate.configuration.copy(logger = null))
 
 /**
  * The type of its actions is given to EmaViewModel through a base class

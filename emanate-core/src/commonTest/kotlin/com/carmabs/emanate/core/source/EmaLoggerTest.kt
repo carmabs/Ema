@@ -1,6 +1,7 @@
 package com.carmabs.emanate.core.source
 
 import com.carmabs.emanate.core.action.EmaAction
+import com.carmabs.emanate.core.configurationOn
 import com.carmabs.emanate.core.logging.EmaLogger
 import com.carmabs.emanate.core.source.middleware.loggerMiddleware
 import com.carmabs.emanate.core.state.EmaEvent
@@ -29,7 +30,7 @@ class EmaLoggerTest {
         val logs = mutableListOf<String>()
         val source = EmaSource<LoggedState, LoggedAction, LoggedEvent>(
             LoggedState(),
-            dispatcher = UnconfinedTestDispatcher(testScheduler)
+            configurationOn(UnconfinedTestDispatcher(testScheduler))
         ) {
             middlewares {
                 +loggerMiddleware("Counter", EmaLogger { tag, message -> logs += "$tag: $message" })

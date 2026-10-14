@@ -1,6 +1,7 @@
 import com.carmabs.emanate.core.Emanate
 import com.carmabs.emanate.core.action.EmaAction
 import com.carmabs.emanate.core.broadcast.EmaActionBroadcaster
+import com.carmabs.emanate.core.configurationOn
 import com.carmabs.emanate.core.error.EmaErrorPolicy
 import com.carmabs.emanate.core.initializer.EmaInitializer
 import com.carmabs.emanate.core.logging.EmaLogger
@@ -49,7 +50,7 @@ sealed interface CounterEvent : EmaEvent {
 data class CounterInitializer(val start: Int) : EmaInitializer
 
 class CounterViewModel(dispatcher: CoroutineDispatcher, private val renderOnInitialization: Boolean = true) :
-    EmaViewModelAction<CounterState, CounterAction, CounterEvent>(CounterState(), dispatcher = dispatcher) {
+    EmaViewModelAction<CounterState, CounterAction, CounterEvent>(CounterState(), configurationOn(dispatcher)) {
 
     val hooks = mutableListOf<String>()
 
@@ -336,13 +337,13 @@ class EmaViewModelActionTest {
 data class UserSent(val user: String) : EmaAction
 
 class SenderViewModel(dispatcher: CoroutineDispatcher) :
-    EmaViewModelClassic<CounterState, CounterEvent>(CounterState(), dispatcher = dispatcher) {
+    EmaViewModelClassic<CounterState, CounterEvent>(CounterState(), configurationOn(dispatcher)) {
     override fun onStateCreated(initializer: EmaInitializer?) = Unit
     fun send(user: String, keepUntilReceived: Boolean = false) = broadcast(UserSent(user), keepUntilReceived)
 }
 
 class ReceiverViewModel(dispatcher: CoroutineDispatcher) :
-    EmaViewModelClassic<CounterState, CounterEvent>(CounterState(), dispatcher = dispatcher) {
+    EmaViewModelClassic<CounterState, CounterEvent>(CounterState(), configurationOn(dispatcher)) {
     val received = mutableListOf<String>()
     override fun onStateCreated(initializer: EmaInitializer?) = Unit
     override fun onBroadcastListenerSetup() {

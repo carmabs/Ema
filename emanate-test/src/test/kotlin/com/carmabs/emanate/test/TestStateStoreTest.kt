@@ -1,5 +1,6 @@
 package com.carmabs.emanate.test
 
+import com.carmabs.emanate.core.Emanate
 import com.carmabs.emanate.core.action.EmaAction
 import com.carmabs.emanate.core.initializer.EmaInitializer
 import com.carmabs.emanate.core.savestate.EmaRestoreState
@@ -26,7 +27,7 @@ private sealed interface SearchAction : EmaAction {
 private class SearchViewModel :
     EmaViewModel<SearchState, SearchAction, EmaEvent.EMPTY>(
         initialDataState = SearchState(),
-        logger = null
+        configuration = Emanate.configuration.copy(logger = null)
     ) {
     override fun setup() = source {
         install(
@@ -93,7 +94,10 @@ class TestStateStoreTest {
 
     @Test
     fun `a reducer of the restore never runs without a backup`() {
-        val viewModel = object : EmaViewModel<SearchState, SearchAction, EmaEvent.EMPTY>(SearchState(), logger = null) {
+        val viewModel = object : EmaViewModel<SearchState, SearchAction, EmaEvent.EMPTY>(
+            SearchState(),
+            Emanate.configuration.copy(logger = null)
+        ) {
             override fun setup() = source {
                 reducers {
                     add<EmaRestoreState> { state.copy(results = listOf("restored")) }

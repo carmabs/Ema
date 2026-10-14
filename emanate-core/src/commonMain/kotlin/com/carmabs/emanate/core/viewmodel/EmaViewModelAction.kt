@@ -6,7 +6,6 @@ import com.carmabs.emanate.core.action.EmaActionDispatcher
 import com.carmabs.emanate.core.model.EmaConfiguration
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
-import kotlinx.coroutines.CoroutineDispatcher
 
 /**
  * Created by Carlos Mateo Benito on 14/04/2023.
@@ -14,8 +13,7 @@ import kotlinx.coroutines.CoroutineDispatcher
  * Viewmodel that handles actions by the method onAction(action:EmaAction).
  * It centralize the user actions on view.Based on MVI
  * @param configuration applied by the view model. By default the one of [Emanate], read when the view model is
- * created.
- * @param dispatcher where the view model runs. By default the main dispatcher of [configuration].
+ * created. The view model runs on its main dispatcher.
  * <p>
  * Copyright (c) 2023 by Carmabs. All rights reserved.
  * </p>
@@ -24,9 +22,8 @@ import kotlinx.coroutines.CoroutineDispatcher
  */
 abstract class EmaViewModelAction<S : EmaState, A : EmaAction, E : EmaEvent>(
     initialDataState: S,
-    configuration: EmaConfiguration = Emanate.configuration,
-    dispatcher: CoroutineDispatcher = configuration.dispatchers.main
-) : EmaViewModelClassic<S, E>(initialDataState, configuration, dispatcher),
+    configuration: EmaConfiguration = Emanate.configuration
+) : EmaViewModelClassic<S, E>(initialDataState, configuration),
     EmaActionDispatcher<A> {
 
     final override fun dispatch(action: A) {

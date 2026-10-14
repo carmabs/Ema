@@ -1,5 +1,6 @@
 package com.carmabs.emanate.serialization
 
+import com.carmabs.emanate.core.Emanate
 import com.carmabs.emanate.core.action.EmaAction
 import com.carmabs.emanate.core.savestate.backupOf
 import com.carmabs.emanate.core.state.EmaEvent
@@ -42,7 +43,8 @@ private sealed interface LoginAction : EmaAction {
  * Saves the form without the password, with the type of the codec inferred from save, and the recent users with an
  * explicit serializer
  */
-private class LoginViewModel : EmaViewModel<LoginState, LoginAction, EmaEvent.EMPTY>(LoginState(), logger = null) {
+private class LoginViewModel :
+    EmaViewModel<LoginState, LoginAction, EmaEvent.EMPTY>(LoginState(), Emanate.configuration.copy(logger = null)) {
 
     override fun setup() = source {
         install(

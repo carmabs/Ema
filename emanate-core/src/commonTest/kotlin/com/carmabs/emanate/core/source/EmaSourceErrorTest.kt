@@ -2,6 +2,7 @@ package com.carmabs.emanate.core.source
 
 import com.carmabs.emanate.core.Emanate
 import com.carmabs.emanate.core.action.EmaAction
+import com.carmabs.emanate.core.configurationOn
 import com.carmabs.emanate.core.error.EmaError
 import com.carmabs.emanate.core.error.EmaErrorPolicy
 import com.carmabs.emanate.core.logging.EmaLogger
@@ -44,8 +45,7 @@ class EmaSourceErrorTest {
 
     private fun TestScope.countSource() = EmaSource(
         CountState(),
-        configuration,
-        UnconfinedTestDispatcher(testScheduler),
+        configurationOn(UnconfinedTestDispatcher(testScheduler), configuration),
         countSetup
     )
 
@@ -119,7 +119,8 @@ class EmaSourceErrorTest {
     @Test
     fun `by default the source keeps the configuration of Emanate it had when it was created`() = runTest {
         Emanate.initForTest(configuration)
-        val source = EmaSource(CountState(), dispatcher = UnconfinedTestDispatcher(testScheduler), setup = countSetup)
+        val source =
+            EmaSource(CountState(), configurationOn(UnconfinedTestDispatcher(testScheduler)), setup = countSetup)
         Emanate.initForTest(EmaConfiguration(errorPolicy = EmaErrorPolicy.Throw, logger = null))
 
         source.dispatch(CountAction.BrokenReducer)

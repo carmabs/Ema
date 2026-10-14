@@ -7,6 +7,8 @@ import androidx.lifecycle.ViewModelProvider
 import com.carmabs.emanate.android.viewmodel.EmaAndroidViewModel
 import com.carmabs.emanate.android.viewmodel.EmaViewModelFactory
 import com.carmabs.emanate.core.action.EmaAction
+import com.carmabs.emanate.core.concurrency.EmaDispatchers
+import com.carmabs.emanate.core.model.EmaConfiguration
 import com.carmabs.emanate.core.savestate.backupOf
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
@@ -29,8 +31,7 @@ private sealed interface NameAction : EmaAction {
 private class NameViewModel :
     EmaViewModel<NameState, NameAction, EmaEvent.EMPTY>(
         NameState(),
-        dispatcher = Dispatchers.Unconfined,
-        logger = null
+        EmaConfiguration(dispatchers = EmaDispatchers(main = Dispatchers.Unconfined), logger = null)
     ) {
 
     override fun setup() = source {

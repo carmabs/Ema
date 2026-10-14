@@ -45,11 +45,12 @@ import kotlinx.coroutines.withTimeoutOrNull
 /**
  * Creates a source. Its actions are of type [A], plus the ones it listens to in the broadcasts block of setup: every
  * action goes through the middlewares, the reducers and the side effects of its type. The source creates its own scope
- * with [dispatcher], so call [EmaSource.close] when it isn't needed anymore to cancel its work.
+ * with the main dispatcher of [configuration], so call [EmaSource.close] when it isn't needed anymore to cancel its
+ * work.
  *
- * @param configuration applied by the source. By default the one of [Emanate], read when the source is created.
- * @param dispatcher where the source runs. By default the main dispatcher of [configuration], as the state is usually
- * drawn by the view; use cases run on their own dispatcher anyway.
+ * @param configuration applied by the source. By default the one of [Emanate], read when the source is created. The
+ * source runs on its main dispatcher, as the state is usually drawn by the view; use cases run on their own dispatcher
+ * anyway.
  * @param setup adds the middlewares, reducers, side effects and broadcast listeners of the source, and installs its
  * plugins
  */
@@ -57,13 +58,12 @@ import kotlinx.coroutines.withTimeoutOrNull
 fun <S : EmaState, A : EmaAction, E : EmaEvent> EmaSource(
     initialState: S,
     configuration: EmaConfiguration = Emanate.configuration,
-    dispatcher: CoroutineDispatcher = configuration.dispatchers.main,
     setup: SourceSetupScope<S, A, E>.() -> Unit
 ): EmaSource<S, A, E> {
     val sourceSetup = buildSourceSetup(setup)
     return EmaSource(
         mutableStateFlow = MutableStateFlow(initialState),
-        dispatcher = dispatcher,
+        dispatcher = configuration.dispatchers.main,
         middlewares = sourceSetup.middlewares,
         reducers = sourceSetup.reducers,
         sideEffects = sourceSetup.sideEffects,

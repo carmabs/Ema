@@ -3,6 +3,7 @@ package com.carmabs.emanate.core.viewmodel
 import com.carmabs.emanate.core.Emanate
 import com.carmabs.emanate.core.action.EmaAction
 import com.carmabs.emanate.core.concurrency.EmaDispatchers
+import com.carmabs.emanate.core.configurationOn
 import com.carmabs.emanate.core.initializer.EmaInitializer
 import com.carmabs.emanate.core.logging.EmaLogger
 import com.carmabs.emanate.core.model.EmaConfiguration
@@ -62,7 +63,7 @@ private class LoadUseCase {
  * View model of other screen that sends a result
  */
 private class SenderViewModel(dispatcher: CoroutineDispatcher) :
-    EmaViewModel<TestState, TestAction, TestEvent>(TestState(), dispatcher = dispatcher, logger = null) {
+    EmaViewModel<TestState, TestAction, TestEvent>(TestState(), configurationOn(dispatcher).copy(logger = null)) {
 
     override fun setup() = source {
         sideEffects {
@@ -75,7 +76,7 @@ private class SenderViewModel(dispatcher: CoroutineDispatcher) :
  * View model with a side effect for every lifecycle action
  */
 private class LifecycleViewModel(dispatcher: CoroutineDispatcher) :
-    EmaViewModel<TestState, TestAction, TestEvent>(TestState(), dispatcher = dispatcher, logger = null) {
+    EmaViewModel<TestState, TestAction, TestEvent>(TestState(), configurationOn(dispatcher).copy(logger = null)) {
 
     val launched = mutableListOf<String>()
 
@@ -93,7 +94,10 @@ private class ClosingViewModel(
     dispatcher: CoroutineDispatcher,
     private val duration: Duration,
     configuration: EmaConfiguration = Emanate.configuration
-) : EmaViewModel<TestState, TestAction, TestEvent>(TestState(), configuration, dispatcher, logger = null) {
+) : EmaViewModel<TestState, TestAction, TestEvent>(
+    TestState(),
+    configurationOn(dispatcher, configuration).copy(logger = null)
+) {
 
     val finished = mutableListOf<String>()
 
@@ -113,7 +117,7 @@ private class TestViewModel(
     private val loadUseCase: LoadUseCase = LoadUseCase(),
     logger: EmaLogger? = null,
     private val renderOnInitialization: Boolean = true
-) : EmaViewModel<TestState, TestAction, TestEvent>(TestState(), dispatcher = dispatcher, logger = logger) {
+) : EmaViewModel<TestState, TestAction, TestEvent>(TestState(), configurationOn(dispatcher).copy(logger = logger)) {
 
     val received = mutableListOf<String>()
 

@@ -1,6 +1,7 @@
 package com.carmabs.emanate.core.source
 
 import com.carmabs.emanate.core.action.EmaAction
+import com.carmabs.emanate.core.configurationOn
 import com.carmabs.emanate.core.source.middleware.middlewareDelayOf
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
@@ -41,7 +42,7 @@ class EmaSourceMiddlewareTest {
 
     private fun TestScope.testSource() = EmaSource<TestState, TestAction, TestEvent>(
         TestState(),
-        dispatcher = UnconfinedTestDispatcher(testScheduler)
+        configurationOn(UnconfinedTestDispatcher(testScheduler))
     ) {
         middlewares {
             add<TestAction.Blocked> { received += "blocked" }

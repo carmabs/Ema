@@ -2,6 +2,7 @@ package com.carmabs.emanate.core.savestate
 
 import com.carmabs.emanate.core.Emanate
 import com.carmabs.emanate.core.action.EmaAction
+import com.carmabs.emanate.core.configurationOn
 import com.carmabs.emanate.core.error.EmaError
 import com.carmabs.emanate.core.error.EmaErrorPolicy
 import com.carmabs.emanate.core.initializer.EmaInitializer
@@ -99,7 +100,10 @@ private class FormViewModel(
     dispatcher: CoroutineDispatcher,
     private val ageSavedValue: EmaBackupValue<FormState, Int> = AgeSavedValue(),
     configuration: EmaConfiguration = Emanate.configuration
-) : EmaViewModel<FormState, FormAction, EmaEvent.EMPTY>(FormState(), configuration, dispatcher, logger = null) {
+) : EmaViewModel<FormState, FormAction, EmaEvent.EMPTY>(
+    FormState(),
+    configurationOn(dispatcher, configuration).copy(logger = null)
+) {
 
     val received = mutableListOf<EmaAction>()
 
@@ -136,7 +140,7 @@ private class FormViewModel(
  * View model that doesn't save anything
  */
 private class PlainViewModel(dispatcher: CoroutineDispatcher) :
-    EmaViewModel<FormState, FormAction, EmaEvent.EMPTY>(FormState(), dispatcher = dispatcher, logger = null) {
+    EmaViewModel<FormState, FormAction, EmaEvent.EMPTY>(FormState(), configurationOn(dispatcher).copy(logger = null)) {
 
     override fun setup() = source {}
 }
@@ -368,8 +372,7 @@ class EmaViewModelSavedStateTest {
     fun `the backups of a view model can't repeat keys`() = runTest {
         val viewModel = object : EmaViewModel<FormState, FormAction, EmaEvent.EMPTY>(
             FormState(),
-            dispatcher = testDispatcher(),
-            logger = null
+            configurationOn(testDispatcher()).copy(logger = null)
         ) {
             override fun setup() = source {
                 install(nameBackup)
@@ -382,7 +385,7 @@ class EmaViewModelSavedStateTest {
 
     @Test
     fun `a backup that isn't installed doesn't restore anything`() = runTest {
-        val source = EmaSource<FormState, FormAction, EmaEvent.EMPTY>(FormState(), dispatcher = testDispatcher()) {}
+        val source = EmaSource<FormState, FormAction, EmaEvent.EMPTY>(FormState(), configurationOn(testDispatcher())) {}
 
         source.dispatchAction(EmaRestoreState(mapOf("name" to "Ana")))
         runCurrent()
@@ -436,7 +439,7 @@ class EmaViewModelSavedStateTest {
     }
 
     private fun formSource(dispatcher: CoroutineDispatcher) =
-        EmaSource<FormState, FormAction, EmaEvent.EMPTY>(FormState(), dispatcher = dispatcher) {
+        EmaSource<FormState, FormAction, EmaEvent.EMPTY>(FormState(), configurationOn(dispatcher)) {
             install(nameBackup)
             reducers {
                 add<FormAction.NameWritten> { action -> state.copy(name = action.name) }

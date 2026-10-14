@@ -1,6 +1,7 @@
 package com.carmabs.emanate.core.source
 
 import com.carmabs.emanate.core.action.EmaAction
+import com.carmabs.emanate.core.configurationOn
 import com.carmabs.emanate.core.model.EmaConfiguration
 import com.carmabs.emanate.core.source.sideeffect.SideEffect
 import com.carmabs.emanate.core.source.sideeffect.SideEffectConcurrency
@@ -61,7 +62,7 @@ class EmaSourceSideEffectTest {
     private val received = mutableListOf<String>()
 
     private fun TestScope.testSource(dispatcher: CoroutineDispatcher = UnconfinedTestDispatcher(testScheduler)) =
-        EmaSource<EffectState, EffectAction, EffectEvent>(EffectState(), dispatcher = dispatcher) {
+        EmaSource<EffectState, EffectAction, EffectEvent>(EffectState(), configurationOn(dispatcher)) {
             reducers {
                 add<EffectAction.Load> { state.copy(text = "loading") }
                 add<EffectAction.Loaded> { action -> state.copy(text = action.text) }
@@ -261,7 +262,7 @@ class EmaSourceSideEffectTest {
         val finished = mutableListOf<EffectAction>()
         val source = EmaSource<EffectState, EffectAction, EffectEvent>(
             EffectState(),
-            dispatcher = UnconfinedTestDispatcher(testScheduler)
+            configurationOn(UnconfinedTestDispatcher(testScheduler))
         ) {
             sideEffects {
                 add<EffectAction.Save> { action ->
@@ -286,8 +287,7 @@ class EmaSourceSideEffectTest {
         val finished = mutableListOf<EffectAction>()
         val source = EmaSource<EffectState, EffectAction, EffectEvent>(
             EffectState(),
-            EmaConfiguration(closeTimeout = 2.seconds),
-            UnconfinedTestDispatcher(testScheduler)
+            configurationOn(UnconfinedTestDispatcher(testScheduler), EmaConfiguration(closeTimeout = 2.seconds))
         ) {
             sideEffects {
                 add<EffectAction.Save> { action ->
