@@ -1,6 +1,7 @@
 package com.carmabs.emanate.serialization
 
 import com.carmabs.emanate.core.action.EmaAction
+import com.carmabs.emanate.core.savestate.backupOf
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
 import com.carmabs.emanate.core.viewmodel.EmaViewModel
@@ -44,20 +45,22 @@ private sealed interface LoginAction : EmaAction {
 private class LoginViewModel : EmaViewModel<LoginState, LoginAction, EmaEvent.EMPTY>(LoginState(), logger = null) {
 
     override fun setup() = source {
-        backup {
-            add(
-                key = "form",
-                codec = json(),
-                save = { LoginForm(userName, rememberMe) },
-                restore = { form -> copy(userName = form.userName, rememberMe = form.rememberMe) }
-            )
-            add(
-                key = "recentUsers",
-                codec = json(ListSerializer(String.serializer())),
-                save = { recentUsers.takeIf { it.isNotEmpty() } },
-                restore = { copy(recentUsers = it) }
-            )
-        }
+        install(
+            backupOf {
+                add(
+                    key = "form",
+                    codec = json(),
+                    save = { LoginForm(userName, rememberMe) },
+                    restore = { form -> copy(userName = form.userName, rememberMe = form.rememberMe) }
+                )
+                add(
+                    key = "recentUsers",
+                    codec = json(ListSerializer(String.serializer())),
+                    save = { recentUsers.takeIf { it.isNotEmpty() } },
+                    restore = { copy(recentUsers = it) }
+                )
+            }
+        )
         reducers {
             add<LoginAction> { action ->
                 when (action) {

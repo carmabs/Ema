@@ -10,15 +10,12 @@ import com.carmabs.emanate.core.action.EventDispatcher
 import com.carmabs.emanate.core.broadcast.EmaActionBroadcaster
 import com.carmabs.emanate.core.error.runHandlingErrors
 import com.carmabs.emanate.core.model.EmaConfiguration
-import com.carmabs.emanate.core.savestate.EmaBackupValue
-import com.carmabs.emanate.core.savestate.EmaRestoreState
 import com.carmabs.emanate.core.sideeffect.SideEffectResult
 import com.carmabs.emanate.core.source.middleware.EmaMiddleware
 import com.carmabs.emanate.core.source.middleware.MiddlewareContext
 import com.carmabs.emanate.core.source.middleware.MiddlewareScope
 import com.carmabs.emanate.core.source.reducer.EmaReducer
 import com.carmabs.emanate.core.source.reducer.ReducerScope
-import com.carmabs.emanate.core.source.reducer.reducerOf
 import com.carmabs.emanate.core.source.sideeffect.SideEffect
 import com.carmabs.emanate.core.source.sideeffect.SideEffectConcurrency
 import com.carmabs.emanate.core.source.sideeffect.SideEffectScope
@@ -53,8 +50,8 @@ import kotlinx.coroutines.withTimeoutOrNull
  * @param configuration applied by the source. By default the one of [Emanate], read when the source is created.
  * @param dispatcher where the source runs. By default the main dispatcher of [configuration], as the state is usually
  * drawn by the view; use cases run on their own dispatcher anyway.
- * @param setup adds the middlewares, reducers, side effects, broadcast listeners and saved values of the source. The
- * saved values are written and restored with an [com.carmabs.emanate.core.savestate.EmaStateSaver].
+ * @param setup adds the middlewares, reducers, side effects and broadcast listeners of the source, and installs its
+ * plugins
  */
 @Suppress("FunctionName") // Factory named like the class
 fun <S : EmaState, A : EmaAction, E : EmaEvent> EmaSource(
@@ -71,7 +68,6 @@ fun <S : EmaState, A : EmaAction, E : EmaEvent> EmaSource(
         reducers = sourceSetup.reducers,
         sideEffects = sourceSetup.sideEffects,
         broadcastListeners = sourceSetup.broadcastListeners,
-        savedValues = sourceSetup.savedValues,
         container = null,
         eventDispatcher = EventDispatcher(),
         configuration = configuration
@@ -95,10 +91,9 @@ class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
     private val mutableStateFlow: MutableStateFlow<S>,
     dispatcher: CoroutineDispatcher,
     private val middlewares: List<EmaMiddleware<S, A, *>>,
-    reducers: List<EmaReducer<S, *>>,
+    private val reducers: List<EmaReducer<S, *>>,
     private val sideEffects: List<SideEffect<S, A, E, *>>,
     broadcastListeners: List<KClass<out EmaAction>>,
-    internal val savedValues: List<EmaBackupValue<S, *>>,
     container: Any?,
     private val eventDispatcher: EventDispatcher<E>,
     internal val configuration: EmaConfiguration
@@ -128,12 +123,6 @@ class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
      * Reported as the class that launches the side effects: the view model that owns the source, or the source
      */
     internal val container: Any = container ?: this
-
-    /**
-     * The saved values are restored before the reducers of setup, so they receive the restored state
-     */
-    private val reducers: List<EmaReducer<S, *>> =
-        listOfNotNull(savedValues.takeIf { it.isNotEmpty() }?.let { restoreReducer(it) }) + reducers
 
     val stateFlow: StateFlow<S> = mutableStateFlow.asStateFlow()
 
@@ -231,25 +220,6 @@ class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
     internal fun post(step: () -> Unit) {
         queue.trySend(step)
     }
-
-    /**
-     * Restores the values of [EmaRestoreState] with the saved values of setup, in the order they were added. A value
-     * that can't be decoded, or whose restore fails with the Catch policy, is skipped.
-     */
-    private fun restoreReducer(savedValues: List<EmaBackupValue<S, *>>) =
-        reducerOf<S, EmaRestoreState>(EmaRestoreState::class) { action ->
-            savedValues.fold(state) { restoredState, savedValue ->
-                val value = action.values[savedValue.key] ?: return@fold restoredState
-                var newState = restoredState
-                configuration.runHandlingErrors(container, { "restore ${savedValue.key}" }) {
-                    newState = savedValue.restore(restoredState, value)
-                }
-                newState
-            }
-        }
-
-    private fun <T> EmaBackupValue<S, T>.restore(state: S, value: String): S =
-        codec.decode(value)?.let { restore(state, it) } ?: state
 
     /**
      * Dispatches an action without checking its type. The scopes only let dispatch actions of type [A].

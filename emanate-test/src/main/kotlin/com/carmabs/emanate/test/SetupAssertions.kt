@@ -2,6 +2,7 @@ package com.carmabs.emanate.test
 
 import com.carmabs.emanate.core.action.EmaAction
 import com.carmabs.emanate.core.initializer.EmaInitializer
+import com.carmabs.emanate.core.savestate.EmaBackup
 import com.carmabs.emanate.core.savestate.EmaRestoreState
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
@@ -14,7 +15,7 @@ import kotlin.reflect.KClass
 
 /**
  * Checks that every middleware, reducer and side effect of the view model can receive the actions of its type: actions
- * of the screen, initializers, lifecycle actions, the restore of the saved state or broadcast actions it listens to. A
+ * of the screen, initializers, lifecycle actions, the restore of its backups or broadcast actions it listens to. A
  * piece for a broadcast action that isn't listened to in the broadcasts block never runs, and nothing fails at runtime,
  * so this assertion catches a forgotten listen. Only the types that the view model can't receive for sure are
  * reported: two interfaces may be implemented by the same action, so they are considered compatible.
@@ -24,12 +25,10 @@ import kotlin.reflect.KClass
 fun <S : EmaState, A : EmaAction, E : EmaEvent> EmaViewModel<S, A, E>.assertSetup() {
     val setup = sourceSetup
     val listened = setup.broadcastListeners.map { it.java }
-    val received = listOf(
-        actionClass(),
-        EmaInitializer::class.java,
-        EmaLifecycle::class.java,
-        EmaRestoreState::class.java
-    ) + listened
+    // The restore of the saved state only arrives if a backup is installed
+    val restored = EmaRestoreState::class.java.takeIf { setup.plugins.any { it is EmaBackup<*> } }
+    val received = listOfNotNull(actionClass(), EmaInitializer::class.java, EmaLifecycle::class.java, restored) +
+        listened
     val pieces = setup.middlewares.map { "middleware" to it.actionType } +
         setup.reducers.map { "reducer" to it.actionType } +
         setup.sideEffects.map { "side effect" to it.actionType }

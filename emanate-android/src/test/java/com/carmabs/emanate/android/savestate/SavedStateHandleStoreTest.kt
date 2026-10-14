@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.carmabs.emanate.android.viewmodel.EmaAndroidViewModel
 import com.carmabs.emanate.android.viewmodel.EmaViewModelFactory
 import com.carmabs.emanate.core.action.EmaAction
+import com.carmabs.emanate.core.savestate.backupOf
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
 import com.carmabs.emanate.core.viewmodel.EmaViewModel
@@ -33,9 +34,11 @@ private class NameViewModel :
     ) {
 
     override fun setup() = source {
-        backup {
-            add("name", save = { name.takeIf { it.isNotEmpty() } }, restore = { copy(name = it) })
-        }
+        install(
+            backupOf {
+                add("name", save = { name.takeIf { it.isNotEmpty() } }, restore = { copy(name = it) })
+            }
+        )
         reducers {
             add<NameAction.Written> { action -> state.copy(name = action.name) }
         }

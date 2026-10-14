@@ -1,7 +1,6 @@
 package com.carmabs.emanate.core.source
 
 import com.carmabs.emanate.core.action.EmaAction
-import com.carmabs.emanate.core.savestate.BackupSetupScope
 import com.carmabs.emanate.core.source.middleware.MiddlewareSetupScope
 import com.carmabs.emanate.core.source.reducer.ReducerSetupScope
 import com.carmabs.emanate.core.source.sideeffect.SideEffectSetupScope
@@ -12,8 +11,8 @@ import com.carmabs.emanate.core.state.EmaState
  * Created by Carlos Mateo Benito on 11/10/2026.
  *
  * Adds the middlewares, reducers, side effects and broadcast listeners of the source, each one in its own block, and
- * the parts of the state saved by the view model. The blocks can be used more than once: what they add is kept in
- * order. It can only be used inside setup.
+ * installs its plugins. The blocks can be used more than once: what they add is kept in order. It can only be used
+ * inside setup.
  *
  * <p>
  * Copyright (c) 2026 by Carmabs. All rights reserved.
@@ -34,7 +33,7 @@ class SourceSetupScope<S : EmaState, A : EmaAction, E : EmaEvent> internal const
 
     private val broadcastSetupScope = BroadcastSetupScope(guard)
 
-    private val backupSetupScope = BackupSetupScope<S>(guard)
+    private var pluginList: List<EmaSourcePlugin<S>> = emptyList()
 
     /**
      * Adds middlewares. They handle the actions in the order they are added, before the reducers.
@@ -69,18 +68,13 @@ class SourceSetupScope<S : EmaState, A : EmaAction, E : EmaEvent> internal const
     }
 
     /**
-     * Adds the parts of the state to save, so they are restored after the system kills the process of the app. Save
-     * only what the user would lose, like the fields of a form, not the whole state: the platform limits the size of
-     * the saved values. Each value is saved every time it changes and, when the view model is created again, they are
-     * restored after its initializer, before the reducers.
-     *
-     * An EmaViewModel saves them in the store of its platform: on Android, the SavedStateHandle of the screen. A source
-     * on its own saves them with an [com.carmabs.emanate.core.savestate.EmaStateSaver]. Without a store nothing is
-     * saved.
+     * Installs [plugin], a feature that the source doesn't know, like an EmaBackup. It adds its pieces to this setup,
+     * so they are kept in order with the ones added before and after it.
      */
-    fun backup(block: BackupSetupScope<S>.() -> Unit) {
+    fun install(plugin: EmaSourcePlugin<S>) {
         guard.checkNotBuilt()
-        backupSetupScope.block()
+        pluginList = pluginList + plugin
+        plugin.install(this)
     }
 
     /**
@@ -93,7 +87,7 @@ class SourceSetupScope<S : EmaState, A : EmaAction, E : EmaEvent> internal const
             reducers = reducerSetupScope.reducerList,
             sideEffects = sideEffectSetupScope.sideEffectList,
             broadcastListeners = broadcastSetupScope.broadcastListenerList,
-            savedValues = backupSetupScope.savedValueList
+            plugins = pluginList
         )
     }
 }

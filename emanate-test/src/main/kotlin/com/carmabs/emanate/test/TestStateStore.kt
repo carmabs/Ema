@@ -35,8 +35,8 @@ class EmaTestStateStore internal constructor() : EmaStateStore {
 fun testStateStore(): EmaTestStateStore = EmaTestStateStore()
 
 /**
- * Saves the values added in the backup block of the setup of the view model in [store], and restores the ones it
- * has when the view is created with onCreated, like the view model of a screen. Call it before onCreated.
+ * Saves the values of the backups installed in the setup of the view model in [store], and restores the ones it has
+ * when the view is created with onCreated, like the view model of a screen. Call it before onCreated.
  *
  * @return the view model
  * @throws IllegalStateException if the view has already been created and the view model saves values

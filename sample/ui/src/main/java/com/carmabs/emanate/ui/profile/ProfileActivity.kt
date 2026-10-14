@@ -83,8 +83,8 @@ class ProfileActivity : ComponentActivity() {
                                 savedStateHandle,
                                 emaViewModel
                             ->
-                            // ProfileCreationViewModel saves its form in the backup block of its setup, in this
-                            // same handle. EmaViewModelAction can't, so the screen saves it as before backup.
+                            // ProfileCreationViewModel saves its form with a backup installed in its setup, in this
+                            // same handle. EmaViewModelAction can't, so the screen saves it as before the backups.
                             if (emaViewModel !is ProfileCreationActionViewModel) return@EmaSaveStateManager
 
                             val keyName = "USERNAME"

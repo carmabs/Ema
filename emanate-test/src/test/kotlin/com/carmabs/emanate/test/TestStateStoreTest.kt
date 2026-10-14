@@ -3,6 +3,7 @@ package com.carmabs.emanate.test
 import com.carmabs.emanate.core.action.EmaAction
 import com.carmabs.emanate.core.initializer.EmaInitializer
 import com.carmabs.emanate.core.savestate.EmaRestoreState
+import com.carmabs.emanate.core.savestate.backupOf
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
 import com.carmabs.emanate.core.viewmodel.EmaViewModel
@@ -28,9 +29,11 @@ private class SearchViewModel :
         logger = null
     ) {
     override fun setup() = source {
-        backup {
-            add("query", save = { query }, restore = { copy(query = it) })
-        }
+        install(
+            backupOf {
+                add("query", save = { query }, restore = { copy(query = it) })
+            }
+        )
         reducers {
             add<SearchAction.QueryWritten> { action -> state.copy(query = action.query) }
             add<EmaRestoreState> { state.copy(results = listOf("restored")) }
@@ -86,6 +89,19 @@ class TestStateStoreTest {
     @Test
     fun `a reducer of the restore of the saved state runs`() {
         SearchViewModel().assertSetup()
+    }
+
+    @Test
+    fun `a reducer of the restore never runs without a backup`() {
+        val viewModel = object : EmaViewModel<SearchState, SearchAction, EmaEvent.EMPTY>(SearchState(), logger = null) {
+            override fun setup() = source {
+                reducers {
+                    add<EmaRestoreState> { state.copy(results = listOf("restored")) }
+                }
+            }
+        }
+
+        assertFailsWith<AssertionError> { viewModel.assertSetup() }
     }
 
     @Test

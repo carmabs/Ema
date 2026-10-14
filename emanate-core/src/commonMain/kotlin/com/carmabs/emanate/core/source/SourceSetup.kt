@@ -1,7 +1,6 @@
 package com.carmabs.emanate.core.source
 
 import com.carmabs.emanate.core.action.EmaAction
-import com.carmabs.emanate.core.savestate.EmaBackupValue
 import com.carmabs.emanate.core.source.middleware.EmaMiddleware
 import com.carmabs.emanate.core.source.reducer.EmaReducer
 import com.carmabs.emanate.core.source.sideeffect.SideEffect
@@ -12,7 +11,7 @@ import kotlin.reflect.KClass
 /**
  * Created by Carlos Mateo Benito on 12/10/2026.
  *
- * Middlewares, reducers, side effects, broadcast listeners and saved values of a source, added inside a
+ * Middlewares, reducers, side effects and broadcast listeners of a source, and its installed plugins, added inside a
  * [SourceSetupScope].
  *
  * <p>
@@ -26,7 +25,7 @@ class SourceSetup<S : EmaState, A : EmaAction, E : EmaEvent> internal constructo
     internal val reducers: List<EmaReducer<S, *>>,
     internal val sideEffects: List<SideEffect<S, A, E, *>>,
     internal val broadcastListeners: List<KClass<out EmaAction>>,
-    internal val savedValues: List<EmaBackupValue<S, *>>
+    internal val plugins: List<EmaSourcePlugin<S>>
 )
 
 /**

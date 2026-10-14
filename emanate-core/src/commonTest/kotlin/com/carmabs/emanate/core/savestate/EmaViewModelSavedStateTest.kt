@@ -88,6 +88,13 @@ private class AgeSavedValue(private val failRestore: Boolean = false) : EmaBacku
     }
 }
 
+/**
+ * Backup of the name, for the sources on their own
+ */
+private val nameBackup = backupOf<FormState> {
+    add("name", save = { name.takeIf { it.isNotEmpty() } }, restore = { copy(name = it) })
+}
+
 private class FormViewModel(
     dispatcher: CoroutineDispatcher,
     private val ageSavedValue: EmaBackupValue<FormState, Int> = AgeSavedValue(),
@@ -97,11 +104,13 @@ private class FormViewModel(
     val received = mutableListOf<EmaAction>()
 
     override fun setup() = source {
-        backup {
-            add("name", save = { name.takeIf { it.isNotEmpty() } }, restore = { copy(name = it) })
-            +ageSavedValue
-            add("plan", PlanCodec, save = { plan }, restore = { copy(plan = it) })
-        }
+        install(
+            backupOf {
+                add("name", save = { name.takeIf { it.isNotEmpty() } }, restore = { copy(name = it) })
+                +ageSavedValue
+                add("plan", PlanCodec, save = { plan }, restore = { copy(plan = it) })
+            }
+        )
         middlewares {
             add<EmaAction> { action ->
                 received += action
@@ -284,7 +293,7 @@ class EmaViewModelSavedStateTest {
     }
 
     @Test
-    fun `a restore that fails is reported and the other values are restored`() = runTest {
+    fun `a restore that fails discards the restore like any reducer and is reported`() = runTest {
         val configuration = EmaConfiguration(errorPolicy = EmaErrorPolicy.Catch { errors += it })
         val store = MemoryStore(mapOf("name" to "Ana", "age" to "30"))
         val viewModel = FormViewModel(testDispatcher(), AgeSavedValue(failRestore = true), configuration)
@@ -293,8 +302,8 @@ class EmaViewModelSavedStateTest {
         viewModel.onCreated(null)
         runCurrent()
 
-        assertEquals(FormState(name = "Ana", greeting = "Welcome back Ana"), viewModel.stateFlow.value)
-        assertEquals("restore age", errors.single().reflection.methodName)
+        assertEquals(FormState(), viewModel.stateFlow.value)
+        assertEquals("action EmaRestoreState", errors.single().reflection.methodName)
         viewModel.onCleared()
     }
 
@@ -346,32 +355,53 @@ class EmaViewModelSavedStateTest {
     }
 
     @Test
-    fun `a key can only be saved once`() = runTest {
+    fun `a key can only be added once to a backup`() {
+        assertFailsWith<IllegalArgumentException> {
+            backupOf<FormState> {
+                add("name", save = { name }, restore = { copy(name = it) })
+                add("name", save = { name }, restore = { copy(name = it) })
+            }
+        }
+    }
+
+    @Test
+    fun `the backups of a view model can't repeat keys`() = runTest {
         val viewModel = object : EmaViewModel<FormState, FormAction, EmaEvent.EMPTY>(
             FormState(),
             dispatcher = testDispatcher(),
             logger = null
         ) {
             override fun setup() = source {
-                backup { add("name", save = { name }, restore = { copy(name = it) }) }
-                backup { add("name", save = { name }, restore = { copy(name = it) }) }
+                install(nameBackup)
+                install(nameBackup)
             }
         }
 
-        assertFailsWith<IllegalArgumentException> { viewModel.onCreated(null) }
+        assertFailsWith<IllegalArgumentException> { viewModel.attachStateStore(MemoryStore()) }
+    }
+
+    @Test
+    fun `a backup that isn't installed doesn't restore anything`() = runTest {
+        val source = EmaSource<FormState, FormAction, EmaEvent.EMPTY>(FormState(), dispatcher = testDispatcher()) {}
+
+        source.dispatchAction(EmaRestoreState(mapOf("name" to "Ana")))
+        runCurrent()
+
+        assertEquals(FormState(), source.state)
+        source.close()
     }
 
     @Test
     fun `a source on its own saves and restores its values with a state saver`() = runTest {
         val store = MemoryStore()
         val first = formSource(testDispatcher())
-        EmaStateSaver(first, store).restore()
+        EmaStateSaver(first, store, nameBackup).restore()
         first.dispatch(FormAction.NameWritten("Ana"))
         runCurrent()
         first.close()
 
         val second = formSource(testDispatcher())
-        EmaStateSaver(second, store).restore()
+        EmaStateSaver(second, store, nameBackup).restore()
         runCurrent()
 
         assertEquals(mapOf("name" to "Ana"), store.values)
@@ -383,7 +413,7 @@ class EmaViewModelSavedStateTest {
     fun `the values are restored only once`() = runTest {
         val store = MemoryStore(mapOf("name" to "Ana"))
         val source = formSource(testDispatcher())
-        val saver = EmaStateSaver(source, store)
+        val saver = EmaStateSaver(source, store, nameBackup)
         saver.restore()
         source.dispatch(FormAction.NameWritten("Luis"))
 
@@ -407,7 +437,7 @@ class EmaViewModelSavedStateTest {
 
     private fun formSource(dispatcher: CoroutineDispatcher) =
         EmaSource<FormState, FormAction, EmaEvent.EMPTY>(FormState(), dispatcher = dispatcher) {
-            backup { add("name", save = { name.takeIf { it.isNotEmpty() } }, restore = { copy(name = it) }) }
+            install(nameBackup)
             reducers {
                 add<FormAction.NameWritten> { action -> state.copy(name = action.name) }
             }

@@ -10,8 +10,8 @@ import kotlin.concurrent.Volatile
 /**
  * Created by Carlos Mateo Benito on 13/10/2026.
  *
- * Saves the values added in the backup block of the setup of [source] in [store], and restores the ones saved
- * before. It observes the states of the source and writes a value only when it changes. EmaViewModel creates one with
+ * Saves the values of [backups], installed in the setup of [source], in [store], and restores the ones saved before.
+ * It observes the states of the source and writes a value only when it changes. EmaViewModel creates one with
  * the store of its platform; create one to save the state of a source on its own, for example on a platform without
  * view models.
  *
@@ -24,9 +24,18 @@ import kotlin.concurrent.Volatile
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-class EmaStateSaver<S : EmaState>(private val source: EmaSource<S, *, *>, private val store: EmaStateStore) {
+class EmaStateSaver<S : EmaState>(
+    private val source: EmaSource<S, *, *>,
+    private val store: EmaStateStore,
+    vararg backups: EmaBackup<S>
+) {
 
-    private val savedValues = source.savedValues
+    private val savedValues = backups.flatMap { it.values }
+
+    init {
+        val keys = savedValues.map { it.key }
+        require(keys.size == keys.toSet().size) { "The backups have repeated keys: $keys" }
+    }
 
     /**
      * Last text written in the store, or read from it, of each key

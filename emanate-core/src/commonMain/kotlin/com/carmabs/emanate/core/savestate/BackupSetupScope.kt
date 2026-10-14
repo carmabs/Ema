@@ -7,9 +7,9 @@ import com.carmabs.emanate.core.state.EmaState
 /**
  * Created by Carlos Mateo Benito on 14/10/2026.
  *
- * Block of setup that adds the parts of the state saved by the view model: with [add], or with `+` for the ones
- * already created. Each value is saved every time it changes and, when the view model is created again after the
- * death of the process, it is restored after the initializer, in the order they are added.
+ * Adds the values of an [EmaBackup], created with backupOf: with [add], or with `+` for the ones already created. Each
+ * value is saved every time it changes and, after the death of the process, it is restored in the order they are
+ * added.
  *
  * <p>
  * Copyright (c) 2026 by Carmabs. All rights reserved.
@@ -20,7 +20,7 @@ import com.carmabs.emanate.core.state.EmaState
 @EmaSourceDsl
 class BackupSetupScope<S : EmaState> internal constructor(private val guard: SetupGuard) {
 
-    internal var savedValueList: List<EmaBackupValue<S, *>> = emptyList()
+    internal var backupValueList: List<EmaBackupValue<S, *>> = emptyList()
         private set
 
     /**
@@ -31,8 +31,8 @@ class BackupSetupScope<S : EmaState> internal constructor(private val guard: Set
     fun add(vararg savedValue: EmaBackupValue<S, *>) {
         guard.checkNotBuilt()
         savedValue.forEach { value ->
-            require(savedValueList.none { it.key == value.key }) { "The key ${value.key} is already saved" }
-            savedValueList = savedValueList + value
+            require(backupValueList.none { it.key == value.key }) { "The key ${value.key} is already saved" }
+            backupValueList = backupValueList + value
         }
     }
 
@@ -46,7 +46,7 @@ class BackupSetupScope<S : EmaState> internal constructor(private val guard: Set
     /**
      * Saves text with [key].
      *
-     * @param key unique in the view model
+     * @param key unique in the backup
      * @param save returns the text to save from the state, or null to save nothing
      * @param restore returns the state with the saved text restored
      */
@@ -57,7 +57,7 @@ class BackupSetupScope<S : EmaState> internal constructor(private val guard: Set
     /**
      * Saves a value of type [T] with [key], converted to text with [codec].
      *
-     * @param key unique in the view model
+     * @param key unique in the backup
      * @param save returns the value to save from the state, or null to save nothing
      * @param restore returns the state with the saved value restored
      */

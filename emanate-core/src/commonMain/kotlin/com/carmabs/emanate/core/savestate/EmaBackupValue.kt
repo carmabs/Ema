@@ -9,9 +9,9 @@ import com.carmabs.emanate.core.viewmodel.EmaViewModel
  * Created by Carlos Mateo Benito on 14/10/2026.
  *
  * Part of the state that a view model saves with [key], so it is restored after the system kills the process of the
- * app. Inside the backup block of setup, create it with add, or add one already created with `+`. Outside of it,
- * create it with savedValueOf, or implement it as a class, for example to receive it in the constructor of the view
- * model and replace it in a test.
+ * app. Inside backupOf, create it with add, or add one already created with `+`. Outside of it, create it with
+ * savedValueOf, or implement it as a class, for example to receive it in the constructor of the view model and
+ * replace it in a test.
  *
  * <p>
  * Copyright (c) 2026 by Carmabs. All rights reserved.
@@ -22,7 +22,7 @@ import com.carmabs.emanate.core.viewmodel.EmaViewModel
 interface EmaBackupValue<S : EmaState, T> {
 
     /**
-     * Identifies the value. It must be unique in the view model.
+     * Identifies the value. It must be unique in the backups of the source.
      */
     val key: String
 
