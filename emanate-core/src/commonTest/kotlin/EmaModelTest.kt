@@ -38,6 +38,7 @@ import com.carmabs.emanate.core.usecase.EmaUseCase
 import com.carmabs.emanate.core.utils.EmaUtils
 import com.carmabs.emanate.core.value.EmaUriRes
 import com.carmabs.emanate.core.value.EmaUriType
+import com.carmabs.emanate.core.viewmodel.EmaLifecycle
 import com.carmabs.emanate.core.viewmodel.EmaViewModelClassic
 import com.carmabs.emanate.core.viewmodel.EmaViewModelContract
 import kotlin.coroutines.ContinuationInterceptor
@@ -209,7 +210,7 @@ class EmaModelTest {
         assertEquals("EmaAction", EmaAction.type)
         assertEquals("EmaAction", CounterAction.Increment.type)
         assertEquals("Initializer", CounterInitializer(1).type)
-        assertEquals("Lifecycle", EmaAction.Lifecycle.Started.type)
+        assertEquals("Lifecycle", EmaLifecycle.Started.type)
         assertEquals("EmaAction", EmaAction.EMPTY.type)
         assertEquals("EmaInitializer", EmaInitializer.KEY)
         assertEquals("Initializer", EmaInitializer.EMPTY.type)

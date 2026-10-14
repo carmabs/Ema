@@ -4,6 +4,7 @@ import com.carmabs.emanate.core.action.EmaAction
 import com.carmabs.emanate.core.initializer.EmaInitializer
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
+import com.carmabs.emanate.core.viewmodel.EmaLifecycle
 import com.carmabs.emanate.core.viewmodel.EmaViewModel
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -39,7 +40,7 @@ private class CartViewModel : EmaViewModel<CartState, CartAction, EmaEvent.EMPTY
             add<ItemBought> { state.copy(items = state.items + 1) }
         }
         sideEffects {
-            add<EmaAction.Lifecycle.Resumed> { }
+            add<EmaLifecycle.Resumed> { }
         }
         broadcasts {
             listen<ItemBought>()

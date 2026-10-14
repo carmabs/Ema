@@ -111,12 +111,18 @@ class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
     private val scope = CoroutineScope(SupervisorJob() + dispatcher)
 
     /**
-     * Job of the side effects of [EmaAction.Lifecycle.Destroyed]. [close] doesn't cancel them, so they can finish, up
-     * to their timeout or the destroyedTimeout of the configuration: it completes when they do.
+     * Job of the side effects of the last action given to [close]. [close] doesn't cancel them, so they can finish, up
+     * to their timeout or the closeTimeout of the configuration: it completes when they do.
      */
-    private val destroyedJob = SupervisorJob()
+    private val closingJob = SupervisorJob()
 
-    private val destroyedScope = CoroutineScope(destroyedJob + dispatcher)
+    private val closingScope = CoroutineScope(closingJob + dispatcher)
+
+    /**
+     * Whether the source is processing the last action given to [close]. It is only read and written in the coroutine
+     * of the source.
+     */
+    private var closing = false
 
     /**
      * Reported as the class that launches the side effects: the view model that owns the source, or the source
@@ -187,22 +193,32 @@ class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
                 // The queue is closed in close, after the pending steps. If a step throws an exception with the Throw
                 // policy, the source stops too, so its work is cancelled.
                 scope.cancel()
-                destroyedJob.complete()
+                closingJob.complete()
             }
         }
     }
 
     /**
-     * Processes the pending actions and then cancels the asynchronous work of the source, except the side effects of
-     * [EmaAction.Lifecycle.Destroyed], which can finish. Actions dispatched after it are ignored.
-     * @return the job that completes when the source has finished, including the side effects of
-     * [EmaAction.Lifecycle.Destroyed]
+     * Processes the pending actions and [lastAction], and then cancels the asynchronous work of the source, except the
+     * side effects of [lastAction], which can finish, up to their timeout or the closeTimeout of the configuration.
+     * Actions dispatched after it are ignored.
+     *
+     * @param lastAction last action of the source, whose side effects can finish after it is closed, for example to
+     * send a result to the previous screen. Null to close it without a last action.
+     * @return the job that completes when the source has finished, including the side effects of [lastAction]
      */
-    fun close(): Job {
+    fun close(lastAction: EmaAction? = null): Job {
         broadcastJob?.cancel()
+        lastAction?.let { action ->
+            queue.trySend {
+                closing = true
+                observers.forEach { it.onAction(action) }
+                runChain(0, action)
+            }
+        }
         queue.close()
-        // It is completed when the steps finish, and then waits for the side effects of Destroyed
-        return destroyedJob
+        // It is completed when the steps finish, and then waits for the side effects of the last action
+        return closingJob
     }
 
     final override fun dispatch(action: A) {
@@ -332,16 +348,15 @@ class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
                 sideEffect
             }
         }
-        // The source is closed right after Destroyed, so its side effects run in a scope that close doesn't cancel,
-        // with a timeout so they don't keep the source alive
-        val destroyed = action == EmaAction.Lifecycle.Destroyed
+        // The source is closed right after its last action, so its side effects run in a scope that close doesn't
+        // cancel, with a timeout so they don't keep the source alive
         with(sideEffect) {
-            val destroyedTimeout = configuration.destroyedTimeout
+            val closeTimeout = configuration.closeTimeout
             launch(
                 key = key,
-                timeout = if (destroyed) timeout ?: destroyedTimeout else timeout,
+                timeout = if (closing) timeout ?: closeTimeout else timeout,
                 onTimeout = { sideEffectScope.onTimeout(typedAction) },
-                launchScope = if (destroyed) destroyedScope else scope,
+                launchScope = if (closing) closingScope else scope,
                 block = { sideEffectScope.invoke(typedAction) }
             )
         }

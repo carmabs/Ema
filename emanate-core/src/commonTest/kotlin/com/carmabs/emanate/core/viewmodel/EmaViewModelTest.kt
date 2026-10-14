@@ -80,7 +80,7 @@ private class LifecycleViewModel(dispatcher: CoroutineDispatcher) :
 
     override fun setup() = source {
         sideEffects {
-            add<EmaAction.Lifecycle> { action -> launched += action::class.simpleName.orEmpty() }
+            add<EmaLifecycle> { action -> launched += action::class.simpleName.orEmpty() }
         }
     }
 }
@@ -98,7 +98,7 @@ private class ClosingViewModel(
 
     override fun setup() = source {
         sideEffects {
-            add<EmaAction.Lifecycle.Destroyed> {
+            add<EmaLifecycle.Destroyed> {
                 delay(duration)
                 broadcast(TextSent("closed"))
                 finished += "destroyed"
@@ -126,7 +126,7 @@ private class TestViewModel(
 
     override fun setup() = source {
         middlewares {
-            add<EmaAction.Lifecycle> { action ->
+            add<EmaLifecycle> { action ->
                 received += "lifecycle ${action::class.simpleName}"
                 next()
             }
@@ -142,7 +142,7 @@ private class TestViewModel(
             add<TestAction.Slow> { state.copy(count = state.count + 1) }
             add<TestAction.Update> { action -> state.copy(text = action.text) }
             add<TestInitializer> { action -> state.copy(text = action.text) }
-            add<EmaAction.Lifecycle.Resumed> { state.copy(resumed = true) }
+            add<EmaLifecycle.Resumed> { state.copy(resumed = true) }
             add<TextSent> { action -> state.copy(text = action.text) }
             add<TestAction.Load> { state.copy(text = "loading") }
         }
@@ -305,8 +305,10 @@ class EmaViewModelTest {
 
     @Test
     fun `the time of the side effects of destroyed is set in the configuration`() = runTest {
-        val closing = ClosingViewModel(testDispatcher(), 3.seconds, EmaConfiguration(destroyedTimeout = 2.seconds))
-        closing.onCreated(null)
+        Emanate.initForTest(EmaConfiguration(closeTimeout = 2.seconds))
+        try {
+            val closing = ClosingViewModel(testDispatcher(), 3.seconds)
+            closing.onCreated(null)
 
         closing.onCleared()
         advanceUntilIdle()
@@ -363,7 +365,7 @@ class EmaViewModelTest {
     @Test
     fun `the view model reads the configuration when it is created although its source is created later`() = runTest {
         val closing = ClosingViewModel(testDispatcher(), 3.seconds)
-        Emanate.initForTest(EmaConfiguration(destroyedTimeout = 2.seconds))
+        Emanate.initForTest(EmaConfiguration(closeTimeout = 2.seconds))
         try {
             // The source is created now, with the configuration of the view model: 5 seconds
             closing.onCreated(null)

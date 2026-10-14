@@ -1,6 +1,8 @@
 package com.carmabs.emanate.core.source
 
+import com.carmabs.emanate.core.Emanate
 import com.carmabs.emanate.core.action.EmaAction
+import com.carmabs.emanate.core.model.EmaConfiguration
 import com.carmabs.emanate.core.source.sideeffect.SideEffect
 import com.carmabs.emanate.core.source.sideeffect.SideEffectConcurrency
 import com.carmabs.emanate.core.source.sideeffect.SideEffectScope
@@ -256,23 +258,53 @@ class EmaSourceSideEffectTest {
     }
 
     @Test
-    fun `closing the source completes after the side effects of destroyed`() = runTest {
+    fun `closing the source completes after the side effects of its last action`() = runTest {
+        val finished = mutableListOf<EffectAction>()
         val source = EmaSource<EffectState, EffectAction, EffectEvent>(
             EffectState(),
             dispatcher = UnconfinedTestDispatcher(testScheduler)
         ) {
             sideEffects {
-                add<EmaAction.Lifecycle.Destroyed> { delay(1000) }
+                add<EffectAction.Save> { action ->
+                    delay(1000)
+                    finished += action
+                }
             }
         }
 
-        source.dispatchAction(EmaAction.Lifecycle.Destroyed)
-        val closed = source.close()
+        val closed = source.close(lastAction = EffectAction.Save)
         runCurrent()
         assertFalse(closed.isCompleted)
 
         advanceTimeBy(1500)
         runCurrent()
         assertTrue(closed.isCompleted)
+        assertEquals(listOf<EffectAction>(EffectAction.Save), finished)
+    }
+
+    @Test
+    fun `the side effects of the last action are cancelled after the close timeout`() = runTest {
+        Emanate.initForTest(EmaConfiguration(closeTimeout = 2.seconds))
+        val finished = mutableListOf<EffectAction>()
+        val source = EmaSource<EffectState, EffectAction, EffectEvent>(
+            EffectState(),
+            UnconfinedTestDispatcher(testScheduler)
+        ) {
+            sideEffects {
+                add<EffectAction.Save> { action ->
+                    delay(5000)
+                    finished += action
+                }
+            }
+        }
+        // The source reads the configuration when it is created
+        Emanate.reset()
+
+        val closed = source.close(lastAction = EffectAction.Save)
+        advanceTimeBy(2500)
+        runCurrent()
+
+        assertTrue(closed.isCompleted)
+        assertTrue(finished.isEmpty())
     }
 }

@@ -7,6 +7,7 @@ import com.carmabs.emanate.core.model.EmaConfiguration
 import com.carmabs.emanate.core.source.EmaSource
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
+import com.carmabs.emanate.core.viewmodel.EmaLifecycle
 import com.carmabs.emanate.core.viewmodel.EmaViewModel
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -132,7 +133,7 @@ class EmaRecorderTest {
         viewModel.onCleared()
         advanceUntilIdle()
 
-        recorder.assertActions(EmaAction.Lifecycle.Resumed, EmaAction.Lifecycle.Destroyed)
+        recorder.assertActions(EmaLifecycle.Resumed, EmaLifecycle.Destroyed)
     }
 }
 

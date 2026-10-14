@@ -5,6 +5,7 @@ import com.carmabs.emanate.core.initializer.EmaInitializer
 import com.carmabs.emanate.core.savestate.EmaRestoreState
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
+import com.carmabs.emanate.core.viewmodel.EmaLifecycle
 import com.carmabs.emanate.core.viewmodel.EmaViewModel
 import java.lang.reflect.Modifier
 import java.lang.reflect.ParameterizedType
@@ -26,7 +27,7 @@ fun <S : EmaState, A : EmaAction, E : EmaEvent> EmaViewModel<S, A, E>.assertSetu
     val received = listOf(
         actionClass(),
         EmaInitializer::class.java,
-        EmaAction.Lifecycle::class.java,
+        EmaLifecycle::class.java,
         EmaRestoreState::class.java
     ) + listened
     val pieces = setup.middlewares.map { "middleware" to it.actionType } +

@@ -2,7 +2,6 @@ package com.carmabs.emanate.core.viewmodel
 
 import com.carmabs.emanate.core.Emanate
 import com.carmabs.emanate.core.action.EmaAction
-import com.carmabs.emanate.core.action.EmaAction.Lifecycle
 import com.carmabs.emanate.core.action.EmaActionDispatcher
 import com.carmabs.emanate.core.action.EventDispatcher
 import com.carmabs.emanate.core.initializer.EmaInitializer
@@ -62,7 +61,7 @@ abstract class EmaViewModel<S : EmaState, A : EmaAction, E : EmaEvent>(
     /**
      * Returns the middlewares, reducers, side effects, broadcast listeners and saved values of the view model, created
      * with [source]: `override fun setup() = source { ... }`. Besides the actions of type [A], they can handle the
-     * [EmaInitializer] of the screen, its [Lifecycle] actions and the actions broadcast by other view models that it
+     * [EmaInitializer] of the screen, its [EmaLifecycle] actions and the actions broadcast by other view models that it
      * listens to. It is called once, when the source or the saved values are first needed.
      */
     protected abstract fun setup(): SourceSetup<S, A, E>
@@ -76,7 +75,7 @@ abstract class EmaViewModel<S : EmaState, A : EmaAction, E : EmaEvent>(
      * Marks the state as updated when an action of the screen or an initializer is received
      */
     private val updateTrackerMiddleware = middlewareOf<EmaState, Nothing, EmaAction>(EmaAction::class) { action ->
-        if (action !is Lifecycle && action != EmaInitializer.EMPTY && action != EmaAction.EMPTY) {
+        if (action !is EmaLifecycle && action != EmaInitializer.EMPTY && action != EmaAction.EMPTY) {
             hasBeenUpdated = true
         }
         next()
@@ -193,25 +192,25 @@ abstract class EmaViewModel<S : EmaState, A : EmaAction, E : EmaEvent>(
     }
 
     final override fun onStartView() {
-        emaSource.dispatch(Lifecycle.Started)
+        emaSource.dispatch(EmaLifecycle.Started)
     }
 
     /**
      * Called when view is shown in foreground
      */
     final override fun onResumeView() {
-        emaSource.dispatch(Lifecycle.Resumed)
+        emaSource.dispatch(EmaLifecycle.Resumed)
     }
 
     /**
      * Called when view is hidden in background
      */
     final override fun onPauseView() {
-        emaSource.dispatch(Lifecycle.Paused)
+        emaSource.dispatch(EmaLifecycle.Paused)
     }
 
     final override fun onStopView() {
-        emaSource.dispatch(Lifecycle.Stopped)
+        emaSource.dispatch(EmaLifecycle.Stopped)
     }
 
     final override fun consumeEvent(event: E) {
@@ -219,11 +218,11 @@ abstract class EmaViewModel<S : EmaState, A : EmaAction, E : EmaEvent>(
     }
 
     /**
-     * Called when the view model is destroyed. The source processes [Lifecycle.Destroyed] after the pending actions
-     * and then cancels its pending work, except the side effects of [Lifecycle.Destroyed], which can finish.
+     * Called when the view model is destroyed. The source processes [EmaLifecycle.Destroyed] after the pending actions,
+     * as its last action, and then cancels its pending work, except the side effects of [EmaLifecycle.Destroyed], which
+     * can finish.
      */
     final override fun onCleared() {
-        emaSource.dispatch(Lifecycle.Destroyed)
-        emaSource.close()
+        emaSource.close(EmaLifecycle.Destroyed)
     }
 }
