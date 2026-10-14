@@ -3,11 +3,23 @@ package com.carmabs.emanate.presentation.profile.creation
 import com.carmabs.domain.model.Role
 import com.carmabs.domain.model.User
 import com.carmabs.emanate.presentation.base.BaseViewModel
+import com.carmabs.emanate.serialization.json
 
 class ProfileCreationViewModel(initialDataState: ProfileCreationState) :
     BaseViewModel<ProfileCreationState, ProfileCreationAction, ProfileCreationEvent>(initialDataState) {
 
     override fun setup() = source {
+        // The form is restored after the system kills the process, for example while the user changes a permission
+        // in the settings
+        backup {
+            add(
+                key = "form",
+                codec = json(),
+                save = { ProfileCreationForm(name, surname) },
+                restore = { form -> copy(name = form.name, surname = form.surname) }
+            )
+        }
+
         reducers {
             add<ProfileCreationInitializer> { initializer ->
                 when (initializer) {

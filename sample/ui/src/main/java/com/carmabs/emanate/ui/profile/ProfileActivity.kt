@@ -83,9 +83,9 @@ class ProfileActivity : ComponentActivity() {
                                 savedStateHandle,
                                 emaViewModel
                             ->
-
-                            // SAMPLE TO RETAIN STATE THROUGH SAVED STATE HANDLE WHEN PROCESS IS KILLED BY SYSTEM, FOR EXAMPLE,
-                            // DENYING A PERMISSION IN SETTINGS
+                            // ProfileCreationViewModel saves its form in the backup block of its setup, in this
+                            // same handle. EmaViewModelAction can't, so the screen saves it as before backup.
+                            if (emaViewModel !is ProfileCreationActionViewModel) return@EmaSaveStateManager
 
                             val keyName = "USERNAME"
                             val keySurname = "SURNAME"
