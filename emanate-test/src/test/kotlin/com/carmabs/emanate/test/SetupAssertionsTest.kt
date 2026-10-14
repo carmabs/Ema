@@ -1,6 +1,7 @@
 package com.carmabs.emanate.test
 
 import com.carmabs.emanate.core.action.EmaAction
+import com.carmabs.emanate.core.initializer.EmaInitializer
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
 import com.carmabs.emanate.core.viewmodel.EmaViewModel
@@ -14,7 +15,7 @@ private sealed interface CartAction : EmaAction {
     data object Add : CartAction
 }
 
-private data class CartInitializer(val items: Int) : EmaAction.Initializer
+private data class CartInitializer(val items: Int) : EmaInitializer
 
 private data class ItemBought(val id: Int) : EmaAction
 

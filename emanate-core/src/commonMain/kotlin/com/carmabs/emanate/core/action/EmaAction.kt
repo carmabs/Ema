@@ -27,27 +27,6 @@ interface EmaAction {
      */
     data object EMPTY : EmaAction
 
-    /**
-     * The data a screen starts with. The ViewModel receives it once, in onStateCreated, the first time the screen
-     * is created.
-     */
-    interface Initializer : EmaAction {
-        companion object {
-            /**
-             * Key of the initializer in bundles and routes.
-             */
-            const val KEY = "EmaInitializer"
-        }
-
-        override val type: String
-            get() = "Initializer"
-
-        /**
-         * No initializer.
-         */
-        data object EMPTY : Initializer
-    }
-
     sealed interface Lifecycle : EmaAction {
         data object Started : Lifecycle
         data object Resumed : Lifecycle

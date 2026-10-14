@@ -2,8 +2,8 @@ package com.carmabs.emanate.presentation.login
 
 import com.carmabs.domain.model.User
 import com.carmabs.domain.usecase.LoginUseCase
-import com.carmabs.emanate.core.action.EmaAction
 import com.carmabs.emanate.core.constants.STRING_EMPTY
+import com.carmabs.emanate.core.initializer.EmaInitializer
 import com.carmabs.emanate.core.model.onFailure
 import com.carmabs.emanate.core.model.onSuccess
 import com.carmabs.emanate.presentation.base.BaseActionViewModel
@@ -11,7 +11,7 @@ import com.carmabs.emanate.presentation.home.HomeBroadcast
 
 class LoginActionViewModel(private val loginUseCase: LoginUseCase, initialDataState: LoginState) :
     BaseActionViewModel<LoginState, LoginAction, LoginEvent>(initialDataState) {
-    override fun onStateCreated(initializer: EmaAction.Initializer?) = Unit
+    override fun onStateCreated(initializer: EmaInitializer?) = Unit
     override fun onAction(action: LoginAction) {
         when (action) {
             LoginAction.DeleteUser -> {

@@ -1,6 +1,7 @@
 package com.carmabs.emanate.test
 
 import com.carmabs.emanate.core.action.EmaAction
+import com.carmabs.emanate.core.initializer.EmaInitializer
 import com.carmabs.emanate.core.savestate.EmaRestoreState
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
@@ -24,7 +25,7 @@ fun <S : EmaState, A : EmaAction, E : EmaEvent> EmaViewModel<S, A, E>.assertSetu
     val listened = setup.broadcastListeners.map { it.java }
     val received = listOf(
         actionClass(),
-        EmaAction.Initializer::class.java,
+        EmaInitializer::class.java,
         EmaAction.Lifecycle::class.java,
         EmaRestoreState::class.java
     ) + listened

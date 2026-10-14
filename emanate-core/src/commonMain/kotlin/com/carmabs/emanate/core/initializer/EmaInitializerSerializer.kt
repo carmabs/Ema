@@ -1,7 +1,5 @@
 package com.carmabs.emanate.core.initializer
 
-import com.carmabs.emanate.core.action.EmaAction
-
 /**
  * Created by Carlos Mateo Benito on 19/3/24.
  *
@@ -12,6 +10,6 @@ import com.carmabs.emanate.core.action.EmaAction
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
 interface EmaInitializerSerializer {
-    fun save(initializer: EmaAction.Initializer)
-    fun restore(): EmaAction.Initializer?
+    fun save(initializer: EmaInitializer)
+    fun restore(): EmaInitializer?
 }

@@ -1,8 +1,8 @@
 package com.carmabs.emanate.core.viewmodel
 
-import com.carmabs.emanate.core.action.EmaAction
 import com.carmabs.emanate.core.action.EmaEventConsumer
 import com.carmabs.emanate.core.extension.qualifiedNameOrSimpleName
+import com.carmabs.emanate.core.initializer.EmaInitializer
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
 import kotlinx.coroutines.flow.Flow
@@ -30,7 +30,7 @@ interface EmaViewModelContract<S : EmaState, E : EmaEvent> : EmaEventConsumer<E>
      */
     val shouldRenderState: Boolean
 
-    fun onCreated(initializer: EmaAction.Initializer? = null)
+    fun onCreated(initializer: EmaInitializer? = null)
 
     fun onStartView()
 
@@ -56,7 +56,7 @@ interface EmaViewModelContract<S : EmaState, E : EmaEvent> : EmaEventConsumer<E>
         override val shouldRenderState: Boolean
             get() = true
 
-        override fun onCreated(initializer: EmaAction.Initializer?) = Unit
+        override fun onCreated(initializer: EmaInitializer?) = Unit
 
         override fun onStartView() = Unit
 

@@ -9,7 +9,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewbinding.ViewBinding
 import com.carmabs.emanate.android.navigation.EmaActivityBackDelegate
-import com.carmabs.emanate.core.action.EmaAction
+import com.carmabs.emanate.core.initializer.EmaInitializer
 import com.carmabs.emanate.core.model.EmaBackHandlerStrategy
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
@@ -25,14 +25,14 @@ sealed interface ViewEvent : EmaEvent {
 }
 
 data class NameInitializer(val name: String) :
-    EmaAction.Initializer,
+    EmaInitializer,
     Serializable
 
 class ViewTestViewModel : EmaViewModelClassic<ViewState, ViewEvent>(ViewState()) {
     val hooks = mutableListOf<String>()
-    var initializer: EmaAction.Initializer? = null
+    var initializer: EmaInitializer? = null
 
-    override fun onStateCreated(initializer: EmaAction.Initializer?) {
+    override fun onStateCreated(initializer: EmaInitializer?) {
         hooks += "created"
         this.initializer = initializer
     }

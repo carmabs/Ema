@@ -1,7 +1,7 @@
 package com.carmabs.emanate.android.initializer
 
 import com.carmabs.emanate.android.initializer.bundle.strategy.BundleSerializerStrategy
-import com.carmabs.emanate.core.action.EmaAction
+import com.carmabs.emanate.core.initializer.EmaInitializer
 
 /**
  * Created by Carlos Mateo Benito on 19/3/24.
@@ -12,4 +12,4 @@ import com.carmabs.emanate.core.action.EmaAction
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-data class EmaInitializerBundle(val initializer: EmaAction.Initializer, val serializer: BundleSerializerStrategy)
+data class EmaInitializerBundle(val initializer: EmaInitializer, val serializer: BundleSerializerStrategy)

@@ -2,7 +2,7 @@ package com.carmabs.emanate.core.viewmodel
 
 import com.carmabs.emanate.core.Emanate
 import com.carmabs.emanate.core.action.EmaAction
-import com.carmabs.emanate.core.concurrency.EmaDispatchers
+import com.carmabs.emanate.core.initializer.EmaInitializer
 import com.carmabs.emanate.core.logging.EmaLogger
 import com.carmabs.emanate.core.model.EmaConfiguration
 import com.carmabs.emanate.core.source.middleware.middlewareDelayOf
@@ -40,7 +40,7 @@ private sealed interface TestEvent : EmaEvent {
     data object Loaded : TestEvent
 }
 
-private data class TestInitializer(val text: String) : EmaAction.Initializer
+private data class TestInitializer(val text: String) : EmaInitializer
 
 /**
  * Result sent by the view model of other screen
@@ -130,7 +130,7 @@ private class TestViewModel(
                 received += "lifecycle ${action::class.simpleName}"
                 next()
             }
-            add<EmaAction.Initializer> { action ->
+            add<EmaInitializer> { action ->
                 received += "initializer $action"
                 next()
             }
@@ -272,7 +272,7 @@ class EmaViewModelTest {
         viewModel.onCreated()
         runCurrent()
 
-        assertEquals(listOf("initializer ${EmaAction.Initializer.EMPTY}"), viewModel.received)
+        assertEquals(listOf("initializer ${EmaInitializer.EMPTY}"), viewModel.received)
         viewModel.onCleared()
     }
 

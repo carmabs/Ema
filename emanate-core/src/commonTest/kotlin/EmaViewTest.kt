@@ -1,4 +1,4 @@
-import com.carmabs.emanate.core.action.EmaAction
+import com.carmabs.emanate.core.initializer.EmaInitializer
 import com.carmabs.emanate.core.initializer.EmaInitializerSerializer
 import com.carmabs.emanate.core.navigator.EmaNavigator
 import com.carmabs.emanate.core.view.EmaView
@@ -27,9 +27,9 @@ class FakeNavigator : EmaNavigator<CounterEvent> {
     }
 }
 
-class FakeSerializer(private val initializer: EmaAction.Initializer?) : EmaInitializerSerializer {
-    override fun save(initializer: EmaAction.Initializer) = Unit
-    override fun restore(): EmaAction.Initializer? = initializer
+class FakeSerializer(private val initializer: EmaInitializer?) : EmaInitializerSerializer {
+    override fun save(initializer: EmaInitializer) = Unit
+    override fun restore(): EmaInitializer? = initializer
 }
 
 class FakeView(

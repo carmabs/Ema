@@ -2,10 +2,10 @@ package com.carmabs.emanate.core.viewmodel
 
 import com.carmabs.emanate.core.Emanate
 import com.carmabs.emanate.core.action.EmaAction
-import com.carmabs.emanate.core.action.EmaAction.Initializer
 import com.carmabs.emanate.core.action.EmaAction.Lifecycle
 import com.carmabs.emanate.core.action.EmaActionDispatcher
 import com.carmabs.emanate.core.action.EventDispatcher
+import com.carmabs.emanate.core.initializer.EmaInitializer
 import com.carmabs.emanate.core.logging.EmaLogger
 import com.carmabs.emanate.core.savestate.EmaStateSaver
 import com.carmabs.emanate.core.savestate.EmaStateStore
@@ -62,7 +62,7 @@ abstract class EmaViewModel<S : EmaState, A : EmaAction, E : EmaEvent>(
     /**
      * Returns the middlewares, reducers, side effects, broadcast listeners and saved values of the view model, created
      * with [source]: `override fun setup() = source { ... }`. Besides the actions of type [A], they can handle the
-     * [Initializer] of the screen, its [Lifecycle] actions and the actions broadcast by other view models that it
+     * [EmaInitializer] of the screen, its [Lifecycle] actions and the actions broadcast by other view models that it
      * listens to. It is called once, when the source or the saved values are first needed.
      */
     protected abstract fun setup(): SourceSetup<S, A, E>
@@ -76,7 +76,7 @@ abstract class EmaViewModel<S : EmaState, A : EmaAction, E : EmaEvent>(
      * Marks the state as updated when an action of the screen or an initializer is received
      */
     private val updateTrackerMiddleware = middlewareOf<EmaState, Nothing, EmaAction>(EmaAction::class) { action ->
-        if (action !is Lifecycle && action != Initializer.EMPTY && action != EmaAction.EMPTY) {
+        if (action !is Lifecycle && action != EmaInitializer.EMPTY && action != EmaAction.EMPTY) {
             hasBeenUpdated = true
         }
         next()
@@ -181,13 +181,13 @@ abstract class EmaViewModel<S : EmaState, A : EmaAction, E : EmaEvent>(
     }
 
     /**
-     * Called when the view is created. The first time, the source receives [initializer], or [Initializer.EMPTY] if
+     * Called when the view is created. The first time, the source receives [initializer], or [EmaInitializer.EMPTY] if
      * there isn't any, and then the saved values, if it has a store.
      */
-    final override fun onCreated(initializer: Initializer?) {
+    final override fun onCreated(initializer: EmaInitializer?) {
         if (!hasBeenInitialized) {
             hasBeenInitialized = true
-            emaSource.dispatch(initializer ?: Initializer.EMPTY)
+            emaSource.dispatch(initializer ?: EmaInitializer.EMPTY)
             stateSaver?.restore()
         }
     }

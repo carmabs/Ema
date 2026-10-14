@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import com.carmabs.emanate.compose.action.EmaImmutableActionDispatcher
 import com.carmabs.emanate.compose.ui.EmaComposableScreenContent
 import com.carmabs.emanate.core.action.EmaAction
+import com.carmabs.emanate.core.initializer.EmaInitializer
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
 import com.carmabs.emanate.core.viewmodel.EmaViewModelAction
@@ -31,7 +32,7 @@ sealed interface CounterEvent : EmaEvent {
     data object Notified : CounterEvent
 }
 
-data class RouteInitializer(val name: String) : EmaAction.Initializer
+data class RouteInitializer(val name: String) : EmaInitializer
 
 /**
  * Serializer written by hand, so the tests do not need the serialization plugin.
@@ -44,9 +45,9 @@ object RouteInitializerSerializer : KSerializer<RouteInitializer> {
 
 class CounterViewModel : EmaViewModelAction<CounterState, CounterAction, CounterEvent>(CounterState()) {
     val hooks = mutableListOf<String>()
-    var initializer: EmaAction.Initializer? = null
+    var initializer: EmaInitializer? = null
 
-    override fun onStateCreated(initializer: EmaAction.Initializer?) {
+    override fun onStateCreated(initializer: EmaInitializer?) {
         hooks += "created"
         this.initializer = initializer
     }
@@ -80,7 +81,7 @@ class CounterViewModel : EmaViewModelAction<CounterState, CounterAction, Counter
  * ViewModel that does not handle actions.
  */
 class ClassicViewModel : EmaViewModelClassic<CounterState, CounterEvent>(CounterState()) {
-    override fun onStateCreated(initializer: EmaAction.Initializer?) = Unit
+    override fun onStateCreated(initializer: EmaInitializer?) = Unit
 }
 
 class CounterScreen(private val backEnabled: Boolean = true) :

@@ -4,6 +4,7 @@ import com.carmabs.emanate.core.Emanate
 import com.carmabs.emanate.core.action.EmaAction
 import com.carmabs.emanate.core.error.EmaError
 import com.carmabs.emanate.core.error.EmaErrorPolicy
+import com.carmabs.emanate.core.initializer.EmaInitializer
 import com.carmabs.emanate.core.model.EmaConfiguration
 import com.carmabs.emanate.core.source.EmaSource
 import com.carmabs.emanate.core.state.EmaEvent
@@ -37,7 +38,7 @@ private sealed interface FormAction : EmaAction {
     data class PlanChosen(val plan: Plan) : FormAction
 }
 
-private data class RoleInitializer(val role: String) : EmaAction.Initializer
+private data class RoleInitializer(val role: String) : EmaInitializer
 
 /**
  * Store that keeps the values in memory and records every write
@@ -271,7 +272,7 @@ class EmaViewModelSavedStateTest {
         viewModel.onCreated(null)
         runCurrent()
 
-        assertEquals(listOf<EmaAction>(EmaAction.Initializer.EMPTY), viewModel.received)
+        assertEquals(listOf<EmaAction>(EmaInitializer.EMPTY), viewModel.received)
         viewModel.onCleared()
     }
 

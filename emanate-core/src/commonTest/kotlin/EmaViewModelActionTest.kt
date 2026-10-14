@@ -2,6 +2,7 @@ import com.carmabs.emanate.core.Emanate
 import com.carmabs.emanate.core.action.EmaAction
 import com.carmabs.emanate.core.broadcast.EmaActionBroadcaster
 import com.carmabs.emanate.core.error.EmaErrorPolicy
+import com.carmabs.emanate.core.initializer.EmaInitializer
 import com.carmabs.emanate.core.logging.EmaLogger
 import com.carmabs.emanate.core.model.EmaConfiguration
 import com.carmabs.emanate.core.model.reflection.Reflection
@@ -45,7 +46,7 @@ sealed interface CounterEvent : EmaEvent {
     data object Message : CounterEvent
 }
 
-data class CounterInitializer(val start: Int) : EmaAction.Initializer
+data class CounterInitializer(val start: Int) : EmaInitializer
 
 class CounterViewModel(dispatcher: CoroutineDispatcher, private val renderOnInitialization: Boolean = true) :
     EmaViewModelAction<CounterState, CounterAction, CounterEvent>(CounterState(), dispatcher = dispatcher) {
@@ -55,7 +56,7 @@ class CounterViewModel(dispatcher: CoroutineDispatcher, private val renderOnInit
     override val updateOnInitialization: Boolean
         get() = renderOnInitialization
 
-    override fun onStateCreated(initializer: EmaAction.Initializer?) {
+    override fun onStateCreated(initializer: EmaInitializer?) {
         hooks.add("created")
         (initializer as? CounterInitializer)?.also { updateState { copy(count = it.start) } }
     }
@@ -335,15 +336,15 @@ class EmaViewModelActionTest {
 data class UserSent(val user: String) : EmaAction
 
 class SenderViewModel(dispatcher: CoroutineDispatcher) :
-    EmaViewModelClassic<CounterState, CounterEvent>(CounterState(), dispatcher = dispatcher) {
-    override fun onStateCreated(initializer: EmaAction.Initializer?) = Unit
+    EmaViewModelClassic<CounterState, CounterEvent>(CounterState(), dispatcher) {
+    override fun onStateCreated(initializer: EmaInitializer?) = Unit
     fun send(user: String, keepUntilReceived: Boolean = false) = broadcast(UserSent(user), keepUntilReceived)
 }
 
 class ReceiverViewModel(dispatcher: CoroutineDispatcher) :
     EmaViewModelClassic<CounterState, CounterEvent>(CounterState(), dispatcher = dispatcher) {
     val received = mutableListOf<String>()
-    override fun onStateCreated(initializer: EmaAction.Initializer?) = Unit
+    override fun onStateCreated(initializer: EmaInitializer?) = Unit
     override fun onBroadcastListenerSetup() {
         registerBroadcastListener<UserSent> { received.add(it.user) }
     }

@@ -1,6 +1,7 @@
 package com.carmabs.emanate.presentation.splash
 
 import com.carmabs.emanate.core.action.EmaAction
+import com.carmabs.emanate.core.initializer.EmaInitializer
 import com.carmabs.emanate.core.state.EmaState
 import com.carmabs.emanate.presentation.base.BaseViewModel
 import kotlinx.coroutines.delay
@@ -10,7 +11,7 @@ class SplashViewModel : BaseViewModel<EmaState.EMPTY, EmaAction.EMPTY, SplashEve
     override fun setup() = source {
         sideEffects {
             // The view is created
-            add<EmaAction.Initializer> {
+            add<EmaInitializer> {
                 delay(1500)
                 postEvent(SplashEvent.SplashFinished)
             }

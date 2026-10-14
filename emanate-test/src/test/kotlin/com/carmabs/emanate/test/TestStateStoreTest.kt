@@ -1,6 +1,7 @@
 package com.carmabs.emanate.test
 
 import com.carmabs.emanate.core.action.EmaAction
+import com.carmabs.emanate.core.initializer.EmaInitializer
 import com.carmabs.emanate.core.savestate.EmaRestoreState
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
@@ -77,7 +78,7 @@ class TestStateStoreTest {
         second.onCreated(null)
         advanceUntilIdle()
 
-        recorder.assertActions(EmaAction.Initializer.EMPTY, restoreStateOf("query" to "ema"))
+        recorder.assertActions(EmaInitializer.EMPTY, restoreStateOf("query" to "ema"))
         recorder.assertState(SearchState(query = "ema", results = listOf("restored")))
         second.onCleared()
     }

@@ -6,6 +6,7 @@ import com.carmabs.emanate.core.action.EmaEventConsumer
 import com.carmabs.emanate.core.action.EventDispatcher
 import com.carmabs.emanate.core.error.EmaErrorPolicy
 import com.carmabs.emanate.core.error.runHandlingErrors
+import com.carmabs.emanate.core.initializer.EmaInitializer
 import com.carmabs.emanate.core.model.EmaConfiguration
 import com.carmabs.emanate.core.model.reflection.Reflection
 import com.carmabs.emanate.core.sideeffect.SideEffectResult
@@ -91,7 +92,7 @@ abstract class EmaViewModelClassic<S : EmaState, E : EmaEvent>(
     protected var hasBeenInitialized: Boolean = false
         private set
 
-    override fun onCreated(initializer: EmaAction.Initializer?) {
+    override fun onCreated(initializer: EmaInitializer?) {
         if (!hasBeenInitialized) {
             hasBeenInitialized = true
             if (updateOnInitialization) {
@@ -128,7 +129,7 @@ abstract class EmaViewModelClassic<S : EmaState, E : EmaEvent>(
     /**
      * Called when the state of the view has been created
      */
-    abstract fun onStateCreated(initializer: EmaAction.Initializer? = null)
+    abstract fun onStateCreated(initializer: EmaInitializer? = null)
 
     /**
      * Called always the view goes to the foreground
