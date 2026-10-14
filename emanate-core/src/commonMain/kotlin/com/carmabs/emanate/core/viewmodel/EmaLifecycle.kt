@@ -37,10 +37,9 @@ sealed interface EmaLifecycle : EmaAction {
     data object Stopped : EmaLifecycle
 
     /**
-     * The last action of the view model, given to its source as the last action when it is closed. The rest of its
-     * work is cancelled after it, but its side effects can finish, up to their timeout or the closeTimeout of the
-     * configuration, 5 seconds by default: they can broadcast actions and read the state, while the actions they
-     * dispatch and the events they post are ignored, as the view model is closed.
+     * The last action of the view model, right before its source is closed. Its side effects are cancelled when the
+     * source is closed, like the rest of its work, unless they survive close: work that must run when the view model
+     * is closed, like sending a result to the previous screen, goes in the onClose block of the side effects.
      */
     data object Destroyed : EmaLifecycle
 

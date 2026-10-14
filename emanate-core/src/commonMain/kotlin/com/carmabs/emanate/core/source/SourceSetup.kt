@@ -4,6 +4,7 @@ import com.carmabs.emanate.core.action.EmaAction
 import com.carmabs.emanate.core.source.middleware.EmaMiddleware
 import com.carmabs.emanate.core.source.reducer.EmaReducer
 import com.carmabs.emanate.core.source.sideeffect.SideEffect
+import com.carmabs.emanate.core.source.sideeffect.SideEffectScope
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
 import kotlin.reflect.KClass
@@ -24,6 +25,7 @@ class SourceSetup<S : EmaState, A : EmaAction, E : EmaEvent> internal constructo
     internal val middlewares: List<EmaMiddleware<S, A, *>>,
     internal val reducers: List<EmaReducer<S, *>>,
     internal val sideEffects: List<SideEffect<S, A, E, *>>,
+    internal val closeEffects: List<suspend SideEffectScope<S, A, E>.() -> Unit>,
     internal val broadcastListeners: List<KClass<out EmaAction>>,
     internal val plugins: List<EmaSourcePlugin<S>>
 )

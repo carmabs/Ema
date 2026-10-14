@@ -86,6 +86,7 @@ class SourceSetupScope<S : EmaState, A : EmaAction, E : EmaEvent> internal const
             middlewares = middlewareSetupScope.middlewareList,
             reducers = reducerSetupScope.reducerList,
             sideEffects = sideEffectSetupScope.sideEffectList,
+            closeEffects = sideEffectSetupScope.closeEffectList,
             broadcastListeners = broadcastSetupScope.broadcastListenerList,
             plugins = pluginList
         )

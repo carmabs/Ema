@@ -20,9 +20,8 @@ import kotlin.time.Duration.Companion.seconds
  * @param logger writes the logs of Emanate, like the actions of every EmaViewModel with the state before and after
  * them, and the errors caught by [errorPolicy]. Null to disable the logs, for example in release builds.
  * @param printer how objects are printed in the logs and by [com.carmabs.emanate.core.logging.toStringPretty]
- * @param closeTimeout time the side effects of the last action of a source, like EmaLifecycle.Destroyed in an
- * EmaViewModel, can run after it is closed, unless they have their own timeout. Then they are cancelled, so they don't
- * keep the view model alive.
+ * @param closeTimeout time the onClose blocks of a source and its side effects that survive close can run after it is
+ * closed. Then they are cancelled, so they don't keep the source alive.
  * @param sideEffectListener receives the result of every side effect, to track or measure them
  * @param methodNameResolver resolves the name of the function that launched a side effect, reported in the errors,
  * when no logName is given

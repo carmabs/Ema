@@ -35,6 +35,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -67,6 +68,7 @@ fun <S : EmaState, A : EmaAction, E : EmaEvent> EmaSource(
         middlewares = sourceSetup.middlewares,
         reducers = sourceSetup.reducers,
         sideEffects = sourceSetup.sideEffects,
+        closeEffects = sourceSetup.closeEffects,
         broadcastListeners = sourceSetup.broadcastListeners,
         container = null,
         eventDispatcher = EventDispatcher(),
@@ -89,10 +91,11 @@ fun <S : EmaState, A : EmaAction, E : EmaEvent> EmaSource(
  */
 class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
     private val mutableStateFlow: MutableStateFlow<S>,
-    dispatcher: CoroutineDispatcher,
+    private val dispatcher: CoroutineDispatcher,
     private val middlewares: List<EmaMiddleware<S, A, *>>,
     private val reducers: List<EmaReducer<S, *>>,
     private val sideEffects: List<SideEffect<S, A, E, *>>,
+    private val closeEffects: List<suspend SideEffectScope<S, A, E>.() -> Unit>,
     broadcastListeners: List<KClass<out EmaAction>>,
     container: Any?,
     private val eventDispatcher: EventDispatcher<E>,
@@ -106,18 +109,12 @@ class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
     private val scope = CoroutineScope(SupervisorJob() + dispatcher)
 
     /**
-     * Job of the side effects of the last action given to [close]. [close] doesn't cancel them, so they can finish, up
-     * to their timeout or the closeTimeout of the configuration: it completes when they do.
+     * Job of the work that [close] doesn't cancel: the onClose blocks and the side effects that survive close. They can
+     * finish, up to the closeTimeout of the configuration after the source is closed: it completes when they do.
      */
     private val closingJob = SupervisorJob()
 
     private val closingScope = CoroutineScope(closingJob + dispatcher)
-
-    /**
-     * Whether the source is processing the last action given to [close]. It is only read and written in the coroutine
-     * of the source.
-     */
-    private var closing = false
 
     /**
      * Reported as the class that launches the side effects: the view model that owns the source, or the source
@@ -182,32 +179,43 @@ class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
                 // The queue is closed in close, after the pending steps. If a step throws an exception with the Throw
                 // policy, the source stops too, so its work is cancelled.
                 scope.cancel()
+                cancelClosingWorkAfterTimeout()
                 closingJob.complete()
             }
         }
     }
 
     /**
-     * Processes the pending actions and [lastAction], and then cancels the asynchronous work of the source, except the
-     * side effects of [lastAction], which can finish, up to their timeout or the closeTimeout of the configuration.
-     * Actions dispatched after it are ignored.
+     * Processes the pending actions, runs the onClose blocks of setup and then cancels the asynchronous work of the
+     * source, except the onClose blocks and the side effects that survive close, which can finish, up to the
+     * closeTimeout of the configuration. Actions dispatched after it are ignored.
      *
-     * @param lastAction last action of the source, whose side effects can finish after it is closed, for example to
-     * send a result to the previous screen. Null to close it without a last action.
-     * @return the job that completes when the source has finished, including the side effects of [lastAction]
+     * @return the job that completes when the source has finished, including the work that survives close
      */
-    fun close(lastAction: EmaAction? = null): Job {
+    fun close(): Job {
         broadcastJob?.cancel()
-        lastAction?.let { action ->
-            queue.trySend {
-                closing = true
-                observers.forEach { it.onAction(action) }
-                runChain(0, action)
+        queue.trySend {
+            closeEffects.forEach { effect ->
+                launch(key = null, timeout = null, onTimeout = {}, launchScope = closingScope) {
+                    sideEffectScope.effect()
+                }
             }
         }
         queue.close()
-        // It is completed when the steps finish, and then waits for the side effects of the last action
+        // It is completed when the steps finish, and then waits for the work that survives close
         return closingJob
+    }
+
+    /**
+     * Cancels the work that survives close if it doesn't finish in the closeTimeout of the configuration, so it doesn't
+     * keep the source alive
+     */
+    private fun cancelClosingWorkAfterTimeout() {
+        val timeoutJob = CoroutineScope(dispatcher).launch {
+            delay(configuration.closeTimeout)
+            closingJob.cancel()
+        }
+        closingJob.invokeOnCompletion { timeoutJob.cancel() }
     }
 
     final override fun dispatch(action: A) {
@@ -318,15 +326,13 @@ class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
                 sideEffect
             }
         }
-        // The source is closed right after its last action, so its side effects run in a scope that close doesn't
-        // cancel, with a timeout so they don't keep the source alive
+        // The side effects that survive close run in a scope that close doesn't cancel
         with(sideEffect) {
-            val closeTimeout = configuration.closeTimeout
             launch(
                 key = key,
-                timeout = if (closing) timeout ?: closeTimeout else timeout,
+                timeout = timeout,
                 onTimeout = { sideEffectScope.onTimeout(typedAction) },
-                launchScope = if (closing) closingScope else scope,
+                launchScope = if (survivesClose) closingScope else scope,
                 block = { sideEffectScope.invoke(typedAction) }
             )
         }

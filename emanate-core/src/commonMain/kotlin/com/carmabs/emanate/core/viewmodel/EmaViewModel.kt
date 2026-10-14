@@ -148,6 +148,7 @@ abstract class EmaViewModel<S : EmaState, A : EmaAction, E : EmaEvent>(
             ),
             reducers = sourceSetup.reducers,
             sideEffects = sourceSetup.sideEffects,
+            closeEffects = sourceSetup.closeEffects,
             broadcastListeners = sourceSetup.broadcastListeners,
             container = this,
             eventDispatcher = eventDispatcher,
@@ -217,11 +218,12 @@ abstract class EmaViewModel<S : EmaState, A : EmaAction, E : EmaEvent>(
     }
 
     /**
-     * Called when the view model is destroyed. The source processes [EmaLifecycle.Destroyed] after the pending actions,
-     * as its last action, and then cancels its pending work, except the side effects of [EmaLifecycle.Destroyed], which
-     * can finish.
+     * Called when the view model is destroyed. The source processes [EmaLifecycle.Destroyed] after the pending actions
+     * and then it is closed: its work is cancelled, except its onClose blocks and the side effects that survive close,
+     * which can finish.
      */
     final override fun onCleared() {
-        emaSource.close(EmaLifecycle.Destroyed)
+        emaSource.dispatch(EmaLifecycle.Destroyed)
+        emaSource.close()
     }
 }

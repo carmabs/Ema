@@ -258,21 +258,52 @@ class EmaSourceSideEffectTest {
     }
 
     @Test
-    fun `closing the source completes after the side effects of its last action`() = runTest {
+    fun `the onClose blocks run when the source is closed and it completes after them`() = runTest {
+        val finished = mutableListOf<String>()
+        val source = EmaSource<EffectState, EffectAction, EffectEvent>(
+            EffectState(text = "draft"),
+            configurationOn(UnconfinedTestDispatcher(testScheduler))
+        ) {
+            sideEffects {
+                onClose {
+                    delay(1000)
+                    finished += "closed with ${state.text}"
+                }
+            }
+        }
+
+        val closed = source.close()
+        runCurrent()
+        assertFalse(closed.isCompleted)
+
+        advanceTimeBy(1500)
+        runCurrent()
+        assertTrue(closed.isCompleted)
+        assertEquals(listOf("closed with draft"), finished)
+    }
+
+    @Test
+    fun `a side effect that survives close can finish after the source is closed`() = runTest {
         val finished = mutableListOf<EffectAction>()
         val source = EmaSource<EffectState, EffectAction, EffectEvent>(
             EffectState(),
             configurationOn(UnconfinedTestDispatcher(testScheduler))
         ) {
             sideEffects {
-                add<EffectAction.Save> { action ->
+                add<EffectAction.Save>(survivesClose = true) { action ->
+                    delay(1000)
+                    finished += action
+                }
+                add<EffectAction.Load> { action ->
                     delay(1000)
                     finished += action
                 }
             }
         }
 
-        val closed = source.close(lastAction = EffectAction.Save)
+        source.dispatch(EffectAction.Save)
+        source.dispatch(EffectAction.Load)
+        val closed = source.close()
         runCurrent()
         assertFalse(closed.isCompleted)
 
@@ -283,23 +314,32 @@ class EmaSourceSideEffectTest {
     }
 
     @Test
-    fun `the side effects of the last action are cancelled after the close timeout`() = runTest {
-        val finished = mutableListOf<EffectAction>()
+    fun `the work that survives close is cancelled after the close timeout`() = runTest {
+        val finished = mutableListOf<String>()
         val source = EmaSource<EffectState, EffectAction, EffectEvent>(
             EffectState(),
             configurationOn(UnconfinedTestDispatcher(testScheduler), EmaConfiguration(closeTimeout = 2.seconds))
         ) {
             sideEffects {
-                add<EffectAction.Save> { action ->
+                add<EffectAction.Save>(survivesClose = true) {
                     delay(5000)
-                    finished += action
+                    finished += "saved"
+                }
+                onClose {
+                    delay(5000)
+                    finished += "closed"
                 }
             }
         }
-        val closed = source.close(lastAction = EffectAction.Save)
-        advanceTimeBy(2500)
-        runCurrent()
 
+        source.dispatch(EffectAction.Save)
+        val closed = source.close()
+        advanceTimeBy(1500)
+        runCurrent()
+        assertFalse(closed.isCompleted)
+
+        advanceTimeBy(1000)
+        runCurrent()
         assertTrue(closed.isCompleted)
         assertTrue(finished.isEmpty())
     }

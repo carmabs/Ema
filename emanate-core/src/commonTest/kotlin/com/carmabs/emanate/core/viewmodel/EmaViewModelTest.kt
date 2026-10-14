@@ -88,7 +88,7 @@ private class LifecycleViewModel(dispatcher: CoroutineDispatcher) :
 }
 
 /**
- * View model that sends a result when it is destroyed, after [duration]
+ * View model that sends a result when it is closed, after [duration]
  */
 private class ClosingViewModel(
     dispatcher: CoroutineDispatcher,
@@ -103,10 +103,10 @@ private class ClosingViewModel(
 
     override fun setup() = source {
         sideEffects {
-            add<EmaLifecycle.Destroyed> {
+            onClose {
                 delay(duration)
                 broadcast(TextSent("closed"))
-                finished += "destroyed"
+                finished += "closed"
             }
         }
     }
@@ -293,7 +293,7 @@ class EmaViewModelTest {
     }
 
     @Test
-    fun `the side effects of destroyed can finish after the view model is cleared`() = runTest {
+    fun `the work of onClose can finish after the view model is cleared`() = runTest {
         val receiver = TestViewModel(testDispatcher())
         receiver.onCreated(null)
         val closing = ClosingViewModel(testDispatcher(), 1.seconds)
@@ -303,13 +303,42 @@ class EmaViewModelTest {
         advanceTimeBy(1500)
         runCurrent()
 
-        assertEquals(listOf("destroyed"), closing.finished)
+        assertEquals(listOf("closed"), closing.finished)
         assertEquals("closed", receiver.stateFlow.value.text)
         receiver.onCleared()
     }
 
     @Test
-    fun `the time of the side effects of destroyed is set in the configuration`() = runTest {
+    fun `the side effects of destroyed are cancelled unless they survive close`() = runTest {
+        val finished = mutableListOf<String>()
+        val viewModel = object : EmaViewModel<TestState, TestAction, TestEvent>(
+            TestState(),
+            configurationOn(testDispatcher()).copy(logger = null)
+        ) {
+            override fun setup() = source {
+                sideEffects {
+                    add<EmaLifecycle.Destroyed> {
+                        delay(1000)
+                        finished += "cancelled"
+                    }
+                    add<EmaLifecycle.Destroyed>(survivesClose = true) {
+                        delay(1000)
+                        finished += "survived"
+                    }
+                }
+            }
+        }
+        viewModel.onCreated(null)
+
+        viewModel.onCleared()
+        advanceTimeBy(1500)
+        runCurrent()
+
+        assertEquals(listOf("survived"), finished)
+    }
+
+    @Test
+    fun `the time of the work that survives close is set in the configuration`() = runTest {
         val closing = ClosingViewModel(testDispatcher(), 3.seconds, EmaConfiguration(closeTimeout = 2.seconds))
         closing.onCreated(null)
 
@@ -376,14 +405,14 @@ class EmaViewModelTest {
             closing.onCleared()
             advanceUntilIdle()
 
-            assertEquals(listOf("destroyed"), closing.finished)
+            assertEquals(listOf("closed"), closing.finished)
         } finally {
             Emanate.reset()
         }
     }
 
     @Test
-    fun `the side effects of destroyed are cancelled after 5 seconds`() = runTest {
+    fun `the work that survives close is cancelled after 5 seconds`() = runTest {
         val closing = ClosingViewModel(testDispatcher(), 10.seconds)
         closing.onCreated(null)
 
