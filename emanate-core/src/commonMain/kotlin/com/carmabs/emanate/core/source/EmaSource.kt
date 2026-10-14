@@ -50,8 +50,9 @@ import kotlinx.coroutines.withTimeoutOrNull
  * action goes through the middlewares, the reducers and the side effects of its type. The source creates its own scope
  * with [dispatcher], so call [EmaSource.close] when it isn't needed anymore to cancel its work.
  *
- * @param dispatcher where the source runs. By default the main dispatcher of Emanate, as the state is usually drawn by
- * the view; use cases run on their own dispatcher anyway.
+ * @param configuration applied by the source. By default the one of [Emanate], read when the source is created.
+ * @param dispatcher where the source runs. By default the main dispatcher of [configuration], as the state is usually
+ * drawn by the view; use cases run on their own dispatcher anyway.
  * @param setup adds the middlewares, reducers, side effects, broadcast listeners and saved values of the source. The
  * saved values are written and restored with an [com.carmabs.emanate.core.savestate.EmaStateSaver].
  */
@@ -100,8 +101,7 @@ class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
     internal val savedValues: List<EmaSavedValue<S, *>>,
     container: Any?,
     private val eventDispatcher: EventDispatcher<E>,
-    internal val configuration: EmaConfiguration,
-    internal val broadcaster: EmaActionBroadcaster = Emanate.actionBroadcaster
+    internal val configuration: EmaConfiguration
 ) : EmaEventConsumer<E>,
     EmaActionDispatcher<A> {
 

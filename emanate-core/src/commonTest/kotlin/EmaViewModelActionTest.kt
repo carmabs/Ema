@@ -336,7 +336,7 @@ class EmaViewModelActionTest {
 data class UserSent(val user: String) : EmaAction
 
 class SenderViewModel(dispatcher: CoroutineDispatcher) :
-    EmaViewModelClassic<CounterState, CounterEvent>(CounterState(), dispatcher) {
+    EmaViewModelClassic<CounterState, CounterEvent>(CounterState(), dispatcher = dispatcher) {
     override fun onStateCreated(initializer: EmaInitializer?) = Unit
     fun send(user: String, keepUntilReceived: Boolean = false) = broadcast(UserSent(user), keepUntilReceived)
 }

@@ -26,7 +26,11 @@ private sealed interface NameAction : EmaAction {
 }
 
 private class NameViewModel :
-    EmaViewModel<NameState, NameAction, EmaEvent.EMPTY>(NameState(), Dispatchers.Unconfined, logger = null) {
+    EmaViewModel<NameState, NameAction, EmaEvent.EMPTY>(
+        NameState(),
+        dispatcher = Dispatchers.Unconfined,
+        logger = null
+    ) {
 
     override fun setup() = source {
         backup {

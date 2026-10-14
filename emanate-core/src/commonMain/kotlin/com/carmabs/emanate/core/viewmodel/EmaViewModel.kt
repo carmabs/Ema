@@ -6,6 +6,7 @@ import com.carmabs.emanate.core.action.EmaActionDispatcher
 import com.carmabs.emanate.core.action.EventDispatcher
 import com.carmabs.emanate.core.initializer.EmaInitializer
 import com.carmabs.emanate.core.logging.EmaLogger
+import com.carmabs.emanate.core.model.EmaConfiguration
 import com.carmabs.emanate.core.savestate.EmaStateSaver
 import com.carmabs.emanate.core.savestate.EmaStateStore
 import com.carmabs.emanate.core.source.EmaSource
@@ -144,8 +145,9 @@ abstract class EmaViewModel<S : EmaState, A : EmaAction, E : EmaEvent>(
             middlewares = listOfNotNull(
                 logger?.let { receivedActionLoggerMiddleware(tag, it) },
                 updateTrackerMiddleware
-            ) + sourceSetup.middlewares + listOfNotNull(logger?.let { loggerMiddleware(tag, it) }),
-            // The saved values are restored before the reducers of setup, so they receive the restored state
+            ) + sourceSetup.middlewares + listOfNotNull(
+                logger?.let { loggerMiddleware(tag, it, configuration.printer) }
+            ),
             reducers = sourceSetup.reducers,
             sideEffects = sourceSetup.sideEffects,
             broadcastListeners = sourceSetup.broadcastListeners,

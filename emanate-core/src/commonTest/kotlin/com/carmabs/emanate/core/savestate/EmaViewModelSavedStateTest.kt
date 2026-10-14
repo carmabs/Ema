@@ -10,7 +10,6 @@ import com.carmabs.emanate.core.source.EmaSource
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
 import com.carmabs.emanate.core.viewmodel.EmaViewModel
-import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -91,8 +90,9 @@ private class AgeSavedValue(private val failRestore: Boolean = false) : EmaSaved
 
 private class FormViewModel(
     dispatcher: CoroutineDispatcher,
-    private val ageSavedValue: EmaSavedValue<FormState, Int> = AgeSavedValue()
-) : EmaViewModel<FormState, FormAction, EmaEvent.EMPTY>(FormState(), dispatcher, logger = null) {
+    private val ageSavedValue: EmaSavedValue<FormState, Int> = AgeSavedValue(),
+    configuration: EmaConfiguration = Emanate.configuration
+) : EmaViewModel<FormState, FormAction, EmaEvent.EMPTY>(FormState(), configuration, dispatcher, logger = null) {
 
     val received = mutableListOf<EmaAction>()
 
@@ -127,7 +127,7 @@ private class FormViewModel(
  * View model that doesn't save anything
  */
 private class PlainViewModel(dispatcher: CoroutineDispatcher) :
-    EmaViewModel<FormState, FormAction, EmaEvent.EMPTY>(FormState(), dispatcher, logger = null) {
+    EmaViewModel<FormState, FormAction, EmaEvent.EMPTY>(FormState(), dispatcher = dispatcher, logger = null) {
 
     override fun setup() = source {}
 }
@@ -136,11 +136,6 @@ private class PlainViewModel(dispatcher: CoroutineDispatcher) :
 class EmaViewModelSavedStateTest {
 
     private val errors = mutableListOf<EmaError>()
-
-    @AfterTest
-    fun tearDown() {
-        Emanate.reset()
-    }
 
     private fun TestScope.testDispatcher() = UnconfinedTestDispatcher(testScheduler)
 
@@ -290,9 +285,9 @@ class EmaViewModelSavedStateTest {
 
     @Test
     fun `a restore that fails is reported and the other values are restored`() = runTest {
-        Emanate.initForTest(EmaConfiguration(errorPolicy = EmaErrorPolicy.Catch { errors += it }))
+        val configuration = EmaConfiguration(errorPolicy = EmaErrorPolicy.Catch { errors += it })
         val store = MemoryStore(mapOf("name" to "Ana", "age" to "30"))
-        val viewModel = FormViewModel(testDispatcher(), AgeSavedValue(failRestore = true))
+        val viewModel = FormViewModel(testDispatcher(), AgeSavedValue(failRestore = true), configuration)
         viewModel.attachStateStore(store)
 
         viewModel.onCreated(null)
@@ -354,7 +349,7 @@ class EmaViewModelSavedStateTest {
     fun `a key can only be saved once`() = runTest {
         val viewModel = object : EmaViewModel<FormState, FormAction, EmaEvent.EMPTY>(
             FormState(),
-            testDispatcher(),
+            dispatcher = testDispatcher(),
             logger = null
         ) {
             override fun setup() = source {
@@ -411,7 +406,7 @@ class EmaViewModelSavedStateTest {
     }
 
     private fun formSource(dispatcher: CoroutineDispatcher) =
-        EmaSource<FormState, FormAction, EmaEvent.EMPTY>(FormState(), dispatcher) {
+        EmaSource<FormState, FormAction, EmaEvent.EMPTY>(FormState(), dispatcher = dispatcher) {
             backup { add("name", save = { name.takeIf { it.isNotEmpty() } }, restore = { copy(name = it) }) }
             reducers {
                 add<FormAction.NameWritten> { action -> state.copy(name = action.name) }

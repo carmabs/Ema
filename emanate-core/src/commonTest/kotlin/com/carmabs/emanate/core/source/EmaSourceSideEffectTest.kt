@@ -1,6 +1,5 @@
 package com.carmabs.emanate.core.source
 
-import com.carmabs.emanate.core.Emanate
 import com.carmabs.emanate.core.action.EmaAction
 import com.carmabs.emanate.core.model.EmaConfiguration
 import com.carmabs.emanate.core.source.sideeffect.SideEffect
@@ -284,10 +283,10 @@ class EmaSourceSideEffectTest {
 
     @Test
     fun `the side effects of the last action are cancelled after the close timeout`() = runTest {
-        Emanate.initForTest(EmaConfiguration(closeTimeout = 2.seconds))
         val finished = mutableListOf<EffectAction>()
         val source = EmaSource<EffectState, EffectAction, EffectEvent>(
             EffectState(),
+            EmaConfiguration(closeTimeout = 2.seconds),
             UnconfinedTestDispatcher(testScheduler)
         ) {
             sideEffects {
@@ -297,9 +296,6 @@ class EmaSourceSideEffectTest {
                 }
             }
         }
-        // The source reads the configuration when it is created
-        Emanate.reset()
-
         val closed = source.close(lastAction = EffectAction.Save)
         advanceTimeBy(2500)
         runCurrent()
