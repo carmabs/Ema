@@ -10,8 +10,8 @@ import com.carmabs.emanate.core.action.EventDispatcher
 import com.carmabs.emanate.core.broadcast.EmaActionBroadcaster
 import com.carmabs.emanate.core.error.runHandlingErrors
 import com.carmabs.emanate.core.model.EmaConfiguration
+import com.carmabs.emanate.core.savestate.EmaBackupValue
 import com.carmabs.emanate.core.savestate.EmaRestoreState
-import com.carmabs.emanate.core.savestate.EmaSavedValue
 import com.carmabs.emanate.core.sideeffect.SideEffectResult
 import com.carmabs.emanate.core.source.middleware.EmaMiddleware
 import com.carmabs.emanate.core.source.middleware.MiddlewareContext
@@ -98,7 +98,7 @@ class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
     reducers: List<EmaReducer<S, *>>,
     private val sideEffects: List<SideEffect<S, A, E, *>>,
     broadcastListeners: List<KClass<out EmaAction>>,
-    internal val savedValues: List<EmaSavedValue<S, *>>,
+    internal val savedValues: List<EmaBackupValue<S, *>>,
     container: Any?,
     private val eventDispatcher: EventDispatcher<E>,
     internal val configuration: EmaConfiguration
@@ -236,7 +236,7 @@ class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
      * Restores the values of [EmaRestoreState] with the saved values of setup, in the order they were added. A value
      * that can't be decoded, or whose restore fails with the Catch policy, is skipped.
      */
-    private fun restoreReducer(savedValues: List<EmaSavedValue<S, *>>) =
+    private fun restoreReducer(savedValues: List<EmaBackupValue<S, *>>) =
         reducerOf<S, EmaRestoreState>(EmaRestoreState::class) { action ->
             savedValues.fold(state) { restoredState, savedValue ->
                 val value = action.values[savedValue.key] ?: return@fold restoredState
@@ -248,7 +248,7 @@ class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
             }
         }
 
-    private fun <T> EmaSavedValue<S, T>.restore(state: S, value: String): S =
+    private fun <T> EmaBackupValue<S, T>.restore(state: S, value: String): S =
         codec.decode(value)?.let { restore(state, it) } ?: state
 
     /**

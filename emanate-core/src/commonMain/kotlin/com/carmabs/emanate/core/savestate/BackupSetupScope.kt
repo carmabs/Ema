@@ -20,7 +20,7 @@ import com.carmabs.emanate.core.state.EmaState
 @EmaSourceDsl
 class BackupSetupScope<S : EmaState> internal constructor(private val guard: SetupGuard) {
 
-    internal var savedValueList: List<EmaSavedValue<S, *>> = emptyList()
+    internal var savedValueList: List<EmaBackupValue<S, *>> = emptyList()
         private set
 
     /**
@@ -28,7 +28,7 @@ class BackupSetupScope<S : EmaState> internal constructor(private val guard: Set
      *
      * @throws IllegalArgumentException if a key is already saved
      */
-    fun add(vararg savedValue: EmaSavedValue<S, *>) {
+    fun add(vararg savedValue: EmaBackupValue<S, *>) {
         guard.checkNotBuilt()
         savedValue.forEach { value ->
             require(savedValueList.none { it.key == value.key }) { "The key ${value.key} is already saved" }
@@ -39,7 +39,7 @@ class BackupSetupScope<S : EmaState> internal constructor(private val guard: Set
     /**
      * Adds a saved value already created.
      */
-    operator fun EmaSavedValue<S, *>.unaryPlus() {
+    operator fun EmaBackupValue<S, *>.unaryPlus() {
         add(this)
     }
 
@@ -61,7 +61,7 @@ class BackupSetupScope<S : EmaState> internal constructor(private val guard: Set
      * @param save returns the value to save from the state, or null to save nothing
      * @param restore returns the state with the saved value restored
      */
-    fun <T> add(key: String, codec: EmaSavedCodec<T>, save: S.() -> T?, restore: S.(value: T) -> S) {
+    fun <T> add(key: String, codec: EmaBackupCodec<T>, save: S.() -> T?, restore: S.(value: T) -> S) {
         add(savedValueOf(key, codec, save, restore))
     }
 }

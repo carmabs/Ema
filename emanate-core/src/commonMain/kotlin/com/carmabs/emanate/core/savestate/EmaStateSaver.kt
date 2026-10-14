@@ -83,5 +83,5 @@ class EmaStateSaver<S : EmaState>(private val source: EmaSource<S, *, *>, privat
         }
     }
 
-    private fun <T> EmaSavedValue<S, T>.encode(state: S): String? = save(state)?.let(codec::encode)
+    private fun <T> EmaBackupValue<S, T>.encode(state: S): String? = save(state)?.let(codec::encode)
 }

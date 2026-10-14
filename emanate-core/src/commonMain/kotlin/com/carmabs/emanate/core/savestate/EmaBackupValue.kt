@@ -19,7 +19,7 @@ import com.carmabs.emanate.core.viewmodel.EmaViewModel
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-interface EmaSavedValue<S : EmaState, T> {
+interface EmaBackupValue<S : EmaState, T> {
 
     /**
      * Identifies the value. It must be unique in the view model.
@@ -29,7 +29,7 @@ interface EmaSavedValue<S : EmaState, T> {
     /**
      * Converts the value to the text kept by the store, and back.
      */
-    val codec: EmaSavedCodec<T>
+    val codec: EmaBackupCodec<T>
 
     /**
      * Returns the value to save from [state], or null to save nothing. It is called with every new state, and the
@@ -53,7 +53,7 @@ fun <S : EmaState> savedValueOf(
     key: String,
     save: S.() -> String?,
     restore: S.(value: String) -> S
-): EmaSavedValue<S, String> = savedValueOf(key, EmaSavedCodec.Text, save, restore)
+): EmaBackupValue<S, String> = savedValueOf(key, EmaBackupCodec.Text, save, restore)
 
 /**
  * Creates a saved value of type [T], converted to text with [codec].
@@ -63,14 +63,14 @@ fun <S : EmaState> savedValueOf(
  */
 fun <S : EmaState, T> savedValueOf(
     key: String,
-    codec: EmaSavedCodec<T>,
+    codec: EmaBackupCodec<T>,
     save: S.() -> T?,
     restore: S.(value: T) -> S
-): EmaSavedValue<S, T> = object : EmaSavedValue<S, T> {
+): EmaBackupValue<S, T> = object : EmaBackupValue<S, T> {
 
     override val key: String = key
 
-    override val codec: EmaSavedCodec<T> = codec
+    override val codec: EmaBackupCodec<T> = codec
 
     override fun save(state: S): T? = state.save()
 
@@ -81,11 +81,11 @@ fun <S : EmaState, A : EmaAction, E : EmaEvent> EmaViewModel<S, A, E>.savedValue
     key: String,
     save: S.() -> String?,
     restore: S.(value: String) -> S
-): EmaSavedValue<S, String> = com.carmabs.emanate.core.savestate.savedValueOf(key, save, restore)
+): EmaBackupValue<S, String> = com.carmabs.emanate.core.savestate.savedValueOf(key, save, restore)
 
 fun <S : EmaState, A : EmaAction, E : EmaEvent, T> EmaViewModel<S, A, E>.savedValueOf(
     key: String,
-    codec: EmaSavedCodec<T>,
+    codec: EmaBackupCodec<T>,
     save: S.() -> T?,
     restore: S.(value: T) -> S
-): EmaSavedValue<S, T> = com.carmabs.emanate.core.savestate.savedValueOf(key, codec, save, restore)
+): EmaBackupValue<S, T> = com.carmabs.emanate.core.savestate.savedValueOf(key, codec, save, restore)

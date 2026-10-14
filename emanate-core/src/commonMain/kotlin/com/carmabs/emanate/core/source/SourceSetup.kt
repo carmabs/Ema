@@ -1,7 +1,7 @@
 package com.carmabs.emanate.core.source
 
 import com.carmabs.emanate.core.action.EmaAction
-import com.carmabs.emanate.core.savestate.EmaSavedValue
+import com.carmabs.emanate.core.savestate.EmaBackupValue
 import com.carmabs.emanate.core.source.middleware.EmaMiddleware
 import com.carmabs.emanate.core.source.reducer.EmaReducer
 import com.carmabs.emanate.core.source.sideeffect.SideEffect
@@ -26,7 +26,7 @@ class SourceSetup<S : EmaState, A : EmaAction, E : EmaEvent> internal constructo
     internal val reducers: List<EmaReducer<S, *>>,
     internal val sideEffects: List<SideEffect<S, A, E, *>>,
     internal val broadcastListeners: List<KClass<out EmaAction>>,
-    internal val savedValues: List<EmaSavedValue<S, *>>
+    internal val savedValues: List<EmaBackupValue<S, *>>
 )
 
 /**

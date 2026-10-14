@@ -59,13 +59,13 @@ private class MemoryStore(initialValues: Map<String, String> = emptyMap()) : Ema
 /**
  * Saves an enum by its name. A name that doesn't exist anymore isn't restored.
  */
-private object PlanCodec : EmaSavedCodec<Plan> {
+private object PlanCodec : EmaBackupCodec<Plan> {
     override fun encode(value: Plan): String = value.name
 
     override fun decode(value: String): Plan? = Plan.entries.find { it.name == value }
 }
 
-private object IntCodec : EmaSavedCodec<Int> {
+private object IntCodec : EmaBackupCodec<Int> {
     override fun encode(value: Int): String = value.toString()
 
     override fun decode(value: String): Int? = value.toIntOrNull()
@@ -74,11 +74,11 @@ private object IntCodec : EmaSavedCodec<Int> {
 /**
  * Saved value implemented as a class, received in the constructor of the view model
  */
-private class AgeSavedValue(private val failRestore: Boolean = false) : EmaSavedValue<FormState, Int> {
+private class AgeSavedValue(private val failRestore: Boolean = false) : EmaBackupValue<FormState, Int> {
 
     override val key: String = "age"
 
-    override val codec: EmaSavedCodec<Int> = IntCodec
+    override val codec: EmaBackupCodec<Int> = IntCodec
 
     override fun save(state: FormState): Int = state.age
 
@@ -90,7 +90,7 @@ private class AgeSavedValue(private val failRestore: Boolean = false) : EmaSaved
 
 private class FormViewModel(
     dispatcher: CoroutineDispatcher,
-    private val ageSavedValue: EmaSavedValue<FormState, Int> = AgeSavedValue(),
+    private val ageSavedValue: EmaBackupValue<FormState, Int> = AgeSavedValue(),
     configuration: EmaConfiguration = Emanate.configuration
 ) : EmaViewModel<FormState, FormAction, EmaEvent.EMPTY>(FormState(), configuration, dispatcher, logger = null) {
 

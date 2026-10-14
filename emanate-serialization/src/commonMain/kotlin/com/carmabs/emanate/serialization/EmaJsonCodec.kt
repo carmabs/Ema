@@ -1,6 +1,6 @@
 package com.carmabs.emanate.serialization
 
-import com.carmabs.emanate.core.savestate.EmaSavedCodec
+import com.carmabs.emanate.core.savestate.EmaBackupCodec
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
@@ -17,7 +17,7 @@ import kotlinx.serialization.serializer
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-class EmaJsonCodec<T>(private val serializer: KSerializer<T>, private val format: Json = Json) : EmaSavedCodec<T> {
+class EmaJsonCodec<T>(private val serializer: KSerializer<T>, private val format: Json = Json) : EmaBackupCodec<T> {
 
     override fun encode(value: T): String = format.encodeToString(serializer, value)
 
@@ -36,7 +36,7 @@ class EmaJsonCodec<T>(private val serializer: KSerializer<T>, private val format
  *
  * @param format encodes and decodes the value. By default the one of kotlinx.serialization.
  */
-inline fun <reified T> json(format: Json = Json): EmaSavedCodec<T> = EmaJsonCodec(serializer<T>(), format)
+inline fun <reified T> json(format: Json = Json): EmaBackupCodec<T> = EmaJsonCodec(serializer<T>(), format)
 
 /**
  * Saves a value of type [T] in JSON with [serializer], for the types whose serializer can't be found from the type,
@@ -44,4 +44,4 @@ inline fun <reified T> json(format: Json = Json): EmaSavedCodec<T> = EmaJsonCode
  *
  * @param format encodes and decodes the value. By default the one of kotlinx.serialization.
  */
-fun <T> json(serializer: KSerializer<T>, format: Json = Json): EmaSavedCodec<T> = EmaJsonCodec(serializer, format)
+fun <T> json(serializer: KSerializer<T>, format: Json = Json): EmaBackupCodec<T> = EmaJsonCodec(serializer, format)

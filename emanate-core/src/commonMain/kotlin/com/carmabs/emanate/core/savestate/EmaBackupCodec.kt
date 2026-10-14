@@ -13,7 +13,7 @@ package com.carmabs.emanate.core.savestate
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-interface EmaSavedCodec<T> {
+interface EmaBackupCodec<T> {
 
     /**
      * Returns the text saved for [value].
@@ -29,7 +29,7 @@ interface EmaSavedCodec<T> {
     /**
      * Saves text as it is.
      */
-    data object Text : EmaSavedCodec<String> {
+    data object Text : EmaBackupCodec<String> {
 
         override fun encode(value: String): String = value
 
