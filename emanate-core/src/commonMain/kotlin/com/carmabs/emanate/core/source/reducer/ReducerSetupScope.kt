@@ -19,7 +19,7 @@ import kotlin.reflect.KClass
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
 @EmaSourceDsl
-class ReducerListScope<S : EmaState> internal constructor(private val guard: SetupGuard) {
+class ReducerSetupScope<S : EmaState> internal constructor(private val guard: SetupGuard) {
 
     internal var reducerList: List<EmaReducer<S, *>> = emptyList()
         private set

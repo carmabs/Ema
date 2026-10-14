@@ -21,7 +21,7 @@ import kotlin.time.Duration
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
 @EmaSourceDsl
-class SideEffectListScope<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
+class SideEffectSetupScope<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
     private val guard: SetupGuard
 ) {
 

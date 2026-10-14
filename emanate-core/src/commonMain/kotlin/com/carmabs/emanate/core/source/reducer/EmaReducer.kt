@@ -41,7 +41,7 @@ fun <S : EmaState, F : EmaAction> reducerOf(
     override fun ReducerScope<S>.reduce(action: F): S = reduceAction(action)
 }
 
-fun <S : EmaState, F : EmaAction> ReducerListScope<S>.reducerOf(
+fun <S : EmaState, F : EmaAction> ReducerSetupScope<S>.reducerOf(
     actionType: KClass<F>,
     reduceAction: ReducerScope<S>.(F) -> S
 ): EmaReducer<S, F> = com.carmabs.emanate.core.source.reducer.reducerOf(actionType, reduceAction)

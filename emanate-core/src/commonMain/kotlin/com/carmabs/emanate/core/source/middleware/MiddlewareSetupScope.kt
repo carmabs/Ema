@@ -19,7 +19,7 @@ import kotlin.reflect.KClass
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
 @EmaSourceDsl
-class MiddlewareListScope<S : EmaState, A : EmaAction> internal constructor(private val guard: SetupGuard) {
+class MiddlewareSetupScope<S : EmaState, A : EmaAction> internal constructor(private val guard: SetupGuard) {
 
     internal var middlewareList: List<EmaMiddleware<S, A, *>> = emptyList()
         private set

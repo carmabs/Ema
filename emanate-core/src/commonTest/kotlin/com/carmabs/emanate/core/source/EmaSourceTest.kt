@@ -1,7 +1,7 @@
 package com.carmabs.emanate.core.source
 
 import com.carmabs.emanate.core.action.EmaAction
-import com.carmabs.emanate.core.source.reducer.ReducerListScope
+import com.carmabs.emanate.core.source.reducer.ReducerSetupScope
 import com.carmabs.emanate.core.source.reducer.reducerOf
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
@@ -118,20 +118,20 @@ class EmaSourceTest {
     @Test
     fun `the source can't be configured after setup`() = runTest {
         lateinit var setupScope: SourceSetupScope<CounterState, CounterAction, CounterEvent>
-        lateinit var reducerListScope: ReducerListScope<CounterState>
+        lateinit var reducerSetupScope: ReducerSetupScope<CounterState>
         val source = EmaSource<CounterState, CounterAction, CounterEvent>(
             CounterState(),
             dispatcher = UnconfinedTestDispatcher(testScheduler)
         ) {
             setupScope = this
-            reducers { reducerListScope = this }
+            reducers { reducerSetupScope = this }
         }
 
         assertFailsWith<IllegalStateException> {
             setupScope.reducers { }
         }
         assertFailsWith<IllegalStateException> {
-            reducerListScope.add<CounterAction> { state }
+            reducerSetupScope.add<CounterAction> { state }
         }
         source.close()
     }

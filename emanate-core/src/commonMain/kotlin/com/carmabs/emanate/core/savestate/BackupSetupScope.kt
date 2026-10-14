@@ -18,7 +18,7 @@ import com.carmabs.emanate.core.state.EmaState
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
 @EmaSourceDsl
-class BackupScope<S : EmaState> internal constructor(private val guard: SetupGuard) {
+class BackupSetupScope<S : EmaState> internal constructor(private val guard: SetupGuard) {
 
     internal var savedValueList: List<EmaSavedValue<S, *>> = emptyList()
         private set

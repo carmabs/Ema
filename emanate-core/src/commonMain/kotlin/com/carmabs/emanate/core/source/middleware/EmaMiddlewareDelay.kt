@@ -48,7 +48,7 @@ fun <S : EmaState, A : EmaAction, F : EmaAction> middlewareDelayOf(
     }
 }
 
-fun <S : EmaState, A : EmaAction, F : EmaAction> MiddlewareListScope<S, A>.middlewareDelayOf(
+fun <S : EmaState, A : EmaAction, F : EmaAction> MiddlewareSetupScope<S, A>.middlewareDelayOf(
     actionType: KClass<F>,
     delay: Duration,
     onActionDelayed: (NextAfterScope<S, A>.(F) -> Unit)? = null

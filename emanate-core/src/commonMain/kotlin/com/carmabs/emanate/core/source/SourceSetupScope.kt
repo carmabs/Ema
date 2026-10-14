@@ -1,10 +1,10 @@
 package com.carmabs.emanate.core.source
 
 import com.carmabs.emanate.core.action.EmaAction
-import com.carmabs.emanate.core.savestate.BackupScope
-import com.carmabs.emanate.core.source.middleware.MiddlewareListScope
-import com.carmabs.emanate.core.source.reducer.ReducerListScope
-import com.carmabs.emanate.core.source.sideeffect.SideEffectListScope
+import com.carmabs.emanate.core.savestate.BackupSetupScope
+import com.carmabs.emanate.core.source.middleware.MiddlewareSetupScope
+import com.carmabs.emanate.core.source.reducer.ReducerSetupScope
+import com.carmabs.emanate.core.source.sideeffect.SideEffectSetupScope
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
 
@@ -26,46 +26,46 @@ class SourceSetupScope<S : EmaState, A : EmaAction, E : EmaEvent> internal const
 
     private val guard = SetupGuard()
 
-    private val middlewareListScope = MiddlewareListScope<S, A>(guard)
+    private val middlewareSetupScope = MiddlewareSetupScope<S, A>(guard)
 
-    private val reducerListScope = ReducerListScope<S>(guard)
+    private val reducerSetupScope = ReducerSetupScope<S>(guard)
 
-    private val sideEffectListScope = SideEffectListScope<S, A, E>(guard)
+    private val sideEffectSetupScope = SideEffectSetupScope<S, A, E>(guard)
 
-    private val broadcastListScope = BroadcastListScope(guard)
+    private val broadcastSetupScope = BroadcastSetupScope(guard)
 
-    private val savedStateListScope = BackupScope<S>(guard)
+    private val backupSetupScope = BackupSetupScope<S>(guard)
 
     /**
      * Adds middlewares. They handle the actions in the order they are added, before the reducers.
      */
-    fun middlewares(block: MiddlewareListScope<S, A>.() -> Unit) {
+    fun middlewares(block: MiddlewareSetupScope<S, A>.() -> Unit) {
         guard.checkNotBuilt()
-        middlewareListScope.block()
+        middlewareSetupScope.block()
     }
 
     /**
      * Adds reducers. Each one only receives the actions of its type, in the order they are added.
      */
-    fun reducers(block: ReducerListScope<S>.() -> Unit) {
+    fun reducers(block: ReducerSetupScope<S>.() -> Unit) {
         guard.checkNotBuilt()
-        reducerListScope.block()
+        reducerSetupScope.block()
     }
 
     /**
      * Adds side effects. Each one runs asynchronously after the reducers of the actions of its type.
      */
-    fun sideEffects(block: SideEffectListScope<S, A, E>.() -> Unit) {
+    fun sideEffects(block: SideEffectSetupScope<S, A, E>.() -> Unit) {
         guard.checkNotBuilt()
-        sideEffectListScope.block()
+        sideEffectSetupScope.block()
     }
 
     /**
      * Adds the types of the broadcast actions the source listens to.
      */
-    fun broadcasts(block: BroadcastListScope.() -> Unit) {
+    fun broadcasts(block: BroadcastSetupScope.() -> Unit) {
         guard.checkNotBuilt()
-        broadcastListScope.block()
+        broadcastSetupScope.block()
     }
 
     /**
@@ -78,9 +78,9 @@ class SourceSetupScope<S : EmaState, A : EmaAction, E : EmaEvent> internal const
      * on its own saves them with an [com.carmabs.emanate.core.savestate.EmaStateSaver]. Without a store nothing is
      * saved.
      */
-    fun backup(block: BackupScope<S>.() -> Unit) {
+    fun backup(block: BackupSetupScope<S>.() -> Unit) {
         guard.checkNotBuilt()
-        savedStateListScope.block()
+        backupSetupScope.block()
     }
 
     /**
@@ -89,11 +89,11 @@ class SourceSetupScope<S : EmaState, A : EmaAction, E : EmaEvent> internal const
     internal fun build(): SourceSetup<S, A, E> {
         guard.build()
         return SourceSetup(
-            middlewares = middlewareListScope.middlewareList,
-            reducers = reducerListScope.reducerList,
-            sideEffects = sideEffectListScope.sideEffectList,
-            broadcastListeners = broadcastListScope.broadcastListenerList,
-            savedValues = savedStateListScope.savedValueList
+            middlewares = middlewareSetupScope.middlewareList,
+            reducers = reducerSetupScope.reducerList,
+            sideEffects = sideEffectSetupScope.sideEffectList,
+            broadcastListeners = broadcastSetupScope.broadcastListenerList,
+            savedValues = backupSetupScope.savedValueList
         )
     }
 }
