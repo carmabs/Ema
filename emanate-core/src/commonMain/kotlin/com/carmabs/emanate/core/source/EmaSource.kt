@@ -36,7 +36,6 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -100,7 +99,7 @@ class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
     container: Any?,
     private val eventDispatcher: EventDispatcher<E>,
     internal val configuration: EmaConfiguration
-) : EmaEventConsumer<E>,
+) : EmaEventConsumer<E> by eventDispatcher,
     EmaActionDispatcher<A> {
 
     /**
@@ -376,10 +375,6 @@ class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
             observers.forEach { it.onEvent(event) }
         }
     }
-
-    final override fun consumeEvent(event: E) = eventDispatcher.consumeEvent(event)
-
-    final override val eventFlow: Flow<List<E>> = eventDispatcher.eventFlow
 
     private fun putJob(key: Any, job: Job) {
         updateJobs { it + (key to job) }
