@@ -179,7 +179,7 @@ class EmaViewModelTest {
         runCurrent()
 
         assertEquals(TestState(count = 1, text = "text"), viewModel.stateFlow.value)
-        viewModel.onCleared()
+        viewModel.close()
     }
 
     @Test
@@ -201,7 +201,7 @@ class EmaViewModelTest {
         advanceTimeBy(1500)
         runCurrent()
         assertEquals(1, viewModel.stateFlow.value.count)
-        viewModel.onCleared()
+        viewModel.close()
     }
 
     @Test
@@ -214,7 +214,7 @@ class EmaViewModelTest {
 
         assertEquals("loaded", viewModel.stateFlow.value.text)
         assertEquals(listOf(TestEvent.Loaded), viewModel.eventFlow.first())
-        viewModel.onCleared()
+        viewModel.close()
     }
 
     @Test
@@ -230,7 +230,7 @@ class EmaViewModelTest {
         runCurrent()
 
         assertEquals(listOf(TestEvent.Loaded), viewModel.eventFlow.first())
-        viewModel.onCleared()
+        viewModel.close()
     }
 
     @Test
@@ -255,7 +255,7 @@ class EmaViewModelTest {
             viewModel.received
         )
         assertEquals(TestState(text = "initial", resumed = true), viewModel.stateFlow.value)
-        viewModel.onCleared()
+        viewModel.close()
     }
 
     @Test
@@ -267,7 +267,7 @@ class EmaViewModelTest {
         runCurrent()
 
         assertEquals("first", viewModel.stateFlow.value.text)
-        viewModel.onCleared()
+        viewModel.close()
     }
 
     @Test
@@ -278,7 +278,7 @@ class EmaViewModelTest {
         runCurrent()
 
         assertEquals(listOf("initializer ${EmaInitializer.EMPTY}"), viewModel.received)
-        viewModel.onCleared()
+        viewModel.close()
     }
 
     @Test
@@ -286,7 +286,7 @@ class EmaViewModelTest {
         val viewModel = LifecycleViewModel(testDispatcher())
 
         viewModel.onResumeView()
-        viewModel.onCleared()
+        viewModel.close()
         runCurrent()
 
         assertEquals(listOf("Resumed", "Destroyed"), viewModel.launched)
@@ -299,13 +299,13 @@ class EmaViewModelTest {
         val closing = ClosingViewModel(testDispatcher(), 1.seconds)
         closing.onCreated(null)
 
-        closing.onCleared()
+        closing.close()
         advanceTimeBy(1500)
         runCurrent()
 
         assertEquals(listOf("closed"), closing.finished)
         assertEquals("closed", receiver.stateFlow.value.text)
-        receiver.onCleared()
+        receiver.close()
     }
 
     @Test
@@ -330,7 +330,7 @@ class EmaViewModelTest {
         }
         viewModel.onCreated(null)
 
-        viewModel.onCleared()
+        viewModel.close()
         advanceTimeBy(1500)
         runCurrent()
 
@@ -342,7 +342,7 @@ class EmaViewModelTest {
         val closing = ClosingViewModel(testDispatcher(), 3.seconds, EmaConfiguration(closeTimeout = 2.seconds))
         closing.onCreated(null)
 
-        closing.onCleared()
+        closing.close()
         advanceUntilIdle()
 
         assertTrue(closing.finished.isEmpty())
@@ -368,7 +368,7 @@ class EmaViewModelTest {
 
         assertTrue(logs.any { "printed Increment" in it })
         assertEquals(2, logs.count { "printed TestState" in it })
-        viewModel.onCleared()
+        viewModel.close()
     }
 
     @Test
@@ -391,7 +391,7 @@ class EmaViewModelTest {
         // Run by the test dispatcher of the configuration and logged by its logger, not by the ones of Emanate
         assertEquals(1, viewModel.stateFlow.value.count)
         assertTrue(logs.isNotEmpty())
-        viewModel.onCleared()
+        viewModel.close()
     }
 
     @Test
@@ -402,7 +402,7 @@ class EmaViewModelTest {
             // The source is created now, with the configuration of the view model: 5 seconds
             closing.onCreated(null)
 
-            closing.onCleared()
+            closing.close()
             advanceUntilIdle()
 
             assertEquals(listOf("closed"), closing.finished)
@@ -416,7 +416,7 @@ class EmaViewModelTest {
         val closing = ClosingViewModel(testDispatcher(), 10.seconds)
         closing.onCreated(null)
 
-        closing.onCleared()
+        closing.close()
         advanceUntilIdle()
 
         assertTrue(closing.finished.isEmpty())
@@ -428,7 +428,7 @@ class EmaViewModelTest {
         viewModel.dispatch(TestAction.Increment)
         runCurrent()
 
-        viewModel.onCleared()
+        viewModel.close()
         viewModel.dispatch(TestAction.Increment)
         runCurrent()
 
@@ -455,7 +455,7 @@ class EmaViewModelTest {
         viewModel.dispatch(TestAction.Increment)
         runCurrent()
         assertTrue(viewModel.shouldRenderState)
-        viewModel.onCleared()
+        viewModel.close()
     }
 
     @Test
@@ -469,7 +469,7 @@ class EmaViewModelTest {
         assertEquals(setOf("TestViewModel"), logs.map { it.first }.toSet())
         assertTrue(logs.any { "Increment" in it.second })
         assertTrue(logs.any { "count=1" in it.second })
-        viewModel.onCleared()
+        viewModel.close()
     }
 
     @Test
@@ -481,7 +481,7 @@ class EmaViewModelTest {
         runCurrent()
 
         assertEquals(setOf("EMA_TestViewModel"), tags)
-        viewModel.onCleared()
+        viewModel.close()
     }
 
     @Test
@@ -499,7 +499,7 @@ class EmaViewModelTest {
         runCurrent()
         val stateAfter = logs.dropWhile { "State after apply action" !in it }
         assertTrue(stateAfter.any { "count=1" in it })
-        viewModel.onCleared()
+        viewModel.close()
     }
 
     @Test
@@ -513,8 +513,8 @@ class EmaViewModelTest {
         runCurrent()
 
         assertEquals("result", receiver.stateFlow.value.text)
-        sender.onCleared()
-        receiver.onCleared()
+        sender.close()
+        receiver.close()
     }
 
     @Test
@@ -524,11 +524,11 @@ class EmaViewModelTest {
         receiver.onCreated()
         sender.onCreated()
 
-        receiver.onCleared()
+        receiver.close()
         sender.dispatch(TestAction.Update("result"))
         runCurrent()
 
         assertEquals("", receiver.stateFlow.value.text)
-        sender.onCleared()
+        sender.close()
     }
 }

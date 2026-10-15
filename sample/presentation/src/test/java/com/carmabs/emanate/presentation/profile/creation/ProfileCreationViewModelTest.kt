@@ -34,7 +34,7 @@ class ProfileCreationViewModelTest {
         viewModel.dispatch(ProfileCreationAction.UserSurnameWritten("García"))
         viewModel.dispatch(ProfileCreationAction.OnBack)
         advanceUntilIdle()
-        viewModel.onCleared()
+        viewModel.close()
 
         // The system kills the process: the screen is created again with the same initializer and the saved values
         val restoredViewModel = ProfileCreationViewModel(ProfileCreationState.DEFAULT).withStateStore(store)
@@ -48,6 +48,6 @@ class ProfileCreationViewModelTest {
         )
         // The dialog isn't saved, so it is closed
         recorder.assertState(ProfileCreationState(Role.ADMIN, "Ana", "García"))
-        restoredViewModel.onCleared()
+        restoredViewModel.close()
     }
 }

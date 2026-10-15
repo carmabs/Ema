@@ -65,7 +65,7 @@ class TestStateStoreTest {
         advanceUntilIdle()
 
         assertEquals(mapOf("query" to "ema"), store.values)
-        viewModel.onCleared()
+        viewModel.close()
     }
 
     @Test
@@ -75,7 +75,7 @@ class TestStateStoreTest {
         first.onCreated(null)
         first.dispatch(SearchAction.QueryWritten("ema"))
         advanceUntilIdle()
-        first.onCleared()
+        first.close()
 
         val second = SearchViewModel().withStateStore(store)
         val recorder = second.record()
@@ -84,7 +84,7 @@ class TestStateStoreTest {
 
         recorder.assertActions(EmaInitializer.EMPTY, restoreStateOf("query" to "ema"))
         recorder.assertState(SearchState(query = "ema", results = listOf("restored")))
-        second.onCleared()
+        second.close()
     }
 
     @Test
@@ -124,6 +124,6 @@ class TestStateStoreTest {
         viewModel.onCreated(null)
 
         assertFailsWith<IllegalStateException> { viewModel.withStateStore(testStateStore()) }
-        viewModel.onCleared()
+        viewModel.close()
     }
 }

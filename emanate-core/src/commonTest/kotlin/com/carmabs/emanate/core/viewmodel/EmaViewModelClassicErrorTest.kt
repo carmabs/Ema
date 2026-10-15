@@ -79,7 +79,7 @@ class EmaViewModelClassicErrorTest {
         assertEquals("action Broken", errors.single().reflection.methodName)
         // The state is changed imperatively, so the change made before the error is kept
         assertEquals(BrokenState(count = 11), viewModel.stateFlow.value)
-        viewModel.onCleared()
+        viewModel.close()
     }
 
     @Test
@@ -90,7 +90,7 @@ class EmaViewModelClassicErrorTest {
 
         assertEquals(listOf("onStateCreated"), errors.map { it.reflection.methodName })
         assertEquals("BrokenViewModel", errors.single().reflection.containerClassName)
-        viewModel.onCleared()
+        viewModel.close()
     }
 
     @Test
@@ -104,7 +104,7 @@ class EmaViewModelClassicErrorTest {
 
         assertEquals(listOf("ping 2"), viewModel.received)
         assertEquals("broadcast listener of Ping", errors.last().reflection.methodName)
-        viewModel.onCleared()
+        viewModel.close()
     }
 
     @Test
@@ -118,7 +118,7 @@ class EmaViewModelClassicErrorTest {
         runCurrent()
 
         assertEquals(listOf("ping 2"), viewModel.received)
-        viewModel.onCleared()
+        viewModel.close()
     }
 
     @Test
@@ -128,6 +128,6 @@ class EmaViewModelClassicErrorTest {
         val exception = assertFailsWith<IllegalStateException> { viewModel.dispatch(BrokenAction.Broken) }
 
         assertEquals("broken action", exception.message)
-        viewModel.onCleared()
+        viewModel.close()
     }
 }

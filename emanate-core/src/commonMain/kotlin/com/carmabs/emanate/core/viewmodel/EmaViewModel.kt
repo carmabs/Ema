@@ -218,11 +218,11 @@ abstract class EmaViewModel<S : EmaState, A : EmaAction, E : EmaEvent>(
     }
 
     /**
-     * Called when the view model is destroyed. The source processes [EmaLifecycle.Destroyed] after the pending actions
-     * and then it is closed: its work is cancelled, except its onClose blocks and the side effects that survive close,
+     * Closes the view model when its screen is destroyed. The source processes [EmaLifecycle.Destroyed] after the pending
+     * actions and then it is closed: its work is cancelled, except its onClose blocks and the side effects that survive close,
      * which can finish.
      */
-    final override fun onCleared() {
+    final override fun close() {
         emaSource.dispatch(EmaLifecycle.Destroyed)
         emaSource.close()
     }

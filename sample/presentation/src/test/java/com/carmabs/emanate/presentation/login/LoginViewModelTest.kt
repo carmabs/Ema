@@ -92,7 +92,7 @@ class LoginViewModelTest {
 
         recorder.assertState { !it.isLoading && it.overlap == null }
         recorder.assertEvents(LoginEvent.Message(admin.name), LoginEvent.LoginSuccess(admin))
-        viewModel.onCleared()
+        viewModel.close()
     }
 
     @Test
@@ -142,9 +142,9 @@ class LoginViewModelTest {
         // The profile screen broadcasts the user to the home screen, which broadcasts it to the login screen
         assertEquals(listOf(friend), homeViewModel.stateFlow.value.userList)
         recorder.assertEvents(LoginEvent.LastUserAdded(friend))
-        profileCreationViewModel.onCleared()
-        homeViewModel.onCleared()
-        viewModel.onCleared()
+        profileCreationViewModel.close()
+        homeViewModel.close()
+        viewModel.close()
     }
 
     @Test

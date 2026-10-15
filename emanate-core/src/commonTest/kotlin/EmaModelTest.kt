@@ -234,7 +234,7 @@ class EmaModelTest {
         viewModel.onResumeView()
         viewModel.onPauseView()
         viewModel.onStopView()
-        viewModel.onCleared()
+        viewModel.close()
         viewModel.consumeEvent(EmaEvent.EMPTY)
         assertEquals(EmaState.EMPTY, viewModel.initialState)
         assertEquals(EmaState.EMPTY, viewModel.stateFlow.value)

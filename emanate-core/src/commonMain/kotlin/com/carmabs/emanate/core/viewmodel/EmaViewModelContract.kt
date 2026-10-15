@@ -40,7 +40,11 @@ interface EmaViewModelContract<S : EmaState, E : EmaEvent> : EmaEventConsumer<E>
 
     fun onStopView()
 
-    fun onCleared()
+    /**
+     * Closes the view model when its screen is destroyed: its work is cancelled. On Android, EmaAndroidViewModel calls
+     * it when it is cleared.
+     */
+    fun close()
 
     val stateFlow: StateFlow<S>
 
@@ -66,6 +70,6 @@ interface EmaViewModelContract<S : EmaState, E : EmaEvent> : EmaEventConsumer<E>
 
         override fun onStopView() = Unit
 
-        override fun onCleared() = Unit
+        override fun close() = Unit
     }
 }

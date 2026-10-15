@@ -258,9 +258,9 @@ class EmaViewModelActionTest {
     }
 
     @Test
-    fun `onCleared cancels the scope and calls onDestroy`() = runTest {
+    fun `close cancels the scope and calls onDestroy`() = runTest {
         val viewModel = createViewModel()
-        viewModel.onCleared()
+        viewModel.close()
         assertFalse(viewModel.currentScope().coroutineContext[kotlinx.coroutines.Job]!!.isActive)
         assertEquals(listOf("destroyed"), viewModel.hooks)
     }
@@ -371,8 +371,8 @@ class EmaClassicBroadcastTest {
 
         assertEquals(listOf("Ana"), firstReceiver.received)
         assertEquals(listOf("Ana"), secondReceiver.received)
-        firstReceiver.onCleared()
-        secondReceiver.onCleared()
+        firstReceiver.close()
+        secondReceiver.close()
     }
 
     @Test
@@ -382,7 +382,7 @@ class EmaClassicBroadcastTest {
         val receiver = ReceiverViewModel(newDispatcher()).apply { onCreated() }
 
         assertTrue(receiver.received.isEmpty())
-        receiver.onCleared()
+        receiver.close()
     }
 
     @Test
@@ -395,8 +395,8 @@ class EmaClassicBroadcastTest {
 
         assertEquals(listOf("Ana"), firstReceiver.received)
         assertTrue(secondReceiver.received.isEmpty())
-        firstReceiver.onCleared()
-        secondReceiver.onCleared()
+        firstReceiver.close()
+        secondReceiver.close()
     }
 
     @Test
@@ -408,13 +408,13 @@ class EmaClassicBroadcastTest {
         val receiver = ReceiverViewModel(newDispatcher()).apply { onCreated() }
 
         assertEquals(listOf("Luis"), receiver.received)
-        receiver.onCleared()
+        receiver.close()
     }
 
     @Test
     fun `the receiver stops listening when it is cleared`() = runTest {
         val receiver = ReceiverViewModel(newDispatcher()).apply { onCreated() }
-        receiver.onCleared()
+        receiver.close()
 
         SenderViewModel(newDispatcher()).send("Ana")
 

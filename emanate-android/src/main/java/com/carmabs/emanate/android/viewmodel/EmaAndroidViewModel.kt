@@ -33,7 +33,7 @@ open class EmaAndroidViewModel<S : EmaState, E : EmaEvent>(
 
     @CallSuper
     override fun onCleared() {
-        emaViewModel.onCleared()
+        emaViewModel.close()
         super.onCleared()
     }
 }

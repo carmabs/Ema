@@ -176,7 +176,7 @@ class EmaViewModelSavedStateTest {
             store.writes
         )
         assertEquals(mapOf("name" to "Ana", "age" to "30", "plan" to "PRO"), store.values)
-        viewModel.onCleared()
+        viewModel.close()
     }
 
     @Test
@@ -195,7 +195,7 @@ class EmaViewModelSavedStateTest {
             listOf<Pair<String, String?>>("name" to "Ana", "name" to null),
             store.writes.filter { it.first == "name" }
         )
-        viewModel.onCleared()
+        viewModel.close()
     }
 
     @Test
@@ -218,7 +218,7 @@ class EmaViewModelSavedStateTest {
             FormState(name = "Ana", age = 30, plan = Plan.PRO, role = "admin", greeting = "Welcome back Ana"),
             viewModel.stateFlow.value
         )
-        viewModel.onCleared()
+        viewModel.close()
     }
 
     @Test
@@ -232,7 +232,7 @@ class EmaViewModelSavedStateTest {
 
         assertTrue(store.writes.isEmpty())
         assertEquals(mapOf("name" to "Ana", "age" to "30", "plan" to "PRO"), store.values)
-        viewModel.onCleared()
+        viewModel.close()
     }
 
     @Test
@@ -244,7 +244,7 @@ class EmaViewModelSavedStateTest {
         first.dispatch(FormAction.NameWritten("Ana"))
         first.dispatch(FormAction.AgeWritten(30))
         runCurrent()
-        first.onCleared()
+        first.close()
 
         val second = FormViewModel(testDispatcher())
         second.attachStateStore(store)
@@ -255,7 +255,7 @@ class EmaViewModelSavedStateTest {
             FormState(name = "Ana", age = 30, role = "admin", greeting = "Welcome back Ana"),
             second.stateFlow.value
         )
-        second.onCleared()
+        second.close()
     }
 
     @Test
@@ -269,7 +269,7 @@ class EmaViewModelSavedStateTest {
 
         assertEquals(FormState(greeting = "Welcome back "), viewModel.stateFlow.value)
         assertEquals(mapOf("age" to "0", "plan" to "FREE"), store.values)
-        viewModel.onCleared()
+        viewModel.close()
     }
 
     @Test
@@ -281,7 +281,7 @@ class EmaViewModelSavedStateTest {
         runCurrent()
 
         assertEquals(listOf<EmaAction>(EmaInitializer.EMPTY), viewModel.received)
-        viewModel.onCleared()
+        viewModel.close()
     }
 
     @Test
@@ -293,7 +293,7 @@ class EmaViewModelSavedStateTest {
         runCurrent()
 
         assertEquals(FormState(name = "Ana"), viewModel.stateFlow.value)
-        viewModel.onCleared()
+        viewModel.close()
     }
 
     @Test
@@ -308,7 +308,7 @@ class EmaViewModelSavedStateTest {
 
         assertEquals(FormState(), viewModel.stateFlow.value)
         assertEquals("action EmaRestoreState", errors.single().reflection.methodName)
-        viewModel.onCleared()
+        viewModel.close()
     }
 
     @Test
@@ -323,7 +323,7 @@ class EmaViewModelSavedStateTest {
 
         assertEquals(99, viewModel.stateFlow.value.age)
         assertEquals("7", store.values["age"])
-        viewModel.onCleared()
+        viewModel.close()
     }
 
     @Test
@@ -332,7 +332,7 @@ class EmaViewModelSavedStateTest {
         viewModel.attachStateStore(MemoryStore())
 
         assertFailsWith<IllegalStateException> { viewModel.attachStateStore(MemoryStore()) }
-        viewModel.onCleared()
+        viewModel.close()
     }
 
     @Test
@@ -341,7 +341,7 @@ class EmaViewModelSavedStateTest {
         viewModel.onCreated(null)
 
         assertFailsWith<IllegalStateException> { viewModel.attachStateStore(MemoryStore()) }
-        viewModel.onCleared()
+        viewModel.close()
     }
 
     @Test
@@ -355,7 +355,7 @@ class EmaViewModelSavedStateTest {
         runCurrent()
 
         assertTrue(store.writes.isEmpty())
-        viewModel.onCleared()
+        viewModel.close()
     }
 
     @Test

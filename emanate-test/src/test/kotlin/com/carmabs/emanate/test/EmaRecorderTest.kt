@@ -129,7 +129,7 @@ class EmaRecorderTest {
         val recorder = viewModel.record()
 
         viewModel.onResumeView()
-        viewModel.onCleared()
+        viewModel.close()
         advanceUntilIdle()
 
         recorder.assertActions(EmaLifecycle.Resumed, EmaLifecycle.Destroyed)

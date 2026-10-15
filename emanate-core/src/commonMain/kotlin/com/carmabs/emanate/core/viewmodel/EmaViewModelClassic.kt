@@ -201,7 +201,7 @@ abstract class EmaViewModelClassic<S : EmaState, E : EmaEvent>(
     private fun shouldThrowException() = configuration.errorPolicy is EmaErrorPolicy.Throw
 
     /**
-     * Method to override onCleared ViewModel method
+     * Called when the view model is closed
      */
     protected open fun onDestroy() = Unit
 
@@ -275,10 +275,9 @@ abstract class EmaViewModelClassic<S : EmaState, E : EmaEvent>(
     }
 
     /**
-     * Method called when the ViewModel is destroyed. It cancels all background pending tasks.
-     * Check call name for EmaAndroidView. It uses reflection to call this internal method
+     * Closes the view model when its screen is destroyed. It cancels all background pending tasks.
      */
-    final override fun onCleared() {
+    final override fun close() {
         scope.cancel()
         handlingErrors("onDestroy") { onDestroy() }
     }

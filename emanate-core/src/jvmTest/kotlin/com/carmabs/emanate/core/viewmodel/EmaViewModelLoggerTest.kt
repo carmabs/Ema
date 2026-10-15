@@ -56,7 +56,7 @@ class EmaViewModelLoggerTest {
             val viewModel = DefaultLoggerViewModel(UnconfinedTestDispatcher(testScheduler))
             viewModel.dispatch(IncrementAction)
             runCurrent()
-            viewModel.onCleared()
+            viewModel.close()
         } finally {
             System.setOut(systemOut)
         }
@@ -72,7 +72,7 @@ class EmaViewModelLoggerTest {
         val viewModel = DefaultLoggerViewModel(UnconfinedTestDispatcher(testScheduler))
         viewModel.dispatch(IncrementAction)
         runCurrent()
-        viewModel.onCleared()
+        viewModel.close()
 
         assertEquals(setOf("DefaultLoggerViewModel"), tags)
     }
@@ -87,7 +87,7 @@ class EmaViewModelLoggerTest {
             val viewModel = DefaultLoggerViewModel(UnconfinedTestDispatcher(testScheduler))
             viewModel.dispatch(IncrementAction)
             runCurrent()
-            viewModel.onCleared()
+            viewModel.close()
         } finally {
             System.setOut(systemOut)
         }

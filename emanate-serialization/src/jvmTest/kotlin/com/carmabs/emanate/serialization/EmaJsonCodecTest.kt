@@ -105,7 +105,7 @@ class EmaJsonCodecTest {
             mapOf("form" to """{"userName":"ana","rememberMe":true}""", "recentUsers" to """["ana"]"""),
             store.values
         )
-        viewModel.onCleared()
+        viewModel.close()
     }
 
     @Test
@@ -122,7 +122,7 @@ class EmaJsonCodecTest {
             LoginState(userName = "ana", rememberMe = true, recentUsers = listOf("ana", "luis")),
             viewModel.stateFlow.value
         )
-        viewModel.onCleared()
+        viewModel.close()
     }
 
     @Test
@@ -137,7 +137,7 @@ class EmaJsonCodecTest {
 
         assertEquals(LoginState(), viewModel.stateFlow.value)
         assertEquals(mapOf("form" to """{"userName":"","rememberMe":false}"""), store.values)
-        viewModel.onCleared()
+        viewModel.close()
     }
 
     @Test
