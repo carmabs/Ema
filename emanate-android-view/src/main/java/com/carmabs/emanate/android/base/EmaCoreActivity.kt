@@ -20,6 +20,7 @@ import com.carmabs.emanate.core.constants.INT_ZERO
 import com.carmabs.emanate.core.initializer.EmaInitializer
 import com.carmabs.emanate.core.initializer.EmaInitializerSerializer
 import com.carmabs.emanate.core.model.EmaBackHandlerStrategy
+import com.carmabs.emanate.core.savestate.EmaStateStore
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
 import com.carmabs.emanate.core.view.EmaViewModelTrigger
@@ -81,14 +82,19 @@ abstract class EmaCoreActivity<S : EmaState, VM : EmaViewModelContract<S, E>, E 
 
     protected open fun overrideDestinationInitializer(): EmaInitializer? = null
 
-    abstract fun provideViewModel(): VM
+    /**
+     * Creates the view model of the screen.
+     *
+     * @param store saves the values of the backup of the view model in the SavedStateHandle of the screen
+     */
+    abstract fun provideViewModel(store: EmaStateStore): VM
 
     override val coroutineScope: CoroutineScope
         get() = lifecycleScope
 
     @Suppress("UNCHECKED_CAST")
     override val viewModel: VM by lazy {
-        generateViewModel(provideViewModel()).emaViewModel as VM
+        generateViewModel(::provideViewModel).emaViewModel as VM
     }
 
     private var viewJob: MutableList<Job>? = null

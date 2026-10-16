@@ -32,6 +32,7 @@ import com.carmabs.emanate.compose.ui.EmaComposableScreen
 import com.carmabs.emanate.compose.ui.EmaComposableScreenContent
 import com.carmabs.emanate.core.action.EmaAction
 import com.carmabs.emanate.core.initializer.EmaInitializer
+import com.carmabs.emanate.core.savestate.EmaStateStore
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
 import com.carmabs.emanate.core.viewmodel.EmaViewModelContract
@@ -57,7 +58,7 @@ fun NavController.navigate(
 
 fun <S : EmaState, A : EmaAction, E : EmaEvent> NavGraphBuilder.createComposableScreen(
     screenContent: EmaComposableScreenContent<S, A, E>,
-    viewModel: () -> EmaViewModelContract<S, E>,
+    viewModel: (store: EmaStateStore) -> EmaViewModelContract<S, E>,
     routeId: String = screenContent::class.routeId,
     initializerSupport: EmaInitializerSupport? = null,
     saveStateManager: EmaSaveStateManager<S, E>? = null,
@@ -81,9 +82,7 @@ fun <S : EmaState, A : EmaAction, E : EmaEvent> NavGraphBuilder.createComposable
             // With backEntry.savedStateHandle data is rightly persisted
             val androidVm = EmaScreenProvider.provideComposableViewModel(
                 key = EmaScreenProvider.viewModelKey(screenContent),
-                viewModel = remember {
-                    viewModel.invoke()
-                },
+                viewModel = viewModel,
                 backEntry.savedStateHandle
             )
 

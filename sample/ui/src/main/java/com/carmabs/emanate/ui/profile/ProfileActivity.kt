@@ -60,17 +60,22 @@ class ProfileActivity : ComponentActivity() {
                         onEvent = {
                             navigator.handleProfileOnBoardingEvent(it)
                         },
-                        viewModel = {
+                        viewModel = { store ->
                             sampleViewModel(
                                 ProfileOnBoardingViewModel::class,
-                                ProfileOnBoardingActionViewModel::class
+                                ProfileOnBoardingActionViewModel::class,
+                                store
                             )
                         }
                     )
                     createComposableScreen(
                         screenContent = ProfileCreationScreenContent(),
-                        viewModel = {
-                            sampleViewModel(ProfileCreationViewModel::class, ProfileCreationActionViewModel::class)
+                        viewModel = { store ->
+                            sampleViewModel(
+                                ProfileCreationViewModel::class,
+                                ProfileCreationActionViewModel::class,
+                                store
+                            )
                         },
                         onEvent = {
                             navigator.handleProfileCreationEvent(it)

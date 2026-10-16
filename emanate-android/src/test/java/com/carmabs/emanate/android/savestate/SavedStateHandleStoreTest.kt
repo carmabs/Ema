@@ -9,6 +9,7 @@ import com.carmabs.emanate.android.viewmodel.EmaViewModelFactory
 import com.carmabs.emanate.core.action.EmaAction
 import com.carmabs.emanate.core.concurrency.EmaDispatchers
 import com.carmabs.emanate.core.model.EmaConfiguration
+import com.carmabs.emanate.core.savestate.EmaStateStore
 import com.carmabs.emanate.core.savestate.backupOf
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
@@ -28,7 +29,7 @@ private sealed interface NameAction : EmaAction {
     data class Written(val name: String) : NameAction
 }
 
-private class NameViewModel :
+private class NameViewModel(private val store: EmaStateStore) :
     EmaViewModel<NameState, NameAction, EmaEvent.EMPTY>(
         NameState(),
         EmaConfiguration(dispatchers = EmaDispatchers(main = Dispatchers.Unconfined), logger = null)
@@ -36,7 +37,7 @@ private class NameViewModel :
 
     override fun setup() = source {
         plugins {
-            +backupOf {
+            +backupOf(store) {
                 add("name", save = { name.takeIf { it.isNotEmpty() } }, restore = { copy(name = it) })
             }
         }
@@ -77,13 +78,13 @@ class SavedStateHandleStoreTest {
     fun `the android view model saves the state of the ema view model in its handle and restores it`() {
         val handle = SavedStateHandle()
         val activity = Robolectric.buildActivity(ComponentActivity::class.java).setup().get()
-        val first = androidViewModel(activity, NameViewModel(), handle, "first")
+        val first = androidViewModel(activity, handle, "first")
         first.emaViewModel.onCreated(null)
         (first.emaViewModel as NameViewModel).dispatch(NameAction.Written("Ana"))
 
         // The process dies: a new view model is created with the restored handle
         val restoredHandle = SavedStateHandle(handle.keys().associateWith { handle.get<Any>(it) })
-        val second = androidViewModel(activity, NameViewModel(), restoredHandle, "second")
+        val second = androidViewModel(activity, restoredHandle, "second")
         second.emaViewModel.onCreated(null)
 
         assertEquals(NameState("Ana"), second.emaViewModel.stateFlow.value)
@@ -92,7 +93,7 @@ class SavedStateHandleStoreTest {
     @Test
     fun `the state is restored when the activity is recreated from its saved state`() {
         val controller = Robolectric.buildActivity(ComponentActivity::class.java).setup()
-        val first = androidViewModel(controller.get(), NameViewModel())
+        val first = androidViewModel(controller.get())
         first.emaViewModel.onCreated(null)
         (first.emaViewModel as NameViewModel).dispatch(NameAction.Written("Ana"))
         val outState = Bundle()
@@ -100,7 +101,7 @@ class SavedStateHandleStoreTest {
 
         // The process dies: the activity is created again from its saved state, with a new store of view models
         val restoredActivity = Robolectric.buildActivity(ComponentActivity::class.java).setup(outState).get()
-        val second = androidViewModel(restoredActivity, NameViewModel())
+        val second = androidViewModel(restoredActivity)
         second.emaViewModel.onCreated(null)
 
         assertEquals(NameState("Ana"), second.emaViewModel.stateFlow.value)
@@ -110,16 +111,12 @@ class SavedStateHandleStoreTest {
      * Like a Fragment or an Activity of emanate-android-view, without giving a handle
      */
     @Suppress("UNCHECKED_CAST")
-    private fun androidViewModel(activity: ComponentActivity, viewModel: NameViewModel) =
-        ViewModelProvider(activity, EmaViewModelFactory(viewModel))[viewModel.id, EmaAndroidViewModel::class.java]
+    private fun androidViewModel(activity: ComponentActivity) =
+        ViewModelProvider(activity, EmaViewModelFactory(::NameViewModel))["name", EmaAndroidViewModel::class.java]
             as EmaAndroidViewModel<NameState, EmaEvent.EMPTY>
 
     @Suppress("UNCHECKED_CAST")
-    private fun androidViewModel(
-        activity: ComponentActivity,
-        viewModel: NameViewModel,
-        handle: SavedStateHandle,
-        key: String
-    ) = ViewModelProvider(activity, EmaViewModelFactory(viewModel, handle))[key, EmaAndroidViewModel::class.java]
-        as EmaAndroidViewModel<NameState, EmaEvent.EMPTY>
+    private fun androidViewModel(activity: ComponentActivity, handle: SavedStateHandle, key: String) =
+        ViewModelProvider(activity, EmaViewModelFactory(::NameViewModel, handle))[key, EmaAndroidViewModel::class.java]
+            as EmaAndroidViewModel<NameState, EmaEvent.EMPTY>
 }

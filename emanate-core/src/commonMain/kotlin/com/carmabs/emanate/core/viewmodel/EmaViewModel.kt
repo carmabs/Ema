@@ -6,9 +6,6 @@ import com.carmabs.emanate.core.action.EmaActionDispatcher
 import com.carmabs.emanate.core.action.EventDispatcher
 import com.carmabs.emanate.core.initializer.EmaInitializer
 import com.carmabs.emanate.core.model.EmaConfiguration
-import com.carmabs.emanate.core.savestate.EmaBackup
-import com.carmabs.emanate.core.savestate.EmaStateSaver
-import com.carmabs.emanate.core.savestate.EmaStateStore
 import com.carmabs.emanate.core.source.EmaSource
 import com.carmabs.emanate.core.source.EmaSourceObserver
 import com.carmabs.emanate.core.source.SourceSetup
@@ -31,7 +28,7 @@ import kotlinx.coroutines.flow.asStateFlow
  * View model whose state is handled by an [EmaSource]: the actions of the screen, the initializer and the lifecycle
  * of the view go through the middlewares, the reducers and the side effects added in [setup]. It is the recommended
  * view model. It can save parts of its state with an EmaBackup installed in [setup], to restore them after the
- * system kills the process of the app.
+ * system kills the process of the app: receive the store of the backup in its constructor.
  *
  * @param initialDataState state of the view before any action
  * @param configuration applied by the view model and its source. By default the one of [Emanate], read when the view
@@ -58,7 +55,7 @@ abstract class EmaViewModel<S : EmaState, A : EmaAction, E : EmaEvent>(
      * Returns the middlewares, reducers, side effects, broadcast listeners and plugins of the view model, created
      * with [source]: `override fun setup() = source { ... }`. Besides the actions of type [A], they can handle the
      * [EmaInitializer] of the screen, its [EmaLifecycle] actions and the actions broadcast by other view models that it
-     * listens to. It is called once, when the source or its backups are first needed.
+     * listens to. It is called once, when the source is first needed.
      */
     protected abstract fun setup(): SourceSetup<S, A, E>
 
@@ -98,33 +95,6 @@ abstract class EmaViewModel<S : EmaState, A : EmaAction, E : EmaEvent>(
      * subclass, which are assigned after the constructor of this class
      */
     private val emaSource: EmaSource<S, EmaAction, E> by lazy { createSource() }
-
-    /**
-     * Saves the values of the backups installed in [setup] and restores them. Null without a store or backups.
-     */
-    @Volatile
-    private var stateSaver: EmaStateSaver<S>? = null
-
-    /**
-     * Saves the values of the backups installed in [setup] in [store], and restores the ones it has when the view is
-     * created. Call it once, before the view is created. Each platform calls it with its own store: on Android,
-     * EmaAndroidViewModel with the SavedStateHandle of the screen. It is internal: emanate-android and emanate-test use
-     * it as friend modules.
-     *
-     * @throws IllegalStateException if the view model has backups and the view has already been created or it already
-     * has a store
-     */
-    internal fun attachStateStore(store: EmaStateStore) {
-        // The backups are plugins of the setup of type S, so they back up the state of this view model
-        @Suppress("UNCHECKED_CAST")
-        val backups = sourceSetup.plugins.filterIsInstance<EmaBackup<*>>() as List<EmaBackup<S>>
-        if (backups.isEmpty()) return
-        check(!hasBeenInitialized) {
-            "The state store of ${this::class.simpleName} must be attached before the view is created"
-        }
-        check(stateSaver == null) { "${this::class.simpleName} already has a state store" }
-        stateSaver = EmaStateSaver(emaSource, store, *backups.toTypedArray())
-    }
 
     /**
      * What [setup] returns, created once. It is internal: emanate-test checks it as a friend module.
@@ -181,13 +151,12 @@ abstract class EmaViewModel<S : EmaState, A : EmaAction, E : EmaEvent>(
 
     /**
      * Called when the view is created. The first time, the source receives [initializer], or [EmaInitializer.EMPTY] if
-     * there isn't any, and then the saved values, if it has a store.
+     * there isn't any. A backup installed in [setup] restores its values right after it, by default.
      */
     final override fun onCreated(initializer: EmaInitializer?) {
         if (!hasBeenInitialized) {
             hasBeenInitialized = true
             emaSource.dispatch(initializer ?: EmaInitializer.EMPTY)
-            stateSaver?.restore()
         }
     }
 

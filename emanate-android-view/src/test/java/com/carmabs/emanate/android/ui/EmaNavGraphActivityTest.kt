@@ -18,6 +18,7 @@ import com.carmabs.emanate.android.initializer.bundle.strategy.BundleSerializerS
 import com.carmabs.emanate.android.navigation.EmaActivityNavControllerNavigator
 import com.carmabs.emanate.android.view.test.R
 import com.carmabs.emanate.core.initializer.EmaInitializer
+import com.carmabs.emanate.core.savestate.EmaStateStore
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -52,7 +53,7 @@ class GraphActivity : EmaActivity<ToolbarBinding, ViewState, ViewTestViewModel, 
     override fun overrideDestinationInitializer() = destinationInitializer
 
     override fun createViewBinding(inflater: LayoutInflater) = ToolbarBinding(this)
-    override fun provideViewModel() = ViewTestViewModel()
+    override fun provideViewModel(store: EmaStateStore) = ViewTestViewModel()
     override fun ToolbarBinding.onState(data: ViewState) = Unit
 }
 

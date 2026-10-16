@@ -224,7 +224,7 @@ class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
     /**
      * Runs [step] in the coroutine of the source, after the actions dispatched before it
      */
-    internal fun post(step: () -> Unit) {
+    internal fun enqueue(step: () -> Unit) {
         queue.trySend(step)
     }
 

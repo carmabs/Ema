@@ -227,7 +227,7 @@ class EmaAndroidViewModelTest {
     fun `the android ViewModel gives its scope to the Ema ViewModel and clears it`() {
         val activity = Robolectric.buildActivity(ComponentActivity::class.java).setup().get()
         val emaViewModel = TestViewModel()
-        val androidViewModel = ViewModelProvider(activity, EmaViewModelFactory(emaViewModel))[
+        val androidViewModel = ViewModelProvider(activity, EmaViewModelFactory({ emaViewModel }))[
             emaViewModel.id, EmaAndroidViewModel::class.java
         ]
         assertSame(emaViewModel, androidViewModel.emaViewModel)
@@ -239,10 +239,23 @@ class EmaAndroidViewModelTest {
     }
 
     @Test
+    fun `the view model is only created if the screen doesn't have it yet`() {
+        val activity = Robolectric.buildActivity(ComponentActivity::class.java).setup().get()
+        var created = 0
+        val factory = EmaViewModelFactory({ TestViewModel().also { created++ } })
+
+        val first = ViewModelProvider(activity, factory)["screen", EmaAndroidViewModel::class.java]
+        val second = ViewModelProvider(activity, factory)["screen", EmaAndroidViewModel::class.java]
+
+        assertSame(first, second)
+        assertEquals(1, created)
+    }
+
+    @Test
     fun `the provided saved state handle is used`() {
         val activity = Robolectric.buildActivity(ComponentActivity::class.java).setup().get()
         val handle = SavedStateHandle(mapOf("key" to "value"))
-        val androidViewModel = ViewModelProvider(activity, EmaViewModelFactory(TestViewModel(), handle))[
+        val androidViewModel = ViewModelProvider(activity, EmaViewModelFactory({ TestViewModel() }, handle))[
             "with handle", EmaAndroidViewModel::class.java
         ]
         assertSame(handle, androidViewModel.savedStateHandle)

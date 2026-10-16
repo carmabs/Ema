@@ -7,8 +7,8 @@ import com.carmabs.emanate.core.action.EmaAction
  *
  * Restores the saved [values], by key, in a source. The reducer of each [EmaBackup] installed in the source restores
  * its values, so the source doesn't know them, and the reducers and middlewares of the source receive it like any
- * other action, for example to validate the restored state. Only [EmaStateSaver.restore] dispatches it, so
- * its constructor is internal: emanate-test creates it for the tests as a friend module.
+ * other action, for example to validate the restored state. Only the [EmaBackup] dispatches it, so its
+ * constructor is internal: emanate-test creates it for the tests as a friend module.
  *
  * <p>
  * Copyright (c) 2026 by Carmabs. All rights reserved.

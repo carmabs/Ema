@@ -12,7 +12,7 @@ createComposableScreen(
 )
 
 // Android Views
-override fun provideViewModel(): LoginViewModel = LoginViewModel(loginUseCase, LoginState.DEFAULT)
+override fun provideViewModel(store: EmaStateStore): LoginViewModel = LoginViewModel(loginUseCase, LoginState.DEFAULT)
 ```
 
 ## One ViewModel per screen
@@ -62,8 +62,47 @@ createComposableScreen(
 )
 
 // Android Views
-override fun provideViewModel(): LoginViewModel = get()
+override fun provideViewModel(store: EmaStateStore): LoginViewModel = get()
 ```
+
+## The store of a backup
+
+A ViewModel that saves part of its state with a backup receives its `EmaStateStore` in the constructor. The function
+that creates the ViewModel receives the store of the screen, so pass it on:
+
+```kotlin
+class ProfileCreationViewModel(
+    initialDataState: ProfileCreationState,
+    private val stateStore: EmaStateStore
+) : EmaViewModel<ProfileCreationState, ProfileCreationAction, ProfileCreationEvent>(initialDataState) {
+
+    override fun setup() = source {
+        install(backupOf(stateStore) { /* ... */ })
+    }
+}
+
+// Compose
+createComposableScreen(
+    screenContent = ProfileCreationScreenContent(),
+    viewModel = { store -> ProfileCreationViewModel(ProfileCreationState.DEFAULT, store) },
+    onEvent = { /* ... */ }
+)
+
+// Android Views
+override fun provideViewModel(store: EmaStateStore) = ProfileCreationViewModel(ProfileCreationState.DEFAULT, store)
+```
+
+With Koin, pass it as a parameter:
+
+```kotlin
+val uiModule = module {
+    factory { (stateStore: EmaStateStore) -> ProfileCreationViewModel(get(), stateStore) }
+}
+
+viewModel = { store -> get<ProfileCreationViewModel> { parametersOf(store) } }
+```
+
+On the platforms without a store, or in a test that doesn't check the saved state, pass `EmaStateStore.None`.
 
 ## Data and use cases
 

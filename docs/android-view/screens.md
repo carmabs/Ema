@@ -11,7 +11,7 @@ class CounterFragment :
         container: ViewGroup?
     ) = CounterFragmentBinding.inflate(inflater, container, false)
 
-    override fun provideViewModel(): CounterViewModel = CounterViewModel()
+    override fun provideViewModel(store: EmaStateStore): CounterViewModel = CounterViewModel()
 
     override val navigator: EmaNavigator<CounterEvent>? = null
 
@@ -42,7 +42,7 @@ class CounterFragment :
 | Member                          | Fragment | Activity | Notes                                                                 |
 |---------------------------------|:--------:|:--------:|-----------------------------------------------------------------------|
 | `createViewBinding`             | ✔        | ✔        | Inflates the layout.                                                  |
-| `provideViewModel()`            | ✔        | ✔        | Creates the ViewModel. It is called once, when the screen is opened. See [Dependency injection](../guides/dependency-injection.md). |
+| `provideViewModel(store)`       | ✔        | ✔        | Creates the ViewModel with the store of its backup, if it saves its state. It is called once, when the screen is opened. See [Dependency injection](../guides/dependency-injection.md). |
 | `navigator`                     | ✔        | ✔        | `null` if the screen never navigates. See [Navigation](navigation.md). |
 | `B.onState(state)`              | ✔        | ✔        | Renders the state.                                                    |
 | `B.onEvent(event)`              | optional | optional | Handles [events](../concepts/events.md). Does nothing by default.     |
@@ -153,7 +153,7 @@ class SplashActivity :
 
     override fun createViewBinding(inflater: LayoutInflater) = SplashActivityBinding.inflate(inflater)
 
-    override fun provideViewModel() = EmaViewModelContract.EMPTY
+    override fun provideViewModel(store: EmaStateStore) = EmaViewModelContract.EMPTY
 
     override fun SplashActivityBinding.onState(data: EmaState.EMPTY) = Unit
 

@@ -29,6 +29,7 @@ import com.carmabs.emanate.android.initializer.bundle.strategy.BundleSerializerS
 import com.carmabs.emanate.android.navigation.EmaNavControllerNavigator
 import com.carmabs.emanate.core.initializer.EmaInitializerSerializer
 import com.carmabs.emanate.core.navigator.EmaNavigator
+import com.carmabs.emanate.core.savestate.EmaStateStore
 import com.carmabs.emanate.core.view.EmaViewModelTrigger
 import com.google.android.material.appbar.AppBarLayout
 import java.time.Duration
@@ -62,7 +63,7 @@ class TestActivity : EmaActivity<TestBinding, ViewState, ViewTestViewModel, View
 
     override fun createViewBinding(inflater: LayoutInflater) = TestBinding(this)
 
-    override fun provideViewModel() = ViewTestViewModel()
+    override fun provideViewModel(store: EmaStateStore) = ViewTestViewModel()
 
     override fun TestBinding.onState(data: ViewState) {
         states += data
@@ -93,7 +94,7 @@ class SilentActivity : EmaActivity<TestBinding, ViewState, ViewTestViewModel, Vi
     }
 
     override fun createViewBinding(inflater: LayoutInflater) = TestBinding(this)
-    override fun provideViewModel() = ViewTestViewModel()
+    override fun provideViewModel(store: EmaStateStore) = ViewTestViewModel()
     override fun TestBinding.onState(data: ViewState) = Unit
 }
 
@@ -137,7 +138,7 @@ class TestToolbarActivity : EmaToolbarActivity<ToolbarBinding, ViewState, ViewTe
     }
 
     override fun createViewBinding(inflater: LayoutInflater) = ToolbarBinding(this)
-    override fun provideViewModel() = ViewTestViewModel()
+    override fun provideViewModel(store: EmaStateStore) = ViewTestViewModel()
     override fun ToolbarBinding.onState(data: ViewState) = Unit
     override fun ToolbarBinding.provideToolbar() = toolbar
     override fun ToolbarBinding.provideToolbarLayout() = appBar
@@ -276,10 +277,10 @@ class EmaActivityTest {
     fun `the ViewModel of a view can only be created inside a FragmentActivity`() {
         val activity = Robolectric.buildActivity(HostActivity::class.java).setup().get()
         val layoutView = LayoutEmaView(activity, ViewTestViewModel())
-        assertSame(layoutView.viewModel, layoutView.generateViewModel(layoutView.viewModel).emaViewModel)
+        assertSame(layoutView.viewModel, layoutView.generateViewModel { layoutView.viewModel }.emaViewModel)
 
         val orphan = OrphanEmaView(ViewTestViewModel())
-        assertFailsWith<IllegalAccessException> { orphan.generateViewModel(orphan.viewModel) }
+        assertFailsWith<IllegalAccessException> { orphan.generateViewModel { orphan.viewModel } }
     }
 }
 

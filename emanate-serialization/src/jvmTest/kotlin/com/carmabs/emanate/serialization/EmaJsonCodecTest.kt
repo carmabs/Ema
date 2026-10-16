@@ -2,6 +2,7 @@ package com.carmabs.emanate.serialization
 
 import com.carmabs.emanate.core.Emanate
 import com.carmabs.emanate.core.action.EmaAction
+import com.carmabs.emanate.core.savestate.EmaStateStore
 import com.carmabs.emanate.core.savestate.backupOf
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
@@ -9,7 +10,6 @@ import com.carmabs.emanate.core.viewmodel.EmaViewModel
 import com.carmabs.emanate.test.resetTestDispatchers
 import com.carmabs.emanate.test.testStateStore
 import com.carmabs.emanate.test.useTestDispatchers
-import com.carmabs.emanate.test.withStateStore
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -43,12 +43,12 @@ private sealed interface LoginAction : EmaAction {
  * Saves the form without the password, with the type of the codec inferred from save, and the recent users with an
  * explicit serializer
  */
-private class LoginViewModel :
+private class LoginViewModel(private val store: EmaStateStore) :
     EmaViewModel<LoginState, LoginAction, EmaEvent.EMPTY>(LoginState(), Emanate.configuration.copy(logger = null)) {
 
     override fun setup() = source {
         plugins {
-            +backupOf {
+            +backupOf(store) {
                 add(
                     key = "form",
                     codec = json(),
@@ -92,7 +92,7 @@ class EmaJsonCodecTest {
     @Test
     fun `the values are saved in JSON`() = runTest {
         val store = testStateStore()
-        val viewModel = LoginViewModel().withStateStore(store)
+        val viewModel = LoginViewModel(store)
 
         viewModel.onCreated(null)
         viewModel.dispatch(LoginAction.UserNameWritten("ana"))
@@ -113,7 +113,7 @@ class EmaJsonCodecTest {
         val store = testStateStore()
         store.write("form", """{"userName":"ana","rememberMe":true}""")
         store.write("recentUsers", """["ana","luis"]""")
-        val viewModel = LoginViewModel().withStateStore(store)
+        val viewModel = LoginViewModel(store)
 
         viewModel.onCreated(null)
         advanceUntilIdle()
@@ -130,7 +130,7 @@ class EmaJsonCodecTest {
         val store = testStateStore()
         store.write("form", """{"name":"ana"}""")
         store.write("recentUsers", "not json")
-        val viewModel = LoginViewModel().withStateStore(store)
+        val viewModel = LoginViewModel(store)
 
         viewModel.onCreated(null)
         advanceUntilIdle()

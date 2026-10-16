@@ -12,6 +12,7 @@ import com.carmabs.emanate.android.initializer.bundle.strategy.BundleSerializerS
 import com.carmabs.emanate.android.ui.EmaFragment
 import com.carmabs.emanate.android.ui.recycler.EmaBaseRecyclerAdapter
 import com.carmabs.emanate.core.navigator.EmaNavigator
+import com.carmabs.emanate.core.savestate.EmaStateStore
 import com.carmabs.emanate.presentation.base.SampleViewModel
 import com.carmabs.emanate.presentation.extension.fullNameOf
 import com.carmabs.emanate.presentation.extension.initialsOf
@@ -48,8 +49,8 @@ class HomeFragment :
         }
     }
 
-    override fun provideViewModel(): SampleViewModel<HomeState, HomeAction, HomeEvent> =
-        sampleViewModel(HomeViewModel::class, HomeActionViewModel::class)
+    override fun provideViewModel(store: EmaStateStore): SampleViewModel<HomeState, HomeAction, HomeEvent> =
+        sampleViewModel(HomeViewModel::class, HomeActionViewModel::class, store)
 
     override fun HomeFragmentBinding.onState(state: HomeState) {
         state.userData?.also { onUserData(it) }

@@ -6,6 +6,7 @@ import androidx.fragment.app.FragmentActivity
 import com.carmabs.emanate.android.base.EmaCoreFragment
 import com.carmabs.emanate.android.ui.EmaAndroidView
 import com.carmabs.emanate.android.viewmodel.EmaAndroidViewModel
+import com.carmabs.emanate.core.savestate.EmaStateStore
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
 import com.carmabs.emanate.core.viewmodel.EmaViewModelContract
@@ -21,7 +22,7 @@ import com.carmabs.emanate.core.viewmodel.EmaViewModelContract
  */
 @Suppress("ClassName")
 internal fun <S : EmaState, VM : EmaViewModelContract<S, E>, E : EmaEvent> EmaAndroidView<S, VM, E>.generateViewModel(
-    vm: VM
+    vm: (store: EmaStateStore) -> VM
 ): EmaAndroidViewModel<S, E> {
     val fragmentScope =
         (this as? EmaCoreFragment<*, *, *>)?.fragmentViewModelScope ?: false

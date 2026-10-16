@@ -24,6 +24,7 @@ import com.carmabs.emanate.core.action.EmaActionDispatcher
 import com.carmabs.emanate.core.action.EmaEventConsumer
 import com.carmabs.emanate.core.initializer.EmaInitializer
 import com.carmabs.emanate.core.model.EmaBackHandlerStrategy
+import com.carmabs.emanate.core.savestate.EmaStateStore
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
 import com.carmabs.emanate.core.utils.EmaUtils
@@ -65,7 +66,7 @@ fun <S : EmaState, A : EmaAction, E : EmaEvent> EmaComposableScreen(
 @Composable
 fun <A : EmaAction, S : EmaState, E : EmaEvent> EmaComposableScreen(
     initializer: EmaInitializer? = null,
-    vm: () -> EmaViewModelContract<S, E>,
+    vm: (store: EmaStateStore) -> EmaViewModelContract<S, E>,
     screenContent: EmaComposableScreenContent<S, A, E>,
     onEvent: (E) -> Unit,
     saveStateSupport: SavedStateSupport<S, E>? = null,
@@ -83,9 +84,7 @@ fun <A : EmaAction, S : EmaState, E : EmaEvent> EmaComposableScreen(
     ) {
         val androidVm = EmaScreenProvider.provideComposableViewModel(
             key = EmaScreenProvider.viewModelKey(screenContent),
-            viewModel = remember {
-                vm.invoke()
-            },
+            viewModel = vm,
             saveStateSupport?.savedStateHandle
         )
 

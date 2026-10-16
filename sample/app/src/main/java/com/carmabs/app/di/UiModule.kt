@@ -1,6 +1,7 @@
 package com.carmabs.app.di
 
 import androidx.fragment.app.FragmentManager
+import com.carmabs.emanate.core.savestate.EmaStateStore
 import com.carmabs.emanate.presentation.choice.ImplementationChoiceViewModel
 import com.carmabs.emanate.presentation.choice.ViewModelImplementationSelector
 import com.carmabs.emanate.presentation.home.HomeActionViewModel
@@ -44,7 +45,8 @@ val uiModule = module {
     factoryOf(::LoginViewModel)
     factoryOf(::HomeViewModel)
     factoryOf(::ProfileOnBoardingViewModel)
-    factoryOf(::ProfileCreationViewModel)
+    // The platform gives the store of its backup when it creates the screen
+    factory { (stateStore: EmaStateStore) -> ProfileCreationViewModel(get(), stateStore) }
 
     // Built with EmaViewModelAction
     factory { SplashActionViewModel() }

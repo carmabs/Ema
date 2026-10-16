@@ -15,10 +15,14 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 
@@ -39,6 +43,11 @@ private sealed interface FormAction : EmaAction {
 }
 
 private data class RoleInitializer(val role: String) : EmaInitializer
+
+/**
+ * Action after which a source on its own restores its values
+ */
+private data object Opened : EmaAction
 
 /**
  * Store that keeps the values in memory and records every write
@@ -92,12 +101,13 @@ private class AgeSavedValue(private val failRestore: Boolean = false) : EmaBacku
 /**
  * Backup of the name, for the sources on their own
  */
-private val nameBackup = backupOf<FormState> {
+private fun nameBackup(store: EmaStateStore) = backupOf<FormState>(store, restoreOn = Opened::class) {
     add("name", save = { name.takeIf { it.isNotEmpty() } }, restore = { copy(name = it) })
 }
 
 private class FormViewModel(
     dispatcher: CoroutineDispatcher,
+    private val store: EmaStateStore,
     private val ageSavedValue: EmaBackupValue<FormState, Int> = AgeSavedValue(),
     configuration: EmaConfiguration = Emanate.configuration
 ) : EmaViewModel<FormState, FormAction, EmaEvent.EMPTY>(
@@ -109,7 +119,7 @@ private class FormViewModel(
 
     override fun setup() = source {
         plugins {
-            +backupOf {
+            +backupOf(store) {
                 add("name", save = { name.takeIf { it.isNotEmpty() } }, restore = { copy(name = it) })
                 +ageSavedValue
                 add("plan", PlanCodec, save = { plan }, restore = { copy(plan = it) })
@@ -136,15 +146,6 @@ private class FormViewModel(
     }
 }
 
-/**
- * View model that doesn't save anything
- */
-private class PlainViewModel(dispatcher: CoroutineDispatcher) :
-    EmaViewModel<FormState, FormAction, EmaEvent.EMPTY>(FormState(), configurationOn(dispatcher).copy(logger = null)) {
-
-    override fun setup() = source {}
-}
-
 @OptIn(ExperimentalCoroutinesApi::class)
 class EmaViewModelSavedStateTest {
 
@@ -155,8 +156,7 @@ class EmaViewModelSavedStateTest {
     @Test
     fun `the saved values are written when they change`() = runTest {
         val store = MemoryStore()
-        val viewModel = FormViewModel(testDispatcher())
-        viewModel.attachStateStore(store)
+        val viewModel = FormViewModel(testDispatcher(), store)
 
         viewModel.onCreated(null)
         viewModel.dispatch(FormAction.NameWritten("Ana"))
@@ -182,8 +182,7 @@ class EmaViewModelSavedStateTest {
     @Test
     fun `a null value removes the saved one`() = runTest {
         val store = MemoryStore()
-        val viewModel = FormViewModel(testDispatcher())
-        viewModel.attachStateStore(store)
+        val viewModel = FormViewModel(testDispatcher(), store)
 
         viewModel.onCreated(null)
         viewModel.dispatch(FormAction.NameWritten("Ana"))
@@ -201,8 +200,7 @@ class EmaViewModelSavedStateTest {
     @Test
     fun `the saved values are restored with an action after the initializer`() = runTest {
         val store = MemoryStore(mapOf("name" to "Ana", "age" to "30", "plan" to "PRO"))
-        val viewModel = FormViewModel(testDispatcher())
-        viewModel.attachStateStore(store)
+        val viewModel = FormViewModel(testDispatcher(), store)
 
         viewModel.onCreated(RoleInitializer("admin"))
         runCurrent()
@@ -224,8 +222,7 @@ class EmaViewModelSavedStateTest {
     @Test
     fun `the initializer doesn't overwrite the values before they are restored`() = runTest {
         val store = MemoryStore(mapOf("name" to "Ana", "age" to "30", "plan" to "PRO"))
-        val viewModel = FormViewModel(testDispatcher())
-        viewModel.attachStateStore(store)
+        val viewModel = FormViewModel(testDispatcher(), store)
 
         viewModel.onCreated(RoleInitializer("admin"))
         runCurrent()
@@ -238,16 +235,14 @@ class EmaViewModelSavedStateTest {
     @Test
     fun `a new view model with the same store restores the state of the previous one`() = runTest {
         val store = MemoryStore()
-        val first = FormViewModel(testDispatcher())
-        first.attachStateStore(store)
+        val first = FormViewModel(testDispatcher(), store)
         first.onCreated(RoleInitializer("admin"))
         first.dispatch(FormAction.NameWritten("Ana"))
         first.dispatch(FormAction.AgeWritten(30))
         runCurrent()
         first.close()
 
-        val second = FormViewModel(testDispatcher())
-        second.attachStateStore(store)
+        val second = FormViewModel(testDispatcher(), store)
         second.onCreated(RoleInitializer("admin"))
         runCurrent()
 
@@ -261,8 +256,7 @@ class EmaViewModelSavedStateTest {
     @Test
     fun `a value that can't be decoded isn't restored and is saved again from the state`() = runTest {
         val store = MemoryStore(mapOf("plan" to "GOLD"))
-        val viewModel = FormViewModel(testDispatcher())
-        viewModel.attachStateStore(store)
+        val viewModel = FormViewModel(testDispatcher(), store)
 
         viewModel.onCreated(null)
         runCurrent()
@@ -274,8 +268,7 @@ class EmaViewModelSavedStateTest {
 
     @Test
     fun `nothing is restored when the store is empty`() = runTest {
-        val viewModel = FormViewModel(testDispatcher())
-        viewModel.attachStateStore(MemoryStore())
+        val viewModel = FormViewModel(testDispatcher(), MemoryStore())
 
         viewModel.onCreated(null)
         runCurrent()
@@ -285,8 +278,8 @@ class EmaViewModelSavedStateTest {
     }
 
     @Test
-    fun `without a store nothing is saved nor restored`() = runTest {
-        val viewModel = FormViewModel(testDispatcher())
+    fun `with the store None nothing is saved nor restored`() = runTest {
+        val viewModel = FormViewModel(testDispatcher(), EmaStateStore.None)
 
         viewModel.onCreated(null)
         viewModel.dispatch(FormAction.NameWritten("Ana"))
@@ -300,8 +293,7 @@ class EmaViewModelSavedStateTest {
     fun `a restore that fails discards the restore like any reducer and is reported`() = runTest {
         val configuration = EmaConfiguration(errorPolicy = EmaErrorPolicy.Catch { errors += it })
         val store = MemoryStore(mapOf("name" to "Ana", "age" to "30"))
-        val viewModel = FormViewModel(testDispatcher(), AgeSavedValue(failRestore = true), configuration)
-        viewModel.attachStateStore(store)
+        val viewModel = FormViewModel(testDispatcher(), store, AgeSavedValue(failRestore = true), configuration)
 
         viewModel.onCreated(null)
         runCurrent()
@@ -315,8 +307,7 @@ class EmaViewModelSavedStateTest {
     fun `a saved value can be replaced in the constructor`() = runTest {
         val fakeAge = savedValueOf<FormState, Int>("age", IntCodec, save = { 7 }, restore = { copy(age = 99) })
         val store = MemoryStore(mapOf("age" to "30"))
-        val viewModel = FormViewModel(testDispatcher(), fakeAge)
-        viewModel.attachStateStore(store)
+        val viewModel = FormViewModel(testDispatcher(), store, fakeAge)
 
         viewModel.onCreated(null)
         runCurrent()
@@ -327,41 +318,32 @@ class EmaViewModelSavedStateTest {
     }
 
     @Test
-    fun `the store can only be attached once`() = runTest {
-        val viewModel = FormViewModel(testDispatcher())
-        viewModel.attachStateStore(MemoryStore())
+    fun `nothing is read nor written before the initializer`() = runTest {
+        val store = object : EmaStateStore {
+            val keys = mutableListOf<String>()
 
-        assertFailsWith<IllegalStateException> { viewModel.attachStateStore(MemoryStore()) }
-        viewModel.close()
-    }
+            override fun read(key: String): String? = null.also { keys += key }
 
-    @Test
-    fun `the store can't be attached after the view is created`() = runTest {
-        val viewModel = FormViewModel(testDispatcher())
-        viewModel.onCreated(null)
+            override fun write(key: String, value: String?) {
+                keys += key
+            }
+        }
+        val viewModel = FormViewModel(testDispatcher(), store)
 
-        assertFailsWith<IllegalStateException> { viewModel.attachStateStore(MemoryStore()) }
-        viewModel.close()
-    }
-
-    @Test
-    fun `a view model without saved values ignores the store`() = runTest {
-        val store = MemoryStore()
-        val viewModel = PlainViewModel(testDispatcher())
-        viewModel.onCreated(null)
-
-        viewModel.attachStateStore(store)
         viewModel.dispatch(FormAction.NameWritten("Ana"))
         runCurrent()
 
-        assertTrue(store.writes.isEmpty())
+        assertTrue(store.keys.isEmpty())
+        viewModel.onCreated(null)
+        runCurrent()
+        assertEquals(listOf("name", "age", "plan", "name", "age", "plan"), store.keys)
         viewModel.close()
     }
 
     @Test
     fun `a key can only be added once to a backup`() {
         assertFailsWith<IllegalArgumentException> {
-            backupOf<FormState> {
+            backupOf<FormState>(MemoryStore(), restoreOn = Opened::class) {
                 add("name", save = { name }, restore = { copy(name = it) })
                 add("name", save = { name }, restore = { copy(name = it) })
             }
@@ -369,20 +351,37 @@ class EmaViewModelSavedStateTest {
     }
 
     @Test
-    fun `the backups of a view model can't repeat keys`() = runTest {
-        val viewModel = object : EmaViewModel<FormState, FormAction, EmaEvent.EMPTY>(
-            FormState(),
-            configurationOn(testDispatcher()).copy(logger = null)
-        ) {
-            override fun setup() = source {
+    fun `the backups of a source can't repeat keys in the same store`() = runTest {
+        val store = MemoryStore()
+
+        assertFailsWith<IllegalArgumentException> {
+            EmaSource<FormState, FormAction, EmaEvent.EMPTY>(FormState(), configurationOn(testDispatcher())) {
                 plugins {
-                    +nameBackup
-                    +nameBackup
+                    +nameBackup(store)
+                    +nameBackup(store)
                 }
             }
         }
+    }
 
-        assertFailsWith<IllegalArgumentException> { viewModel.attachStateStore(MemoryStore()) }
+    @Test
+    fun `the backups of a source can repeat keys in different stores`() = runTest {
+        val source = EmaSource<FormState, FormAction, EmaEvent.EMPTY>(FormState(), configurationOn(testDispatcher())) {
+            plugins {
+                +nameBackup(MemoryStore())
+                +nameBackup(MemoryStore())
+            }
+        }
+
+        source.close()
+    }
+
+    @Test
+    fun `a backup can only be installed in one source`() = runTest {
+        val backup = nameBackup(MemoryStore())
+        formSource(testDispatcher(), backup).close()
+
+        assertFailsWith<IllegalStateException> { formSource(testDispatcher(), backup) }
     }
 
     @Test
@@ -397,16 +396,16 @@ class EmaViewModelSavedStateTest {
     }
 
     @Test
-    fun `a source on its own saves and restores its values with a state saver`() = runTest {
+    fun `a source on its own saves and restores its values after the action set`() = runTest {
         val store = MemoryStore()
-        val first = formSource(testDispatcher())
-        EmaStateSaver(first, store, nameBackup).restore()
+        val first = formSource(testDispatcher(), nameBackup(store))
+        first.dispatchAction(Opened)
         first.dispatch(FormAction.NameWritten("Ana"))
         runCurrent()
         first.close()
 
-        val second = formSource(testDispatcher())
-        EmaStateSaver(second, store, nameBackup).restore()
+        val second = formSource(testDispatcher(), nameBackup(store))
+        second.dispatchAction(Opened)
         runCurrent()
 
         assertEquals(mapOf("name" to "Ana"), store.values)
@@ -415,14 +414,25 @@ class EmaViewModelSavedStateTest {
     }
 
     @Test
+    fun `a source doesn't save its values before the action set`() = runTest {
+        val store = MemoryStore()
+        val source = formSource(testDispatcher(), nameBackup(store))
+
+        source.dispatch(FormAction.NameWritten("Ana"))
+        runCurrent()
+
+        assertTrue(store.writes.isEmpty())
+        source.close()
+    }
+
+    @Test
     fun `the values are restored only once`() = runTest {
         val store = MemoryStore(mapOf("name" to "Ana"))
-        val source = formSource(testDispatcher())
-        val saver = EmaStateSaver(source, store, nameBackup)
-        saver.restore()
+        val source = formSource(testDispatcher(), nameBackup(store))
+        source.dispatchAction(Opened)
         source.dispatch(FormAction.NameWritten("Luis"))
 
-        saver.restore()
+        source.dispatchAction(Opened)
         runCurrent()
 
         assertEquals(FormState(name = "Luis"), source.state)
@@ -431,7 +441,7 @@ class EmaViewModelSavedStateTest {
 
     @Test
     fun `a source restores the values of the action without a store`() = runTest {
-        val source = formSource(testDispatcher())
+        val source = formSource(testDispatcher(), nameBackup(EmaStateStore.None))
 
         source.dispatchAction(EmaRestoreState(mapOf("name" to "Ana", "unknown" to "value")))
         runCurrent()
@@ -440,9 +450,95 @@ class EmaViewModelSavedStateTest {
         source.close()
     }
 
-    private fun formSource(dispatcher: CoroutineDispatcher) =
+    @Test
+    fun `a backup installed before a middleware that delays an action saves its new state`() = runTest {
+        val store = MemoryStore()
+        val source = EmaSource<FormState, FormAction, EmaEvent.EMPTY>(FormState(), configurationOn(testDispatcher())) {
+            plugins { +nameBackup(store) }
+            middlewares {
+                add<FormAction.NameWritten> { nextAfter { delay(300.milliseconds) } }
+            }
+            reducers {
+                add<FormAction.NameWritten> { action -> state.copy(name = action.name) }
+            }
+        }
+        source.dispatchAction(Opened)
+
+        source.dispatch(FormAction.NameWritten("Ana"))
+        advanceTimeBy(299.milliseconds)
+        assertTrue(store.values.isEmpty())
+        advanceTimeBy(2.milliseconds)
+
+        assertEquals(mapOf("name" to "Ana"), store.values)
+        source.close()
+    }
+
+    @Test
+    fun `the values aren't restored if a middleware stops the action that restores them`() = runTest {
+        val store = MemoryStore(mapOf("name" to "Ana"))
+        val source = EmaSource<FormState, FormAction, EmaEvent.EMPTY>(FormState(), configurationOn(testDispatcher())) {
+            plugins { +nameBackup(store) }
+            middlewares {
+                add<Opened> { }
+            }
+        }
+
+        source.dispatchAction(Opened)
+        runCurrent()
+
+        assertEquals(FormState(), source.state)
+        assertEquals(mapOf("name" to "Ana"), store.values)
+        assertTrue(store.writes.isEmpty())
+        source.close()
+    }
+
+    @Test
+    fun `the values not restored because a middleware stops the restore are saved from the state`() = runTest {
+        val store = MemoryStore(mapOf("name" to "Ana"))
+        val source = EmaSource<FormState, FormAction, EmaEvent.EMPTY>(FormState(), configurationOn(testDispatcher())) {
+            plugins { +nameBackup(store) }
+            middlewares {
+                add<EmaRestoreState> { }
+            }
+            reducers {
+                add<FormAction.NameWritten> { action -> state.copy(name = action.name) }
+            }
+        }
+        source.dispatchAction(Opened)
+        runCurrent()
+        assertEquals(FormState(), source.state)
+        assertTrue(store.values.isEmpty())
+        source.dispatch(FormAction.NameWritten("Luis"))
+        runCurrent()
+
+        assertEquals(FormState(name = "Luis"), source.state)
+        assertEquals(mapOf("name" to "Luis"), store.values)
+        source.close()
+    }
+
+    @Test
+    fun `an action queued before the restore doesn't replace the values that are going to be restored`() = runTest {
+        val store = MemoryStore(mapOf("name" to "Ana"))
+        val source = EmaSource<FormState, FormAction, EmaEvent.EMPTY>(
+            FormState(),
+            configurationOn(StandardTestDispatcher(testScheduler))
+        ) {
+            plugins { +nameBackup(store) }
+        }
+
+        // Queued before the restore, which is dispatched when Opened is processed
+        source.dispatchAction(Opened)
+        source.dispatch(FormAction.AgeWritten(30))
+        runCurrent()
+
+        assertEquals(FormState(name = "Ana"), source.state)
+        assertTrue(store.writes.isEmpty())
+        source.close()
+    }
+
+    private fun formSource(dispatcher: CoroutineDispatcher, backup: EmaBackup<FormState>) =
         EmaSource<FormState, FormAction, EmaEvent.EMPTY>(FormState(), configurationOn(dispatcher)) {
-            plugins { +nameBackup }
+            plugins { +backup }
             reducers {
                 add<FormAction.NameWritten> { action -> state.copy(name = action.name) }
             }

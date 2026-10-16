@@ -6,7 +6,6 @@ import com.carmabs.emanate.test.resetTestDispatchers
 import com.carmabs.emanate.test.restoreStateOf
 import com.carmabs.emanate.test.testStateStore
 import com.carmabs.emanate.test.useTestDispatchers
-import com.carmabs.emanate.test.withStateStore
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -28,7 +27,7 @@ class ProfileCreationViewModelTest {
     @Test
     fun `the form is restored after the death of the process`() = runTest {
         val store = testStateStore()
-        val viewModel = ProfileCreationViewModel(ProfileCreationState.DEFAULT).withStateStore(store)
+        val viewModel = ProfileCreationViewModel(ProfileCreationState.DEFAULT, store)
         viewModel.onCreated(ProfileCreationInitializer.Admin)
         viewModel.dispatch(ProfileCreationAction.UserNameWritten("Ana"))
         viewModel.dispatch(ProfileCreationAction.UserSurnameWritten("García"))
@@ -37,7 +36,7 @@ class ProfileCreationViewModelTest {
         viewModel.close()
 
         // The system kills the process: the screen is created again with the same initializer and the saved values
-        val restoredViewModel = ProfileCreationViewModel(ProfileCreationState.DEFAULT).withStateStore(store)
+        val restoredViewModel = ProfileCreationViewModel(ProfileCreationState.DEFAULT, store)
         val recorder = restoredViewModel.record()
         restoredViewModel.onCreated(ProfileCreationInitializer.Admin)
         advanceUntilIdle()

@@ -4,6 +4,7 @@ import com.carmabs.emanate.core.Emanate
 import com.carmabs.emanate.core.action.EmaAction
 import com.carmabs.emanate.core.initializer.EmaInitializer
 import com.carmabs.emanate.core.savestate.EmaRestoreState
+import com.carmabs.emanate.core.savestate.EmaStateStore
 import com.carmabs.emanate.core.savestate.backupOf
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
@@ -24,14 +25,14 @@ private sealed interface SearchAction : EmaAction {
     data class QueryWritten(val query: String) : SearchAction
 }
 
-private class SearchViewModel :
+private class SearchViewModel(private val store: EmaStateStore) :
     EmaViewModel<SearchState, SearchAction, EmaEvent.EMPTY>(
         initialDataState = SearchState(),
         configuration = Emanate.configuration.copy(logger = null)
     ) {
     override fun setup() = source {
         plugins {
-            +backupOf {
+            +backupOf(store) {
                 add("query", save = { query }, restore = { copy(query = it) })
             }
         }
@@ -58,7 +59,7 @@ class TestStateStoreTest {
     @Test
     fun `the store keeps the values saved by the view model`() = runTest {
         val store = testStateStore()
-        val viewModel = SearchViewModel().withStateStore(store)
+        val viewModel = SearchViewModel(store)
 
         viewModel.onCreated(null)
         viewModel.dispatch(SearchAction.QueryWritten("ema"))
@@ -71,13 +72,13 @@ class TestStateStoreTest {
     @Test
     fun `a new view model with the same store restores the state as after the death of the process`() = runTest {
         val store = testStateStore()
-        val first = SearchViewModel().withStateStore(store)
+        val first = SearchViewModel(store)
         first.onCreated(null)
         first.dispatch(SearchAction.QueryWritten("ema"))
         advanceUntilIdle()
         first.close()
 
-        val second = SearchViewModel().withStateStore(store)
+        val second = SearchViewModel(store)
         val recorder = second.record()
         second.onCreated(null)
         advanceUntilIdle()
@@ -89,7 +90,7 @@ class TestStateStoreTest {
 
     @Test
     fun `a reducer of the restore of the saved state runs`() {
-        SearchViewModel().assertSetup()
+        SearchViewModel(testStateStore()).assertSetup()
     }
 
     @Test
@@ -116,14 +117,5 @@ class TestStateStoreTest {
         store.write("query", null)
 
         assertTrue(store.values.isEmpty())
-    }
-
-    @Test
-    fun `the store must be attached before the view is created`() = runTest {
-        val viewModel = SearchViewModel()
-        viewModel.onCreated(null)
-
-        assertFailsWith<IllegalStateException> { viewModel.withStateStore(testStateStore()) }
-        viewModel.close()
     }
 }

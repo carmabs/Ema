@@ -87,6 +87,12 @@ class SourceSetupScope<S : EmaState, A : EmaAction, E : EmaEvent> internal const
         pluginSetupScope.block()
     }
 
+    /**
+     * Plugins installed so far, including the one being installed
+     */
+    internal val installedPlugins: List<EmaSourcePlugin<S, *>>
+        get() = pluginList
+
     private fun <P : EmaAction> install(plugin: EmaSourcePlugin<S, P>, actionType: KClass<out EmaAction>?) {
         pluginList = pluginList + plugin
         actionType?.let { pluginActionTypeList = pluginActionTypeList + it }
