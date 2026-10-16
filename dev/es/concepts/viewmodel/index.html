@@ -2052,7 +2052,7 @@ Android:</p>
 como su pantalla y sobrevive a los cambios de configuración:</p>
 <ol>
 <li>La primera vez que se abre una pantalla, Emanate llama a la función que le has dado (<code>viewModel</code> en Compose,
-   <code>provideViewModel()</code> en las vistas) y guarda esa instancia.</li>
+   <code>provideViewModel(store)</code> en las vistas) y guarda esa instancia.</li>
 <li>Mientras la pantalla existe, después de una rotación o al volver desde el back stack, Emanate reutiliza la instancia
    que guarda. Tu función no se vuelve a llamar.</li>
 <li>Cuando se cierra la pantalla, el ViewModel se destruye. Si se vuelve a abrir, se crea uno nuevo.</li>

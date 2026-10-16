@@ -821,6 +821,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#the-store-of-a-backup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The store of a backup
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#data-and-use-cases" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1583,6 +1594,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#the-store-of-a-backup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The store of a backup
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#data-and-use-cases" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1635,7 +1657,7 @@ function, so you can use Koin, Hilt, Kodein, a manual container or plain constru
 <span class="p">)</span>
 
 <span class="c1">// Android Views</span>
-<span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">provideViewModel</span><span class="p">():</span><span class="w"> </span><span class="n">LoginViewModel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">LoginViewModel</span><span class="p">(</span><span class="n">loginUseCase</span><span class="p">,</span><span class="w"> </span><span class="n">LoginState</span><span class="p">.</span><span class="na">DEFAULT</span><span class="p">)</span>
+<span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">provideViewModel</span><span class="p">(</span><span class="n">store</span><span class="p">:</span><span class="w"> </span><span class="n">EmaStateStore</span><span class="p">):</span><span class="w"> </span><span class="n">LoginViewModel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">LoginViewModel</span><span class="p">(</span><span class="n">loginUseCase</span><span class="p">,</span><span class="w"> </span><span class="n">LoginState</span><span class="p">.</span><span class="na">DEFAULT</span><span class="p">)</span>
 </code></pre></div>
 <h2 id="one-viewmodel-per-screen">One ViewModel per screen<a class="headerlink" href="#one-viewmodel-per-screen" title="Permanent link">&para;</a></h2>
 <p>Emanate calls the function once, when the screen is opened for the first time, and keeps the ViewModel while the screen
@@ -1674,8 +1696,39 @@ keeps the default state in one place:</p>
 <span class="p">)</span>
 
 <span class="c1">// Android Views</span>
-<span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">provideViewModel</span><span class="p">():</span><span class="w"> </span><span class="n">LoginViewModel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">get</span><span class="p">()</span>
+<span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">provideViewModel</span><span class="p">(</span><span class="n">store</span><span class="p">:</span><span class="w"> </span><span class="n">EmaStateStore</span><span class="p">):</span><span class="w"> </span><span class="n">LoginViewModel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">get</span><span class="p">()</span>
 </code></pre></div>
+<h2 id="the-store-of-a-backup">The store of a backup<a class="headerlink" href="#the-store-of-a-backup" title="Permanent link">&para;</a></h2>
+<p>A ViewModel that saves part of its state with a backup receives its <code>EmaStateStore</code> in the constructor. The function
+that creates the ViewModel receives the store of the screen, so pass it on:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">class</span><span class="w"> </span><span class="nc">ProfileCreationViewModel</span><span class="p">(</span>
+<span class="w">    </span><span class="n">initialDataState</span><span class="p">:</span><span class="w"> </span><span class="n">ProfileCreationState</span><span class="p">,</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">stateStore</span><span class="p">:</span><span class="w"> </span><span class="n">EmaStateStore</span>
+<span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">EmaViewModel</span><span class="o">&lt;</span><span class="n">ProfileCreationState</span><span class="p">,</span><span class="w"> </span><span class="n">ProfileCreationAction</span><span class="p">,</span><span class="w"> </span><span class="n">ProfileCreationEvent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">initialDataState</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">    </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">setup</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">source</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">install</span><span class="p">(</span><span class="n">backupOf</span><span class="p">(</span><span class="n">stateStore</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/* ... */</span><span class="w"> </span><span class="p">})</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// Compose</span>
+<span class="n">createComposableScreen</span><span class="p">(</span>
+<span class="w">    </span><span class="n">screenContent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ProfileCreationScreenContent</span><span class="p">(),</span>
+<span class="w">    </span><span class="n">viewModel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">store</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">ProfileCreationViewModel</span><span class="p">(</span><span class="n">ProfileCreationState</span><span class="p">.</span><span class="na">DEFAULT</span><span class="p">,</span><span class="w"> </span><span class="n">store</span><span class="p">)</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="n">onEvent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/* ... */</span><span class="w"> </span><span class="p">}</span>
+<span class="p">)</span>
+
+<span class="c1">// Android Views</span>
+<span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">provideViewModel</span><span class="p">(</span><span class="n">store</span><span class="p">:</span><span class="w"> </span><span class="n">EmaStateStore</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ProfileCreationViewModel</span><span class="p">(</span><span class="n">ProfileCreationState</span><span class="p">.</span><span class="na">DEFAULT</span><span class="p">,</span><span class="w"> </span><span class="n">store</span><span class="p">)</span>
+</code></pre></div>
+<p>With Koin, pass it as a parameter:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">val</span><span class="w"> </span><span class="nv">uiModule</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">module</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">factory</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">(</span><span class="n">stateStore</span><span class="p">:</span><span class="w"> </span><span class="n">EmaStateStore</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">ProfileCreationViewModel</span><span class="p">(</span><span class="k">get</span><span class="p">(),</span><span class="w"> </span><span class="n">stateStore</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">viewModel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">store</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">get</span><span class="o">&lt;</span><span class="n">ProfileCreationViewModel</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">parametersOf</span><span class="p">(</span><span class="n">store</span><span class="p">)</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
+</code></pre></div>
+<p>On the platforms without a store, or in a test that doesn't check the saved state, pass <code>EmaStateStore.None</code>.</p>
 <h2 id="data-and-use-cases">Data and use cases<a class="headerlink" href="#data-and-use-cases" title="Permanent link">&para;</a></h2>
 <p>Repositories are usually singletons and use cases are created when needed:</p>
 <div class="highlight"><pre><span></span><code><span class="kd">val</span><span class="w"> </span><span class="nv">dataModule</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">module</span><span class="w"> </span><span class="p">{</span>

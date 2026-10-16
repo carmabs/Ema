@@ -1756,7 +1756,7 @@
 <span class="w">        </span><span class="n">container</span><span class="p">:</span><span class="w"> </span><span class="n">ViewGroup?</span>
 <span class="w">    </span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CounterFragmentBinding</span><span class="p">.</span><span class="na">inflate</span><span class="p">(</span><span class="n">inflater</span><span class="p">,</span><span class="w"> </span><span class="n">container</span><span class="p">,</span><span class="w"> </span><span class="kc">false</span><span class="p">)</span>
 
-<span class="w">    </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">provideViewModel</span><span class="p">():</span><span class="w"> </span><span class="n">CounterViewModel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CounterViewModel</span><span class="p">()</span>
+<span class="w">    </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">provideViewModel</span><span class="p">(</span><span class="n">store</span><span class="p">:</span><span class="w"> </span><span class="n">EmaStateStore</span><span class="p">):</span><span class="w"> </span><span class="n">CounterViewModel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CounterViewModel</span><span class="p">()</span>
 
 <span class="w">    </span><span class="kd">override</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">navigator</span><span class="p">:</span><span class="w"> </span><span class="n">EmaNavigator</span><span class="o">&lt;</span><span class="n">CounterEvent</span><span class="o">&gt;?</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">null</span>
 
@@ -1799,10 +1799,10 @@
 <td>Inflates the layout.</td>
 </tr>
 <tr>
-<td><code>provideViewModel()</code></td>
+<td><code>provideViewModel(store)</code></td>
 <td style="text-align: center;">✔</td>
 <td style="text-align: center;">✔</td>
-<td>Creates the ViewModel. It is called once, when the screen is opened. See <a href="../../guides/dependency-injection/">Dependency injection</a>.</td>
+<td>Creates the ViewModel with the store of its backup, if it saves its state. It is called once, when the screen is opened. See <a href="../../guides/dependency-injection/">Dependency injection</a>.</td>
 </tr>
 <tr>
 <td><code>navigator</code></td>
@@ -1928,7 +1928,7 @@ before the saved state has been restored.</p>
 
 <span class="w">    </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">createViewBinding</span><span class="p">(</span><span class="n">inflater</span><span class="p">:</span><span class="w"> </span><span class="n">LayoutInflater</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SplashActivityBinding</span><span class="p">.</span><span class="na">inflate</span><span class="p">(</span><span class="n">inflater</span><span class="p">)</span>
 
-<span class="w">    </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">provideViewModel</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EmaViewModelContract</span><span class="p">.</span><span class="na">EMPTY</span>
+<span class="w">    </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">provideViewModel</span><span class="p">(</span><span class="n">store</span><span class="p">:</span><span class="w"> </span><span class="n">EmaStateStore</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EmaViewModelContract</span><span class="p">.</span><span class="na">EMPTY</span>
 
 <span class="w">    </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="n">SplashActivityBinding</span><span class="p">.</span><span class="nf">onState</span><span class="p">(</span><span class="n">data</span><span class="p">:</span><span class="w"> </span><span class="n">EmaState</span><span class="p">.</span><span class="na">EMPTY</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">Unit</span>
 

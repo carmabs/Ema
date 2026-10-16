@@ -2048,7 +2048,7 @@ it, and <code>EmaViewModelContract.EMPTY</code> is the ViewModel of a screen wit
 its screen and survives configuration changes:</p>
 <ol>
 <li>The first time a screen is opened, Emanate calls the function you gave it (<code>viewModel</code> in Compose,
-   <code>provideViewModel()</code> in Views) and keeps that instance.</li>
+   <code>provideViewModel(store)</code> in Views) and keeps that instance.</li>
 <li>While the screen exists, after rotations or when coming back from the back stack, Emanate reuses the instance it
    keeps. Your function is not called again.</li>
 <li>When the screen is closed, the ViewModel is cleared. Opening the screen again creates a new one.</li>
