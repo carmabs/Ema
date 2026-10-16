@@ -27,7 +27,7 @@ import com.carmabs.emanate.core.viewmodel.EmaViewModel
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
 class EmaBackup<S : EmaState> internal constructor(internal val values: List<EmaBackupValue<S, *>>) :
-    EmaSourcePlugin<S> {
+    EmaSourcePlugin<S, EmaRestoreState> {
 
     /**
      * Restores the values of [EmaRestoreState] that belong to this backup, in the order they were added. A value that
@@ -39,7 +39,7 @@ class EmaBackup<S : EmaState> internal constructor(internal val values: List<Ema
         }
     }
 
-    override fun install(setup: SourceSetupScope<S, *, *>) {
+    override fun install(setup: SourceSetupScope<S, EmaRestoreState, Nothing>) {
         setup.reducers { +restoreReducer }
     }
 

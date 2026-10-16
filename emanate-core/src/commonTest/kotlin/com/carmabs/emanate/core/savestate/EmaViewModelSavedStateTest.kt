@@ -108,13 +108,13 @@ private class FormViewModel(
     val received = mutableListOf<EmaAction>()
 
     override fun setup() = source {
-        install(
-            backupOf {
+        plugins {
+            +backupOf {
                 add("name", save = { name.takeIf { it.isNotEmpty() } }, restore = { copy(name = it) })
                 +ageSavedValue
                 add("plan", PlanCodec, save = { plan }, restore = { copy(plan = it) })
             }
-        )
+        }
         middlewares {
             add<EmaAction> { action ->
                 received += action
@@ -375,8 +375,10 @@ class EmaViewModelSavedStateTest {
             configurationOn(testDispatcher()).copy(logger = null)
         ) {
             override fun setup() = source {
-                install(nameBackup)
-                install(nameBackup)
+                plugins {
+                    +nameBackup
+                    +nameBackup
+                }
             }
         }
 
@@ -440,7 +442,7 @@ class EmaViewModelSavedStateTest {
 
     private fun formSource(dispatcher: CoroutineDispatcher) =
         EmaSource<FormState, FormAction, EmaEvent.EMPTY>(FormState(), configurationOn(dispatcher)) {
-            install(nameBackup)
+            plugins { +nameBackup }
             reducers {
                 add<FormAction.NameWritten> { action -> state.copy(name = action.name) }
             }

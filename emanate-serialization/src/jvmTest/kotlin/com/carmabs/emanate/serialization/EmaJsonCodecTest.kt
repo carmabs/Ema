@@ -47,8 +47,8 @@ private class LoginViewModel :
     EmaViewModel<LoginState, LoginAction, EmaEvent.EMPTY>(LoginState(), Emanate.configuration.copy(logger = null)) {
 
     override fun setup() = source {
-        install(
-            backupOf {
+        plugins {
+            +backupOf {
                 add(
                     key = "form",
                     codec = json(),
@@ -62,7 +62,7 @@ private class LoginViewModel :
                     restore = { copy(recentUsers = it) }
                 )
             }
-        )
+        }
         reducers {
             add<LoginAction> { action ->
                 when (action) {

@@ -12,8 +12,8 @@ class ProfileCreationViewModel(initialDataState: ProfileCreationState) :
     override fun setup() = source {
         // The form is restored after the system kills the process, for example while the user changes a permission
         // in the settings
-        install(
-            backupOf {
+        plugins {
+            +backupOf {
                 add(
                     key = "form",
                     codec = json(),
@@ -21,7 +21,7 @@ class ProfileCreationViewModel(initialDataState: ProfileCreationState) :
                     restore = { form -> copy(name = form.name, surname = form.surname) }
                 )
             }
-        )
+        }
 
         reducers {
             add<ProfileCreationInitializer> { initializer ->

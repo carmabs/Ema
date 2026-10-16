@@ -7,6 +7,7 @@ import com.carmabs.emanate.core.source.reducer.ReducerSetupScope
 import com.carmabs.emanate.core.source.sideeffect.SideEffectSetupScope
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
+import kotlin.reflect.KClass
 
 /**
  * Created by Carlos Mateo Benito on 11/10/2026.
@@ -34,7 +35,11 @@ class SourceSetupScope<S : EmaState, A : EmaAction, E : EmaEvent> internal const
 
     private val broadcastSetupScope = BroadcastSetupScope(guard)
 
-    private var pluginList: List<EmaSourcePlugin<S>> = emptyList()
+    private var pluginList: List<EmaSourcePlugin<S, *>> = emptyList()
+
+    private var pluginActionTypeList: List<KClass<out EmaAction>> = emptyList()
+
+    private val pluginSetupScope = PluginSetupScope<S>(guard) { plugin, actionType -> install(plugin, actionType) }
 
     /**
      * Adds middlewares at [position] of the chain, whatever the place where the block is written. Inside each position
@@ -73,13 +78,22 @@ class SourceSetupScope<S : EmaState, A : EmaAction, E : EmaEvent> internal const
     }
 
     /**
-     * Installs [plugin], a feature that the source doesn't know, like an EmaBackup. It adds its pieces to this setup,
-     * so they are kept in order with the ones added before and after it.
+     * Installs plugins, features that the source doesn't know, like an EmaBackup. Each one adds its pieces to this
+     * setup, so they are kept in order with the ones added before and after the block, except the middlewares that the
+     * plugin places first or last.
      */
-    fun install(plugin: EmaSourcePlugin<S>) {
+    fun plugins(block: PluginSetupScope<S>.() -> Unit) {
         guard.checkNotBuilt()
+        pluginSetupScope.block()
+    }
+
+    private fun <P : EmaAction> install(plugin: EmaSourcePlugin<S, P>, actionType: KClass<out EmaAction>?) {
         pluginList = pluginList + plugin
-        plugin.install(this)
+        actionType?.let { pluginActionTypeList = pluginActionTypeList + it }
+        // The same setup seen with the actions of the plugin: its pieces keep their place with the ones of the
+        // developer, and they can only dispatch the actions of the plugin, which the source accepts at runtime
+        @Suppress("UNCHECKED_CAST")
+        plugin.install(this as SourceSetupScope<S, P, Nothing>)
     }
 
     /**
@@ -93,7 +107,8 @@ class SourceSetupScope<S : EmaState, A : EmaAction, E : EmaEvent> internal const
             sideEffects = sideEffectSetupScope.sideEffectList,
             closeEffects = sideEffectSetupScope.closeEffectList,
             broadcastListeners = broadcastSetupScope.broadcastListenerList,
-            plugins = pluginList
+            plugins = pluginList,
+            pluginActionTypes = pluginActionTypeList
         )
     }
 }

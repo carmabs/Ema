@@ -35,11 +35,11 @@ private class NameViewModel :
     ) {
 
     override fun setup() = source {
-        install(
-            backupOf {
+        plugins {
+            +backupOf {
                 add("name", save = { name.takeIf { it.isNotEmpty() } }, restore = { copy(name = it) })
             }
-        )
+        }
         reducers {
             add<NameAction.Written> { action -> state.copy(name = action.name) }
         }

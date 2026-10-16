@@ -30,11 +30,11 @@ private class SearchViewModel :
         configuration = Emanate.configuration.copy(logger = null)
     ) {
     override fun setup() = source {
-        install(
-            backupOf {
+        plugins {
+            +backupOf {
                 add("query", save = { query }, restore = { copy(query = it) })
             }
-        )
+        }
         reducers {
             add<SearchAction.QueryWritten> { action -> state.copy(query = action.query) }
             add<EmaRestoreState> { state.copy(results = listOf("restored")) }

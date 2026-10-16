@@ -3,6 +3,8 @@ package com.carmabs.emanate.test
 import com.carmabs.emanate.core.Emanate
 import com.carmabs.emanate.core.action.EmaAction
 import com.carmabs.emanate.core.initializer.EmaInitializer
+import com.carmabs.emanate.core.source.EmaSourcePlugin
+import com.carmabs.emanate.core.source.SourceSetupScope
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
 import com.carmabs.emanate.core.viewmodel.EmaLifecycle
@@ -66,6 +68,37 @@ private class ForgetfulCartViewModel :
     }
 }
 
+private sealed interface DiscountAction : EmaAction {
+    data object Applied : DiscountAction
+}
+
+/**
+ * Plugin that applies a discount when the cart is created
+ */
+private class DiscountPlugin : EmaSourcePlugin<CartState, DiscountAction> {
+    override fun install(setup: SourceSetupScope<CartState, DiscountAction, Nothing>) {
+        setup.sideEffects {
+            add<CartInitializer> { dispatch(DiscountAction.Applied) }
+        }
+    }
+}
+
+/**
+ * Handles the actions of a plugin, installed or not
+ */
+private class DiscountCartViewModel(private val withPlugin: Boolean) :
+    EmaViewModel<CartState, CartAction, EmaEvent.EMPTY>(CartState(), Emanate.configuration.copy(logger = null)) {
+
+    override fun setup() = source {
+        if (withPlugin) {
+            plugins { +DiscountPlugin() }
+        }
+        reducers {
+            add<DiscountAction.Applied> { state }
+        }
+    }
+}
+
 private abstract class BaseViewModel<S : EmaState, A : EmaAction>(initialState: S) :
     EmaViewModel<S, A, EmaEvent.EMPTY>(initialState, Emanate.configuration.copy(logger = null))
 
@@ -100,6 +133,18 @@ class SetupAssertionsTest {
                 "is broadcast by another source, add listen<ItemBought>() in the broadcasts block.",
             error.message
         )
+    }
+
+    @Test
+    fun `the pieces of the actions of an installed plugin receive them`() {
+        DiscountCartViewModel(withPlugin = true).assertSetup()
+    }
+
+    @Test
+    fun `the pieces of the actions of a plugin that isn't installed are reported`() {
+        val error = assertFailsWith<AssertionError> { DiscountCartViewModel(withPlugin = false).assertSetup() }
+
+        assertEquals(true, error.message?.startsWith("The reducer of Applied never runs"))
     }
 
     @Test

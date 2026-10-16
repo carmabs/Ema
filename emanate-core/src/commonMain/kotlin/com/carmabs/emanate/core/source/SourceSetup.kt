@@ -27,7 +27,8 @@ class SourceSetup<S : EmaState, A : EmaAction, E : EmaEvent> internal constructo
     internal val sideEffects: List<SideEffect<S, A, E, *>>,
     internal val closeEffects: List<suspend SideEffectScope<S, A, E>.() -> Unit>,
     internal val broadcastListeners: List<KClass<out EmaAction>>,
-    internal val plugins: List<EmaSourcePlugin<S>>
+    internal val plugins: List<EmaSourcePlugin<S, *>>,
+    internal val pluginActionTypes: List<KClass<out EmaAction>>
 )
 
 /**
