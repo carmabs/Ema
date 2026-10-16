@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.carmabs.emanate.android.ui.EmaFragment
 import com.carmabs.emanate.core.navigator.EmaNavigator
+import com.carmabs.emanate.core.savestate.EmaStateStore
 import com.carmabs.emanate.core.state.EmaState
 import com.carmabs.emanate.presentation.choice.ImplementationChoiceAction
 import com.carmabs.emanate.presentation.choice.ImplementationChoiceEvent
@@ -45,7 +46,7 @@ class ImplementationChoiceFragment :
 
     override fun ImplementationChoiceFragmentBinding.onState(state: EmaState.EMPTY) = Unit
 
-    override fun provideViewModel(): ImplementationChoiceViewModel = get()
+    override fun provideViewModel(store: EmaStateStore): ImplementationChoiceViewModel = get()
 
     override suspend fun ImplementationChoiceFragmentBinding.onEvent(event: ImplementationChoiceEvent) {
         navigate(event)

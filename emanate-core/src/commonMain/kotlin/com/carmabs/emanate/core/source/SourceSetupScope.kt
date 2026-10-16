@@ -1,17 +1,20 @@
 package com.carmabs.emanate.core.source
 
 import com.carmabs.emanate.core.action.EmaAction
-import com.carmabs.emanate.core.source.middleware.MiddlewareListScope
-import com.carmabs.emanate.core.source.reducer.ReducerListScope
-import com.carmabs.emanate.core.source.sideeffect.SideEffectListScope
+import com.carmabs.emanate.core.source.middleware.MiddlewarePosition
+import com.carmabs.emanate.core.source.middleware.MiddlewareSetupScope
+import com.carmabs.emanate.core.source.reducer.ReducerSetupScope
+import com.carmabs.emanate.core.source.sideeffect.SideEffectSetupScope
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
+import kotlin.reflect.KClass
 
 /**
  * Created by Carlos Mateo Benito on 11/10/2026.
  *
- * Adds the middlewares, reducers, side effects and broadcast listeners of the source, each one in its own block. The
- * blocks can be used more than once: what they add is kept in order. It can only be used inside setup.
+ * Adds the middlewares, reducers, side effects and broadcast listeners of the source, each one in its own block, and
+ * installs its plugins. The blocks can be used more than once: what they add is kept in order. It can only be used
+ * inside setup.
  *
  * <p>
  * Copyright (c) 2026 by Carmabs. All rights reserved.
@@ -24,44 +27,79 @@ class SourceSetupScope<S : EmaState, A : EmaAction, E : EmaEvent> internal const
 
     private val guard = SetupGuard()
 
-    private val middlewareListScope = MiddlewareListScope<S, A>(guard)
+    private val middlewareSetupScopes = MiddlewarePosition.entries.associateWith { MiddlewareSetupScope<S, A>(guard) }
 
-    private val reducerListScope = ReducerListScope<S>(guard)
+    private val reducerSetupScope = ReducerSetupScope<S>(guard)
 
-    private val sideEffectListScope = SideEffectListScope<S, A, E>(guard)
+    private val sideEffectSetupScope = SideEffectSetupScope<S, A, E>(guard)
 
-    private val broadcastListScope = BroadcastListScope(guard)
+    private val broadcastSetupScope = BroadcastSetupScope(guard)
+
+    private var pluginList: List<EmaSourcePlugin<S, *>> = emptyList()
+
+    private var pluginActionTypeList: List<KClass<out EmaAction>> = emptyList()
+
+    private val pluginSetupScope = PluginSetupScope<S>(guard) { plugin, actionType -> install(plugin, actionType) }
 
     /**
-     * Adds middlewares. They handle the actions in the order they are added, before the reducers.
+     * Adds middlewares at [position] of the chain, whatever the place where the block is written. Inside each position
+     * they handle the actions in the order they are added, and all of them run before the reducers.
      */
-    fun middlewares(block: MiddlewareListScope<S, A>.() -> Unit) {
+    fun middlewares(
+        position: MiddlewarePosition = MiddlewarePosition.InPlace,
+        block: MiddlewareSetupScope<S, A>.() -> Unit
+    ) {
         guard.checkNotBuilt()
-        middlewareListScope.block()
+        middlewareSetupScopes.getValue(position).block()
     }
 
     /**
      * Adds reducers. Each one only receives the actions of its type, in the order they are added.
      */
-    fun reducers(block: ReducerListScope<S>.() -> Unit) {
+    fun reducers(block: ReducerSetupScope<S>.() -> Unit) {
         guard.checkNotBuilt()
-        reducerListScope.block()
+        reducerSetupScope.block()
     }
 
     /**
      * Adds side effects. Each one runs asynchronously after the reducers of the actions of its type.
      */
-    fun sideEffects(block: SideEffectListScope<S, A, E>.() -> Unit) {
+    fun sideEffects(block: SideEffectSetupScope<S, A, E>.() -> Unit) {
         guard.checkNotBuilt()
-        sideEffectListScope.block()
+        sideEffectSetupScope.block()
     }
 
     /**
      * Adds the types of the broadcast actions the source listens to.
      */
-    fun broadcasts(block: BroadcastListScope.() -> Unit) {
+    fun broadcasts(block: BroadcastSetupScope.() -> Unit) {
         guard.checkNotBuilt()
-        broadcastListScope.block()
+        broadcastSetupScope.block()
+    }
+
+    /**
+     * Installs plugins, features that the source doesn't know, like an EmaBackup. Each one adds its pieces to this
+     * setup, so they are kept in order with the ones added before and after the block, except the middlewares that the
+     * plugin places first or last.
+     */
+    fun plugins(block: PluginSetupScope<S>.() -> Unit) {
+        guard.checkNotBuilt()
+        pluginSetupScope.block()
+    }
+
+    /**
+     * Plugins installed so far, including the one being installed
+     */
+    internal val installedPlugins: List<EmaSourcePlugin<S, *>>
+        get() = pluginList
+
+    private fun <P : EmaAction> install(plugin: EmaSourcePlugin<S, P>, actionType: KClass<out EmaAction>?) {
+        pluginList = pluginList + plugin
+        actionType?.let { pluginActionTypeList = pluginActionTypeList + it }
+        // The same setup seen with the actions of the plugin: its pieces keep their place with the ones of the
+        // developer, and they can only dispatch the actions of the plugin, which the source accepts at runtime
+        @Suppress("UNCHECKED_CAST")
+        plugin.install(this as SourceSetupScope<S, P, Nothing>)
     }
 
     /**
@@ -70,10 +108,13 @@ class SourceSetupScope<S : EmaState, A : EmaAction, E : EmaEvent> internal const
     internal fun build(): SourceSetup<S, A, E> {
         guard.build()
         return SourceSetup(
-            middlewares = middlewareListScope.middlewareList,
-            reducers = reducerListScope.reducerList,
-            sideEffects = sideEffectListScope.sideEffectList,
-            broadcastListeners = broadcastListScope.broadcastListenerList
+            middlewares = MiddlewarePosition.entries.flatMap { middlewareSetupScopes.getValue(it).middlewareList },
+            reducers = reducerSetupScope.reducerList,
+            sideEffects = sideEffectSetupScope.sideEffectList,
+            closeEffects = sideEffectSetupScope.closeEffectList,
+            broadcastListeners = broadcastSetupScope.broadcastListenerList,
+            plugins = pluginList,
+            pluginActionTypes = pluginActionTypeList
         )
     }
 }

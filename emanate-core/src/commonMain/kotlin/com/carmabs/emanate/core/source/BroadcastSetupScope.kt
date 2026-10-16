@@ -15,7 +15,7 @@ import kotlin.reflect.KClass
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
 @EmaSourceDsl
-class BroadcastListScope internal constructor(private val guard: SetupGuard) {
+class BroadcastSetupScope internal constructor(private val guard: SetupGuard) {
 
     internal var broadcastListenerList: List<KClass<out EmaAction>> = emptyList()
         private set

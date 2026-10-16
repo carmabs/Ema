@@ -1,6 +1,7 @@
 package com.carmabs.emanate.core.source
 
 import com.carmabs.emanate.core.action.EmaAction
+import com.carmabs.emanate.core.configurationOn
 import com.carmabs.emanate.core.error.EmaErrorPolicy
 import com.carmabs.emanate.core.model.EmaConfiguration
 import com.carmabs.emanate.core.state.EmaEvent
@@ -37,8 +38,7 @@ class EmaSourceThrowTest {
             runTest {
                 val source = EmaSource<ThrowState, BrokenAction, EmaEvent.EMPTY>(
                     ThrowState(),
-                    throwErrors,
-                    UnconfinedTestDispatcher(testScheduler)
+                    configurationOn(UnconfinedTestDispatcher(testScheduler), throwErrors)
                 ) {
                     reducers {
                         add<BrokenAction> { error("broken reducer") }
@@ -60,8 +60,7 @@ class EmaSourceThrowTest {
             runTest {
                 val source = EmaSource<ThrowState, EmaAction, EmaEvent.EMPTY>(
                     ThrowState(),
-                    throwErrors,
-                    UnconfinedTestDispatcher(testScheduler)
+                    configurationOn(UnconfinedTestDispatcher(testScheduler), throwErrors)
                 ) {
                     reducers {
                         add<BrokenAction> { error("broken reducer") }

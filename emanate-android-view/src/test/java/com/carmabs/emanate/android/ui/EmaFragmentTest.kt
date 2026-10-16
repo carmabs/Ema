@@ -31,6 +31,7 @@ import com.carmabs.emanate.android.initializer.bundle.strategy.BundleSerializerS
 import com.carmabs.emanate.android.permission.EmaAndroidPermissionManager
 import com.carmabs.emanate.core.manager.PermissionState
 import com.carmabs.emanate.core.navigator.EmaNavigator
+import com.carmabs.emanate.core.savestate.EmaStateStore
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotSame
@@ -70,7 +71,7 @@ class TestFragment : EmaFragment<TestBinding, ViewState, ViewTestViewModel, View
 
     override fun createViewBinding(inflater: LayoutInflater, container: ViewGroup?) = TestBinding(inflater.context)
 
-    override fun provideViewModel() = ViewTestViewModel()
+    override fun provideViewModel(store: EmaStateStore) = ViewTestViewModel()
 
     override fun TestBinding.onState(state: ViewState) {
         states += state
@@ -89,7 +90,7 @@ class TestFragment : EmaFragment<TestBinding, ViewState, ViewTestViewModel, View
 class SilentFragment : EmaFragment<TestBinding, ViewState, ViewTestViewModel, ViewEvent>() {
     override val navigator: EmaNavigator<ViewEvent>? = null
     override fun createViewBinding(inflater: LayoutInflater, container: ViewGroup?) = TestBinding(inflater.context)
-    override fun provideViewModel() = ViewTestViewModel()
+    override fun provideViewModel(store: EmaStateStore) = ViewTestViewModel()
     override fun TestBinding.onState(state: ViewState) = Unit
 }
 

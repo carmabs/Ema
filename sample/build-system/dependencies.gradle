@@ -6,5 +6,6 @@ rootProject.ext {
             emanateAndroidCompose: ':emanate-android-compose',
             emanateCore          : ':emanate-core',
             emanateTest          : ':emanate-test',
+            emanateSerialization : ':emanate-serialization',
     ]
 }

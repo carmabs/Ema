@@ -7,6 +7,7 @@ import com.carmabs.emanate.core.model.EmaConfiguration
 import com.carmabs.emanate.core.source.EmaSource
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
+import com.carmabs.emanate.core.viewmodel.EmaLifecycle
 import com.carmabs.emanate.core.viewmodel.EmaViewModel
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -37,8 +38,7 @@ private sealed interface ProfileEvent : EmaEvent {
 private class ProfileViewModel(configuration: EmaConfiguration = Emanate.configuration) :
     EmaViewModel<ProfileState, ProfileAction, ProfileEvent>(
         initialDataState = ProfileState(),
-        configuration = configuration,
-        logger = null
+        configuration = configuration.copy(logger = null)
     ) {
     override fun setup() = source {
         reducers {
@@ -129,10 +129,10 @@ class EmaRecorderTest {
         val recorder = viewModel.record()
 
         viewModel.onResumeView()
-        viewModel.onCleared()
+        viewModel.close()
         advanceUntilIdle()
 
-        recorder.assertActions(EmaAction.Lifecycle.Resumed, EmaAction.Lifecycle.Destroyed)
+        recorder.assertActions(EmaLifecycle.Resumed, EmaLifecycle.Destroyed)
     }
 }
 

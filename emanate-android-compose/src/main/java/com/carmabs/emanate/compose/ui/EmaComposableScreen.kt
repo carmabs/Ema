@@ -22,7 +22,9 @@ import com.carmabs.emanate.compose.utils.Compose
 import com.carmabs.emanate.core.action.EmaAction
 import com.carmabs.emanate.core.action.EmaActionDispatcher
 import com.carmabs.emanate.core.action.EmaEventConsumer
+import com.carmabs.emanate.core.initializer.EmaInitializer
 import com.carmabs.emanate.core.model.EmaBackHandlerStrategy
+import com.carmabs.emanate.core.savestate.EmaStateStore
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
 import com.carmabs.emanate.core.utils.EmaUtils
@@ -30,7 +32,7 @@ import com.carmabs.emanate.core.viewmodel.EmaViewModelContract
 
 @Composable
 fun <S : EmaState, A : EmaAction, E : EmaEvent> EmaComposableScreen(
-    initializer: EmaAction.Initializer? = null,
+    initializer: EmaInitializer? = null,
     vm: EmaViewModelContract<S, E>,
     actions: EmaActionDispatcher<A>,
     screenContent: EmaComposableScreenContent<S, A, E>,
@@ -63,8 +65,8 @@ fun <S : EmaState, A : EmaAction, E : EmaEvent> EmaComposableScreen(
 
 @Composable
 fun <A : EmaAction, S : EmaState, E : EmaEvent> EmaComposableScreen(
-    initializer: EmaAction.Initializer? = null,
-    vm: () -> EmaViewModelContract<S, E>,
+    initializer: EmaInitializer? = null,
+    vm: (store: EmaStateStore) -> EmaViewModelContract<S, E>,
     screenContent: EmaComposableScreenContent<S, A, E>,
     onEvent: (E) -> Unit,
     saveStateSupport: SavedStateSupport<S, E>? = null,
@@ -81,9 +83,8 @@ fun <A : EmaAction, S : EmaState, E : EmaEvent> EmaComposableScreen(
         }
     ) {
         val androidVm = EmaScreenProvider.provideComposableViewModel(
-            viewModel = remember {
-                vm.invoke()
-            },
+            key = EmaScreenProvider.viewModelKey(screenContent),
+            viewModel = vm,
             saveStateSupport?.savedStateHandle
         )
 
@@ -113,7 +114,7 @@ fun <A : EmaAction, S : EmaState, E : EmaEvent> EmaComposableScreen(
 
 @Composable
 private fun <S : EmaState, A : EmaAction, E : EmaEvent> RenderScreen(
-    initializer: EmaAction.Initializer?,
+    initializer: EmaInitializer?,
     screenContent: EmaComposableScreenContent<S, A, E>,
     vm: EmaViewModelContract<S, E>,
     immutableActions: EmaImmutableActionDispatcher<A>,

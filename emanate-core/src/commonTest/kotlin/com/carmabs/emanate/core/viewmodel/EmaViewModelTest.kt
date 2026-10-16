@@ -3,6 +3,8 @@ package com.carmabs.emanate.core.viewmodel
 import com.carmabs.emanate.core.Emanate
 import com.carmabs.emanate.core.action.EmaAction
 import com.carmabs.emanate.core.concurrency.EmaDispatchers
+import com.carmabs.emanate.core.configurationOn
+import com.carmabs.emanate.core.initializer.EmaInitializer
 import com.carmabs.emanate.core.logging.EmaLogger
 import com.carmabs.emanate.core.model.EmaConfiguration
 import com.carmabs.emanate.core.source.middleware.middlewareDelayOf
@@ -40,7 +42,7 @@ private sealed interface TestEvent : EmaEvent {
     data object Loaded : TestEvent
 }
 
-private data class TestInitializer(val text: String) : EmaAction.Initializer
+private data class TestInitializer(val text: String) : EmaInitializer
 
 /**
  * Result sent by the view model of other screen
@@ -61,7 +63,7 @@ private class LoadUseCase {
  * View model of other screen that sends a result
  */
 private class SenderViewModel(dispatcher: CoroutineDispatcher) :
-    EmaViewModel<TestState, TestAction, TestEvent>(TestState(), dispatcher = dispatcher, logger = null) {
+    EmaViewModel<TestState, TestAction, TestEvent>(TestState(), configurationOn(dispatcher).copy(logger = null)) {
 
     override fun setup() = source {
         sideEffects {
@@ -74,34 +76,37 @@ private class SenderViewModel(dispatcher: CoroutineDispatcher) :
  * View model with a side effect for every lifecycle action
  */
 private class LifecycleViewModel(dispatcher: CoroutineDispatcher) :
-    EmaViewModel<TestState, TestAction, TestEvent>(TestState(), dispatcher = dispatcher, logger = null) {
+    EmaViewModel<TestState, TestAction, TestEvent>(TestState(), configurationOn(dispatcher).copy(logger = null)) {
 
     val launched = mutableListOf<String>()
 
     override fun setup() = source {
         sideEffects {
-            add<EmaAction.Lifecycle> { action -> launched += action::class.simpleName.orEmpty() }
+            add<EmaLifecycle> { action -> launched += action::class.simpleName.orEmpty() }
         }
     }
 }
 
 /**
- * View model that sends a result when it is destroyed, after [duration]
+ * View model that sends a result when it is closed, after [duration]
  */
 private class ClosingViewModel(
     dispatcher: CoroutineDispatcher,
     private val duration: Duration,
     configuration: EmaConfiguration = Emanate.configuration
-) : EmaViewModel<TestState, TestAction, TestEvent>(TestState(), configuration, dispatcher, logger = null) {
+) : EmaViewModel<TestState, TestAction, TestEvent>(
+    TestState(),
+    configurationOn(dispatcher, configuration).copy(logger = null)
+) {
 
     val finished = mutableListOf<String>()
 
     override fun setup() = source {
         sideEffects {
-            add<EmaAction.Lifecycle.Destroyed> {
+            onClose {
                 delay(duration)
                 broadcast(TextSent("closed"))
-                finished += "destroyed"
+                finished += "closed"
             }
         }
     }
@@ -112,7 +117,7 @@ private class TestViewModel(
     private val loadUseCase: LoadUseCase = LoadUseCase(),
     logger: EmaLogger? = null,
     private val renderOnInitialization: Boolean = true
-) : EmaViewModel<TestState, TestAction, TestEvent>(TestState(), dispatcher = dispatcher, logger = logger) {
+) : EmaViewModel<TestState, TestAction, TestEvent>(TestState(), configurationOn(dispatcher).copy(logger = logger)) {
 
     val received = mutableListOf<String>()
 
@@ -126,11 +131,11 @@ private class TestViewModel(
 
     override fun setup() = source {
         middlewares {
-            add<EmaAction.Lifecycle> { action ->
+            add<EmaLifecycle> { action ->
                 received += "lifecycle ${action::class.simpleName}"
                 next()
             }
-            add<EmaAction.Initializer> { action ->
+            add<EmaInitializer> { action ->
                 received += "initializer $action"
                 next()
             }
@@ -142,7 +147,7 @@ private class TestViewModel(
             add<TestAction.Slow> { state.copy(count = state.count + 1) }
             add<TestAction.Update> { action -> state.copy(text = action.text) }
             add<TestInitializer> { action -> state.copy(text = action.text) }
-            add<EmaAction.Lifecycle.Resumed> { state.copy(resumed = true) }
+            add<EmaLifecycle.Resumed> { state.copy(resumed = true) }
             add<TextSent> { action -> state.copy(text = action.text) }
             add<TestAction.Load> { state.copy(text = "loading") }
         }
@@ -174,7 +179,7 @@ class EmaViewModelTest {
         runCurrent()
 
         assertEquals(TestState(count = 1, text = "text"), viewModel.stateFlow.value)
-        viewModel.onCleared()
+        viewModel.close()
     }
 
     @Test
@@ -196,7 +201,7 @@ class EmaViewModelTest {
         advanceTimeBy(1500)
         runCurrent()
         assertEquals(1, viewModel.stateFlow.value.count)
-        viewModel.onCleared()
+        viewModel.close()
     }
 
     @Test
@@ -209,7 +214,7 @@ class EmaViewModelTest {
 
         assertEquals("loaded", viewModel.stateFlow.value.text)
         assertEquals(listOf(TestEvent.Loaded), viewModel.eventFlow.first())
-        viewModel.onCleared()
+        viewModel.close()
     }
 
     @Test
@@ -225,7 +230,7 @@ class EmaViewModelTest {
         runCurrent()
 
         assertEquals(listOf(TestEvent.Loaded), viewModel.eventFlow.first())
-        viewModel.onCleared()
+        viewModel.close()
     }
 
     @Test
@@ -250,7 +255,7 @@ class EmaViewModelTest {
             viewModel.received
         )
         assertEquals(TestState(text = "initial", resumed = true), viewModel.stateFlow.value)
-        viewModel.onCleared()
+        viewModel.close()
     }
 
     @Test
@@ -262,7 +267,7 @@ class EmaViewModelTest {
         runCurrent()
 
         assertEquals("first", viewModel.stateFlow.value.text)
-        viewModel.onCleared()
+        viewModel.close()
     }
 
     @Test
@@ -272,8 +277,8 @@ class EmaViewModelTest {
         viewModel.onCreated()
         runCurrent()
 
-        assertEquals(listOf("initializer ${EmaAction.Initializer.EMPTY}"), viewModel.received)
-        viewModel.onCleared()
+        assertEquals(listOf("initializer ${EmaInitializer.EMPTY}"), viewModel.received)
+        viewModel.close()
     }
 
     @Test
@@ -281,34 +286,63 @@ class EmaViewModelTest {
         val viewModel = LifecycleViewModel(testDispatcher())
 
         viewModel.onResumeView()
-        viewModel.onCleared()
+        viewModel.close()
         runCurrent()
 
         assertEquals(listOf("Resumed", "Destroyed"), viewModel.launched)
     }
 
     @Test
-    fun `the side effects of destroyed can finish after the view model is cleared`() = runTest {
+    fun `the work of onClose can finish after the view model is cleared`() = runTest {
         val receiver = TestViewModel(testDispatcher())
         receiver.onCreated(null)
         val closing = ClosingViewModel(testDispatcher(), 1.seconds)
         closing.onCreated(null)
 
-        closing.onCleared()
+        closing.close()
         advanceTimeBy(1500)
         runCurrent()
 
-        assertEquals(listOf("destroyed"), closing.finished)
+        assertEquals(listOf("closed"), closing.finished)
         assertEquals("closed", receiver.stateFlow.value.text)
-        receiver.onCleared()
+        receiver.close()
     }
 
     @Test
-    fun `the time of the side effects of destroyed is set in the configuration`() = runTest {
-        val closing = ClosingViewModel(testDispatcher(), 3.seconds, EmaConfiguration(destroyedTimeout = 2.seconds))
+    fun `the side effects of destroyed are cancelled unless they survive close`() = runTest {
+        val finished = mutableListOf<String>()
+        val viewModel = object : EmaViewModel<TestState, TestAction, TestEvent>(
+            TestState(),
+            configurationOn(testDispatcher()).copy(logger = null)
+        ) {
+            override fun setup() = source {
+                sideEffects {
+                    add<EmaLifecycle.Destroyed> {
+                        delay(1000)
+                        finished += "cancelled"
+                    }
+                    add<EmaLifecycle.Destroyed>(survivesClose = true) {
+                        delay(1000)
+                        finished += "survived"
+                    }
+                }
+            }
+        }
+        viewModel.onCreated(null)
+
+        viewModel.close()
+        advanceTimeBy(1500)
+        runCurrent()
+
+        assertEquals(listOf("survived"), finished)
+    }
+
+    @Test
+    fun `the time of the work that survives close is set in the configuration`() = runTest {
+        val closing = ClosingViewModel(testDispatcher(), 3.seconds, EmaConfiguration(closeTimeout = 2.seconds))
         closing.onCreated(null)
 
-        closing.onCleared()
+        closing.close()
         advanceUntilIdle()
 
         assertTrue(closing.finished.isEmpty())
@@ -334,7 +368,7 @@ class EmaViewModelTest {
 
         assertTrue(logs.any { "printed Increment" in it })
         assertEquals(2, logs.count { "printed TestState" in it })
-        viewModel.onCleared()
+        viewModel.close()
     }
 
     @Test
@@ -357,32 +391,32 @@ class EmaViewModelTest {
         // Run by the test dispatcher of the configuration and logged by its logger, not by the ones of Emanate
         assertEquals(1, viewModel.stateFlow.value.count)
         assertTrue(logs.isNotEmpty())
-        viewModel.onCleared()
+        viewModel.close()
     }
 
     @Test
     fun `the view model reads the configuration when it is created although its source is created later`() = runTest {
         val closing = ClosingViewModel(testDispatcher(), 3.seconds)
-        Emanate.initForTest(EmaConfiguration(destroyedTimeout = 2.seconds))
+        Emanate.initForTest(EmaConfiguration(closeTimeout = 2.seconds))
         try {
             // The source is created now, with the configuration of the view model: 5 seconds
             closing.onCreated(null)
 
-            closing.onCleared()
+            closing.close()
             advanceUntilIdle()
 
-            assertEquals(listOf("destroyed"), closing.finished)
+            assertEquals(listOf("closed"), closing.finished)
         } finally {
             Emanate.reset()
         }
     }
 
     @Test
-    fun `the side effects of destroyed are cancelled after 5 seconds`() = runTest {
+    fun `the work that survives close is cancelled after 5 seconds`() = runTest {
         val closing = ClosingViewModel(testDispatcher(), 10.seconds)
         closing.onCreated(null)
 
-        closing.onCleared()
+        closing.close()
         advanceUntilIdle()
 
         assertTrue(closing.finished.isEmpty())
@@ -394,7 +428,7 @@ class EmaViewModelTest {
         viewModel.dispatch(TestAction.Increment)
         runCurrent()
 
-        viewModel.onCleared()
+        viewModel.close()
         viewModel.dispatch(TestAction.Increment)
         runCurrent()
 
@@ -421,7 +455,7 @@ class EmaViewModelTest {
         viewModel.dispatch(TestAction.Increment)
         runCurrent()
         assertTrue(viewModel.shouldRenderState)
-        viewModel.onCleared()
+        viewModel.close()
     }
 
     @Test
@@ -435,7 +469,7 @@ class EmaViewModelTest {
         assertEquals(setOf("TestViewModel"), logs.map { it.first }.toSet())
         assertTrue(logs.any { "Increment" in it.second })
         assertTrue(logs.any { "count=1" in it.second })
-        viewModel.onCleared()
+        viewModel.close()
     }
 
     @Test
@@ -447,7 +481,7 @@ class EmaViewModelTest {
         runCurrent()
 
         assertEquals(setOf("EMA_TestViewModel"), tags)
-        viewModel.onCleared()
+        viewModel.close()
     }
 
     @Test
@@ -465,7 +499,7 @@ class EmaViewModelTest {
         runCurrent()
         val stateAfter = logs.dropWhile { "State after apply action" !in it }
         assertTrue(stateAfter.any { "count=1" in it })
-        viewModel.onCleared()
+        viewModel.close()
     }
 
     @Test
@@ -479,8 +513,8 @@ class EmaViewModelTest {
         runCurrent()
 
         assertEquals("result", receiver.stateFlow.value.text)
-        sender.onCleared()
-        receiver.onCleared()
+        sender.close()
+        receiver.close()
     }
 
     @Test
@@ -490,11 +524,11 @@ class EmaViewModelTest {
         receiver.onCreated()
         sender.onCreated()
 
-        receiver.onCleared()
+        receiver.close()
         sender.dispatch(TestAction.Update("result"))
         runCurrent()
 
         assertEquals("", receiver.stateFlow.value.text)
-        sender.onCleared()
+        sender.close()
     }
 }

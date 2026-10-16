@@ -8,6 +8,7 @@ import com.carmabs.domain.repository.Repository
 import com.carmabs.domain.usecase.GetUserFriendsUseCase
 import com.carmabs.domain.usecase.LoginUseCase
 import com.carmabs.emanate.core.model.EmaResult
+import com.carmabs.emanate.core.savestate.EmaStateStore
 import com.carmabs.emanate.presentation.home.HomeInitializer
 import com.carmabs.emanate.presentation.home.HomeState
 import com.carmabs.emanate.presentation.home.HomeViewModel
@@ -92,7 +93,7 @@ class LoginViewModelTest {
 
         recorder.assertState { !it.isLoading && it.overlap == null }
         recorder.assertEvents(LoginEvent.Message(admin.name), LoginEvent.LoginSuccess(admin))
-        viewModel.onCleared()
+        viewModel.close()
     }
 
     @Test
@@ -130,7 +131,7 @@ class LoginViewModelTest {
         val recorder = viewModel.record()
         val homeViewModel = HomeViewModel(GetUserFriendsUseCase(repository), HomeState.DEFAULT)
         homeViewModel.onCreated(HomeInitializer.HomeUser(admin))
-        val profileCreationViewModel = ProfileCreationViewModel(ProfileCreationState.DEFAULT)
+        val profileCreationViewModel = ProfileCreationViewModel(ProfileCreationState.DEFAULT, EmaStateStore.None)
         profileCreationViewModel.onCreated(ProfileCreationInitializer.UserBasic)
 
         profileCreationViewModel.dispatch(ProfileCreationAction.UserNameWritten("Ana"))
@@ -142,15 +143,15 @@ class LoginViewModelTest {
         // The profile screen broadcasts the user to the home screen, which broadcasts it to the login screen
         assertEquals(listOf(friend), homeViewModel.stateFlow.value.userList)
         recorder.assertEvents(LoginEvent.LastUserAdded(friend))
-        profileCreationViewModel.onCleared()
-        homeViewModel.onCleared()
-        viewModel.onCleared()
+        profileCreationViewModel.close()
+        homeViewModel.close()
+        viewModel.close()
     }
 
     @Test
     fun `the view models listen to the broadcast actions they handle`() {
         loginViewModel().assertSetup()
         HomeViewModel(GetUserFriendsUseCase(repository), HomeState.DEFAULT).assertSetup()
-        ProfileCreationViewModel(ProfileCreationState.DEFAULT).assertSetup()
+        ProfileCreationViewModel(ProfileCreationState.DEFAULT, EmaStateStore.None).assertSetup()
     }
 }

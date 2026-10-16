@@ -19,24 +19,21 @@ import kotlin.reflect.KClass
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
 @EmaSourceDsl
-class ReducerListScope<S : EmaState> internal constructor(private val guard: SetupGuard) {
+class ReducerSetupScope<S : EmaState> internal constructor(private val guard: SetupGuard) {
 
     internal var reducerList: List<EmaReducer<S, *>> = emptyList()
         private set
 
     /**
-     * Adds reducers already created.
-     */
-    fun add(vararg reducer: EmaReducer<S, *>) {
-        guard.checkNotBuilt()
-        reducerList = reducerList + reducer
-    }
-
-    /**
      * Adds a reducer already created.
      */
     operator fun EmaReducer<S, *>.unaryPlus() {
-        add(this)
+        include(this)
+    }
+
+    private fun include(reducer: EmaReducer<S, *>) {
+        guard.checkNotBuilt()
+        reducerList = reducerList + reducer
     }
 
     /**
@@ -44,7 +41,7 @@ class ReducerListScope<S : EmaState> internal constructor(private val guard: Set
      */
     @PublishedApi
     internal fun <F : EmaAction> add(filter: KClass<F>, reduceAction: ReducerScope<S>.(F) -> S) {
-        add(reducerOf(filter, reduceAction))
+        include(reducerOf(filter, reduceAction))
     }
 
     /**

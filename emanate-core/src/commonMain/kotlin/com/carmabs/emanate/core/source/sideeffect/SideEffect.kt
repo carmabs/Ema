@@ -39,6 +39,14 @@ interface SideEffect<in S : EmaState, out A : EmaAction, out E : EmaEvent, F : E
         get() = null
 
     /**
+     * Whether it can finish after the source is closed, like a request that saves what the user has done, up to its
+     * timeout or the closeTimeout of the configuration. Otherwise close cancels it. Work that must start when the
+     * source is closed goes in onClose.
+     */
+    val survivesClose: Boolean
+        get() = false
+
+    /**
      * Called when the side effect doesn't finish before [timeout].
      */
     fun SideEffectScope<S, A, E>.onTimeout(action: F) = Unit
@@ -50,6 +58,7 @@ internal fun <S : EmaState, A : EmaAction, E : EmaEvent, F : EmaAction> sideEffe
     actionType: KClass<F>,
     concurrency: SideEffectConcurrency,
     timeout: Duration?,
+    survivesClose: Boolean,
     onTimeout: (SideEffectScope<S, A, E>.(F) -> Unit)?,
     effect: suspend SideEffectScope<S, A, E>.(F) -> Unit
 ): SideEffect<S, A, E, F> = object : SideEffect<S, A, E, F> {
@@ -59,6 +68,8 @@ internal fun <S : EmaState, A : EmaAction, E : EmaEvent, F : EmaAction> sideEffe
     override val concurrency: SideEffectConcurrency = concurrency
 
     override val timeout: Duration? = timeout
+
+    override val survivesClose: Boolean = survivesClose
 
     override fun SideEffectScope<S, A, E>.onTimeout(action: F) {
         onTimeout?.invoke(this, action)

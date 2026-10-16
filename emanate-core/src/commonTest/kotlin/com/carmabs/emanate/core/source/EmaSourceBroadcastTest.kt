@@ -3,6 +3,7 @@ package com.carmabs.emanate.core.source
 import com.carmabs.emanate.core.Emanate
 import com.carmabs.emanate.core.action.EmaAction
 import com.carmabs.emanate.core.broadcast.EmaActionBroadcaster
+import com.carmabs.emanate.core.configurationOn
 import com.carmabs.emanate.core.model.EmaConfiguration
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
@@ -42,8 +43,7 @@ class EmaSourceBroadcastTest {
     private fun TestScope.senderSource(configuration: EmaConfiguration = Emanate.configuration) =
         EmaSource<ListState, SenderAction, NoEvent>(
             ListState(),
-            configuration,
-            UnconfinedTestDispatcher(testScheduler)
+            configurationOn(UnconfinedTestDispatcher(testScheduler), configuration)
         ) {
             sideEffects {
                 add<SenderAction.Create> { action ->
@@ -55,8 +55,7 @@ class EmaSourceBroadcastTest {
     private fun TestScope.receiverSource(configuration: EmaConfiguration = Emanate.configuration) =
         EmaSource<ListState, ReceiverAction, NoEvent>(
             ListState(),
-            configuration,
-            UnconfinedTestDispatcher(testScheduler)
+            configurationOn(UnconfinedTestDispatcher(testScheduler), configuration)
         ) {
             middlewares {
                 add<UserBroadcast> { action ->

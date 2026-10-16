@@ -31,6 +31,8 @@ import com.carmabs.emanate.compose.provider.EmaScreenProvider
 import com.carmabs.emanate.compose.ui.EmaComposableScreen
 import com.carmabs.emanate.compose.ui.EmaComposableScreenContent
 import com.carmabs.emanate.core.action.EmaAction
+import com.carmabs.emanate.core.initializer.EmaInitializer
+import com.carmabs.emanate.core.savestate.EmaStateStore
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
 import com.carmabs.emanate.core.viewmodel.EmaViewModelContract
@@ -56,7 +58,7 @@ fun NavController.navigate(
 
 fun <S : EmaState, A : EmaAction, E : EmaEvent> NavGraphBuilder.createComposableScreen(
     screenContent: EmaComposableScreenContent<S, A, E>,
-    viewModel: () -> EmaViewModelContract<S, E>,
+    viewModel: (store: EmaStateStore) -> EmaViewModelContract<S, E>,
     routeId: String = screenContent::class.routeId,
     initializerSupport: EmaInitializerSupport? = null,
     saveStateManager: EmaSaveStateManager<S, E>? = null,
@@ -79,9 +81,8 @@ fun <S : EmaState, A : EmaAction, E : EmaEvent> NavGraphBuilder.createComposable
             // navController and is restarted on kill process.
             // With backEntry.savedStateHandle data is rightly persisted
             val androidVm = EmaScreenProvider.provideComposableViewModel(
-                viewModel = remember {
-                    viewModel.invoke()
-                },
+                key = EmaScreenProvider.viewModelKey(screenContent),
+                viewModel = viewModel,
                 backEntry.savedStateHandle
             )
 
@@ -127,7 +128,7 @@ fun <S : EmaState, A : EmaAction, E : EmaEvent> NavGraphBuilder.createComposable
         composable(
             route = parseRouteWithInitializerSupport(routeId),
             arguments = listOf(
-                navArgument(EmaAction.Initializer.KEY) {
+                navArgument(EmaInitializer.KEY) {
                     initializerSupport?.also {
                         type = EmaInitializerNavType(it.serializerStrategy)
                     }
@@ -149,15 +150,11 @@ fun routeWithInitializer(route: String, initializerBundle: EmaInitializerBundle?
 } ?: route
 
 private fun parseRouteWithInitializerSupport(routeId: String): String =
-    "$routeId?${EmaAction.Initializer.KEY}={${EmaAction.Initializer.KEY}}"
+    "$routeId?${EmaInitializer.KEY}={${EmaInitializer.KEY}}"
 
-fun routeWithInitializer(
-    routeId: String,
-    initializer: EmaAction.Initializer,
-    serializer: BundleSerializerStrategy
-): String {
+fun routeWithInitializer(routeId: String, initializer: EmaInitializer, serializer: BundleSerializerStrategy): String {
     // Encoded, because the serialized initializer can contain characters with meaning in a route, like & or #
-    return "$routeId?${EmaAction.Initializer.KEY}=${Uri.encode(serializer.toStringValue(initializer))}"
+    return "$routeId?${EmaInitializer.KEY}=${Uri.encode(serializer.toStringValue(initializer))}"
 }
 
 fun NavController.navigateBack(closeActivityWhenBackstackIsEmpty: Boolean = true): Boolean {

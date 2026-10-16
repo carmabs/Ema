@@ -11,6 +11,7 @@ import com.carmabs.emanate.core.extension.concat
 import com.carmabs.emanate.core.extension.until
 import com.carmabs.emanate.core.extension.untilInstanceOf
 import com.carmabs.emanate.core.extension.whileIsInstanceOf
+import com.carmabs.emanate.core.initializer.EmaInitializer
 import com.carmabs.emanate.core.logging.EmaDataClassPrinter
 import com.carmabs.emanate.core.logging.toStringPretty
 import com.carmabs.emanate.core.manager.PermissionState
@@ -37,6 +38,7 @@ import com.carmabs.emanate.core.usecase.EmaUseCase
 import com.carmabs.emanate.core.utils.EmaUtils
 import com.carmabs.emanate.core.value.EmaUriRes
 import com.carmabs.emanate.core.value.EmaUriType
+import com.carmabs.emanate.core.viewmodel.EmaLifecycle
 import com.carmabs.emanate.core.viewmodel.EmaViewModelClassic
 import com.carmabs.emanate.core.viewmodel.EmaViewModelContract
 import kotlin.coroutines.ContinuationInterceptor
@@ -159,7 +161,7 @@ class EmaModelTest {
 
         val viewModel = object : EmaViewModelClassic<EmaState.EMPTY, EmaEvent.EMPTY>(EmaState.EMPTY) {
             val interceptor = scope.coroutineContext[ContinuationInterceptor]
-            override fun onStateCreated(initializer: EmaAction.Initializer?) = Unit
+            override fun onStateCreated(initializer: EmaInitializer?) = Unit
         }
 
         assertSame(main, viewModel.interceptor)
@@ -208,10 +210,10 @@ class EmaModelTest {
         assertEquals("EmaAction", EmaAction.type)
         assertEquals("EmaAction", CounterAction.Increment.type)
         assertEquals("Initializer", CounterInitializer(1).type)
-        assertEquals("Lifecycle", EmaAction.Lifecycle.Started.type)
+        assertEquals("Lifecycle", EmaLifecycle.Started.type)
         assertEquals("EmaAction", EmaAction.EMPTY.type)
-        assertEquals("EmaInitializer", EmaAction.Initializer.KEY)
-        assertEquals("Initializer", EmaAction.Initializer.EMPTY.type)
+        assertEquals("EmaInitializer", EmaInitializer.KEY)
+        assertEquals("Initializer", EmaInitializer.EMPTY.type)
         assertTrue(EmaState.EMPTY is EmaState)
         assertTrue(EmaEvent.EMPTY is EmaEvent)
     }
@@ -232,7 +234,7 @@ class EmaModelTest {
         viewModel.onResumeView()
         viewModel.onPauseView()
         viewModel.onStopView()
-        viewModel.onCleared()
+        viewModel.close()
         viewModel.consumeEvent(EmaEvent.EMPTY)
         assertEquals(EmaState.EMPTY, viewModel.initialState)
         assertEquals(EmaState.EMPTY, viewModel.stateFlow.value)

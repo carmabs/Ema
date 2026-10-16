@@ -1,6 +1,8 @@
 package com.carmabs.emanate.core.source
 
 import com.carmabs.emanate.core.action.EmaAction
+import com.carmabs.emanate.core.configurationOn
+import com.carmabs.emanate.core.model.EmaConfiguration
 import com.carmabs.emanate.core.source.sideeffect.SideEffect
 import com.carmabs.emanate.core.source.sideeffect.SideEffectConcurrency
 import com.carmabs.emanate.core.source.sideeffect.SideEffectScope
@@ -60,7 +62,7 @@ class EmaSourceSideEffectTest {
     private val received = mutableListOf<String>()
 
     private fun TestScope.testSource(dispatcher: CoroutineDispatcher = UnconfinedTestDispatcher(testScheduler)) =
-        EmaSource<EffectState, EffectAction, EffectEvent>(EffectState(), dispatcher = dispatcher) {
+        EmaSource<EffectState, EffectAction, EffectEvent>(EffectState(), configurationOn(dispatcher)) {
             reducers {
                 add<EffectAction.Load> { state.copy(text = "loading") }
                 add<EffectAction.Loaded> { action -> state.copy(text = action.text) }
@@ -256,17 +258,20 @@ class EmaSourceSideEffectTest {
     }
 
     @Test
-    fun `closing the source completes after the side effects of destroyed`() = runTest {
+    fun `the onClose blocks run when the source is closed and it completes after them`() = runTest {
+        val finished = mutableListOf<String>()
         val source = EmaSource<EffectState, EffectAction, EffectEvent>(
-            EffectState(),
-            dispatcher = UnconfinedTestDispatcher(testScheduler)
+            EffectState(text = "draft"),
+            configurationOn(UnconfinedTestDispatcher(testScheduler))
         ) {
             sideEffects {
-                add<EmaAction.Lifecycle.Destroyed> { delay(1000) }
+                onClose {
+                    delay(1000)
+                    finished += "closed with ${state.text}"
+                }
             }
         }
 
-        source.dispatchAction(EmaAction.Lifecycle.Destroyed)
         val closed = source.close()
         runCurrent()
         assertFalse(closed.isCompleted)
@@ -274,5 +279,68 @@ class EmaSourceSideEffectTest {
         advanceTimeBy(1500)
         runCurrent()
         assertTrue(closed.isCompleted)
+        assertEquals(listOf("closed with draft"), finished)
+    }
+
+    @Test
+    fun `a side effect that survives close can finish after the source is closed`() = runTest {
+        val finished = mutableListOf<EffectAction>()
+        val source = EmaSource<EffectState, EffectAction, EffectEvent>(
+            EffectState(),
+            configurationOn(UnconfinedTestDispatcher(testScheduler))
+        ) {
+            sideEffects {
+                add<EffectAction.Save>(survivesClose = true) { action ->
+                    delay(1000)
+                    finished += action
+                }
+                add<EffectAction.Load> { action ->
+                    delay(1000)
+                    finished += action
+                }
+            }
+        }
+
+        source.dispatch(EffectAction.Save)
+        source.dispatch(EffectAction.Load)
+        val closed = source.close()
+        runCurrent()
+        assertFalse(closed.isCompleted)
+
+        advanceTimeBy(1500)
+        runCurrent()
+        assertTrue(closed.isCompleted)
+        assertEquals(listOf<EffectAction>(EffectAction.Save), finished)
+    }
+
+    @Test
+    fun `the work that survives close is cancelled after the close timeout`() = runTest {
+        val finished = mutableListOf<String>()
+        val source = EmaSource<EffectState, EffectAction, EffectEvent>(
+            EffectState(),
+            configurationOn(UnconfinedTestDispatcher(testScheduler), EmaConfiguration(closeTimeout = 2.seconds))
+        ) {
+            sideEffects {
+                add<EffectAction.Save>(survivesClose = true) {
+                    delay(5000)
+                    finished += "saved"
+                }
+                onClose {
+                    delay(5000)
+                    finished += "closed"
+                }
+            }
+        }
+
+        source.dispatch(EffectAction.Save)
+        val closed = source.close()
+        advanceTimeBy(1500)
+        runCurrent()
+        assertFalse(closed.isCompleted)
+
+        advanceTimeBy(1000)
+        runCurrent()
+        assertTrue(closed.isCompleted)
+        assertTrue(finished.isEmpty())
     }
 }

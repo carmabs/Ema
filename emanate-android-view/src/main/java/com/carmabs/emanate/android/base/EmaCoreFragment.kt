@@ -22,6 +22,7 @@ import com.carmabs.emanate.core.constants.INT_ZERO
 import com.carmabs.emanate.core.initializer.EmaInitializerSerializer
 import com.carmabs.emanate.core.model.EmaBackHandlerStrategy
 import com.carmabs.emanate.core.navigator.EmaNavigator
+import com.carmabs.emanate.core.savestate.EmaStateStore
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
 import com.carmabs.emanate.core.view.EmaViewModelTrigger
@@ -49,7 +50,7 @@ abstract class EmaCoreFragment<S : EmaState, VM : EmaViewModelContract<S, E>, E 
 
     @Suppress("UNCHECKED_CAST")
     override val viewModel: VM by lazy {
-        generateViewModel(provideViewModel()).emaViewModel as VM
+        generateViewModel(::provideViewModel).emaViewModel as VM
     }
 
     /**
@@ -66,7 +67,12 @@ abstract class EmaCoreFragment<S : EmaState, VM : EmaViewModelContract<S, E>, E 
 
     abstract override val navigator: EmaNavigator<E>?
 
-    abstract fun provideViewModel(): VM
+    /**
+     * Creates the view model of the screen.
+     *
+     * @param store saves the values of the backup of the view model in the SavedStateHandle of the screen
+     */
+    abstract fun provideViewModel(store: EmaStateStore): VM
     final override val initializerSerializer: EmaInitializerSerializer?
         get() = arguments?.let { bundle ->
             BundleSerializer(bundle, initializerStrategy)

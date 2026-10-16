@@ -8,77 +8,11 @@ plugins {
 group = rootProject.emanateVersioning.groupId
 version = rootProject.emanateVersioning.versionName
 
-// Targets to compile. All of them by default (needed to publish). For faster local builds set
-// emanate.targets in local.properties (not versioned), or pass -Pemanate.targets, with a comma separated list of:
-// all, jvm, js, wasm, apple, linux, windows, androidNative. JVM is always built because the Android modules use it.
-def emanateTargetGroups = ['jvm', 'js', 'wasm', 'apple', 'linux', 'windows', 'androidNative']
-def emanateLocalProperties = new Properties()
-def emanateLocalPropertiesFile = file('../local.properties')
-if (emanateLocalPropertiesFile.exists()) {
-    emanateLocalPropertiesFile.withInputStream { emanateLocalProperties.load(it) }
-}
-def emanateTargetsValue = (findProperty('emanate.targets') ?: emanateLocalProperties.getProperty('emanate.targets') ?: 'all').toString()
-def emanateRequestedTargets = emanateTargetsValue.split(',')*.trim().findAll { !it.isEmpty() }
-if (emanateRequestedTargets.contains('all')) {
-    emanateRequestedTargets = emanateTargetGroups
-}
-def emanateUnknownTargets = emanateRequestedTargets - emanateTargetGroups
-if (!emanateUnknownTargets.isEmpty()) {
-    throw new GradleException("Unknown emanate.targets: ${emanateUnknownTargets.join(', ')}. Valid values: all, ${emanateTargetGroups.join(', ')}")
-}
-def emanateTargets = (emanateRequestedTargets + 'jvm') as Set
+// The targets are shared with the other multiplatform modules: see build-system/kmp-targets.gradle
+apply from: file('../build-system/kmp-targets.gradle')
 
 kotlin {
     // All the code lives in commonMain, so every target shares the same sources
-    jvm {
-        compilerOptions {
-            jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.fromTarget(rootProject.emanateVersioning.kotlinJvmTarget)
-        }
-    }
-    if ('js' in emanateTargets) {
-        js {
-            browser()
-            nodejs()
-        }
-    }
-    if ('wasm' in emanateTargets) {
-        wasmJs {
-            browser()
-            nodejs()
-        }
-        wasmWasi {
-            nodejs()
-        }
-    }
-    if ('apple' in emanateTargets) {
-        iosArm64()
-        iosSimulatorArm64()
-        iosX64()
-        macosArm64()
-        macosX64()
-        watchosArm32()
-        watchosArm64()
-        watchosDeviceArm64()
-        watchosSimulatorArm64()
-        watchosX64()
-        tvosArm64()
-        tvosSimulatorArm64()
-        tvosX64()
-    }
-    if ('linux' in emanateTargets) {
-        linuxX64()
-        linuxArm64()
-    }
-    if ('windows' in emanateTargets) {
-        mingwX64()
-    }
-    if ('androidNative' in emanateTargets) {
-        androidNativeArm32()
-        androidNativeArm64()
-        androidNativeX86()
-        androidNativeX64()
-    }
-
     sourceSets {
         commonMain {
             dependencies {

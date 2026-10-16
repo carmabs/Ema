@@ -10,6 +10,7 @@ import androidx.core.view.updatePadding
 import com.carmabs.emanate.android.navigation.EmaActivityNavControllerHost
 import com.carmabs.emanate.android.ui.EmaToolbarActivity
 import com.carmabs.emanate.core.navigator.EmaNavigator
+import com.carmabs.emanate.core.savestate.EmaStateStore
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
 import com.carmabs.emanate.core.viewmodel.EmaViewModelContract
@@ -34,7 +35,7 @@ class SplashActivity :
 
     override fun SplashActivityBinding.provideToolbarLayout(): AppBarLayout = ablSplash
 
-    override fun provideViewModel(): EmaViewModelContract.EMPTY = EmaViewModelContract.EMPTY
+    override fun provideViewModel(store: EmaStateStore): EmaViewModelContract.EMPTY = EmaViewModelContract.EMPTY
 
     override fun SplashActivityBinding.onState(data: EmaState.EMPTY) {
     }

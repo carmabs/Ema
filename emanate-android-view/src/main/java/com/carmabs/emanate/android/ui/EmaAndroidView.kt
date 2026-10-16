@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.carmabs.emanate.android.viewmodel.EmaAndroidViewModel
 import com.carmabs.emanate.android.viewmodel.EmaViewModelFactory
+import com.carmabs.emanate.core.savestate.EmaStateStore
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
 import com.carmabs.emanate.core.view.EmaView
@@ -20,21 +21,30 @@ import com.carmabs.emanate.core.viewmodel.EmaViewModelContract
  */
 interface EmaAndroidView<S : EmaState, VM : EmaViewModelContract<S, E>, E : EmaEvent> : EmaView<S, VM, E> {
 
-    fun initializeViewModel(activity: ComponentActivity, viewModelSeed: VM): EmaAndroidViewModel<S, E> {
-        val emaFactory = EmaViewModelFactory(viewModelSeed)
+    fun initializeViewModel(
+        activity: ComponentActivity,
+        viewModel: (store: EmaStateStore) -> VM
+    ): EmaAndroidViewModel<S, E> {
+        val emaFactory = EmaViewModelFactory(viewModel)
         val vm = ViewModelProvider(
             activity,
             emaFactory
-        )[viewModelSeed.id, EmaAndroidViewModel::class.java]
+        )[viewModelKey, EmaAndroidViewModel::class.java]
         return vm as EmaAndroidViewModel<S, E>
     }
 
-    fun initializeViewModel(fragment: Fragment, viewModelSeed: VM): EmaAndroidViewModel<S, E> {
-        val emaFactory = EmaViewModelFactory(viewModelSeed)
+    fun initializeViewModel(fragment: Fragment, viewModel: (store: EmaStateStore) -> VM): EmaAndroidViewModel<S, E> {
+        val emaFactory = EmaViewModelFactory(viewModel)
         val vm = ViewModelProvider(
             fragment,
             emaFactory
-        )[viewModelSeed.id, EmaAndroidViewModel::class.java]
+        )[viewModelKey, EmaAndroidViewModel::class.java]
         return vm as EmaAndroidViewModel<S, E>
     }
+
+    /**
+     * Key of the view model of this screen: each screen has its own view model, created only if it doesn't exist yet.
+     */
+    val viewModelKey: String
+        get() = "EmaViewModel of ${this::class.java.name}"
 }

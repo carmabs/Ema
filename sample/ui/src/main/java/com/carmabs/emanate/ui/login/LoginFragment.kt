@@ -12,6 +12,7 @@ import com.carmabs.emanate.android.extension.setTextWithCursorAtEnd
 import com.carmabs.emanate.core.constants.STRING_EMPTY
 import com.carmabs.emanate.core.model.EmaText
 import com.carmabs.emanate.core.navigator.EmaNavigator
+import com.carmabs.emanate.core.savestate.EmaStateStore
 import com.carmabs.emanate.presentation.base.SampleViewModel
 import com.carmabs.emanate.presentation.extension.fullName
 import com.carmabs.emanate.presentation.login.LoginAction
@@ -120,8 +121,8 @@ class LoginFragment :
         }
     }
 
-    override fun provideViewModel(): SampleViewModel<LoginState, LoginAction, LoginEvent> =
-        sampleViewModel(LoginViewModel::class, LoginActionViewModel::class)
+    override fun provideViewModel(store: EmaStateStore): SampleViewModel<LoginState, LoginAction, LoginEvent> =
+        sampleViewModel(LoginViewModel::class, LoginActionViewModel::class, store)
 
     override suspend fun LoginFragmentBinding.onEvent(event: LoginEvent) {
         when (event) {

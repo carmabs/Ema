@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import com.carmabs.emanate.android.ui.EmaFragment
 import com.carmabs.emanate.core.action.EmaAction
 import com.carmabs.emanate.core.navigator.EmaNavigator
+import com.carmabs.emanate.core.savestate.EmaStateStore
 import com.carmabs.emanate.core.state.EmaState
 import com.carmabs.emanate.presentation.base.SampleViewModel
 import com.carmabs.emanate.presentation.splash.SplashActionViewModel
@@ -43,8 +44,8 @@ class SplashFragment :
         }
     }
 
-    override fun provideViewModel(): SampleViewModel<EmaState.EMPTY, EmaAction.EMPTY, SplashEvent> =
-        sampleViewModel(SplashViewModel::class, SplashActionViewModel::class)
+    override fun provideViewModel(store: EmaStateStore): SampleViewModel<EmaState.EMPTY, EmaAction.EMPTY, SplashEvent> =
+        sampleViewModel(SplashViewModel::class, SplashActionViewModel::class, store)
 
     override fun SplashFragmentBinding.onState(state: EmaState.EMPTY) {
     }

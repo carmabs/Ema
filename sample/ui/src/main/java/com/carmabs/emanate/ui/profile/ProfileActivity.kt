@@ -60,17 +60,22 @@ class ProfileActivity : ComponentActivity() {
                         onEvent = {
                             navigator.handleProfileOnBoardingEvent(it)
                         },
-                        viewModel = {
+                        viewModel = { store ->
                             sampleViewModel(
                                 ProfileOnBoardingViewModel::class,
-                                ProfileOnBoardingActionViewModel::class
+                                ProfileOnBoardingActionViewModel::class,
+                                store
                             )
                         }
                     )
                     createComposableScreen(
                         screenContent = ProfileCreationScreenContent(),
-                        viewModel = {
-                            sampleViewModel(ProfileCreationViewModel::class, ProfileCreationActionViewModel::class)
+                        viewModel = { store ->
+                            sampleViewModel(
+                                ProfileCreationViewModel::class,
+                                ProfileCreationActionViewModel::class,
+                                store
+                            )
                         },
                         onEvent = {
                             navigator.handleProfileCreationEvent(it)
@@ -83,9 +88,9 @@ class ProfileActivity : ComponentActivity() {
                                 savedStateHandle,
                                 emaViewModel
                             ->
-
-                            // SAMPLE TO RETAIN STATE THROUGH SAVED STATE HANDLE WHEN PROCESS IS KILLED BY SYSTEM, FOR EXAMPLE,
-                            // DENYING A PERMISSION IN SETTINGS
+                            // ProfileCreationViewModel saves its form with a backup installed in its setup, in this
+                            // same handle. EmaViewModelAction can't, so the screen saves it as before the backups.
+                            if (emaViewModel !is ProfileCreationActionViewModel) return@EmaSaveStateManager
 
                             val keyName = "USERNAME"
                             val keySurname = "SURNAME"

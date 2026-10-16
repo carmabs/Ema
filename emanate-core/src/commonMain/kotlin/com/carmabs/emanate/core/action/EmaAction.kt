@@ -11,7 +11,8 @@ package com.carmabs.emanate.core.action
  */
 
 /**
- * Something that reaches the ViewModel: the actions of the user and the data a screen starts with.
+ * Something that reaches a source: the actions of the user, the data a screen starts with or the lifecycle of the
+ * view.
  */
 interface EmaAction {
 
@@ -26,43 +27,4 @@ interface EmaAction {
      * No action.
      */
     data object EMPTY : EmaAction
-
-    /**
-     * The data a screen starts with. The ViewModel receives it once, in onStateCreated, the first time the screen
-     * is created.
-     */
-    interface Initializer : EmaAction {
-        companion object {
-            /**
-             * Key of the initializer in bundles and routes.
-             */
-            const val KEY = "EmaInitializer"
-        }
-
-        override val type: String
-            get() = "Initializer"
-
-        /**
-         * No initializer.
-         */
-        data object EMPTY : Initializer
-    }
-
-    sealed interface Lifecycle : EmaAction {
-        data object Started : Lifecycle
-        data object Resumed : Lifecycle
-        data object Paused : Lifecycle
-        data object Stopped : Lifecycle
-
-        /**
-         * The last action of the view model. The rest of its work is cancelled after it, but its side effects can
-         * finish, up to their timeout or the destroyedTimeout of the configuration, 5 seconds by default:
-         * they can broadcast actions and read the state, while the actions they dispatch and the events they post are
-         * ignored, as the view model is closed.
-         */
-        data object Destroyed : Lifecycle
-
-        override val type: String
-            get() = "Lifecycle"
-    }
 }

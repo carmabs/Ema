@@ -39,4 +39,5 @@ include ':emanate-core',
         ':emanate-android',
         ':emanate-android-view',
         ':emanate-android-compose',
-        ':emanate-test'
+        ':emanate-test',
+        ':emanate-serialization'

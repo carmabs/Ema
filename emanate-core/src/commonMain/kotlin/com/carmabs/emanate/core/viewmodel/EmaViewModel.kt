@@ -2,11 +2,9 @@ package com.carmabs.emanate.core.viewmodel
 
 import com.carmabs.emanate.core.Emanate
 import com.carmabs.emanate.core.action.EmaAction
-import com.carmabs.emanate.core.action.EmaAction.Initializer
-import com.carmabs.emanate.core.action.EmaAction.Lifecycle
 import com.carmabs.emanate.core.action.EmaActionDispatcher
 import com.carmabs.emanate.core.action.EventDispatcher
-import com.carmabs.emanate.core.logging.EmaLogger
+import com.carmabs.emanate.core.initializer.EmaInitializer
 import com.carmabs.emanate.core.model.EmaConfiguration
 import com.carmabs.emanate.core.source.EmaSource
 import com.carmabs.emanate.core.source.EmaSourceObserver
@@ -19,7 +17,6 @@ import com.carmabs.emanate.core.source.middleware.receivedActionLoggerMiddleware
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
 import kotlin.concurrent.Volatile
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -30,16 +27,15 @@ import kotlinx.coroutines.flow.asStateFlow
  *
  * View model whose state is handled by an [EmaSource]: the actions of the screen, the initializer and the lifecycle
  * of the view go through the middlewares, the reducers and the side effects added in [setup]. It is the recommended
- * view model.
+ * view model. It can save parts of its state with an EmaBackup installed in [setup], to restore them after the
+ * system kills the process of the app: receive the store of the backup in its constructor.
  *
  * @param initialDataState state of the view before any action
  * @param configuration applied by the view model and its source. By default the one of [Emanate], read when the view
  * model is created; pass one to configure this view model without depending on [Emanate.init], for example in a
- * library or in a test.
- * @param dispatcher where the view model runs. By default the main dispatcher of [configuration].
- * @param logger logs every action with the state before and after it, and in one line when it is received, so the
- * actions stopped by a middleware are also logged. By default the logger of [configuration]. Null to disable the logs
- * of this view model.
+ * library or in a test. The view model runs on its main dispatcher, and its logger logs every action with the state
+ * before and after it, and in one line when it is received, so the actions stopped by a middleware are also logged.
+ * Pass a configuration without logger to disable the logs of this view model.
  *
  * <p>
  * Copyright (c) 2026 by Carmabs. All rights reserved.
@@ -49,19 +45,17 @@ import kotlinx.coroutines.flow.asStateFlow
  */
 abstract class EmaViewModel<S : EmaState, A : EmaAction, E : EmaEvent>(
     initialDataState: S,
-    private val configuration: EmaConfiguration = Emanate.configuration,
-    private val dispatcher: CoroutineDispatcher = configuration.dispatchers.main,
-    private val logger: EmaLogger? = configuration.logger
+    private val configuration: EmaConfiguration = Emanate.configuration
 ) : EmaViewModelContract<S, E>,
     EmaActionDispatcher<A> {
 
     final override val initialState: S = initialDataState
 
     /**
-     * Returns the middlewares, reducers, side effects and broadcast listeners of the view model, created with [source]:
-     * `override fun setup() = source { ... }`. Besides the actions of type [A], they can handle the [Initializer] of
-     * the screen, its [Lifecycle] actions and the actions broadcast by other view models that it listens to. It is
-     * called once, when the source is first needed.
+     * Returns the middlewares, reducers, side effects, broadcast listeners and plugins of the view model, created
+     * with [source]: `override fun setup() = source { ... }`. Besides the actions of type [A], they can handle the
+     * [EmaInitializer] of the screen, its [EmaLifecycle] actions and the actions broadcast by other view models that it
+     * listens to. It is called once, when the source is first needed.
      */
     protected abstract fun setup(): SourceSetup<S, A, E>
 
@@ -74,7 +68,7 @@ abstract class EmaViewModel<S : EmaState, A : EmaAction, E : EmaEvent>(
      * Marks the state as updated when an action of the screen or an initializer is received
      */
     private val updateTrackerMiddleware = middlewareOf<EmaState, Nothing, EmaAction>(EmaAction::class) { action ->
-        if (action !is Lifecycle && action != Initializer.EMPTY && action != EmaAction.EMPTY) {
+        if (action !is EmaLifecycle && action != EmaInitializer.EMPTY && action != EmaAction.EMPTY) {
             hasBeenUpdated = true
         }
         next()
@@ -114,16 +108,17 @@ abstract class EmaViewModel<S : EmaState, A : EmaAction, E : EmaEvent>(
         val tag = this::class.simpleName.orEmpty()
         return EmaSource(
             mutableStateFlow = mutableStateFlow,
-            dispatcher = dispatcher,
+            dispatcher = configuration.dispatchers.main,
             // The full log goes last, right before the reducers, so it logs the state they return
             middlewares = listOfNotNull(
-                logger?.let { receivedActionLoggerMiddleware(tag, it) },
+                configuration.logger?.let { receivedActionLoggerMiddleware(tag, it) },
                 updateTrackerMiddleware
             ) + sourceSetup.middlewares + listOfNotNull(
-                logger?.let { loggerMiddleware(tag, it, configuration.printer) }
+                configuration.logger?.let { loggerMiddleware(tag, it, configuration.printer) }
             ),
             reducers = sourceSetup.reducers,
             sideEffects = sourceSetup.sideEffects,
+            closeEffects = sourceSetup.closeEffects,
             broadcastListeners = sourceSetup.broadcastListeners,
             container = this,
             eventDispatcher = eventDispatcher,
@@ -155,36 +150,36 @@ abstract class EmaViewModel<S : EmaState, A : EmaAction, E : EmaEvent>(
     }
 
     /**
-     * Called when the view is created. The first time, the source receives [initializer], or [Initializer.EMPTY] if
-     * there isn't any.
+     * Called when the view is created. The first time, the source receives [initializer], or [EmaInitializer.EMPTY] if
+     * there isn't any. A backup installed in [setup] restores its values right after it, by default.
      */
-    final override fun onCreated(initializer: Initializer?) {
+    final override fun onCreated(initializer: EmaInitializer?) {
         if (!hasBeenInitialized) {
             hasBeenInitialized = true
-            emaSource.dispatch(initializer ?: Initializer.EMPTY)
+            emaSource.dispatch(initializer ?: EmaInitializer.EMPTY)
         }
     }
 
     final override fun onStartView() {
-        emaSource.dispatch(Lifecycle.Started)
+        emaSource.dispatch(EmaLifecycle.Started)
     }
 
     /**
      * Called when view is shown in foreground
      */
     final override fun onResumeView() {
-        emaSource.dispatch(Lifecycle.Resumed)
+        emaSource.dispatch(EmaLifecycle.Resumed)
     }
 
     /**
      * Called when view is hidden in background
      */
     final override fun onPauseView() {
-        emaSource.dispatch(Lifecycle.Paused)
+        emaSource.dispatch(EmaLifecycle.Paused)
     }
 
     final override fun onStopView() {
-        emaSource.dispatch(Lifecycle.Stopped)
+        emaSource.dispatch(EmaLifecycle.Stopped)
     }
 
     final override fun consumeEvent(event: E) {
@@ -192,11 +187,12 @@ abstract class EmaViewModel<S : EmaState, A : EmaAction, E : EmaEvent>(
     }
 
     /**
-     * Called when the view model is destroyed. The source processes [Lifecycle.Destroyed] after the pending actions
-     * and then cancels its pending work, except the side effects of [Lifecycle.Destroyed], which can finish.
+     * Closes the view model when its screen is destroyed. The source processes [EmaLifecycle.Destroyed] after the pending
+     * actions and then it is closed: its work is cancelled, except its onClose blocks and the side effects that survive close,
+     * which can finish.
      */
-    final override fun onCleared() {
-        emaSource.dispatch(Lifecycle.Destroyed)
+    final override fun close() {
+        emaSource.dispatch(EmaLifecycle.Destroyed)
         emaSource.close()
     }
 }

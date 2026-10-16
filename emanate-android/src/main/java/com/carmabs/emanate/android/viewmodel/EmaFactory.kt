@@ -3,6 +3,8 @@ package com.carmabs.emanate.android.viewmodel
 import androidx.lifecycle.AbstractSavedStateViewModelFactory
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import com.carmabs.emanate.android.savestate.SavedStateHandleStore
+import com.carmabs.emanate.core.savestate.EmaStateStore
 import com.carmabs.emanate.core.viewmodel.EmaViewModelContract
 
 /**
@@ -17,10 +19,17 @@ abstract class EmaFactory<VM : EmaViewModelContract<*, *>> : AbstractSavedStateV
      * @param T View model class
      * @param modelClass Class of the view model
      */
-    override fun <T : ViewModel> create(key: String, modelClass: Class<T>, handle: SavedStateHandle): T =
-        EmaAndroidViewModel(createViewModel(), provideSavedStateHandle() ?: handle) as T
+    override fun <T : ViewModel> create(key: String, modelClass: Class<T>, handle: SavedStateHandle): T {
+        val savedStateHandle = provideSavedStateHandle() ?: handle
+        return EmaAndroidViewModel(createViewModel(SavedStateHandleStore(savedStateHandle)), savedStateHandle) as T
+    }
 
-    abstract fun createViewModel(): VM
+    /**
+     * Creates the view model of the screen.
+     *
+     * @param store saves the values of the backups of the view model in the SavedStateHandle of the screen
+     */
+    abstract fun createViewModel(store: EmaStateStore): VM
 
     abstract fun provideSavedStateHandle(): SavedStateHandle?
 }

@@ -1,0 +1,30 @@
+plugins {
+    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.kotlin.serialization)
+    id 'maven-publish'
+    alias(libs.plugins.kover)
+}
+
+group = rootProject.emanateVersioning.groupId
+version = rootProject.emanateVersioning.versionName
+
+// The same targets as emanate-core
+apply from: file('../build-system/kmp-targets.gradle')
+
+kotlin {
+    sourceSets {
+        commonMain {
+            dependencies {
+                api project(':emanate-core')
+                api libs.kotlinx.serialization.json
+            }
+        }
+        // The tests attach a store to the view models with emanate-test, which is a JVM library
+        jvmTest {
+            dependencies {
+                implementation project(':emanate-test')
+                implementation libs.kotlin.test
+            }
+        }
+    }
+}

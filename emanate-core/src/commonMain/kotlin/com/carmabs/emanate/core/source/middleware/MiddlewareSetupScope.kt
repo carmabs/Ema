@@ -19,24 +19,21 @@ import kotlin.reflect.KClass
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
 @EmaSourceDsl
-class MiddlewareListScope<S : EmaState, A : EmaAction> internal constructor(private val guard: SetupGuard) {
+class MiddlewareSetupScope<S : EmaState, A : EmaAction> internal constructor(private val guard: SetupGuard) {
 
     internal var middlewareList: List<EmaMiddleware<S, A, *>> = emptyList()
         private set
 
     /**
-     * Adds middlewares already created.
-     */
-    fun add(vararg middleware: EmaMiddleware<S, A, *>) {
-        guard.checkNotBuilt()
-        middlewareList = middlewareList + middleware
-    }
-
-    /**
      * Adds a middleware already created.
      */
     operator fun EmaMiddleware<S, A, *>.unaryPlus() {
-        add(this)
+        include(this)
+    }
+
+    private fun include(middleware: EmaMiddleware<S, A, *>) {
+        guard.checkNotBuilt()
+        middlewareList = middlewareList + middleware
     }
 
     /**
@@ -44,7 +41,7 @@ class MiddlewareListScope<S : EmaState, A : EmaAction> internal constructor(priv
      */
     @PublishedApi
     internal fun <F : EmaAction> add(filter: KClass<F>, middlewareAction: MiddlewareScope<S, A>.(F) -> Unit) {
-        add(middlewareOf(filter, middlewareAction))
+        include(middlewareOf(filter, middlewareAction))
     }
 
     /**

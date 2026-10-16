@@ -1,8 +1,13 @@
 package com.carmabs.emanate.test
 
+import com.carmabs.emanate.core.Emanate
 import com.carmabs.emanate.core.action.EmaAction
+import com.carmabs.emanate.core.initializer.EmaInitializer
+import com.carmabs.emanate.core.source.EmaSourcePlugin
+import com.carmabs.emanate.core.source.SourceSetupScope
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
+import com.carmabs.emanate.core.viewmodel.EmaLifecycle
 import com.carmabs.emanate.core.viewmodel.EmaViewModel
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -14,7 +19,7 @@ private sealed interface CartAction : EmaAction {
     data object Add : CartAction
 }
 
-private data class CartInitializer(val items: Int) : EmaAction.Initializer
+private data class CartInitializer(val items: Int) : EmaInitializer
 
 private data class ItemBought(val id: Int) : EmaAction
 
@@ -25,7 +30,8 @@ private data class CouponApplied(val code: String) : EmaAction
  */
 private interface TrackedAction : EmaAction
 
-private class CartViewModel : EmaViewModel<CartState, CartAction, EmaEvent.EMPTY>(CartState(), logger = null) {
+private class CartViewModel :
+    EmaViewModel<CartState, CartAction, EmaEvent.EMPTY>(CartState(), Emanate.configuration.copy(logger = null)) {
 
     override fun setup() = source {
         middlewares {
@@ -38,7 +44,7 @@ private class CartViewModel : EmaViewModel<CartState, CartAction, EmaEvent.EMPTY
             add<ItemBought> { state.copy(items = state.items + 1) }
         }
         sideEffects {
-            add<EmaAction.Lifecycle.Resumed> { }
+            add<EmaLifecycle.Resumed> { }
         }
         broadcasts {
             listen<ItemBought>()
@@ -49,7 +55,8 @@ private class CartViewModel : EmaViewModel<CartState, CartAction, EmaEvent.EMPTY
 /**
  * Forgets to listen to the broadcast actions it handles
  */
-private class ForgetfulCartViewModel : EmaViewModel<CartState, CartAction, EmaEvent.EMPTY>(CartState(), logger = null) {
+private class ForgetfulCartViewModel :
+    EmaViewModel<CartState, CartAction, EmaEvent.EMPTY>(CartState(), Emanate.configuration.copy(logger = null)) {
 
     override fun setup() = source {
         reducers {
@@ -61,8 +68,39 @@ private class ForgetfulCartViewModel : EmaViewModel<CartState, CartAction, EmaEv
     }
 }
 
+private sealed interface DiscountAction : EmaAction {
+    data object Applied : DiscountAction
+}
+
+/**
+ * Plugin that applies a discount when the cart is created
+ */
+private class DiscountPlugin : EmaSourcePlugin<CartState, DiscountAction> {
+    override fun install(setup: SourceSetupScope<CartState, DiscountAction, Nothing>) {
+        setup.sideEffects {
+            add<CartInitializer> { dispatch(DiscountAction.Applied) }
+        }
+    }
+}
+
+/**
+ * Handles the actions of a plugin, installed or not
+ */
+private class DiscountCartViewModel(private val withPlugin: Boolean) :
+    EmaViewModel<CartState, CartAction, EmaEvent.EMPTY>(CartState(), Emanate.configuration.copy(logger = null)) {
+
+    override fun setup() = source {
+        if (withPlugin) {
+            plugins { +DiscountPlugin() }
+        }
+        reducers {
+            add<DiscountAction.Applied> { state }
+        }
+    }
+}
+
 private abstract class BaseViewModel<S : EmaState, A : EmaAction>(initialState: S) :
-    EmaViewModel<S, A, EmaEvent.EMPTY>(initialState, logger = null)
+    EmaViewModel<S, A, EmaEvent.EMPTY>(initialState, Emanate.configuration.copy(logger = null))
 
 /**
  * The type of its actions is given to EmaViewModel through a base class
@@ -95,6 +133,18 @@ class SetupAssertionsTest {
                 "is broadcast by another source, add listen<ItemBought>() in the broadcasts block.",
             error.message
         )
+    }
+
+    @Test
+    fun `the pieces of the actions of an installed plugin receive them`() {
+        DiscountCartViewModel(withPlugin = true).assertSetup()
+    }
+
+    @Test
+    fun `the pieces of the actions of a plugin that isn't installed are reported`() {
+        val error = assertFailsWith<AssertionError> { DiscountCartViewModel(withPlugin = false).assertSetup() }
+
+        assertEquals(true, error.message?.startsWith("The reducer of Applied never runs"))
     }
 
     @Test

@@ -2,7 +2,7 @@ package com.carmabs.emanate.presentation.profile.onboarding
 
 import com.carmabs.domain.model.Role
 import com.carmabs.domain.model.User
-import com.carmabs.emanate.core.action.EmaAction
+import com.carmabs.emanate.core.initializer.EmaInitializer
 import com.carmabs.emanate.presentation.base.BaseActionViewModel
 
 class ProfileOnBoardingActionViewModel(initialDataState: ProfileOnBoardingState) :
@@ -10,7 +10,7 @@ class ProfileOnBoardingActionViewModel(initialDataState: ProfileOnBoardingState)
         initialDataState
     ) {
 
-    override fun onStateCreated(initializer: EmaAction.Initializer?) {
+    override fun onStateCreated(initializer: EmaInitializer?) {
         when (val onBoardingInitializer = initializer as ProfileOnBoardingInitializer) {
             is ProfileOnBoardingInitializer.Default -> {
                 updateState {

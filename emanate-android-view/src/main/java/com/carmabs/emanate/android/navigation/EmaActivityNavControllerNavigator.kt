@@ -9,7 +9,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.carmabs.emanate.android.extension.toBundle
 import com.carmabs.emanate.android.initializer.bundle.strategy.BundleSerializerStrategy
-import com.carmabs.emanate.core.action.EmaAction
+import com.carmabs.emanate.core.initializer.EmaInitializer
 import com.carmabs.emanate.core.state.EmaEvent
 import com.google.gson.Gson
 
@@ -35,7 +35,7 @@ abstract class EmaActivityNavControllerNavigator<E : EmaEvent>(
         Gson()
     }
 
-    internal fun setup(initializer: EmaAction.Initializer?, serializerStrategy: BundleSerializerStrategy) {
+    internal fun setup(initializer: EmaInitializer?, serializerStrategy: BundleSerializerStrategy) {
         navController.setGraph(
             graphId,
             initializer?.let {

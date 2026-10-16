@@ -6,19 +6,16 @@ import android.os.Bundle
 import com.carmabs.emanate.android.initializer.EmaInitializerBundle
 import com.carmabs.emanate.android.initializer.bundle.BundleSerializer
 import com.carmabs.emanate.android.initializer.bundle.strategy.BundleSerializerStrategy
-import com.carmabs.emanate.core.action.EmaAction
+import com.carmabs.emanate.core.initializer.EmaInitializer
 
 /**
  * Set a initializer for current bundle
  */
-inline fun <reified I : EmaAction.Initializer> Bundle.setInitializer(
-    initializer: I,
-    strategy: BundleSerializerStrategy
-) {
+inline fun <reified I : EmaInitializer> Bundle.setInitializer(initializer: I, strategy: BundleSerializerStrategy) {
     BundleSerializer(this, strategy).save(initializer)
 }
 
-fun EmaAction.Initializer?.toBundle(serializerStrategy: BundleSerializerStrategy): Bundle? = this?.let {
+fun EmaInitializer?.toBundle(serializerStrategy: BundleSerializerStrategy): Bundle? = this?.let {
     val bundle = Bundle()
     bundle.setInitializer(it, serializerStrategy)
     bundle
@@ -33,13 +30,13 @@ fun EmaInitializerBundle?.toBundle(): Bundle? = this?.let {
 /**
  * Get a initializer for current bundle
  */
-inline fun <reified I : EmaAction.Initializer> Bundle.getInitializer(strategy: BundleSerializerStrategy): I? =
+inline fun <reified I : EmaInitializer> Bundle.getInitializer(strategy: BundleSerializerStrategy): I? =
     BundleSerializer(this, strategy).restore() as? I
 
 /**
  * Get the incoming initializer from another activity by the initializer provided
  */
-inline fun <reified I : EmaAction.Initializer> Activity.getInitializer(
+inline fun <reified I : EmaInitializer> Activity.getInitializer(
     strategy: BundleSerializerStrategy,
     savedInstanceState: Bundle?
 ): I? = intent?.let {
@@ -51,17 +48,14 @@ inline fun <reified I : EmaAction.Initializer> Activity.getInitializer(
 /**
  * Set the initializer for the current activity intent
  */
-inline fun <reified I : EmaAction.Initializer> Activity.setInitializer(
-    initializer: I,
-    strategy: BundleSerializerStrategy
-) {
+inline fun <reified I : EmaInitializer> Activity.setInitializer(initializer: I, strategy: BundleSerializerStrategy) {
     intent = Intent().setInitializer(initializer, strategy)
 }
 
 /**
  * Set the initializer for the current activity intent
  */
-inline fun <reified I : EmaAction.Initializer> Intent.setInitializer(
+inline fun <reified I : EmaInitializer> Intent.setInitializer(
     initializer: I,
     strategy: BundleSerializerStrategy
 ): Intent {
@@ -74,5 +68,5 @@ inline fun <reified I : EmaAction.Initializer> Intent.setInitializer(
 /**
  * Get the initializer of the activity intent
  */
-inline fun <reified I : EmaAction.Initializer> Intent.getInitializer(strategy: BundleSerializerStrategy): I? =
+inline fun <reified I : EmaInitializer> Intent.getInitializer(strategy: BundleSerializerStrategy): I? =
     extras?.getInitializer(strategy)

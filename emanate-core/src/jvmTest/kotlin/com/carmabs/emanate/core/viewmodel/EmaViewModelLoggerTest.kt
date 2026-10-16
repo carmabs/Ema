@@ -2,6 +2,7 @@ package com.carmabs.emanate.core.viewmodel
 
 import com.carmabs.emanate.core.Emanate
 import com.carmabs.emanate.core.action.EmaAction
+import com.carmabs.emanate.core.configurationOn
 import com.carmabs.emanate.core.logging.EmaLogger
 import com.carmabs.emanate.core.model.EmaConfiguration
 import com.carmabs.emanate.core.state.EmaEvent
@@ -26,7 +27,7 @@ private data object IncrementAction : EmaAction
  * View model that doesn't pass a logger, to check the one of the configuration
  */
 private class DefaultLoggerViewModel(dispatcher: CoroutineDispatcher) :
-    EmaViewModel<CountState, IncrementAction, EmaEvent.EMPTY>(CountState(), dispatcher = dispatcher) {
+    EmaViewModel<CountState, IncrementAction, EmaEvent.EMPTY>(CountState(), configurationOn(dispatcher)) {
 
     override fun setup() = source {
         reducers {
@@ -55,7 +56,7 @@ class EmaViewModelLoggerTest {
             val viewModel = DefaultLoggerViewModel(UnconfinedTestDispatcher(testScheduler))
             viewModel.dispatch(IncrementAction)
             runCurrent()
-            viewModel.onCleared()
+            viewModel.close()
         } finally {
             System.setOut(systemOut)
         }
@@ -71,7 +72,7 @@ class EmaViewModelLoggerTest {
         val viewModel = DefaultLoggerViewModel(UnconfinedTestDispatcher(testScheduler))
         viewModel.dispatch(IncrementAction)
         runCurrent()
-        viewModel.onCleared()
+        viewModel.close()
 
         assertEquals(setOf("DefaultLoggerViewModel"), tags)
     }
@@ -86,7 +87,7 @@ class EmaViewModelLoggerTest {
             val viewModel = DefaultLoggerViewModel(UnconfinedTestDispatcher(testScheduler))
             viewModel.dispatch(IncrementAction)
             runCurrent()
-            viewModel.onCleared()
+            viewModel.close()
         } finally {
             System.setOut(systemOut)
         }

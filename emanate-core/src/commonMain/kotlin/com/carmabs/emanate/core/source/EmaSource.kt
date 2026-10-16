@@ -35,7 +35,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -45,27 +45,29 @@ import kotlinx.coroutines.withTimeoutOrNull
 /**
  * Creates a source. Its actions are of type [A], plus the ones it listens to in the broadcasts block of setup: every
  * action goes through the middlewares, the reducers and the side effects of its type. The source creates its own scope
- * with [dispatcher], so call [EmaSource.close] when it isn't needed anymore to cancel its work.
+ * with the main dispatcher of [configuration], so call [EmaSource.close] when it isn't needed anymore to cancel its
+ * work.
  *
- * @param configuration applied by the source. By default the one of [Emanate], read when the source is created.
- * @param dispatcher where the source runs. By default the main dispatcher of [configuration], as the state is usually
- * drawn by the view; use cases run on their own dispatcher anyway.
- * @param setup adds the middlewares, reducers, side effects and broadcast listeners of the source
+ * @param configuration applied by the source. By default the one of [Emanate], read when the source is created. The
+ * source runs on its main dispatcher, as the state is usually drawn by the view; use cases run on their own dispatcher
+ * anyway.
+ * @param setup adds the middlewares, reducers, side effects and broadcast listeners of the source, and installs its
+ * plugins
  */
 @Suppress("FunctionName") // Factory named like the class
 fun <S : EmaState, A : EmaAction, E : EmaEvent> EmaSource(
     initialState: S,
     configuration: EmaConfiguration = Emanate.configuration,
-    dispatcher: CoroutineDispatcher = configuration.dispatchers.main,
     setup: SourceSetupScope<S, A, E>.() -> Unit
 ): EmaSource<S, A, E> {
     val sourceSetup = buildSourceSetup(setup)
     return EmaSource(
         mutableStateFlow = MutableStateFlow(initialState),
-        dispatcher = dispatcher,
+        dispatcher = configuration.dispatchers.main,
         middlewares = sourceSetup.middlewares,
         reducers = sourceSetup.reducers,
         sideEffects = sourceSetup.sideEffects,
+        closeEffects = sourceSetup.closeEffects,
         broadcastListeners = sourceSetup.broadcastListeners,
         container = null,
         eventDispatcher = EventDispatcher(),
@@ -88,15 +90,16 @@ fun <S : EmaState, A : EmaAction, E : EmaEvent> EmaSource(
  */
 class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
     private val mutableStateFlow: MutableStateFlow<S>,
-    dispatcher: CoroutineDispatcher,
+    private val dispatcher: CoroutineDispatcher,
     private val middlewares: List<EmaMiddleware<S, A, *>>,
     private val reducers: List<EmaReducer<S, *>>,
     private val sideEffects: List<SideEffect<S, A, E, *>>,
+    private val closeEffects: List<suspend SideEffectScope<S, A, E>.() -> Unit>,
     broadcastListeners: List<KClass<out EmaAction>>,
     container: Any?,
     private val eventDispatcher: EventDispatcher<E>,
-    private val configuration: EmaConfiguration
-) : EmaEventConsumer<E>,
+    internal val configuration: EmaConfiguration
+) : EmaEventConsumer<E> by eventDispatcher,
     EmaActionDispatcher<A> {
 
     /**
@@ -105,17 +108,17 @@ class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
     private val scope = CoroutineScope(SupervisorJob() + dispatcher)
 
     /**
-     * Job of the side effects of [EmaAction.Lifecycle.Destroyed]. [close] doesn't cancel them, so they can finish, up
-     * to their timeout or the destroyedTimeout of the configuration: it completes when they do.
+     * Job of the work that [close] doesn't cancel: the onClose blocks and the side effects that survive close. They can
+     * finish, up to the closeTimeout of the configuration after the source is closed: it completes when they do.
      */
-    private val destroyedJob = SupervisorJob()
+    private val closingJob = SupervisorJob()
 
-    private val destroyedScope = CoroutineScope(destroyedJob + dispatcher)
+    private val closingScope = CoroutineScope(closingJob + dispatcher)
 
     /**
      * Reported as the class that launches the side effects: the view model that owns the source, or the source
      */
-    private val container: Any = container ?: this
+    internal val container: Any = container ?: this
 
     val stateFlow: StateFlow<S> = mutableStateFlow.asStateFlow()
 
@@ -175,26 +178,54 @@ class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
                 // The queue is closed in close, after the pending steps. If a step throws an exception with the Throw
                 // policy, the source stops too, so its work is cancelled.
                 scope.cancel()
-                destroyedJob.complete()
+                cancelClosingWorkAfterTimeout()
+                closingJob.complete()
             }
         }
     }
 
     /**
-     * Processes the pending actions and then cancels the asynchronous work of the source, except the side effects of
-     * [EmaAction.Lifecycle.Destroyed], which can finish. Actions dispatched after it are ignored.
-     * @return the job that completes when the source has finished, including the side effects of
-     * [EmaAction.Lifecycle.Destroyed]
+     * Processes the pending actions, runs the onClose blocks of setup and then cancels the asynchronous work of the
+     * source, except the onClose blocks and the side effects that survive close, which can finish, up to the
+     * closeTimeout of the configuration. Actions dispatched after it are ignored.
+     *
+     * @return the job that completes when the source has finished, including the work that survives close
      */
     fun close(): Job {
         broadcastJob?.cancel()
+        queue.trySend {
+            closeEffects.forEach { effect ->
+                launch(key = null, timeout = null, onTimeout = {}, launchScope = closingScope) {
+                    sideEffectScope.effect()
+                }
+            }
+        }
         queue.close()
-        // It is completed when the steps finish, and then waits for the side effects of Destroyed
-        return destroyedJob
+        // It is completed when the steps finish, and then waits for the work that survives close
+        return closingJob
+    }
+
+    /**
+     * Cancels the work that survives close if it doesn't finish in the closeTimeout of the configuration, so it doesn't
+     * keep the source alive
+     */
+    private fun cancelClosingWorkAfterTimeout() {
+        val timeoutJob = CoroutineScope(dispatcher).launch {
+            delay(configuration.closeTimeout)
+            closingJob.cancel()
+        }
+        closingJob.invokeOnCompletion { timeoutJob.cancel() }
     }
 
     final override fun dispatch(action: A) {
         dispatchAction(action)
+    }
+
+    /**
+     * Runs [step] in the coroutine of the source, after the actions dispatched before it
+     */
+    internal fun enqueue(step: () -> Unit) {
+        queue.trySend(step)
     }
 
     /**
@@ -294,16 +325,13 @@ class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
                 sideEffect
             }
         }
-        // The source is closed right after Destroyed, so its side effects run in a scope that close doesn't cancel,
-        // with a timeout so they don't keep the source alive
-        val destroyed = action == EmaAction.Lifecycle.Destroyed
+        // The side effects that survive close run in a scope that close doesn't cancel
         with(sideEffect) {
-            val destroyedTimeout = configuration.destroyedTimeout
             launch(
                 key = key,
-                timeout = if (destroyed) timeout ?: destroyedTimeout else timeout,
+                timeout = timeout,
                 onTimeout = { sideEffectScope.onTimeout(typedAction) },
-                launchScope = if (destroyed) destroyedScope else scope,
+                launchScope = if (survivesClose) closingScope else scope,
                 block = { sideEffectScope.invoke(typedAction) }
             )
         }
@@ -347,10 +375,6 @@ class EmaSource<S : EmaState, A : EmaAction, E : EmaEvent> internal constructor(
             observers.forEach { it.onEvent(event) }
         }
     }
-
-    final override fun consumeEvent(event: E) = eventDispatcher.consumeEvent(event)
-
-    final override val eventFlow: Flow<List<E>> = eventDispatcher.eventFlow
 
     private fun putJob(key: Any, job: Job) {
         updateJobs { it + (key to job) }

@@ -6,6 +6,7 @@ import com.carmabs.emanate.core.action.EmaEventConsumer
 import com.carmabs.emanate.core.action.EventDispatcher
 import com.carmabs.emanate.core.error.EmaErrorPolicy
 import com.carmabs.emanate.core.error.runHandlingErrors
+import com.carmabs.emanate.core.initializer.EmaInitializer
 import com.carmabs.emanate.core.model.EmaConfiguration
 import com.carmabs.emanate.core.model.reflection.Reflection
 import com.carmabs.emanate.core.sideeffect.SideEffectResult
@@ -14,7 +15,6 @@ import com.carmabs.emanate.core.state.EmaState
 import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.KClass
 import kotlin.reflect.cast
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Job
@@ -32,16 +32,14 @@ import kotlinx.coroutines.launch
  * @param initialDataState state of the view before any update
  * @param configuration applied by the view model. By default the one of [Emanate], read when the view model is
  * created; pass one to configure this view model without depending on [Emanate.init], for example in a library or in
- * a test.
- * @param dispatcher where the view model runs. By default the main dispatcher of [configuration]. The view model
- * creates its own scope with it and cancels it when it is cleared.
+ * a test. The view model runs on its main dispatcher: it creates its own scope with it and cancels it when it is
+ * cleared.
  *
  * @author <a href="mailto:apps.carmabs@gmail.com">Carlos Mateo Benito</a>
  */
 abstract class EmaViewModelClassic<S : EmaState, E : EmaEvent>(
     initialDataState: S,
-    private val configuration: EmaConfiguration = Emanate.configuration,
-    dispatcher: CoroutineDispatcher = configuration.dispatchers.main
+    private val configuration: EmaConfiguration = Emanate.configuration
 ) : EmaViewModelContract<S, E> {
 
     private val eventDispatcher = EventDispatcher<E>()
@@ -52,7 +50,7 @@ abstract class EmaViewModelClassic<S : EmaState, E : EmaEvent>(
     /**
      * The scope where coroutines are launched by default. It is cancelled when the view model is cleared.
      */
-    protected val scope: CoroutineScope = CoroutineScope(SupervisorJob() + dispatcher)
+    protected val scope: CoroutineScope = CoroutineScope(SupervisorJob() + configuration.dispatchers.main)
 
     /**
      * To determine if the view must be updated when view model is created automatically
@@ -91,7 +89,7 @@ abstract class EmaViewModelClassic<S : EmaState, E : EmaEvent>(
     protected var hasBeenInitialized: Boolean = false
         private set
 
-    override fun onCreated(initializer: EmaAction.Initializer?) {
+    override fun onCreated(initializer: EmaInitializer?) {
         if (!hasBeenInitialized) {
             hasBeenInitialized = true
             if (updateOnInitialization) {
@@ -128,7 +126,7 @@ abstract class EmaViewModelClassic<S : EmaState, E : EmaEvent>(
     /**
      * Called when the state of the view has been created
      */
-    abstract fun onStateCreated(initializer: EmaAction.Initializer? = null)
+    abstract fun onStateCreated(initializer: EmaInitializer? = null)
 
     /**
      * Called always the view goes to the foreground
@@ -203,7 +201,7 @@ abstract class EmaViewModelClassic<S : EmaState, E : EmaEvent>(
     private fun shouldThrowException() = configuration.errorPolicy is EmaErrorPolicy.Throw
 
     /**
-     * Method to override onCleared ViewModel method
+     * Called when the view model is closed
      */
     protected open fun onDestroy() = Unit
 
@@ -277,10 +275,9 @@ abstract class EmaViewModelClassic<S : EmaState, E : EmaEvent>(
     }
 
     /**
-     * Method called when the ViewModel is destroyed. It cancels all background pending tasks.
-     * Check call name for EmaAndroidView. It uses reflection to call this internal method
+     * Closes the view model when its screen is destroyed. It cancels all background pending tasks.
      */
-    final override fun onCleared() {
+    final override fun close() {
         scope.cancel()
         handlingErrors("onDestroy") { onDestroy() }
     }

@@ -1,7 +1,7 @@
 package com.carmabs.emanate.android.initializer.bundle.strategy
 
 import android.os.Bundle
-import com.carmabs.emanate.core.action.EmaAction
+import com.carmabs.emanate.core.initializer.EmaInitializer
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
 
@@ -14,21 +14,19 @@ import kotlinx.serialization.json.Json
  *
  * @author <a href=“mailto:apps.carmabs@gmail.com”>Carlos Mateo Benito</a>
  */
-class KSerializationBundleStrategy<I : EmaAction.Initializer> internal constructor(
-    private val serializer: KSerializer<I>
-) : BundleSerializerStrategy {
-    override fun save(initializer: EmaAction.Initializer, bundle: Bundle) {
+class KSerializationBundleStrategy<I : EmaInitializer> internal constructor(private val serializer: KSerializer<I>) :
+    BundleSerializerStrategy {
+    override fun save(initializer: EmaInitializer, bundle: Bundle) {
         val json = toStringValue(initializer)
-        bundle.putString(EmaAction.Initializer.KEY, json)
+        bundle.putString(EmaInitializer.KEY, json)
     }
 
-    override fun toStringValue(initializer: EmaAction.Initializer): String =
-        Json.encodeToString(serializer, initializer as I)
+    override fun toStringValue(initializer: EmaInitializer): String = Json.encodeToString(serializer, initializer as I)
 
-    override fun fromStringValue(value: String): EmaAction.Initializer = Json.decodeFromString(serializer, value)
+    override fun fromStringValue(value: String): EmaInitializer = Json.decodeFromString(serializer, value)
 
-    override fun restore(bundle: Bundle): EmaAction.Initializer? {
-        val json = bundle.getString(EmaAction.Initializer.KEY)
+    override fun restore(bundle: Bundle): EmaInitializer? {
+        val json = bundle.getString(EmaInitializer.KEY)
         return json?.let { Json.decodeFromString(serializer, it) }
     }
 }

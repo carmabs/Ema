@@ -43,7 +43,7 @@ fun <S : EmaState, A : EmaAction, F : EmaAction> middlewareOf(
     }
 }
 
-fun <S : EmaState, A : EmaAction, F : EmaAction> MiddlewareListScope<S, A>.middlewareOf(
+fun <S : EmaState, A : EmaAction, F : EmaAction> MiddlewareSetupScope<S, A>.middlewareOf(
     actionType: KClass<F>,
     middlewareAction: MiddlewareScope<S, A>.(F) -> Unit
 ): EmaMiddleware<S, A, F> = com.carmabs.emanate.core.source.middleware.middlewareOf(actionType, middlewareAction)

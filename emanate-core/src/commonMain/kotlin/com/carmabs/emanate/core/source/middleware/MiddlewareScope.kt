@@ -3,6 +3,7 @@
 package com.carmabs.emanate.core.source.middleware
 
 import com.carmabs.emanate.core.action.EmaAction
+import com.carmabs.emanate.core.error.runHandlingErrors
 import com.carmabs.emanate.core.source.EmaSource
 import com.carmabs.emanate.core.source.EmaSourceDsl
 import com.carmabs.emanate.core.state.EmaState
@@ -98,6 +99,20 @@ class MiddlewareScope<out S : EmaState, in A : EmaAction> internal constructor(
         context.dispatch(action)
     }
 
+    /**
+     * Runs [step] after the actions dispatched before it, applied or stopped. Unlike an action, nothing can stop it.
+     */
+    internal fun enqueue(step: () -> Unit) {
+        context.enqueue(step)
+    }
+
+    /**
+     * Runs [block] applying the error policy of the source, reported as thrown in [where]
+     */
+    internal fun runHandlingErrors(where: () -> String, block: () -> Unit) {
+        context.runHandlingErrors(where, block)
+    }
+
     internal fun proceedWithReceivedAction() {
         proceed(receivedAction)
     }
@@ -127,4 +142,12 @@ internal class MiddlewareContext<out S : EmaState>(private val source: EmaSource
 
     fun launch(id: String?, timeout: Duration?, onTimeout: () -> Unit, block: suspend () -> Unit): Job =
         source.launch(key = id, timeout = timeout, onTimeout = onTimeout, block = block)
+
+    fun enqueue(step: () -> Unit) {
+        source.enqueue(step)
+    }
+
+    fun runHandlingErrors(where: () -> String, block: () -> Unit) {
+        source.configuration.runHandlingErrors(source.container, where, block)
+    }
 }

@@ -213,7 +213,7 @@ On Android, Emanate keeps your ViewModel inside an Android `ViewModel` (`EmaAndr
 its screen and survives configuration changes:
 
 1. The first time a screen is opened, Emanate calls the function you gave it (`viewModel` in Compose,
-   `provideViewModel()` in Views) and keeps that instance.
+   `provideViewModel(store)` in Views) and keeps that instance.
 2. While the screen exists, after rotations or when coming back from the back stack, Emanate reuses the instance it
    keeps. Your function is not called again.
 3. When the screen is closed, the ViewModel is cleared. Opening the screen again creates a new one.

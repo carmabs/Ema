@@ -3,15 +3,16 @@ package com.carmabs.emanate.core.viewmodel
 import com.carmabs.emanate.core.Emanate
 import com.carmabs.emanate.core.action.EmaAction
 import com.carmabs.emanate.core.broadcast.EmaActionBroadcaster
+import com.carmabs.emanate.core.configurationOn
 import com.carmabs.emanate.core.error.EmaError
 import com.carmabs.emanate.core.error.EmaErrorPolicy
+import com.carmabs.emanate.core.initializer.EmaInitializer
 import com.carmabs.emanate.core.model.EmaConfiguration
 import com.carmabs.emanate.core.state.EmaEvent
 import com.carmabs.emanate.core.state.EmaState
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -30,12 +31,12 @@ private data class Ping(val id: Int, val broken: Boolean = false) : EmaAction
 /**
  * Classic view model whose code called by Emanate throws exceptions
  */
-private class BrokenViewModel(configuration: EmaConfiguration, dispatcher: CoroutineDispatcher) :
-    EmaViewModelAction<BrokenState, BrokenAction, EmaEvent.EMPTY>(BrokenState(), configuration, dispatcher) {
+private class BrokenViewModel(configuration: EmaConfiguration) :
+    EmaViewModelAction<BrokenState, BrokenAction, EmaEvent.EMPTY>(BrokenState(), configuration) {
 
     val received = mutableListOf<String>()
 
-    override fun onStateCreated(initializer: EmaAction.Initializer?) {
+    override fun onStateCreated(initializer: EmaInitializer?) {
         error("broken onStateCreated")
     }
 
@@ -66,7 +67,7 @@ class EmaViewModelClassicErrorTest {
     private val catchErrors = EmaConfiguration(errorPolicy = EmaErrorPolicy.Catch { errors += it }, logger = null)
 
     private fun TestScope.brokenViewModel(configuration: EmaConfiguration = catchErrors) =
-        BrokenViewModel(configuration, UnconfinedTestDispatcher(testScheduler))
+        BrokenViewModel(configurationOn(UnconfinedTestDispatcher(testScheduler), configuration))
 
     @Test
     fun `an action that fails is reported and the view model keeps working`() = runTest {
@@ -78,7 +79,7 @@ class EmaViewModelClassicErrorTest {
         assertEquals("action Broken", errors.single().reflection.methodName)
         // The state is changed imperatively, so the change made before the error is kept
         assertEquals(BrokenState(count = 11), viewModel.stateFlow.value)
-        viewModel.onCleared()
+        viewModel.close()
     }
 
     @Test
@@ -89,7 +90,7 @@ class EmaViewModelClassicErrorTest {
 
         assertEquals(listOf("onStateCreated"), errors.map { it.reflection.methodName })
         assertEquals("BrokenViewModel", errors.single().reflection.containerClassName)
-        viewModel.onCleared()
+        viewModel.close()
     }
 
     @Test
@@ -103,7 +104,7 @@ class EmaViewModelClassicErrorTest {
 
         assertEquals(listOf("ping 2"), viewModel.received)
         assertEquals("broadcast listener of Ping", errors.last().reflection.methodName)
-        viewModel.onCleared()
+        viewModel.close()
     }
 
     @Test
@@ -117,7 +118,7 @@ class EmaViewModelClassicErrorTest {
         runCurrent()
 
         assertEquals(listOf("ping 2"), viewModel.received)
-        viewModel.onCleared()
+        viewModel.close()
     }
 
     @Test
@@ -127,6 +128,6 @@ class EmaViewModelClassicErrorTest {
         val exception = assertFailsWith<IllegalStateException> { viewModel.dispatch(BrokenAction.Broken) }
 
         assertEquals("broken action", exception.message)
-        viewModel.onCleared()
+        viewModel.close()
     }
 }
