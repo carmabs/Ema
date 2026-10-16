@@ -11,13 +11,24 @@ import com.carmabs.emanate.core.viewmodel.EmaViewModelContract
 
 object EmaScreenProvider {
 
+    /**
+     * Returns the Android view model of the screen, with [viewModel] if it doesn't exist yet.
+     *
+     * @param key identifies the view model of the screen
+     */
     @Composable
     fun <S : EmaState, E : EmaEvent> provideComposableViewModel(
+        key: String,
         viewModel: EmaViewModelContract<S, E>,
         savedStateHandle: SavedStateHandle?
     ): EmaAndroidViewModel<S, E> = viewModel(
         modelClass = EmaAndroidViewModel::class.java,
-        key = viewModel.id,
+        key = key,
         factory = EmaViewModelFactory(viewModel, savedStateHandle)
     ) as EmaAndroidViewModel<S, E>
+
+    /**
+     * Key of the view model of the screen drawn by [screenContent]: each screen has its own view model.
+     */
+    internal fun viewModelKey(screenContent: Any): String = "EmaViewModel of ${screenContent::class.java.name}"
 }

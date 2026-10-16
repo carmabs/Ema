@@ -80,6 +80,7 @@ fun <S : EmaState, A : EmaAction, E : EmaEvent> NavGraphBuilder.createComposable
             // navController and is restarted on kill process.
             // With backEntry.savedStateHandle data is rightly persisted
             val androidVm = EmaScreenProvider.provideComposableViewModel(
+                key = EmaScreenProvider.viewModelKey(screenContent),
                 viewModel = remember {
                     viewModel.invoke()
                 },

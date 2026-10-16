@@ -82,6 +82,7 @@ fun <A : EmaAction, S : EmaState, E : EmaEvent> EmaComposableScreen(
         }
     ) {
         val androidVm = EmaScreenProvider.provideComposableViewModel(
+            key = EmaScreenProvider.viewModelKey(screenContent),
             viewModel = remember {
                 vm.invoke()
             },

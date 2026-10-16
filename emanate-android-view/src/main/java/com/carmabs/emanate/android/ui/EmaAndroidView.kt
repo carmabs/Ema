@@ -25,7 +25,7 @@ interface EmaAndroidView<S : EmaState, VM : EmaViewModelContract<S, E>, E : EmaE
         val vm = ViewModelProvider(
             activity,
             emaFactory
-        )[viewModelSeed.id, EmaAndroidViewModel::class.java]
+        )[viewModelKey, EmaAndroidViewModel::class.java]
         return vm as EmaAndroidViewModel<S, E>
     }
 
@@ -34,7 +34,13 @@ interface EmaAndroidView<S : EmaState, VM : EmaViewModelContract<S, E>, E : EmaE
         val vm = ViewModelProvider(
             fragment,
             emaFactory
-        )[viewModelSeed.id, EmaAndroidViewModel::class.java]
+        )[viewModelKey, EmaAndroidViewModel::class.java]
         return vm as EmaAndroidViewModel<S, E>
     }
+
+    /**
+     * Key of the view model of this screen: each screen has its own view model.
+     */
+    val viewModelKey: String
+        get() = "EmaViewModel of ${this::class.java.name}"
 }
