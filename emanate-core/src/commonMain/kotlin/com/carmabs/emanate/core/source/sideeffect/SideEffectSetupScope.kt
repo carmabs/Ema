@@ -32,18 +32,15 @@ class SideEffectSetupScope<S : EmaState, A : EmaAction, E : EmaEvent> internal c
         private set
 
     /**
-     * Adds side effects already created.
-     */
-    fun add(vararg sideEffect: SideEffect<S, A, E, *>) {
-        guard.checkNotBuilt()
-        sideEffectList = sideEffectList + sideEffect
-    }
-
-    /**
      * Adds a side effect already created.
      */
     operator fun SideEffect<S, A, E, *>.unaryPlus() {
-        add(this)
+        include(this)
+    }
+
+    private fun include(sideEffect: SideEffect<S, A, E, *>) {
+        guard.checkNotBuilt()
+        sideEffectList = sideEffectList + sideEffect
     }
 
     /**
@@ -58,7 +55,7 @@ class SideEffectSetupScope<S : EmaState, A : EmaAction, E : EmaEvent> internal c
         onTimeout: (SideEffectScope<S, A, E>.(F) -> Unit)?,
         sideEffect: suspend SideEffectScope<S, A, E>.(F) -> Unit
     ) {
-        add(sideEffectOf(filter, concurrency, timeout, survivesClose, onTimeout, sideEffect))
+        include(sideEffectOf(filter, concurrency, timeout, survivesClose, onTimeout, sideEffect))
     }
 
     /**

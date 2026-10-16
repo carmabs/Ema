@@ -59,7 +59,7 @@ class EmaSourcePluginTest {
         val source = textSource {
             plugins {
                 +SuffixPlugin("a")
-                add(SuffixPlugin("b"))
+                +SuffixPlugin("b")
                 +SuffixPlugin("c")
             }
         }
@@ -116,7 +116,7 @@ class EmaSourcePluginTest {
         val setup = buildSourceSetup<TextState, TextAction, EmaEvent.EMPTY> {
             plugins {
                 +SuffixPlugin("a")
-                add(StampPlugin())
+                +StampPlugin()
             }
         }
 
@@ -130,7 +130,7 @@ class EmaSourcePluginTest {
             plugins { scope = this }
         }
 
-        assertFailsWith<IllegalStateException> { scope.add(SuffixPlugin("a")) }
+        assertFailsWith<IllegalStateException> { with(scope) { +SuffixPlugin("a") } }
         source.close()
     }
 }

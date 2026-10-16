@@ -7,7 +7,7 @@ import com.carmabs.emanate.core.state.EmaState
 /**
  * Created by Carlos Mateo Benito on 14/10/2026.
  *
- * Adds the values of an [EmaBackup], created with backupOf: with [add], or with `+` for the ones already created. Each
+ * Adds the values of an [EmaBackup], created with backupOf: with add, or with `+` for the ones already created. Each
  * value is saved every time it changes and, after the death of the process, it is restored in the order they are
  * added.
  *
@@ -24,23 +24,18 @@ class BackupSetupScope<S : EmaState> internal constructor(private val guard: Set
         private set
 
     /**
-     * Adds saved values already created.
-     *
-     * @throws IllegalArgumentException if a key is already saved
-     */
-    fun add(vararg savedValue: EmaBackupValue<S, *>) {
-        guard.checkNotBuilt()
-        savedValue.forEach { value ->
-            require(backupValueList.none { it.key == value.key }) { "The key ${value.key} is already saved" }
-            backupValueList = backupValueList + value
-        }
-    }
-
-    /**
      * Adds a saved value already created.
+     *
+     * @throws IllegalArgumentException if its key is already saved
      */
     operator fun EmaBackupValue<S, *>.unaryPlus() {
-        add(this)
+        include(this)
+    }
+
+    private fun include(savedValue: EmaBackupValue<S, *>) {
+        guard.checkNotBuilt()
+        require(backupValueList.none { it.key == savedValue.key }) { "The key ${savedValue.key} is already saved" }
+        backupValueList = backupValueList + savedValue
     }
 
     /**
@@ -51,7 +46,7 @@ class BackupSetupScope<S : EmaState> internal constructor(private val guard: Set
      * @param restore returns the state with the saved text restored
      */
     fun add(key: String, save: S.() -> String?, restore: S.(value: String) -> S) {
-        add(savedValueOf(key, save, restore))
+        include(savedValueOf(key, save, restore))
     }
 
     /**
@@ -62,6 +57,6 @@ class BackupSetupScope<S : EmaState> internal constructor(private val guard: Set
      * @param restore returns the state with the saved value restored
      */
     fun <T> add(key: String, codec: EmaBackupCodec<T>, save: S.() -> T?, restore: S.(value: T) -> S) {
-        add(savedValueOf(key, codec, save, restore))
+        include(savedValueOf(key, codec, save, restore))
     }
 }

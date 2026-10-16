@@ -25,18 +25,15 @@ class MiddlewareSetupScope<S : EmaState, A : EmaAction> internal constructor(pri
         private set
 
     /**
-     * Adds middlewares already created.
-     */
-    fun add(vararg middleware: EmaMiddleware<S, A, *>) {
-        guard.checkNotBuilt()
-        middlewareList = middlewareList + middleware
-    }
-
-    /**
      * Adds a middleware already created.
      */
     operator fun EmaMiddleware<S, A, *>.unaryPlus() {
-        add(this)
+        include(this)
+    }
+
+    private fun include(middleware: EmaMiddleware<S, A, *>) {
+        guard.checkNotBuilt()
+        middlewareList = middlewareList + middleware
     }
 
     /**
@@ -44,7 +41,7 @@ class MiddlewareSetupScope<S : EmaState, A : EmaAction> internal constructor(pri
      */
     @PublishedApi
     internal fun <F : EmaAction> add(filter: KClass<F>, middlewareAction: MiddlewareScope<S, A>.(F) -> Unit) {
-        add(middlewareOf(filter, middlewareAction))
+        include(middlewareOf(filter, middlewareAction))
     }
 
     /**
