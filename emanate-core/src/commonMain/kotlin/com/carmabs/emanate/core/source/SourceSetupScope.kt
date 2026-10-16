@@ -1,6 +1,7 @@
 package com.carmabs.emanate.core.source
 
 import com.carmabs.emanate.core.action.EmaAction
+import com.carmabs.emanate.core.source.middleware.MiddlewarePosition
 import com.carmabs.emanate.core.source.middleware.MiddlewareSetupScope
 import com.carmabs.emanate.core.source.reducer.ReducerSetupScope
 import com.carmabs.emanate.core.source.sideeffect.SideEffectSetupScope
@@ -25,7 +26,7 @@ class SourceSetupScope<S : EmaState, A : EmaAction, E : EmaEvent> internal const
 
     private val guard = SetupGuard()
 
-    private val middlewareSetupScope = MiddlewareSetupScope<S, A>(guard)
+    private val middlewareSetupScopes = MiddlewarePosition.entries.associateWith { MiddlewareSetupScope<S, A>(guard) }
 
     private val reducerSetupScope = ReducerSetupScope<S>(guard)
 
@@ -36,11 +37,15 @@ class SourceSetupScope<S : EmaState, A : EmaAction, E : EmaEvent> internal const
     private var pluginList: List<EmaSourcePlugin<S>> = emptyList()
 
     /**
-     * Adds middlewares. They handle the actions in the order they are added, before the reducers.
+     * Adds middlewares at [position] of the chain, whatever the place where the block is written. Inside each position
+     * they handle the actions in the order they are added, and all of them run before the reducers.
      */
-    fun middlewares(block: MiddlewareSetupScope<S, A>.() -> Unit) {
+    fun middlewares(
+        position: MiddlewarePosition = MiddlewarePosition.InPlace,
+        block: MiddlewareSetupScope<S, A>.() -> Unit
+    ) {
         guard.checkNotBuilt()
-        middlewareSetupScope.block()
+        middlewareSetupScopes.getValue(position).block()
     }
 
     /**
@@ -83,7 +88,7 @@ class SourceSetupScope<S : EmaState, A : EmaAction, E : EmaEvent> internal const
     internal fun build(): SourceSetup<S, A, E> {
         guard.build()
         return SourceSetup(
-            middlewares = middlewareSetupScope.middlewareList,
+            middlewares = MiddlewarePosition.entries.flatMap { middlewareSetupScopes.getValue(it).middlewareList },
             reducers = reducerSetupScope.reducerList,
             sideEffects = sideEffectSetupScope.sideEffectList,
             closeEffects = sideEffectSetupScope.closeEffectList,
